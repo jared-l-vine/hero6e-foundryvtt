@@ -1,0 +1,71 @@
+<form class="{{cssClass}}" autocomplete="off">
+        <header class="sheet-header flexrow">
+            <img class="profile" src="{{item.img}}" title="{{item.name}}" data-edit="img" />
+
+            <div class="header-details flexrow">
+                <h1 class="charname">
+                    <input name="name" type="text" value="{{item.name}}" placeholder="Defense Name" />
+                </h1>
+            </div>
+        </header>
+
+    {{!-- Sheet Body --}}
+<section class="sheet-body">
+    <div class="form-group">
+        <label>Resisted By</label>
+        <select name="data.defense" data-dtype="text">
+            {{selectOptions config.defenseTypes selected=data.defense}}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Value</label>
+        <input type="text" name="data.dice" value="{{data.dice}}" data-dtype="Number" />
+        D6
+        <select name="data.extraDice" data-dtype="text">
+            {{selectOptions config.extraDice selected=data.extraDice blank="&nbsp;"}}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Killing Attack</label>
+        <input type="checkbox" name="data.killing" {{checked data.killing}} data-dtype="Boolean" />
+    </div>
+
+    <div class="form-group">
+        <label>Levels of Armor Piercing</label>
+        <input type="text" name="data.piercing" value="{{data.piercing}}" data-dtype="Number" />
+    </div>
+
+    <div class="form-group">
+        <label>Levels of Penetrating</label>
+        <input type="text" name="data.penetrating" value="{{data.penetrating}}" data-dtype="Number" />
+    </div>
+
+    <div class="form-group">
+        <label>Total Attack Advantages</label>
+        <input type="text" name="data.advantages" value="{{data.advantages}}" data-dtype="Number" />
+    </div>
+
+    <div class="form-group">
+        <label>Targets Using</label>
+        <select name="data.uses" data-dtype="text">
+            {{selectOptions config.attacksWith selected=data.uses}}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Avoided By</label>
+        <select name="data.targets" data-dtype="text">
+            {{selectOptions config.defendsWith selected=data.targets}}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>END Cost</label>
+        <input type="text" name="data.end" value="{{data.end}}" data-dtype="Number" />
+    </div>
+
+    {{editor content=data.description target="data.description" button=true owner=owner editable=editable}}
+</section>
+</form>

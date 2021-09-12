@@ -1,0 +1,29 @@
+{
+  "name": "herosystem6e",
+  "title": "Hero System 6e",
+  "description": "The Hero System 6e for FoundryVTT!",
+  "version": "1.0.7",
+  "minimumCoreVersion": "0.7.5",
+  "compatibleCoreVersion": "0.8.6",
+  "templateVersion": 3,
+  "author": "Jared Levine",
+  "esmodules": ["module/herosystem6e.js"],
+  "styles": ["css/herosystem6e.css"],
+  "scripts": [],
+  "packs": [],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "gridDistance": 1,
+  "gridUnits": "m",
+  "primaryTokenAttribute": "body",
+  "secondaryTokenAttribute": "stun",
+  "url": "",
+  "manifest": "",
+  "download": "",
+  "license": "LICENSE.txt"
+}

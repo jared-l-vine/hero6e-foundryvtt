@@ -1,0 +1,48 @@
+<form class="{{cssClass}}" autocomplete="off">
+        <header class="sheet-header flexrow">
+            <img class="profile" src="{{item.img}}" title="{{item.name}}" data-edit="img" />
+
+            <div class="header-details flexrow">
+                <h1 class="charname">
+                    <input name="name" type="text" value="{{item.name}}" placeholder="Defense Name" />
+                </h1>
+            </div>
+        </header>
+
+    {{!-- Sheet Body --}}
+<section class="sheet-body">
+    <div class="form-group">
+        <label>Defense Type</label>
+        <select name="data.defenseType" data-dtype="text">
+            {{selectOptions config.defenseTypes selected=data.defenseType}}
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Value</label>
+        <input type="text" name="data.value" value="{{data.value}}" data-dtype="Number" />
+    </div>
+
+    <div class="form-group">
+        <label>Active By Default</label>
+        <input type="checkbox" name="data.active" {{checked data.active}} data-dtype="Boolean" />
+    </div>
+
+    <div class="form-group">
+        <label>Resistant</label>
+        <input type="checkbox" name="data.resistant" {{checked data.resistant}} data-dtype="Boolean" />
+    </div>
+
+    <div class="form-group">
+        <label>Levels of Hardened</label>
+        <input type="text" name="data.hardened" value="{{data.hardened}}" data-dtype="Number" />
+    </div>
+
+    <div class="form-group">
+        <label>Levels of Impenetrable</label>
+        <input type="text" name="data.impenetrable" value="{{data.impenetrable}}" data-dtype="Number" />
+    </div>
+
+    {{editor content=data.description target="data.description" button=true owner=owner editable=editable}}
+</section>
+</form>

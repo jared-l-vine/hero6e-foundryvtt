@@ -1,0 +1,162 @@
+{
+  "Actor": {
+    "types": ["character"],
+    "templates": {
+      "base": {
+        "body": {
+          "value": 10,
+          "min": 0,
+          "max": 10
+        },
+        "stun": {
+          "value": 20,
+          "min": 0,
+          "max": 20
+        },
+        "end": {
+          "value": 20,
+          "min": 0,
+          "max": 20
+        }
+      }
+    },
+    "character": {
+      "templates": [ "base" ],
+      "biography": "",
+      "attributes": {
+        "points": {
+          "value": 175
+        }
+      },
+      "characteristics": {
+        "str": {
+          "value": 10,
+          "type": "rollable"
+        },
+        "dex": {
+          "value": 10,
+          "type": "rollable"
+        },
+        "con": {
+          "value": 10,
+          "type": "rollable"
+        },
+        "int": {
+          "value": 10,
+          "type": "rollable"
+        },
+        "ego": {
+          "value": 10,
+          "type": "rollable"
+        },
+        "pre": {
+          "value": 10,
+          "type": "rollable"
+        },
+        "ocv": {
+          "value": 3,
+          "type": "combat"
+        },
+        "dcv": {
+          "value": 3,
+          "type": "combat"
+        },
+        "omcv": {
+          "value": 3,
+          "type": "combat"
+        },
+        "dmcv": {
+          "value": 3,
+          "type": "combat"
+        },
+        "spd": {
+          "value": 2
+        },
+        "pd": {
+          "value": 2,
+          "type": "defense"
+        },
+        "ed": {
+          "value": 2,
+          "type": "defense"
+        },
+        "rec": {
+          "value": 4
+        },
+        "end": {
+          "value": 20,
+          "type": "resource"
+        },
+        "stun": {
+          "value": 20,
+          "type": "resource"
+        },
+        "body": {
+          "value": 10,
+          "type": "resource"
+        },
+        "running": {
+          "value": 12,
+          "type": "movement"
+        },
+        "swimming": {
+          "value": 4,
+          "type": "movement"
+        },
+        "leaping": {
+          "value": 4,
+          "type": "movement"
+        }
+      }
+    }
+  },
+  "Item": {
+    "types": [ "skill", "perk", "talent", "martialart", "power", "complication", "equipment", "attack", "defense" ],
+    "templates": {
+      "base": {
+        "description": "",
+        "cost": 0,
+        "modifiers": []
+      }
+    },
+    "skill": {
+      "templates": [ "base" ],
+      "characteristic": "general",
+      "levels": 0,
+      "state": "untrained"
+    },
+    "power": {
+      "templates": [ "base" ],
+      "type": "blast",
+      "effect": 0
+    },
+    "equipment": {
+      "templates": [ "base" ],
+      "quantity": 1,
+      "weight": 0
+    },
+    "attack": {
+      "templates": [ "base" ],
+      "defense": "misc",
+      "killing": 0,
+      "piercing": 0,
+      "penetrating": 0,
+      "advantages": 0,
+      "dice": 1,
+      "extraDice": "zero",
+      "uses": "ocv",
+      "targets": "dcv",
+      "end": 0,
+      "stunX": 0
+    },
+    "defense": {
+      "templates": [ "base" ],
+      "defenseType": "misc",
+      "active": "false",
+      "resistant": "false",
+      "hardened": 0,
+      "impenetrable": 0,
+      "value": 0
+    }
+  }
+}

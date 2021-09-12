@@ -1,0 +1,38 @@
+<div class="hero chat-card item-card" data-actor-id="{{actor._id}}" data-item-id="{{item._id}}"
+     {{#if tokenId}}data-token-id="{{tokenId}}"{{/if}}>
+    <header class="card-header flexrow">
+        <img src="{{item.img}}" title="{{item.name}}" width="36" height="36"/>
+        <h3 class="item-name">{{item.name}}</h3>
+    </header>
+
+    <div class="card-buttons card-content">
+        {{#if state.canMakeHitRoll}}
+        <button class="hit-button" data-action="hit-roll">Roll to Hit</button>
+        {{/if}}
+
+        {{#if state.hasRenderedHitRoll}}
+        <div class="card-section">
+            <div class="hit-roll">{{{ state.renderedHitRoll }}}</div>
+            <div class="description">{{{ state.hitRollText }}}</div>
+        </div>
+        {{/if}}
+
+        {{#if state.canMakeDamageRoll}}
+        <button class="damage-button" data-action="damage-roll">Roll for Damage</button>
+        {{/if}}
+
+        {{#if state.hasRenderedDamageRoll}}
+    <div class="card-section">
+        <div class="damage-roll">{{{ state.renderedDamageRoll }}}</div>
+        <div class="description">{{ state.bodyDamage }} BODY</div>
+        {{#if state.hasStunMultiplierRoll}}
+        <div class="stun-x-roll">{{{ state.renderedStunMultiplierRoll }}}</div>
+        <div class="description">{{ state.stunMultiplier }}X STUN MULTIPLIER</div>
+        {{/if}}
+        <div class="description">{{ state.stunDamage }} STUN</div>
+    </div>
+
+        <button class="apply-defenses" data-action="apply-defenses">Apply Defenses</button>
+        {{/if}}
+    </div>
+</div>

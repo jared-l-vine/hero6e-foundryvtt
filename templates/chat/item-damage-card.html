@@ -1,0 +1,36 @@
+<div class="hero chat-card item-card" data-actor-id="{{actor._id}}" data-item-id="{{item._id}}" 
+     {{#if tokenId}}data-token-id="{{tokenId}}"{{/if}} 
+    {{#if targetId}}data-target-id="{{target._id}}"{{/if}} 
+    {{#if targetTokenId}}data-target-token-id="{{targetTokenId}}"{{/if}}>
+    <header class="card-header flexrow">
+        <img src="{{item.img}}" title="{{item.name}}" width="36" height="36" />
+        <h3 class="item-name">{{item.name}} VS {{target.name}}</h3>
+    </header>
+
+    <div class="card-buttons card-content">
+        <div class="card-section">
+            <div class="description-small">{{ state.startingDefenseText }}</div>
+        </div>
+        {{#if state.showPiercedValues}}
+        <div class="card-section">
+            <div class="description-small">{{ state.piercedDefenseText }}</div>
+        </div>
+        {{/if}}
+        {{#if state.showPenetratedValues}}
+        <div class="card-section">
+            <div class="description-small">{{ state.penetratedDefenseText }}</div>
+        </div>
+        {{/if}}
+        <div class="card-section">
+            <div class="description-small">{{ state.reducedDamageText }}</div>
+        </div>
+
+        {{#if state.canApplyDamage}}
+        <button class="damage-apply-button" data-action="damage-apply">Apply</button>
+        {{/if}}
+
+        {{#if state.hasAppliedDamage}}
+        <button class="damage-apply-button" data-action="damage-apply" disabled>{{ state.appliedDamageText }}</button>
+        {{/if}}
+    </div>
+</div>
