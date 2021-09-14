@@ -6,6 +6,7 @@ import { HeroSystem6eItem } from "./item/item.js";
 import { HeroSystem6eItemSheet } from "./item/item-sheet.js";
 import * as chat from "./chat.js";
 import * as macros from "./macros.js";
+import { HeroSystem6eCardHelpers } from "./card/card-helpers.js";
 
 Hooks.once('init', async function() {
 
@@ -68,10 +69,10 @@ Hooks.once("ready", async function() {
 Hooks.on("renderChatMessage", (app, html, data) => {
     // Display action buttons
     chat.displayChatActionButtons(app, html, data);
-    HeroSystem6eItem.onMessageRendered(html);
+    HeroSystem6eCardHelpers.onMessageRendered(html);
 });
-Hooks.on("renderChatLog", (app, html, data) => HeroSystem6eItem.chatListeners(html));
-Hooks.on("renderChatPopout", (app, html, data) => HeroSystem6eItem.chatListeners(html));
+Hooks.on("renderChatLog", (app, html, data) => HeroSystem6eCardHelpers.chatListeners(html));
+Hooks.on("renderChatPopout", (app, html, data) => HeroSystem6eCardHelpers.chatListeners(html));
 
 /* -------------------------------------------- */
 /*  Hotbar Macros                               */

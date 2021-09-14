@@ -1,6 +1,6 @@
-<div class="hero chat-card item-card" data-actor-id="{{actor._id}}" data-item-id="{{item._id}}" 
+<div class="hero chat-card item-card damage-card" data-actor-id="{{actor._id}}" data-item-id="{{item._id}}" 
      {{#if tokenId}}data-token-id="{{tokenId}}"{{/if}} 
-    {{#if targetId}}data-target-id="{{target._id}}"{{/if}} 
+    data-target-id="{{target._id}}"
     {{#if targetTokenId}}data-target-token-id="{{targetTokenId}}"{{/if}}>
     <header class="card-header flexrow">
         <img src="{{item.img}}" title="{{item.name}}" width="36" height="36" />
