@@ -11,7 +11,10 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			template: "systems/herosystem6e/templates/actor/actor-sheet.html",
 			width: 800,
 			height: 600,
-			tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "description" }]
+			tabs: [
+				{ navSelector: ".sheet-item-tabs", contentSelector: ".sheet-body", initial: "description" },
+				{ navSelector: ".sheet-edit-tabs", contentSelector: ".sheet-mode", initial: "play" },
+			]
 		});
 	}
 
@@ -32,6 +35,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 		// Prepare items.
 		if (this.actor.data.type == 'character') {
+
+			console.log(data);
+
 			this._prepareCharacterItems(data);
 		}
 
@@ -50,9 +56,15 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 		const characteristicSet = []
 
+		this._prepareResource(actorData.data.body);
+		this._prepareResource(actorData.data.stun);
+		this._prepareResource(actorData.data.end);
+
 		for (let [key, characteristic] of Object.entries(actorData.data.characteristics)) {
 			characteristic.key = key;
 			characteristic.name = CONFIG.HERO.characteristics[key];
+
+			this._prepareCharacteristic(characteristic);
 
 			let type = "other";
 
@@ -126,6 +138,20 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		sheetData.defenses = defenses;
 		sheetData.attacks = attacks;
 		sheetData.characteristicSet = characteristicSet;
+	}
+
+	_prepareCharacteristic(characteristic) {
+		characteristic.current = characteristic.value;
+
+		if (characteristic.modifier) {
+			characteristic.current *= characteristic.modifier;
+		}
+
+		characteristic.current = Math.round(characteristic.current);
+	}
+
+	_prepareResource(characteristic) {
+		characteristic.max = characteristic.value;
 	}
 
 	static _prepareDefenseItem(i, item) {

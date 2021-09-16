@@ -118,7 +118,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
     }
 
     async makeHitRoll() {
-        let hitCharacteristic = this.actor.data.data.characteristics[this.item.data.data.uses].value;
+        let hitCharacteristic = this.actor.data.data.characteristics[this.item.data.data.uses].current;
 
         let roll = new Roll("11 + " + hitCharacteristic + " - 3D6", this.actor.getRollData());
         let result = roll.roll();

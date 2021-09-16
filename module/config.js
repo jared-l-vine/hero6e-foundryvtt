@@ -45,7 +45,7 @@ HERO.characteristics = {
     "spd": "SPD",
     "pd": "PD",
     "ed": "ED",
-    "rec": "RED",
+    "rec": "REC",
     "end": "END",
     "body": "BODY",
     "stun": "STUN",

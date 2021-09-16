@@ -5,17 +5,17 @@
       "base": {
         "body": {
           "value": 10,
-          "min": 0,
+          "current": 10,
           "max": 10
         },
         "stun": {
           "value": 20,
-          "min": 0,
+          "current": 20,
           "max": 20
         },
         "end": {
           "value": 20,
-          "min": 0,
+          "current": 20,
           "max": 20
         }
       }
@@ -31,80 +31,104 @@
       "characteristics": {
         "str": {
           "value": 10,
+          "current": 10,
           "type": "rollable"
         },
         "dex": {
           "value": 10,
+          "current": 10,
           "type": "rollable"
         },
         "con": {
           "value": 10,
+          "current": 10,
           "type": "rollable"
         },
         "int": {
           "value": 10,
+          "current": 10,
           "type": "rollable"
         },
         "ego": {
           "value": 10,
+          "current": 10,
           "type": "rollable"
         },
         "pre": {
           "value": 10,
+          "current": 10,
           "type": "rollable"
         },
         "ocv": {
           "value": 3,
+          "current": 3,
+          "modifier": 1,
           "type": "combat"
         },
         "dcv": {
           "value": 3,
+          "current": 3,
+          "modifier": 1,
           "type": "combat"
         },
         "omcv": {
           "value": 3,
+          "current": 3,
+          "modifier": 1,
           "type": "combat"
         },
         "dmcv": {
           "value": 3,
+          "current": 3,
+          "modifier": 1,
           "type": "combat"
         },
         "spd": {
-          "value": 2
+          "value": 2,
+          "current": 2
         },
         "pd": {
           "value": 2,
+          "current": 2,
           "type": "defense"
         },
         "ed": {
           "value": 2,
+          "current": 2,
           "type": "defense"
         },
         "rec": {
-          "value": 4
+          "value": 4,
+          "current": 4
         },
         "end": {
           "value": 20,
+          "current": 20,
           "type": "resource"
         },
         "stun": {
           "value": 20,
+          "current": 20,
           "type": "resource"
         },
         "body": {
           "value": 10,
+          "current": 10,
           "type": "resource"
         },
         "running": {
           "value": 12,
+          "current": 12,
           "type": "movement"
         },
         "swimming": {
           "value": 4,
+          "current": 4,
           "type": "movement"
         },
         "leaping": {
           "value": 4,
+          "current": 4,
           "type": "movement"
         }
       }

@@ -99,4 +99,69 @@ export class HeroSystem6eCard {
             button.setAttribute("disabled", true);
         }
     }
+
+    static async toggleStatusEffect(target, effectData) {
+        if (!target || !effectData.id) return false;
+        let state = false;
+
+        // Remove an existing effect
+        const existing = target.effects.find(e => e.getFlag("core", "statusId") === effectData.id);
+        if (existing) {
+            await existing.delete();
+            // FIXME: The duplicate call is temporarily needed to de-dupe legacy tokens. Remove in 0.9.0
+            await this.toggleEffect(effectData.icon, { active: false, overlay });
+        }
+
+        // Add a new effect
+        else {
+            const createData = foundry.utils.deepClone(effectData);
+            createData.label = game.i18n.localize(effectData.label);
+            createData["flags.core.statusId"] = effectData.id;
+            delete createData.id;
+            const cls = getDocumentClass("ActiveEffect");
+            await cls.create(createData, { parent: target });
+            state = true;
+        }
+        return state;
+    }
+
+    static async removeStatusEffect(target, effectData) {
+        if (!target || !effectData.id) return false;
+        let state = false;
+
+        // Remove an existing effect
+        const existing = target.effects.find(e => e.getFlag("core", "statusId") === effectData.id);
+        if (existing) {
+            await existing.delete();
+            // FIXME: The duplicate call is temporarily needed to de-dupe legacy tokens. Remove in 0.9.0
+
+            for (let token of target.getActiveTokens()) {
+                await token.toggleEffect(effectData.icon, { active: false });
+            }
+        }
+
+        return state;
+    }
+
+    static async applyStatusEffect(target, effectData) {
+        if (!target || !effectData.id) return false;
+        let state = false;
+
+        // Remove an existing effect
+        const existing = target.effects.find(e => e.getFlag("core", "statusId") === effectData.id);
+        if (!existing) {
+            const createData = foundry.utils.deepClone(effectData);
+            createData.label = game.i18n.localize(effectData.label);
+            createData["flags.core.statusId"] = effectData.id;
+            delete createData.id;
+            const cls = getDocumentClass("ActiveEffect");
+            await cls.create(createData, { parent: target });
+            state = true;
+
+            for (let token of target.getActiveTokens()) {
+                if (token.hasActiveHUD) token.layer.hud.render();
+            }
+        }
+        return state;
+    }
 }

@@ -1,3 +1,4 @@
+import { HeroSystem6eActorActiveEffects } from "../actor/actor-active-effects.js";
 import { HeroSystem6eActorSheet } from "../actor/actor-sheet.js";
 import { HeroSystem6eCard } from "./card.js";
 
@@ -86,12 +87,9 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
     async init(card) {
         super.init(card);
         this.target = await HeroSystem6eDamageCard._getChatCardTarget(card);
-        console.log(this.target);
     }
 
     static async _getChatCardTarget(card) {
-        console.log(card.dataset);
-
         // Case 1 - a synthetic actor from a Token
         if (card.dataset.targetTokenId) {
             const token = await fromUuid(card.dataset.targetTokenId);
@@ -294,12 +292,30 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
     }
 
     async applyDamage() {
-        let newBody = this.target.data.data.body.value - this.message.data.flags['state'].finalBody;
-        let newStun = this.target.data.data.stun.value - this.message.data.flags['state'].finalStun;
+        let newBody = this.target.data.data.body.current - this.message.data.flags['state'].finalBody;
+        let newStun = this.target.data.data.stun.current - this.message.data.flags['state'].finalStun;
         await this.target.update({
-            "data.body.value": newBody,
-            "data.stun.value": newStun,
+            "data.body.current": newBody,
+            "data.stun.current": newStun,
         });
+
+        if (newBody <= -this.target.data.data.body.max) {
+            await HeroSystem6eCard.removeStatusEffect(this.target, HeroSystem6eActorActiveEffects.stunEffect);
+            await HeroSystem6eCard.removeStatusEffect(this.target, HeroSystem6eActorActiveEffects.unconsciousEffect);
+            await HeroSystem6eCard.removeStatusEffect(this.target, HeroSystem6eActorActiveEffects.bleedingEffect);
+            await HeroSystem6eCard.applyStatusEffect(this.target, HeroSystem6eActorActiveEffects.deadEffect);
+        } else {
+            if (newBody <= 0) {
+                await HeroSystem6eCard.applyStatusEffect(this.target, HeroSystem6eActorActiveEffects.bleedingEffect);
+            }
+
+            if (newStun <= 0) {
+                await HeroSystem6eCard.removeStatusEffect(this.target, HeroSystem6eActorActiveEffects.stunEffect);
+                await HeroSystem6eCard.applyStatusEffect(this.target, HeroSystem6eActorActiveEffects.unconsciousEffect);
+            } else if (this.message.data.flags['state'].finalStun > this.target.data.data.characteristics['con'].current) {
+                await HeroSystem6eCard.applyStatusEffect(this.target, HeroSystem6eActorActiveEffects.stunEffect);
+            }
+        }
 
         await this.modifyCardState("canApplyDamage", false);
         await this.modifyCardState("hasAppliedDamage", true);

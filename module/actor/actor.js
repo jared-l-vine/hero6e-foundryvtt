@@ -32,4 +32,11 @@ export class HeroSystem6eActor extends Actor {
         characteristic.roll = Math.round(9 + (characteristic.value / 5));
     }
   }
+
+    /** @override */
+    applyActiveEffects() {
+        // The Active Effects do not have access to their parent at preparation time so we wait until this stage to
+        // determine whether they are suppressed or not.
+        return super.applyActiveEffects();
+    }
 }

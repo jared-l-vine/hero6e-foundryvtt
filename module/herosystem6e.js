@@ -7,6 +7,7 @@ import { HeroSystem6eItemSheet } from "./item/item-sheet.js";
 import * as chat from "./chat.js";
 import * as macros from "./macros.js";
 import { HeroSystem6eCardHelpers } from "./card/card-helpers.js";
+import { HeroSystem6eActorActiveEffects } from "./actor/actor-active-effects.js";
 
 Hooks.once('init', async function() {
 
@@ -37,7 +38,10 @@ Hooks.once('init', async function() {
 
   // Define custom Entity classes
   CONFIG.Actor.entityClass = HeroSystem6eActor;
-  CONFIG.Item.entityClass = HeroSystem6eItem;
+    CONFIG.Item.entityClass = HeroSystem6eItem;
+    console.log(CONFIG.statusEffects);
+    CONFIG.statusEffects = HeroSystem6eActorActiveEffects.getEffects();
+    console.log(CONFIG.statusEffects);
 
   // Register sheet application classes
   Actors.unregisterSheet("core", ActorSheet);
