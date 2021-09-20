@@ -17,7 +17,7 @@
 						<div class="resource flex-group-center">
 							<label for="data.body.value" class="resource-label">BODY</label>
 							<div class="resource-content flexrow flex-center flex-between">
-								<input type="text" name="data.body.current" value="{{data.body.current}}" data-dtype="Number" />
+								<input type="text" name="data.body.value" value="{{data.body.value}}" data-dtype="Number" />
 								<span> / </span>
 								<input type="text" name="data.body.max" value="{{data.body.max}}" data-dtype="Number" disabled />
 							</div>
@@ -25,7 +25,7 @@
 						<div class="resource flex-group-center">
 							<label for="data.stun.value" class="resource-label">STUN</label>
 							<div class="resource-content flexrow flex-center flex-between">
-								<input type="text" name="data.stun.current" value="{{data.stun.current}}" data-dtype="Number" />
+								<input type="text" name="data.stun.value" value="{{data.stun.value}}" data-dtype="Number" />
 								<span> / </span>
 								<input type="text" name="data.stun.max" value="{{data.stun.max}}" data-dtype="Number" disabled />
 							</div>
@@ -33,7 +33,7 @@
 						<div class="resource flex-group-center">
 							<label for="data.end.value" class="resource-label">END</label>
 							<div class="resource-content flexrow flex-center flex-between">
-								<input type="text" name="data.end.current" value="{{data.end.current}}" data-dtype="Number" />
+								<input type="text" name="data.end.value" value="{{data.end.value}}" data-dtype="Number" />
 								<span> / </span>
 								<input type="text" name="data.end.max" value="{{data.end.max}}" data-dtype="Number" disabled />
 							</div>
@@ -76,7 +76,7 @@
 						<input type="text" name="data.characteristics.{{characteristic.key}}.current" value="{{characteristic.current}}" data-dtype="Number" disabled />
 					</div>
 					{{/each}}
-					<button style="height:40px;width:90%;align-self:center;">Take Recovery</button>
+					<button class="recovery-button" style="height:40px;width:90%;align-self:center;">Take Recovery</button>
 				</div>
 			</section>
 
@@ -208,25 +208,25 @@
 						<div class="resource flex-group-center">
 							<label for="data.body.value" class="resource-label">BODY</label>
 							<div class="resource-content flexrow flex-center flex-between">
-								<input type="text" value="{{data.body.value}}" data-dtype="Number" disabled />
+								<input type="text" value="{{data.characteristics.body.value}}" data-dtype="Number" disabled />
 								<span> / </span>
-								<input type="text" name="data.body.value" value="{{data.body.value}}" data-dtype="Number" />
+								<input type="text" name="data.characteristics.body.value" value="{{data.characteristics.body.value}}" data-dtype="Number" />
 							</div>
 						</div>
 						<div class="resource flex-group-center">
 							<label for="data.stun.value" class="resource-label">STUN</label>
 							<div class="resource-content flexrow flex-center flex-between">
-								<input type="text" value="{{data.stun.value}}" data-dtype="Number" disabled />
+								<input type="text" value="{{data.characteristics.stun.value}}" data-dtype="Number" disabled />
 								<span> / </span>
-								<input type="text" name="data.stun.value" value="{{data.stun.value}}" data-dtype="Number" />
+								<input type="text" name="data.characteristics.stun.value" value="{{data.characteristics.stun.value}}" data-dtype="Number" />
 							</div>
 						</div>
 						<div class="resource flex-group-center">
 							<label for="data.end.value" class="resource-label">END</label>
 							<div class="resource-content flexrow flex-center flex-between">
-								<input type="text" value="{{data.end.value}}" data-dtype="Number" disabled />
+								<input type="text" value="{{data.characteristics.end.value}}" data-dtype="Number" disabled />
 								<span> / </span>
-								<input type="text" name="data.end.value" value="{{data.end.value}}" data-dtype="Number" />
+								<input type="text" name="data.characteristics.end.value" value="{{data.characteristics.end.value}}" data-dtype="Number" />
 							</div>
 						</div>
 					</div>

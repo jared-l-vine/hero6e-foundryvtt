@@ -51,7 +51,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
         await cardObject.init(card);
 
         // Validate permission to proceed with the roll
-        if (!(game.user.isGM || message.isAuthor)) return;
+        if (!(game.user.isGM || cardObject.message.isAuthor)) return;
 
         // Handle different actions
         switch (action) {
@@ -265,9 +265,6 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
             targetTokenID: token ? token._id : null,
         };
 
-        console.log(attackCard.actor);
-        console.log(target);
-
         let cardHtml = await HeroSystem6eDamageCard._renderInternal(attackCard.item, attackCard.actor, target, stateData);
 
         // Create the ChatMessage data object
@@ -292,11 +289,11 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
     }
 
     async applyDamage() {
-        let newBody = this.target.data.data.body.current - this.message.data.flags['state'].finalBody;
-        let newStun = this.target.data.data.stun.current - this.message.data.flags['state'].finalStun;
+        let newBody = this.target.data.data.body.value - this.message.data.flags['state'].finalBody;
+        let newStun = this.target.data.data.stun.value - this.message.data.flags['state'].finalStun;
         await this.target.update({
-            "data.body.current": newBody,
-            "data.stun.current": newStun,
+            "data.body.value": newBody,
+            "data.stun.value": newStun,
         });
 
         if (newBody <= -this.target.data.data.body.max) {

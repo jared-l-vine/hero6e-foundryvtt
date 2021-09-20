@@ -35,9 +35,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 		// Prepare items.
 		if (this.actor.data.type == 'character') {
-
-			console.log(data);
-
 			this._prepareCharacterItems(data);
 		}
 
@@ -54,17 +51,11 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 	_prepareCharacterItems(sheetData) {
 		const actorData = sheetData.actor;
 
-		const characteristicSet = []
-
-		this._prepareResource(actorData.data.body);
-		this._prepareResource(actorData.data.stun);
-		this._prepareResource(actorData.data.end);
+		const characteristicSet = [];
 
 		for (let [key, characteristic] of Object.entries(actorData.data.characteristics)) {
 			characteristic.key = key;
 			characteristic.name = CONFIG.HERO.characteristics[key];
-
-			this._prepareCharacteristic(characteristic);
 
 			let type = "other";
 
@@ -77,7 +68,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			}
 
 			characteristicSet[type].push(characteristic);
-        }
+		}
 
 		// Initialize containers.
 		const skills = [];
@@ -140,20 +131,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		sheetData.characteristicSet = characteristicSet;
 	}
 
-	_prepareCharacteristic(characteristic) {
-		characteristic.current = characteristic.value;
-
-		if (characteristic.modifier) {
-			characteristic.current *= characteristic.modifier;
-		}
-
-		characteristic.current = Math.round(characteristic.current);
-	}
-
-	_prepareResource(characteristic) {
-		characteristic.max = characteristic.value;
-	}
-
 	static _prepareDefenseItem(i, item) {
 		i.defenseType = CONFIG.HERO.defenseTypes[item.defenseType];
 		i.active = item.active;
@@ -196,6 +173,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		html.find('.rollable-skill').click(this._onRollSkill.bind(this));
 		html.find('.item-attack').click(this._onItemAttack.bind(this));
 		html.find('.item-toggle').click(this._onItemToggle.bind(this));
+		html.find('.recovery-button').click(this._onRecovery.bind(this));
 
 		// Drag events for macros.
 		if (this.actor.isOwner) {
@@ -290,4 +268,22 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			});
 		}
 	}
+
+	async _onRecovery(event) {
+		let newStun = this.actor.data.data.stun.value + this.actor.data.data.characteristics['rec'].current;
+		let newEnd = this.actor.data.data.end.value + this.actor.data.data.characteristics['rec'].current;
+
+		if (newStun > this.actor.data.data.stun.max) {
+			newStun = this.actor.data.data.stun.max
+        }
+
+		if (newEnd > this.actor.data.data.end.max) {
+			newEnd = this.actor.data.data.end.max
+		}
+
+		await this.actor.update({
+			"data.stun.value": newStun,
+			"data.end.value": newEnd,
+		});
+    }
 }

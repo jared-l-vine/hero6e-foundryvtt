@@ -356,10 +356,10 @@
         border-bottom: 2px groove #FFF;
     }
 
-        .hero.chat-card .card-header img {
-            flex: 0 0 36px;
-            margin-right: 5px;
-        }
+    .hero.chat-card .card-header img {
+        flex: 0 0 36px;
+        margin-right: 5px;
+    }
 
     .hero.chat-card .card-header h3 {
         flex: 1;
@@ -391,27 +391,27 @@
         text-align: center;
     }
 
-        .hero.chat-card .card-header h3:hover {
-            color: #111;
-            text-shadow: 0 0 10px red;
-        }
+    .hero.chat-card .card-header h3:hover {
+        color: #111;
+        text-shadow: 0 0 10px red;
+    }
 
     .hero.chat-card .card-content {
         margin: 5px 0;
     }
 
-        .hero.chat-card .card-content h3 {
-            font-size: 12px;
-            margin: 0;
-            font-weight: bold;
-        }
+    .hero.chat-card .card-content h3 {
+        font-size: 12px;
+        margin: 0;
+        font-weight: bold;
+    }
 
-        .hero.chat-card .card-content > * {
-            -webkit-user-select: text;
-            -moz-user-select: text;
-            -ms-user-select: text;
-            user-select: text;
-        }
+    .hero.chat-card .card-content > * {
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+    }
 
     .hero.chat-card .card-buttons {
         margin: 5px 0;
@@ -465,4 +465,48 @@
 
 .dice-roll .dice-total.fumble {
     color: red;
+}
+
+.segment-container {
+    margin: 4px 0;
+    border: 1px solid #888;
+}
+
+.segment-inactive {
+    flex: 1;
+    margin: 0;
+    font-size: 16px;
+    color: #AAA;
+    text-align: center;
+    padding: 4px 0;
+}
+
+.segment-active {
+    flex: 1;
+    margin: 0;
+    font-size: 16px;
+    text-align: center;
+    padding: 4px 0;
+    border-top: 2px groove #4b4a44;
+    border-bottom: 2px groove #BBB;
+}
+
+.segment-header img {
+    flex: 0 0 36px;
+    margin-right: 5px;
+}
+
+.segment-header h3 {
+    flex: 1;
+    margin: 0;
+    line-height: 36px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #4b4a44;
+    display: inline-block;
+}
+
+.segment-header h3:hover {
+    color: #111;
+    text-shadow: 0 0 10px red;
 }

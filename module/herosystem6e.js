@@ -2,12 +2,16 @@
 import { HERO } from "./config.js";
 import { HeroSystem6eActor } from "./actor/actor.js";
 import { HeroSystem6eActorSheet } from "./actor/actor-sheet.js";
+import { HeroSystem6eToken, HeroSystem6eTokenDocument } from "./actor/actor-token.js";
 import { HeroSystem6eItem } from "./item/item.js";
 import { HeroSystem6eItemSheet } from "./item/item-sheet.js";
 import * as chat from "./chat.js";
 import * as macros from "./macros.js";
 import { HeroSystem6eCardHelpers } from "./card/card-helpers.js";
 import { HeroSystem6eActorActiveEffects } from "./actor/actor-active-effects.js";
+import HeroSystem6eTemplate from "./template.js";
+import { HeroSystem6eRuler } from "./ruler.js";
+import { HeroSystem6eCombat, HeroSystem6eCombatTracker } from "./combat.js";
 
 Hooks.once('init', async function() {
 
@@ -19,6 +23,11 @@ Hooks.once('init', async function() {
         entities: {
             HeroSystem6eActor,
             HeroSystem6eItem,
+            HeroSystem6eTokenDocument,
+            HeroSystem6eToken
+        },
+        canvas: {
+            HeroSystem6eTemplate
         },
         macros: macros,
         rollItemMacro: macros.rollItemMacro,
@@ -27,43 +36,55 @@ Hooks.once('init', async function() {
 
     CONFIG.HERO = HERO;
 
-  /**
-   * Set an initiative formula for the system
-   * @type {String}
-   */
-  CONFIG.Combat.initiative = {
-    formula: "1d20 + @abilities.dex.mod",
+    CONFIG.Combat.documentClass = HeroSystem6eCombat;
+
+    /**
+    * Set an initiative formula for the system
+    * @type {String}
+    */
+    CONFIG.Combat.initiative = {
+    formula: "@characteristics.dex.current",
     decimals: 2
-  };
+    };
 
-  // Define custom Entity classes
-  CONFIG.Actor.entityClass = HeroSystem6eActor;
+    // Define custom Entity classes
+    CONFIG.Actor.entityClass = HeroSystem6eActor;
     CONFIG.Item.entityClass = HeroSystem6eItem;
-    console.log(CONFIG.statusEffects);
+    CONFIG.Token.documentClass = HeroSystem6eTokenDocument;
+    CONFIG.Token.objectClass = HeroSystem6eToken;
     CONFIG.statusEffects = HeroSystem6eActorActiveEffects.getEffects();
-    console.log(CONFIG.statusEffects);
+    CONFIG.MeasuredTemplate.objectClass = HeroSystem6eTemplate;
+    CONFIG.ui.combat = HeroSystem6eCombatTracker;
 
-  // Register sheet application classes
-  Actors.unregisterSheet("core", ActorSheet);
-  Actors.registerSheet("herosystem6e", HeroSystem6eActorSheet, { makeDefault: true });
-  Items.unregisterSheet("core", ItemSheet);
-  Items.registerSheet("herosystem6e", HeroSystem6eItemSheet, { makeDefault: true });
+    // Register sheet application classes
+    Actors.unregisterSheet("core", ActorSheet);
+    Actors.registerSheet("herosystem6e", HeroSystem6eActorSheet, { makeDefault: true });
+    Items.unregisterSheet("core", ItemSheet);
+    Items.registerSheet("herosystem6e", HeroSystem6eItemSheet, { makeDefault: true });
 
-  // If you need to add Handlebars helpers, here are a few useful examples:
-  Handlebars.registerHelper('concat', function() {
+    // If you need to add Handlebars helpers, here are a few useful examples:
+    Handlebars.registerHelper('concat', function() {
     var outStr = '';
     for (var arg in arguments) {
-      if (typeof arguments[arg] != 'object') {
+        if (typeof arguments[arg] != 'object') {
         outStr += arguments[arg];
-      }
+        }
     }
     return outStr;
-  });
+    });
 
-  Handlebars.registerHelper('toLowerCase', function(str) {
+    Handlebars.registerHelper('toLowerCase', function(str) {
     return str.toLowerCase();
-  });
+    });
+
+    Handlebars.registerHelper('is_active_segment', function (actives, index) {
+        return actives[index];
+    });
 });
+
+Hooks.once("init", () => {
+    Ruler = HeroSystem6eRuler;
+})
 
 Hooks.once("ready", async function() {
   // Wait to register hotbar drop hook on ready so that modules could register earlier if they want to
@@ -77,6 +98,11 @@ Hooks.on("renderChatMessage", (app, html, data) => {
 });
 Hooks.on("renderChatLog", (app, html, data) => HeroSystem6eCardHelpers.chatListeners(html));
 Hooks.on("renderChatPopout", (app, html, data) => HeroSystem6eCardHelpers.chatListeners(html));
+Hooks.on("updateActor", (app, html, data) => {
+    for (let combat of game.combats) {
+        combat._onActorDataUpdate();
+    }
+});
 
 /* -------------------------------------------- */
 /*  Hotbar Macros                               */

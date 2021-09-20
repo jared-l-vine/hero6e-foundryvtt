@@ -48,7 +48,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
 
         // Validate permission to proceed with the roll
         const isValid = action === "apply-defenses";
-        if (!(isValid || game.user.isGM || message.isAuthor)) return;
+        if (!(isValid || game.user.isGM || cardObject.message.isAuthor)) return;
 
         // Handle different actions
         switch (action) {
