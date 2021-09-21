@@ -2,6 +2,10 @@
 	<nav class="sheet-edit-tabs sheet-tabs tabs" data-group="mode">
 		<a class="item" data-tab="play">Play</a>
 		<a class="item" data-tab="edit">Edit</a>
+		<label class="upload-button">
+			<span>Upload .HDC</span>
+			<input type="file" />
+		</label>
 	</nav>
 
 	<section class="sheet-mode">
@@ -113,7 +117,9 @@
 							<div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
 							<h4 class="item-name">{{item.name}}</h4>
 							<h4 class="item-name">{{item.characteristic}}</h4>
-							<span class="item-roll rollable-skill" data-roll="3d6" data-label="{{item._id}}">{{numberFormat item.roll decimals=0 sign=false}}-</span>
+							<div>
+								<button class="item-roll rollable-skill" data-roll="{{item.roll}}" data-label="{{item._id}}">{{numberFormat item.roll decimals=0 sign=false}}-</button>
+							</div>
 							<div class="item-controls">
 								<a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
 								<a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>

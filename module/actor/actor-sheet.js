@@ -174,6 +174,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		html.find('.item-attack').click(this._onItemAttack.bind(this));
 		html.find('.item-toggle').click(this._onItemToggle.bind(this));
 		html.find('.recovery-button').click(this._onRecovery.bind(this));
+		html.find('.upload-button').change(this._uploadCharacterSheet.bind(this));
 
 		// Drag events for macros.
 		if (this.actor.isOwner) {
@@ -258,13 +259,14 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		const dataset = element.dataset;
 
 		if (dataset.roll) {
-			let roll = new Roll(dataset.roll, this.actor.getRollData());
+			let roll = new Roll("3D6", this.actor.getRollData());
 			let result = roll.roll();
-			let margin = this.actor.items[dataset.label].roll - roll.total;
+			let item = this.actor.items.get(dataset.label);
+			let margin = dataset.roll - roll.total;
 			result.toMessage({
 				speaker: ChatMessage.getSpeaker({ actor: this.actor }),
-				flavor: dataset.label.toUpperCase() + " roll " + (margin >= 0 ? "succeeded" : "failed") + " by " + Math.abs(margin),
-				borderColor: margin >= 0 ? 0x00FF00 : 0xFF0000
+				flavor: item.name.toUpperCase() + " roll " + (margin >= 0 ? "succeeded" : "failed") + " by " + Math.abs(margin),
+				borderColor: margin >= 0 ? 0x00FF00 : 0xFF0000,
 			});
 		}
 	}
@@ -285,5 +287,81 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			"data.stun.value": newStun,
 			"data.end.value": newEnd,
 		});
+	}
+
+	async _uploadCharacterSheet(event) {
+		var file = event.target.files[0];
+		if (!file) {
+			return;
+		}
+		var reader = new FileReader();
+		reader.onload = function (event) {
+			var contents = event.target.result;
+			console.log(contents);
+
+			let parser = new DOMParser();
+			let xmlDoc = parser.parseFromString(contents, "text/xml");
+			this._applyCharacterSheet(xmlDoc);
+		}.bind(this);
+		reader.readAsText(file);
+	}
+
+	_applyCharacterSheet(sheet) {
+		this._applyCharacterSheetAsync(sheet);
+    }
+
+	async _applyCharacterSheetAsync(sheet) {
+		let characterInfo = sheet.getElementsByTagName("CHARACTER_INFO")[0];
+		let characteristics = sheet.getElementsByTagName("CHARACTERISTICS")[0];
+		let skills = sheet.getElementsByTagName("SKILLS")[0];
+
+		let changes = [];
+
+		if (characterInfo.attributes.getNamedItem("CHARACTER_NAME").nodeValue) {
+			changes["name"] = characterInfo.attributes.getNamedItem("CHARACTER_NAME").nodeValue;
+        }
+
+		for (let characteristic of characteristics.children) {
+			let key = CONFIG.HERO.characteristicsXMLKey[characteristic.attributes.getNamedItem("XMLID").nodeValue];
+			changes[`data.characteristics.${key}.value`] = CONFIG.HERO.characteristicDefaults[key] + parseInt(characteristic.attributes.getNamedItem("LEVELS").nodeValue);
+		}
+
+		for (let item of this.actor.items) {
+			if (item.data.type == "skill") {
+				await item.delete();
+            }
+        }
+
+		for (let skill of skills.children) {
+			const name = skill.attributes.getNamedItem("ALIAS").nodeValue;
+			const type = "skill";
+			const data = {
+				"characteristic": CONFIG.HERO.characteristicsXMLKey[skill.attributes.getNamedItem("CHARACTERISTIC").nodeValue],
+				"levels": CONFIG.HERO.characteristicsXMLKey[skill.attributes.getNamedItem("LEVELS").nodeValue],
+				"state": "trained"
+			};
+
+			if (skill.attributes.getNamedItem("FAMILIARITY").nodeValue == "Yes") {
+				data["state"] = "familiar";
+
+				if (skill.attributes.getNamedItem("EVERYMAN").nodeValue == "Yes") {
+					data["state"] = "everyman";
+				}
+			}
+
+			if (skill.attributes.getNamedItem("PROFICIENCY").nodeValue == "Yes") {
+				data["state"] = "proficient";
+			}
+
+			const itemData = {
+				name: name,
+				type: type,
+				data: data
+			};
+
+			await Item.create(itemData, { parent: this.actor });
+		}
+
+		await this.actor.update(changes);
     }
 }

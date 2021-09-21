@@ -510,3 +510,45 @@
     color: #111;
     text-shadow: 0 0 10px red;
 }
+
+.hero input[type="file"] {
+    display: none;
+}
+
+.upload-button {
+    height: 30px;
+    margin: 0px 60px 0px 30px;
+    background: rgba(255, 255, 240, 0.8);
+    border: 1px solid #b5b3a4;
+    border-radius: 3px;
+    font-size: 14px;
+    line-height: 28px;
+    font-family: "Signika", sans-serif;
+    align-content:center;
+    text-align:center;
+}
+
+.upload-button:hover,
+.upload-button:focus {
+    outline: none;
+    box-shadow: 0 0 5px red;
+}
+
+.upload-button:disabled {
+    color: #4b4a44;
+    box-shadow: none;
+}
+
+.upload-button > i {
+    margin-right: 3px;
+}
+
+form .upload-button {
+    background: rgba(0, 0, 0, 0.1);
+    border: 2px groove #f0f0e0;
+}
+
+.hero .rollable-skill {
+    width: 30px;
+    line-height: normal;
+}
