@@ -184,6 +184,10 @@
   font-family: "Roboto", sans-serif;
 }
 
+.hero.actor-sheet {
+    overflow:hidden;
+}
+
 .hero .sheet-header {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 130px;
@@ -302,6 +306,8 @@
 
 .hero .items-list .item-header {
   font-weight: bold;
+  position:sticky;
+  top:0;
 }
 
 .hero .items-list .item {
@@ -549,6 +555,6 @@ form .upload-button {
 }
 
 .hero .rollable-skill {
-    width: 30px;
+    width: 40px;
     line-height: normal;
 }

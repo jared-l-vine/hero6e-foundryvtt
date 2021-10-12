@@ -7,23 +7,55 @@ import { HeroSystem6eCard } from "../card/card.js";
  * @extends {Item}
  */
 export class HeroSystem6eItem extends Item {
-  /**
-   * Augment the basic Item data model with additional dynamic data.
-   */
-  prepareData() {
-    super.prepareData();
+    /**
+     * Augment the basic Item data model with additional dynamic data.
+     */
+    prepareData() {
+        super.prepareData();
 
-    // Get the Item's data
-    const itemData = this.data;
-    const actorData = this.actor ? this.actor.data : {};
-    const data = itemData.data;
+        // Get the Item's data
+        const itemData = this.data;
+        const actorData = this.actor ? this.actor.data : {};
+        const data = itemData.data;
 
-      if (itemData.type === 'skill') this._prepareSkillData(itemData);
-  }
+        if (itemData.type === 'skill') this._prepareSkillData(actorData, itemData);
+    }
 
-  _prepareSkillData(itemData) {
-      const data = itemData.data;
-      data.roll = Math.round(9 + (data.levels / 5));
+    _prepareSkillData(actorData, itemData) {
+        const data = itemData.data;
+
+        let roll = 6;
+
+        switch (data.state) {
+            case "trained":
+                let levels = data.levels;
+
+                if (data.characteristic != "general") {
+                    if (actorData) {
+                        levels += actorData.data.characteristics[data.characteristic].value / 5;
+                    }
+                }
+                else {
+                    roll = 11 + levels;
+                }
+                roll = Math.round(9 + levels);
+                break;
+            case "proficient":
+                roll = 10;
+                break;
+            case "familiar":
+                roll = 8;
+                break;
+            case "everyman":
+                if (data.ps) {
+                    roll = 11;
+                } else {
+                    roll = 8;
+                }
+                break;
+        }
+
+        data.roll = Math.round(roll);
     }
 
     /**

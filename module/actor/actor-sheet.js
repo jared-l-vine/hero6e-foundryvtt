@@ -330,16 +330,32 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			if (item.data.type == "skill") {
 				await item.delete();
             }
-        }
+		}
+
+		let addedSkills = [];
 
 		for (let skill of skills.children) {
-			const name = skill.attributes.getNamedItem("ALIAS").nodeValue;
+			const xmlid = skill.attributes.getNamedItem("XMLID").nodeValue;
+
+			if (xmlid == "LINGUIST" || xmlid == "LANGUAGES") continue;
+
+			let name = skill.attributes.getNamedItem("ALIAS").nodeValue;
+
+			if (xmlid == "KNOWLEDGE_SKILL") name += ": " + skill.attributes.getNamedItem("INPUT").nodeValue;
+			if (xmlid == "PROFESSIONAL_SKILL") name += ": " + skill.attributes.getNamedItem("INPUT").nodeValue;
+			if (xmlid == "SCIENCE_SKILL") name += ": " + skill.attributes.getNamedItem("INPUT").nodeValue;
+
+			console.log(xmlid);
+
 			const type = "skill";
 			const data = {
-				"characteristic": CONFIG.HERO.characteristicsXMLKey[skill.attributes.getNamedItem("CHARACTERISTIC").nodeValue],
 				"levels": CONFIG.HERO.characteristicsXMLKey[skill.attributes.getNamedItem("LEVELS").nodeValue],
 				"state": "trained"
 			};
+
+			if (skill.attributes.getNamedItem("CHARACTERISTIC")) {
+				data["characteristic"] = CONFIG.HERO.characteristicsXMLKey[skill.attributes.getNamedItem("CHARACTERISTIC").nodeValue];
+            }
 
 			if (skill.attributes.getNamedItem("FAMILIARITY").nodeValue == "Yes") {
 				data["state"] = "familiar";
@@ -353,13 +369,27 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 				data["state"] = "proficient";
 			}
 
+			if (xmlid == "PROFESSIONAL_SKILL") data["ps"] = true;
+
 			const itemData = {
 				name: name,
 				type: type,
 				data: data
 			};
 
-			await Item.create(itemData, { parent: this.actor });
+			let parent = undefined;
+
+			if (skill.attributes.getNamedItem("PARENTID")) {
+				parent = skill.attributes.getNamedItem("PARENTID").nodeValue;
+			}
+
+			if (parent && addedSkills[parent]) {
+				await Item.create(itemData, { parent: addedSkills[parent] });
+
+				console.log (addedSkills)
+			} else {
+				await Item.create(itemData, { parent: this.actor });
+            }
 		}
 
 		await this.actor.update(changes);
