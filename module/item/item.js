@@ -30,7 +30,9 @@ export class HeroSystem6eItem extends Item {
             case "trained":
                 let levels = data.levels;
 
-                if (data.characteristic != "general") {
+                if (!data.characteristic) {
+                    roll = undefined;
+                } else if (data.characteristic != "general") {
                     if (actorData) {
                         levels += actorData.data.characteristics[data.characteristic].value / 5;
                     }
@@ -52,6 +54,9 @@ export class HeroSystem6eItem extends Item {
                 } else {
                     roll = 8;
                 }
+                break;
+            case "noroll":
+                roll = undefined;
                 break;
         }
 

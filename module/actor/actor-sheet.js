@@ -10,7 +10,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			classes: ["herosystem6e", "sheet", "actor"],
 			template: "systems/herosystem6e/templates/actor/actor-sheet.html",
 			width: 800,
-			height: 600,
+			height: 700,
 			tabs: [
 				{ navSelector: ".sheet-item-tabs", contentSelector: ".sheet-body", initial: "description" },
 				{ navSelector: ".sheet-edit-tabs", contentSelector: ".sheet-mode", initial: "play" },
@@ -75,6 +75,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		const attacks = [];
 		const defenses = [];
 
+		let orphanedSkills = [];
+		let skillIndex = [];
+
 		// Iterate through items, allocating to containers
 		// let totalWeight = 0;
 		for (let i of sheetData.items) {
@@ -84,7 +87,30 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			if (i.type === 'skill') {
 				i.characteristic = CONFIG.HERO.skillCharacteristics[item.characteristic];
 				i.roll = item.roll;
-				skills.push(i);
+				i.rollable = item.rollable;
+
+				if (!item.parentid) {
+					skills.push(i);
+					skillIndex[item.hdcid] = i;
+
+					if (orphanedSkills[item.hdcid]) {
+						i.children = orphanedSkills[item.hdcid];
+                    }
+				} else {
+					if (skillIndex[item.parentid]) {
+						if (!skillIndex[item.parentid].children) {
+							skillIndex[item.parentid].children = [];
+						}
+
+						skillIndex[item.parentid].children.push(i);
+					} else {
+						if (!orphanedSkills[item.parentid]) {
+							orphanedSkills[item.parentid] = [];
+						}
+
+						orphanedSkills[item.parentid].push(i);
+                    }
+                }
 			}
 			else if (i.type === 'defense') {
 				HeroSystem6eActorSheet._prepareDefenseItem(i, item);
@@ -297,7 +323,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		var reader = new FileReader();
 		reader.onload = function (event) {
 			var contents = event.target.result;
-			console.log(contents);
 
 			let parser = new DOMParser();
 			let xmlDoc = parser.parseFromString(contents, "text/xml");
@@ -317,13 +342,13 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 		let changes = [];
 
-		if (characterInfo.attributes.getNamedItem("CHARACTER_NAME").nodeValue) {
-			changes["name"] = characterInfo.attributes.getNamedItem("CHARACTER_NAME").nodeValue;
+		if (characterInfo.hasAttribute("CHARACTER_NAME")) {
+			changes["name"] = characterInfo.getAttribute("CHARACTER_NAME");
         }
 
 		for (let characteristic of characteristics.children) {
-			let key = CONFIG.HERO.characteristicsXMLKey[characteristic.attributes.getNamedItem("XMLID").nodeValue];
-			changes[`data.characteristics.${key}.value`] = CONFIG.HERO.characteristicDefaults[key] + parseInt(characteristic.attributes.getNamedItem("LEVELS").nodeValue);
+			let key = CONFIG.HERO.characteristicsXMLKey[characteristic.getAttribute("XMLID")];
+			changes[`data.characteristics.${key}.value`] = CONFIG.HERO.characteristicDefaults[key] + parseInt(characteristic.getAttribute("LEVELS"));
 		}
 
 		for (let item of this.actor.items) {
@@ -332,64 +357,72 @@ export class HeroSystem6eActorSheet extends ActorSheet {
             }
 		}
 
-		let addedSkills = [];
-
 		for (let skill of skills.children) {
-			const xmlid = skill.attributes.getNamedItem("XMLID").nodeValue;
+			const xmlid = skill.getAttribute("XMLID");
 
-			if (xmlid == "LINGUIST" || xmlid == "LANGUAGES") continue;
+			let description = skill.getAttribute("ALIAS");
 
-			let name = skill.attributes.getNamedItem("ALIAS").nodeValue;
+			if (xmlid == "KNOWLEDGE_SKILL" || xmlid == "PROFESSIONAL_SKILL" || xmlid == "SCIENCE_SKILL") {
+				if (skill.hasAttribute("INPUT")) {
+					description += ": " + skill.getAttribute("INPUT");
+                }
+			}
 
-			if (xmlid == "KNOWLEDGE_SKILL") name += ": " + skill.attributes.getNamedItem("INPUT").nodeValue;
-			if (xmlid == "PROFESSIONAL_SKILL") name += ": " + skill.attributes.getNamedItem("INPUT").nodeValue;
-			if (xmlid == "SCIENCE_SKILL") name += ": " + skill.attributes.getNamedItem("INPUT").nodeValue;
+			let name = "";
 
-			console.log(xmlid);
+			if (skill.hasAttribute("NAME") && skill.getAttribute("NAME") != "") {
+				name = skill.getAttribute("NAME");
+			} else {
+				name = description;
+			}
 
 			const type = "skill";
 			const data = {
-				"levels": CONFIG.HERO.characteristicsXMLKey[skill.attributes.getNamedItem("LEVELS").nodeValue],
+				"levels": CONFIG.HERO.characteristicsXMLKey[skill.getAttribute("LEVELS")],
 				"state": "trained"
 			};
 
+			data["description"] = description;
+
 			if (skill.attributes.getNamedItem("CHARACTERISTIC")) {
-				data["characteristic"] = CONFIG.HERO.characteristicsXMLKey[skill.attributes.getNamedItem("CHARACTERISTIC").nodeValue];
+				data["characteristic"] = CONFIG.HERO.characteristicsXMLKey[skill.getAttribute("CHARACTERISTIC")];
+			} else {
+				data["characteristic"] = "";
             }
 
-			if (skill.attributes.getNamedItem("FAMILIARITY").nodeValue == "Yes") {
-				data["state"] = "familiar";
+			if (skill.attributes.getNamedItem("FAMILIARITY")) {
+				if (skill.getAttribute("FAMILIARITY") == "Yes") {
+					data["state"] = "familiar";
 
-				if (skill.attributes.getNamedItem("EVERYMAN").nodeValue == "Yes") {
-					data["state"] = "everyman";
+					if (skill.getAttribute("EVERYMAN") == "Yes") {
+						data["state"] = "everyman";
+					}
 				}
-			}
 
-			if (skill.attributes.getNamedItem("PROFICIENCY").nodeValue == "Yes") {
-				data["state"] = "proficient";
-			}
+				if (skill.getAttribute("PROFICIENCY") == "Yes") {
+					data["state"] = "proficient";
+				}
+			} else {
+				data["state"] = "noroll";
+            }
 
 			if (xmlid == "PROFESSIONAL_SKILL") data["ps"] = true;
+
+			if (skill.hasAttribute("PARENTID")) {
+				data["parentid"] = skill.getAttribute("PARENTID");
+			}
+
+			if (skill.hasAttribute("ID")) {
+				data["hdcid"] = skill.getAttribute("ID");
+			}
 
 			const itemData = {
 				name: name,
 				type: type,
-				data: data
+				data: data,
 			};
 
-			let parent = undefined;
-
-			if (skill.attributes.getNamedItem("PARENTID")) {
-				parent = skill.attributes.getNamedItem("PARENTID").nodeValue;
-			}
-
-			if (parent && addedSkills[parent]) {
-				await Item.create(itemData, { parent: addedSkills[parent] });
-
-				console.log (addedSkills)
-			} else {
-				await Item.create(itemData, { parent: this.actor });
-            }
+			await Item.create(itemData, { parent: this.actor });
 		}
 
 		await this.actor.update(changes);

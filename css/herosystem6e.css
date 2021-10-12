@@ -188,6 +188,10 @@
     overflow:hidden;
 }
 
+.hero .sheet-mode {
+    flex:0;
+}
+
 .hero .sheet-header {
     -webkit-box-flex: 0;
     -ms-flex: 0 0 130px;
@@ -266,6 +270,7 @@
 .hero .sheet-body .tab,
 .hero .sheet-body .tab .editor {
   height: 100%;
+  overflow: auto;
 }
 
 .hero .tox .tox-editor-container {
@@ -279,6 +284,26 @@
 .hero .resource-label {
   font-weight: bold;
   text-transform: uppercase;
+}
+
+.hero .tab-body {
+    height: 100%;
+    overflow-y: auto;
+}
+
+.hero .tab-header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    align-items: center;
+    padding: 0 5px;
+    background: #cfcdc2;
+    border: 1px solid #AAA;
+    border-radius: 2px;
+    text-align: left;
+    font-weight: bold;
+    height:26px;
+    z-index:1;
 }
 
 .hero .tabs {
@@ -301,7 +326,7 @@
   list-style: none;
   margin: 7px 0;
   padding: 0;
-  overflow-y: auto;
+  height:100%;
 }
 
 .hero .items-list .item-header {
@@ -317,7 +342,8 @@
   border-bottom: 1px solid #BBB;
 }
 
-.hero .items-list .item .item-image {
+.hero .items-list .item .item-image,
+.hero .tab-header .item-image {
   -webkit-box-flex: 0;
   -ms-flex: 0 0 24px;
   flex: 0 0 24px;
@@ -336,11 +362,12 @@
     text-align: center;
 }
 
-.hero .items-list .item-controls {
-  -webkit-box-flex: 0;
-  -ms-flex: 0 0 86px;
-  flex: 0 0 86px;
-  text-align: right;
+.hero .items-list .item-controls,
+.hero .tab-header .item-controls {
+    -webkit-box-flex: 0;
+    -ms-flex: 0 0 110px;
+    flex: 0 0 110px;
+    text-align: right;
 }
 
 /* ----------------------------------------- */
