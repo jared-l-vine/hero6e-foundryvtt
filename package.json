@@ -1,7 +1,7 @@
 {
-  "name": "boilerplate",
+  "name": "herosystem6e",
   "version": "1.0.0",
-  "description": "CSS compiler for the Boilerplate system",
+  "description": "CSS compiler for the Hero System 6e for FoundryVTT",
   "scripts": {
     "build": "gulp",
     "compile": "gulp css",

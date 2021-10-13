@@ -1,10 +1,10 @@
 {
   "name": "herosystem6e",
-  "title": "Hero System 6e",
+  "title": "Hero System 6e (Unofficial)",
   "description": "The Hero System 6e for FoundryVTT!",
   "version": "1.0.7",
   "minimumCoreVersion": "0.7.5",
-  "compatibleCoreVersion": "0.8.6",
+  "compatibleCoreVersion": "0.8.9",
   "templateVersion": 3,
   "author": "Jared Levine",
   "esmodules": ["module/herosystem6e.js"],

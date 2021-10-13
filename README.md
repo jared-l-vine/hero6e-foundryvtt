@@ -1,27 +1,30 @@
-# Boilerplate System
+# Hero System 6e (Unofficial)
 
-This system is a boilerplate system that you can use as a starting point for building your own custom systems. It's similar to Simple World-building, but has examples of creating attributes in code rather than dynamically through the UI.
+This system is for playing the sixth edition of the Hero System using FoundryVTT.
 
-## Usage
+## Functionality
 
-Before installing this system, you should rename any files that have `boilerplate` in their filename to use whatever machine-safe name your system needs, such as `adnd2e` if you were building a system for 2nd edition Advanced Dungeons & Dragons. In addition, you should search through the files for `boilerplate` and `Boilerplate` and do the same for those, replacing them with appropriate names for your system.
+This system is a work in progress. The following features are supported
 
-## Sheet Layout
+* A proper Turn/Phase/Segment initiative tracking system
+* A character sheet that you can upload a .HDC file to
+* Attack automation
+* The ruler tool will show the default range modifier for the distance drawn
 
-This system includes a handful of helper CSS classes to help you lay out your sheets if you're not comfortable diving into CSS fully. Those are:
+### Character Sheet
 
-* `flexcol`: Included by Foundry itself, this lays out the child elements of whatever element you place this on vertically.
-* `flexrow`: Included by Foundry itself, this lays out the child elements of whatever element you place this on horizontally.
-* `flex-center`: When used on something that's using flexrow or flexcol, this will center the items and text.
-* `flex-between`: When used on something that's using flexrow or flexcol, this will attempt to place space between the items. Similar to "justify" in word processors.
-* `flex-group-center`: Add a border, padding, and center all items.
-* `flex-group-left`: Add a border, padding, and left align all items.
-* `flex-group-right`: Add a border, padding, and right align all items.
-* `grid`: When combined with the `grid-Ncol` classes, this will lay out child elements in a grid.
-* `grid-Ncol`: Replace `N` with any number from 1-12, such as `grid-3col`. When combined with `grid`, this will layout child elements in a grid with a number of columns equal to the number specified.
+The character sheet in this system supports automation for characteristic and skill rolls.
 
-## Compiling the CSS
+.HDC files created in the Hero Designer can be uploaded to it, and currently supports automatically populating information for a character's characteristics and skills.
 
-This repo includes both CSS for the theme and SCSS source files. If you're new to CSS, it's probably easier to just work in those files directly and delete the SCSS directory. If you're interested in using a CSS preprocessor to add support for nesting, variables, and more, you can run `npm install` in this directory to install the dependencies for the scss compiler. After that, just run `npm run gulp` to compile the SCSS and start a process that watches for new changes.
+Attacks and defense can be manually added by users. They support a small set of advantages each.
 
-![image](http://mattsmith.in/images/boilerplate.png)
+The character sheet can also be used to take a Recovery.
+
+### Attack Automation
+
+An attack added by a user can be used by clicking on it. This will add a card to the chat for the attack.
+
+The card can be used to automatically make the attack roll for an attack, and then the damage roll.
+
+Once damage is rolled, any player can select one of their actor tokens and select 'apply damage' to the attack. They will be prompted to select which of their defenses apply to the attack, and will then have the remaining damage subtracted from their BODY and STUN. Conditions such as Stunned, Unconsciousness, Bleeding, and Dead are automatically applied as appropriate.
