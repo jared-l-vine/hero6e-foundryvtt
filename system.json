@@ -1,29 +1,29 @@
 {
-  "name": "herosystem6e",
-  "title": "Hero System 6e (Unofficial)",
-  "description": "The Hero System 6e for FoundryVTT!",
-  "version": "1.0.7",
-  "minimumCoreVersion": "0.7.5",
-  "compatibleCoreVersion": "0.8.9",
-  "templateVersion": 3,
-  "author": "Jared Levine",
-  "esmodules": ["module/herosystem6e.js"],
-  "styles": ["css/herosystem6e.css"],
-  "scripts": [],
-  "packs": [],
-  "languages": [
-    {
-      "lang": "en",
-      "name": "English",
-      "path": "lang/en.json"
-    }
-  ],
-  "gridDistance": 1,
-  "gridUnits": "m",
-  "primaryTokenAttribute": "body",
-  "secondaryTokenAttribute": "stun",
-  "url": "",
-  "manifest": "",
-  "download": "",
-  "license": "LICENSE.txt"
+    "name": "herosystem6e",
+    "title": "Hero System 6e (Unofficial)",
+    "description": "The Hero System 6e for FoundryVTT!",
+    "version": "1.0.7",
+    "minimumCoreVersion": "0.7.5",
+    "compatibleCoreVersion": "0.8.9",
+    "templateVersion": 3,
+    "author": "Jared Levine",
+    "esmodules": [ "module/herosystem6e.js" ],
+    "styles": [ "css/herosystem6e.css" ],
+    "scripts": [],
+    "packs": [],
+    "languages": [
+        {
+            "lang": "en",
+            "name": "English",
+            "path": "lang/en.json"
+        }
+    ],
+    "gridDistance": 1,
+    "gridUnits": "m",
+    "primaryTokenAttribute": "body",
+    "secondaryTokenAttribute": "stun",
+    "url": "https://github.com/jared-l-vine/hero6e-foundryvtt",
+    "manifest": "https://raw.githubusercontent.com/jared-l-vine/hero6e-foundryvtt/main/system.json",
+    "download": "https://github.com/jared-l-vine/hero6e-foundryvtt/archive/refs/heads/main.zip",
+    "license": "LICENSE.txt"
 }
