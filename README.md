@@ -2,6 +2,14 @@
 
 This system is for playing the sixth edition of the Hero System using FoundryVTT.
 
+HERO SystemTM ® is DOJ, Inc.’s trademark for its roleplaying system.
+HERO System Copyright © 1984, 1989, 2002, 2009 by DOJ, Inc. d/b/a Hero Games. All rights
+reserved.
+Fantasy Hero © 2003, 2010 by DOJ, Inc. d/b/a Hero Games. All rights reserved.
+Star Hero © 2003, 2011 by DOJ, Inc. d/b/a Hero Games. All rights reserved.
+All DOJ trademarks and copyrights used with permission.
+For further information about Hero Games and the HERO System, visit www.herogames.com.
+
 ## Functionality
 
 This system is a work in progress. The following features are supported
