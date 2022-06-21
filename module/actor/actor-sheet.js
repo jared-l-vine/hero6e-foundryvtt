@@ -425,6 +425,10 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			await Item.create(itemData, { parent: this.actor });
 		}
 
+		changes['data.body.value'] = changes['data.characteristics.body.value']
+		changes['data.stun.value'] = changes['data.characteristics.stun.value']
+		changes['data.end.value'] = changes['data.characteristics.end.value']
+
 		await this.actor.update(changes);
     }
 }

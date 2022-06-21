@@ -22,8 +22,8 @@
     "gridUnits": "m",
     "primaryTokenAttribute": "body",
     "secondaryTokenAttribute": "stun",
-    "url": "https://github.com/jared-l-vine/hero6e-foundryvtt",
-    "manifest": "https://raw.githubusercontent.com/jared-l-vine/hero6e-foundryvtt/main/system.json",
-    "download": "https://github.com/jared-l-vine/hero6e-foundryvtt/archive/refs/heads/main.zip",
+    "url": "https://github.com/dmdorman/hero6e-foundryvtt",
+    "manifest": "",
+    "download": "",
     "license": "LICENSE.txt"
 }
