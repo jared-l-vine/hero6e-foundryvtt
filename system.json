@@ -1,6 +1,6 @@
 {
-    "name": "herosystem6e",
-    "title": "Hero System 6e (Unofficial)",
+    "name": "hero6e-foundryvtt-experimental",
+    "title": "Hero System 6e (Experimental)",
     "description": "The Hero System 6e for FoundryVTT!",
     "version": "1.0.7",
     "minimumCoreVersion": "0.7.5",

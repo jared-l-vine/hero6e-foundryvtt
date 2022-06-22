@@ -8,7 +8,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 	static get defaultOptions() {
 		return mergeObject(super.defaultOptions, {
 			classes: ["herosystem6e", "sheet", "actor"],
-			template: "systems/herosystem6e/templates/actor/actor-sheet.html",
+			template: "systems/hero6e-foundryvtt-experimental/templates/actor/actor-sheet.html",
 			width: 800,
 			height: 700,
 			tabs: [
@@ -37,6 +37,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		if (this.actor.data.type == 'character') {
 			this._prepareCharacterItems(data);
 		}
+
+		console.log(data)
 
 		return data;
 	}
@@ -340,8 +342,53 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		let characteristics = sheet.getElementsByTagName("CHARACTERISTICS")[0];
 		let skills = sheet.getElementsByTagName("SKILLS")[0];
 
+		let elementsToLoad = ["POWERS", "PERKS", "TALENTS", "MARTIALARTS", "DISADVANTAGES"]
+
+		function loadElement(element, fields, keyPrefix) {
+			for (let e of element.children) {
+				const xmlid = e.getAttribute("XMLID");
+	
+				for (let attribute of e.attributes) {
+					const attName = attribute.name
+	
+					if (fields.includes(attName)) {
+						const attValue = attribute.value
+						changes[`${keyPrefix}.${xmlid}.${attName}`] = attValue
+					}
+				}
+			}
+		}
+
+		function loadElementChildren(element, fields, keyPrefix, keySuffix) {
+			for (let e of element.children) {
+				const xmlid = e.getAttribute("XMLID");
+
+				for (let eChild of e.children) {
+					const xmlidChild = eChild.getAttribute("XMLID");
+	
+					for (let attribute of eChild.attributes) {
+						const attName = attribute.name
+	
+						if (fields.includes(attName)) {
+							const attValue = attribute.value
+							changes[`${keyPrefix}.${xmlid}.${keySuffix}.${xmlidChild}.${attName}`] = attValue
+						}
+					}
+				}
+			}
+		}
+
 		let changes = [];
 
+		const relevantFields = ["BASECOST", "LEVELS", "ALIAS", "MULTIPLIER", "NAME", "OPTION_ALIAS"]
+
+		for (let elementName of elementsToLoad){
+			let element = sheet.getElementsByTagName(elementName)[0]
+
+			loadElement(element, relevantFields, `data.${elementName}`)
+			loadElementChildren(element, relevantFields, `data.${elementName}`, 'modifier')
+		}
+		
 		if (characterInfo.hasAttribute("CHARACTER_NAME")) {
 			changes["name"] = characterInfo.getAttribute("CHARACTER_NAME");
         }
@@ -349,6 +396,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		for (let characteristic of characteristics.children) {
 			let key = CONFIG.HERO.characteristicsXMLKey[characteristic.getAttribute("XMLID")];
 			changes[`data.characteristics.${key}.value`] = CONFIG.HERO.characteristicDefaults[key] + parseInt(characteristic.getAttribute("LEVELS"));
+			changes[`data.characteristics.${key}.current`] = changes[`data.characteristics.${key}.value`]
 		}
 
 		for (let item of this.actor.items) {
@@ -425,10 +473,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			await Item.create(itemData, { parent: this.actor });
 		}
 
-		changes['data.body.value'] = changes['data.characteristics.body.value']
-		changes['data.stun.value'] = changes['data.characteristics.stun.value']
-		changes['data.end.value'] = changes['data.characteristics.end.value']
-
 		await this.actor.update(changes);
+
+		console.log(changes)
     }
 }
