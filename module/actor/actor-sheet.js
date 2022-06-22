@@ -38,8 +38,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			this._prepareCharacterItems(data);
 		}
 
-		console.log(data)
-
 		return data;
 	}
 
@@ -76,6 +74,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		const skills = [];
 		const attacks = [];
 		const defenses = [];
+		const powers = [];
 
 		let orphanedSkills = [];
 		let skillIndex = [];
@@ -150,12 +149,16 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 				attacks.push(i);
 			}
+			else if (i.type === 'power') {
+				powers.push(i);
+			}
 		}
 
 		// Assign and return
 		sheetData.skills = skills;
 		sheetData.defenses = defenses;
 		sheetData.attacks = attacks;
+		sheetData.powers = powers;
 		sheetData.characteristicSet = characteristicSet;
 	}
 
@@ -342,53 +345,10 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		let characteristics = sheet.getElementsByTagName("CHARACTERISTICS")[0];
 		let skills = sheet.getElementsByTagName("SKILLS")[0];
 
-		let elementsToLoad = ["POWERS", "PERKS", "TALENTS", "MARTIALARTS", "DISADVANTAGES"]
-
-		function loadElement(element, fields, keyPrefix) {
-			for (let e of element.children) {
-				const xmlid = e.getAttribute("XMLID");
-	
-				for (let attribute of e.attributes) {
-					const attName = attribute.name
-	
-					if (fields.includes(attName)) {
-						const attValue = attribute.value
-						changes[`${keyPrefix}.${xmlid}.${attName}`] = attValue
-					}
-				}
-			}
-		}
-
-		function loadElementChildren(element, fields, keyPrefix, keySuffix) {
-			for (let e of element.children) {
-				const xmlid = e.getAttribute("XMLID");
-
-				for (let eChild of e.children) {
-					const xmlidChild = eChild.getAttribute("XMLID");
-	
-					for (let attribute of eChild.attributes) {
-						const attName = attribute.name
-	
-						if (fields.includes(attName)) {
-							const attValue = attribute.value
-							changes[`${keyPrefix}.${xmlid}.${keySuffix}.${xmlidChild}.${attName}`] = attValue
-						}
-					}
-				}
-			}
-		}
+		//let elementsToLoad = ["POWERS", "PERKS", "TALENTS", "MARTIALARTS", "DISADVANTAGES"]
 
 		let changes = [];
 
-		const relevantFields = ["BASECOST", "LEVELS", "ALIAS", "MULTIPLIER", "NAME", "OPTION_ALIAS"]
-
-		for (let elementName of elementsToLoad){
-			let element = sheet.getElementsByTagName(elementName)[0]
-
-			loadElement(element, relevantFields, `data.${elementName}`)
-			loadElementChildren(element, relevantFields, `data.${elementName}`, 'modifier')
-		}
-		
 		if (characterInfo.hasAttribute("CHARACTER_NAME")) {
 			changes["name"] = characterInfo.getAttribute("CHARACTER_NAME");
         }
@@ -399,10 +359,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			changes[`data.characteristics.${key}.current`] = changes[`data.characteristics.${key}.value`]
 		}
 
-		for (let item of this.actor.items) {
-			if (item.data.type == "skill") {
-				await item.delete();
-            }
+		for (let item of this.actor.items) {			
+			await item.delete()
 		}
 
 		for (let skill of skills.children) {
@@ -473,8 +431,37 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			await Item.create(itemData, { parent: this.actor });
 		}
 
-		await this.actor.update(changes);
+		let powers = sheet.getElementsByTagName("POWERS")[0];
+		
+		const relevantFields = ["BASECOST", "LEVELS", "ALIAS", "MULTIPLIER", "NAME", "OPTION_ALIAS"]
+		for (let power of powers.children) {
+			const xmlid = power.getAttribute("XMLID");
+			let name = power.getAttribute("NAME");
+			let alias = power.getAttribute("ALIAS");
 
-		console.log(changes)
+			let data = []
+
+			for (let attribute of power.attributes) {
+				const attName = attribute.name
+
+				if (relevantFields.includes(attName)) {
+					const attValue = attribute.value
+
+					data[attName] = attValue
+				}
+			}
+
+			data.description = alias
+
+			const itemData = {
+				name: name,
+				type: "power",
+				data: data,
+			};
+
+			await Item.create(itemData, { parent: this.actor });
+		}
+
+		await this.actor.update(changes);
     }
 }

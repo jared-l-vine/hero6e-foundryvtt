@@ -123,6 +123,7 @@
     {{!-- Sheet Tab Navigation --}}
     <nav class="sheet-tabs sheet-item-tabs tabs" data-group="primary">
         <a class="item" data-tab="description">Description</a>
+        <a class="item" data-tab="powers">Powers</a>
         <a class="item" data-tab="skills">Skills</a>
         <a class="item" data-tab="attacks">Attacks</a>
         <a class="item" data-tab="defenses">Defenses</a>
@@ -134,6 +135,24 @@
         {{!-- Biography Tab --}}
         <div class="tab biography" data-group="primary" data-tab="description">
             {{editor content=data.biography target="data.biography" button=true owner=owner editable=editable}}
+        </div>
+
+        {{!-- Owned Powers Tab --}}
+        <div class="tab tab-body powers" data-group="primary" data-tab="powers">
+            <header class="tab-header flexrow">
+                <span class="item-name flex3">Name</span>
+                <span class="item-name flex3">Data</span>
+            </header>
+            <section class="powers-group">
+                <ol class="items-list">
+                    {{#each powers as |item id|}}
+                    <li class="item flexrow" data-item-id="{{item._id}}">
+                        <h4 class="item-name flex3">{{item.name}}</h4>
+                        <h4 class="item-name flex3">{{item.data.description}}</h4>
+                    </li>
+                    {{/each}}
+                </ol>
+            </section>
         </div>
 
         {{!-- Owned Skills Tab --}}
