@@ -16,95 +16,8 @@
                     <h1 class="charname">
                         <input type="text" value="{{actor.name}}" placeholder="Name" disabled />
                     </h1>
-
-                    <div class="grid grid-3col">
-                        <div class="resource flex-group-center">
-                            <label for="data.body.value" class="resource-label">BODY</label>
-                            <div class="resource-content flexrow flex-center flex-between">
-                                <input type="text" name="data.body.value" value="{{data.body.value}}" data-dtype="Number" />
-                                <span> / </span>
-                                <input type="text" name="data.body.max" value="{{data.body.max}}" data-dtype="Number" disabled />
-                            </div>
-                        </div>
-                        <div class="resource flex-group-center">
-                            <label for="data.stun.value" class="resource-label">STUN</label>
-                            <div class="resource-content flexrow flex-center flex-between">
-                                <input type="text" name="data.stun.value" value="{{data.stun.value}}" data-dtype="Number" />
-                                <span> / </span>
-                                <input type="text" name="data.stun.max" value="{{data.stun.max}}" data-dtype="Number" disabled />
-                            </div>
-                        </div>
-                        <div class="resource flex-group-center">
-                            <label for="data.end.value" class="resource-label">END</label>
-                            <div class="resource-content flexrow flex-center flex-between">
-                                <input type="text" name="data.end.value" value="{{data.end.value}}" data-dtype="Number" />
-                                <span> / </span>
-                                <input type="text" name="data.end.max" value="{{data.end.max}}" data-dtype="Number" disabled />
-                            </div>
-                        </div>
-                    </div>
+                </div>
             </header>
-
-            <section>
-                <div class="flexrow flex-group-center borderless">
-                    <div class="characteristics characteristic-group grid grid-3col flex2 marginless">
-                        {{#each characteristicSet.rollable as |characteristic key|}}
-                        <div class="flexrow flex-group-center characteristic">
-                            <label for="data.characteristics.{{characteristic.key}}.value" class="resource-label">{{characteristic.name}}</label>
-                            <input type="text" name="data.characteristics.{{characteristic.key}}.current" value="{{characteristic.current}}" data-dtype="Number" disabled />
-                            <button class="characteristic-roll rollable-characteristic" data-roll="3d6" data-label="{{characteristic.key}}">{{numberFormat characteristic.roll decimals=0 sign=false}}-</button>
-                        </div>
-                        {{/each}}
-                    </div>
-
-                    <div class="characteristics characteristic-group grid grid-2col flex1 marginless">
-                        {{#each characteristicSet.combat as |characteristic key|}}
-                        <div class="characteristic flexrow flex-group-center">
-                            <label for="data.characteristics.{{characteristic.key}}.value" class="resource-label">{{characteristic.name}}</label>
-                            <input type="text" name="data.characteristics.{{characteristic.key}}.current" value="{{characteristic.current}}" data-dtype="Number" disabled />
-                        </div>
-                        {{/each}}
-                    </div>
-                </div>
-                <div class="characteristics characteristic-group grid grid-5col marginless">
-                    {{#each characteristicSet.defense as |characteristic key|}}
-                    <div class="characteristic flexrow flex-group-center">
-                        <label for="data.characteristics.{{characteristic.key}}.value" class="resource-label">{{characteristic.name}}</label>
-                        <input type="text" name="data.characteristics.{{characteristic.key}}.current" value="{{characteristic.current}}" data-dtype="Number" disabled />
-                    </div>
-                    {{/each}}
-                    {{#each characteristicSet.other as |characteristic key|}}
-                    <div class="characteristic flexrow flex-group-center">
-                        <label for="data.characteristics.{{characteristic.key}}.value" class="resource-label">{{characteristic.name}}</label>
-                        <input type="text" name="data.characteristics.{{characteristic.key}}.current" value="{{characteristic.current}}" data-dtype="Number" disabled />
-                    </div>
-                    {{/each}}
-                    <button class="recovery-button" style="height:40px;width:90%;align-self:center;">Take Recovery</button>
-                </div>
-            </section>
-            <section>
-                <div class="grid grid-3col">
-                    <div class="resource flex-group-center">
-                        <label for="data.running.value" class="resource-label">RUNNING</label>
-                        <div class="resource-content flexrow flex-center flex-between">
-                            <input type="text" name="data.characteristics.running.value" value="{{data.characteristics.running.value}}" data-dtype="Number" disabled />
-                        </div>
-                    </div>
-                    <div class="resource flex-group-center">
-                        <label for="data.swimming.value" class="resource-label">SWIMMING</label>
-                        <div class="resource-content flexrow flex-center flex-between">
-                            <input type="text" name="data.characteristics.swimming.value" value="{{data.characteristics.swimming.value}}" data-dtype="Number" disabled />
-                        </div>
-                    </div>
-                    <div class="resource flex-group-center">
-                        <label for="data.leaping.value" class="resource-label">LEAPING</label>
-                        <div class="resource-content flexrow flex-center flex-between">
-                            <input type="text" name="data.characteristics.leaping.value" value="{{data.characteristics.leaping.value}}" data-dtype="Number" disabled />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            </section>
         </section>
 
         <section class="tab edit" data-group="mode" data-tab="edit">
@@ -114,96 +27,96 @@
                     <h1 class="charname">
                         <input name="name" type="text" value="{{actor.name}}" placeholder="Name" />
                     </h1>
-
-                    <div class="grid grid-3col">
-                        <div class="resource flex-group-center">
-                            <label for="data.body.value" class="resource-label">BODY</label>
-                            <div class="resource-content flexrow flex-center flex-between">
-                                <input type="text" value="{{data.characteristics.body.value}}" data-dtype="Number" disabled />
-                                <span> / </span>
-                                <input type="text" name="data.characteristics.body.value" value="{{data.characteristics.body.value}}" data-dtype="Number" />
-                            </div>
-                        </div>
-                        <div class="resource flex-group-center">
-                            <label for="data.stun.value" class="resource-label">STUN</label>
-                            <div class="resource-content flexrow flex-center flex-between">
-                                <input type="text" value="{{data.characteristics.stun.value}}" data-dtype="Number" disabled />
-                                <span> / </span>
-                                <input type="text" name="data.characteristics.stun.value" value="{{data.characteristics.stun.value}}" data-dtype="Number" />
-                            </div>
-                        </div>
-                        <div class="resource flex-group-center">
-                            <label for="data.end.value" class="resource-label">END</label>
-                            <div class="resource-content flexrow flex-center flex-between">
-                                <input type="text" value="{{data.characteristics.end.value}}" data-dtype="Number" disabled />
-                                <span> / </span>
-                                <input type="text" name="data.characteristics.end.value" value="{{data.characteristics.end.value}}" data-dtype="Number" />
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </header>
+        </section>
 
-            <section>
-                <div class="flexrow flex-group-center borderless">
-                    <div class="characteristics characteristic-group grid grid-3col flex2 marginless">
-                        {{#each characteristicSet.rollable as |characteristic key|}}
-                        <div class="flexrow flex-group-center characteristic">
-                            <label for="data.characteristics.{{characteristic.key}}.value" class="resource-label">{{characteristic.name}}</label>
-                            <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" />
-                            <button class="characteristic-roll rollable-characteristic" data-roll="3d6" data-label="{{characteristic.key}}" disabled>{{numberFormat characteristic.roll decimals=0 sign=false}}-</button>
-                        </div>
-                        {{/each}}
-                    </div>
-
-                    <div class="characteristics characteristic-group grid grid-2col flex1 marginless">
-                        {{#each characteristicSet.combat as |characteristic key|}}
-                        <div class="characteristic flexrow flex-group-center">
-                            <label for="data.characteristics.{{characteristic.key}}.value" class="resource-label">{{characteristic.name}}</label>
-                            <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" />
-                        </div>
-                        {{/each}}
+        <section>
+            <div class="grid grid-3col">
+                <div class="resource flex-group-center">
+                    <label for="data.body.value" class="resource-label">BODY</label>
+                    <div class="resource-content flexrow flex-center flex-between">
+                        <input type="text" value="{{data.characteristics.body.value}}" data-dtype="Number" />
+                        <span> / </span>
+                        <input type="text" name="data.characteristics.body.value" value="{{data.characteristics.body.value}}" data-dtype="Number" disabled />
                     </div>
                 </div>
-                <div class="characteristics characteristic-group grid grid-5col marginless">
-                    {{#each characteristicSet.defense as |characteristic key|}}
-                    <div class="characteristic flexrow flex-group-center">
-                        <label for="data.characteristics.{{characteristic.key}}.value" class="resource-label">{{characteristic.name}}</label>
-                        <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" />
+                <div class="resource flex-group-center">
+                    <label for="data.stun.value" class="resource-label">STUN</label>
+                    <div class="resource-content flexrow flex-center flex-between">
+                        <input type="text" value="{{data.characteristics.stun.value}}" data-dtype="Number" />
+                        <span> / </span>
+                        <input type="text" name="data.characteristics.stun.value" value="{{data.characteristics.stun.value}}" data-dtype="Number" disabled />
                     </div>
-                    {{/each}}
-                    {{#each characteristicSet.other as |characteristic key|}}
-                    <div class="characteristic flexrow flex-group-center">
-                        <label for="data.characteristics.{{characteristic.key}}.value" class="resource-label">{{characteristic.name}}</label>
-                        <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" />
-                    </div>
-                    {{/each}}
-                    <button style="height:40px;width:90%;align-self:center;" disabled>Take Recovery</button>
                 </div>
-            </section>
-            <section>
-                <div class="grid grid-3col">
-                    <div class="resource flex-group-center">
-                        <label for="data.running.value" class="resource-label">RUNNING</label>
-                        <div class="resource-content flexrow flex-center flex-between">
-                            <input type="text" name="data.characteristics.running.value" value="{{data.characteristics.running.value}}" data-dtype="Number" disabled />
-                        </div>
-                    </div>
-                    <div class="resource flex-group-center">
-                        <label for="data.swimming.value" class="resource-label">SWIMMING</label>
-                        <div class="resource-content flexrow flex-center flex-between">
-                            <input type="text" name="data.characteristics.swimming.value" value="{{data.characteristics.swimming.value}}" data-dtype="Number" disabled />
-                        </div>
-                    </div>
-                    <div class="resource flex-group-center">
-                        <label for="data.leaping.value" class="resource-label">LEAPING</label>
-                        <div class="resource-content flexrow flex-center flex-between">
-                            <input type="text" name="data.characteristics.leaping.value" value="{{data.characteristics.leaping.value}}" data-dtype="Number" disabled />
-                        </div>
+                <div class="resource flex-group-center">
+                    <label for="data.end.value" class="resource-label">END</label>
+                    <div class="resource-content flexrow flex-center flex-between">
+                        <input type="text" value="{{data.characteristics.end.value}}" data-dtype="Number" />
+                        <span> / </span>
+                        <input type="text" name="data.characteristics.end.value" value="{{data.characteristics.end.value}}" data-dtype="Number" disabled />
                     </div>
                 </div>
             </div>
-            </section>
+
+            <div class="flexrow flex-group-center borderless">
+                <div class="characteristics characteristic-group grid grid-3col flex2 marginless">
+                    {{#each characteristicSet.rollable as |characteristic key|}}
+                    <div class="flexrow flex-group-center characteristic">
+                        <label for="data.characteristics.{{characteristic.key}}.value" class="resource-label">{{characteristic.name}}</label>
+                        <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" disabled />
+                        <button class="characteristic-roll rollable-characteristic" data-roll="3d6" data-label="{{characteristic.key}}" >{{numberFormat characteristic.roll decimals=0 sign=false}}-</button>
+                        <button class="characteristic-roll rollable-characteristic" data-roll="3d6" data-label="{{characteristic.name}}" >{{characteristic.name}}-</button>
+                    </div>
+                    {{/each}}
+                </div>
+
+                <div class="characteristics characteristic-group grid grid-2col flex1 marginless">
+                    {{#each characteristicSet.combat as |characteristic key|}}
+                    <div class="characteristic flexrow flex-group-center">
+                        <label for="data.characteristics.{{characteristic.key}}.value" class="resource-label">{{characteristic.name}}</label>
+                        <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" disabled />
+                    </div>
+                    {{/each}}
+                </div>
+            </div>
+
+            <div class="characteristics characteristic-group grid grid-5col marginless">
+                {{#each characteristicSet.defense as |characteristic key|}}
+                <div class="characteristic flexrow flex-group-center">
+                    <label for="data.characteristics.{{characteristic.key}}.value" class="resource-label">{{characteristic.name}}</label>
+                    <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" disabled />
+                </div>
+                {{/each}}
+                {{#each characteristicSet.other as |characteristic key|}}
+                <div class="characteristic flexrow flex-group-center">
+                    <label for="data.characteristics.{{characteristic.key}}.value" class="resource-label">{{characteristic.name}}</label>
+                    <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" disabled />
+                </div>
+                {{/each}}
+                <button style="height:40px;width:90%;align-self:center;" disabled>Take Recovery</button>
+            </div>
+
+            <div class="grid grid-3col">
+                <div class="resource flex-group-center">
+                    <label for="data.running.value" class="resource-label">RUNNING</label>
+                    <div class="resource-content flexrow flex-center flex-between">
+                        <input type="text" name="data.characteristics.running.value" value="{{data.characteristics.running.value}}" data-dtype="Number" disabled />
+                    </div>
+                </div>
+                <div class="resource flex-group-center">
+                    <label for="data.swimming.value" class="resource-label">SWIMMING</label>
+                    <div class="resource-content flexrow flex-center flex-between">
+                        <input type="text" name="data.characteristics.swimming.value" value="{{data.characteristics.swimming.value}}" data-dtype="Number" disabled />
+                    </div>
+                </div>
+                <div class="resource flex-group-center">
+                    <label for="data.leaping.value" class="resource-label">LEAPING</label>
+                    <div class="resource-content flexrow flex-center flex-between">
+                        <input type="text" name="data.characteristics.leaping.value" value="{{data.characteristics.leaping.value}}" data-dtype="Number" disabled />
+                    </div>
+                </div>
+            </div>
         </section>
     </section>
 
