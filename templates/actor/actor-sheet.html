@@ -97,7 +97,7 @@
                 <button style="height:40px;width:90%;align-self:center;" disabled>Take Recovery</button>
             </div>
 
-            <div class="grid grid-3col">
+            <div class="grid grid-4col">
                 <div class="resource flex-group-center">
                     <label for="data.running.value" class="resource-label">RUNNING</label>
                     <div class="resource-content flexrow flex-center flex-between">
@@ -116,6 +116,12 @@
                         <input type="text" name="data.characteristics.leaping.value" value="{{data.characteristics.leaping.value}}" data-dtype="Number" disabled />
                     </div>
                 </div>
+                <div class="resource flex-group-center">
+                    <label for="data.flying.value" class="resource-label">FLYING</label>
+                    <div class="resource-content flexrow flex-center flex-between">
+                        <input type="text" name="data.characteristics.flying.value" value="{{data.characteristics.flying.value}}" data-dtype="Number" disabled />
+                    </div>
+                </div>
             </div>
         </section>
     </section>
@@ -128,6 +134,7 @@
         <a class="item" data-tab="attacks">Attacks</a>
         <a class="item" data-tab="defenses">Defenses</a>
     </nav>
+
 
     {{!-- Sheet Body --}}
     <section class="sheet-body">

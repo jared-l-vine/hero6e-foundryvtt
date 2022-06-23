@@ -341,6 +341,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     }
 
 	async _applyCharacterSheetAsync(sheet) {
+
 		let characterInfo = sheet.getElementsByTagName("CHARACTER_INFO")[0];
 		let characteristics = sheet.getElementsByTagName("CHARACTERISTICS")[0];
 		let skills = sheet.getElementsByTagName("SKILLS")[0];
@@ -353,11 +354,17 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			changes["name"] = characterInfo.getAttribute("CHARACTER_NAME");
         }
 
+		//changes['data.characteristics.flying.value'] = 0;
+
 		for (let characteristic of characteristics.children) {
 			let key = CONFIG.HERO.characteristicsXMLKey[characteristic.getAttribute("XMLID")];
 			changes[`data.characteristics.${key}.value`] = CONFIG.HERO.characteristicDefaults[key] + parseInt(characteristic.getAttribute("LEVELS"));
 			changes[`data.characteristics.${key}.current`] = changes[`data.characteristics.${key}.value`]
 		}
+
+		await this.actor.update(changes);
+
+		console.log(changes)
 
 		for (let item of this.actor.items) {			
 			await item.delete()
@@ -431,13 +438,47 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			await Item.create(itemData, { parent: this.actor });
 		}
 
+		function loadPower(actor, itemData, xmlid, sheet) {
+			let newValue = undefined;
+
+			switch(xmlid) {
+				case "SWIMMING":
+					newValue = parseFloat(actor.data.data.characteristics.swimming.value) + parseFloat(itemData.levels)
+					actor.setCharacteristic('swimming.value', newValue)
+					break;
+				case "LEAPING":
+					newValue = parseFloat(actor.data.data.characteristics.leaping.value) + parseFloat(itemData.levels)
+					actor.setCharacteristic('leaping.value', newValue)
+					break;
+				case "FLIGHT":
+					newValue = parseFloat(actor.data.data.characteristics.flying.value) + parseFloat(itemData.levels)
+					actor.setCharacteristic('flying.value', newValue)
+					break;
+				case "RUNNING":
+					newValue = parseFloat(actor.data.data.characteristics.running.value) + parseFloat(itemData.levels)
+					actor.setCharacteristic('running.value', newValue)
+					break;
+				default:
+					console.log(xmlid);
+					break;
+			}
+		}
+
 		let powers = sheet.getElementsByTagName("POWERS")[0];
 		
 		const relevantFields = ["BASECOST", "LEVELS", "ALIAS", "MULTIPLIER", "NAME", "OPTION_ALIAS"]
 		for (let power of powers.children) {
-			const xmlid = power.getAttribute("XMLID");
+			let xmlid = power.getAttribute("XMLID");
 			let name = power.getAttribute("NAME");
 			let alias = power.getAttribute("ALIAS");
+			let levels = power.getAttribute("LEVELS");
+
+			console.log(name)
+
+			let itemName = name;
+			if (name === undefined || name === "") {
+				itemName = alias
+			}
 
 			let data = []
 
@@ -454,14 +495,15 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			data.description = alias
 
 			const itemData = {
-				name: name,
+				name: itemName,
 				type: "power",
 				data: data,
+				levels, levels,
 			};
 
 			await Item.create(itemData, { parent: this.actor });
-		}
 
-		await this.actor.update(changes);
+			loadPower(this.actor, itemData, xmlid, sheet);
+		}
     }
 }

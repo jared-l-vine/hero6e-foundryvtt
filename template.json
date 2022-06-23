@@ -151,7 +151,8 @@
         "power": {
             "templates": [ "base" ],
             "type": "blast",
-            "effect": 0
+            "effect": 0,
+            "levels": 0
         },
         "equipment": {
             "templates": [ "base" ],

@@ -1,5 +1,6 @@
 // Import Modules
 import { HERO } from "./config.js";
+import { POWERS } from "./powers/powers-rules.js";
 import { HeroSystem6eActor } from "./actor/actor.js";
 import { HeroSystem6eActorSheet } from "./actor/actor-sheet.js";
 import { HeroSystem6eToken, HeroSystem6eTokenDocument } from "./actor/actor-token.js";
@@ -36,6 +37,8 @@ Hooks.once('init', async function() {
 
     CONFIG.HERO = HERO;
 
+    CONFIG.POWERS = POWERS
+
     CONFIG.Combat.documentClass = HeroSystem6eCombat;
 
     /**
@@ -46,6 +49,9 @@ Hooks.once('init', async function() {
     formula: "@characteristics.dex.current",
     decimals: 2
     };
+
+    // debug
+    // CONFIG.debug.hooks = true;
 
     // Define custom Entity classes
     CONFIG.Actor.entityClass = HeroSystem6eActor;

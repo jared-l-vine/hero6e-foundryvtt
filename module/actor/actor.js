@@ -65,4 +65,10 @@ export class HeroSystem6eActor extends Actor {
     _onUpdate(data, options, userId) {
         super._onUpdate(data, options, userId);
     }
+
+    setCharacteristic(characteristic, value) {
+        let changes = []
+        changes[`data.characteristics.${characteristic}`] = value
+        this.update(changes);
+    }
 }
