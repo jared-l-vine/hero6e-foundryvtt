@@ -127,6 +127,11 @@
                     "value": 4,
                     "current": 4,
                     "type": "movement"
+                },
+                "flying": {
+                    "value": 0,
+                    "current": 0,
+                    "type": "movement"
                 }
             }
         }
@@ -152,7 +157,8 @@
             "templates": [ "base" ],
             "type": "blast",
             "effect": 0,
-            "levels": 0
+            "levels": 0,
+            "rules": ""
         },
         "equipment": {
             "templates": [ "base" ],

@@ -36,7 +36,7 @@
                 <div class="resource flex-group-center">
                     <label for="data.body.value" class="resource-label">BODY</label>
                     <div class="resource-content flexrow flex-center flex-between">
-                        <input type="text" value="{{data.characteristics.body.value}}" data-dtype="Number" />
+                        <input type="text" value="{{data.characteristics.body.current}}" data-dtype="Number" />
                         <span> / </span>
                         <input type="text" name="data.characteristics.body.value" value="{{data.characteristics.body.value}}" data-dtype="Number" disabled />
                     </div>
@@ -44,7 +44,7 @@
                 <div class="resource flex-group-center">
                     <label for="data.stun.value" class="resource-label">STUN</label>
                     <div class="resource-content flexrow flex-center flex-between">
-                        <input type="text" value="{{data.characteristics.stun.value}}" data-dtype="Number" />
+                        <input type="text" value="{{data.characteristics.stun.current}}" data-dtype="Number" />
                         <span> / </span>
                         <input type="text" name="data.characteristics.stun.value" value="{{data.characteristics.stun.value}}" data-dtype="Number" disabled />
                     </div>
@@ -52,34 +52,14 @@
                 <div class="resource flex-group-center">
                     <label for="data.end.value" class="resource-label">END</label>
                     <div class="resource-content flexrow flex-center flex-between">
-                        <input type="text" value="{{data.characteristics.end.value}}" data-dtype="Number" />
+                        <input type="text" value="{{data.characteristics.end.current}}" data-dtype="Number" />
                         <span> / </span>
                         <input type="text" name="data.characteristics.end.value" value="{{data.characteristics.end.value}}" data-dtype="Number" disabled />
                     </div>
                 </div>
             </div>
 
-            <div class="flexrow flex-group-center borderless">
-                <div class="characteristics characteristic-group grid grid-3col flex2 marginless">
-                    {{#each characteristicSet.rollable as |characteristic key|}}
-                    <div class="flexrow flex-group-center characteristic">
-                        <label for="data.characteristics.{{characteristic.key}}.value" class="resource-label">{{characteristic.name}}</label>
-                        <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" disabled />
-                        <button class="characteristic-roll rollable-characteristic" data-roll="3d6" data-label="{{characteristic.key}}" >{{numberFormat characteristic.roll decimals=0 sign=false}}-</button>
-                        <button class="characteristic-roll rollable-characteristic" data-roll="3d6" data-label="{{characteristic.name}}" >{{characteristic.name}}-</button>
-                    </div>
-                    {{/each}}
-                </div>
-
-                <div class="characteristics characteristic-group grid grid-2col flex1 marginless">
-                    {{#each characteristicSet.combat as |characteristic key|}}
-                    <div class="characteristic flexrow flex-group-center">
-                        <label for="data.characteristics.{{characteristic.key}}.value" class="resource-label">{{characteristic.name}}</label>
-                        <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" disabled />
-                    </div>
-                    {{/each}}
-                </div>
-            </div>
+            <button class="button" style="height:20px;width:100%;align-self:center;" disabled></button>
 
             <div class="characteristics characteristic-group grid grid-5col marginless">
                 {{#each characteristicSet.defense as |characteristic key|}}
@@ -94,7 +74,28 @@
                     <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" disabled />
                 </div>
                 {{/each}}
-                <button style="height:40px;width:90%;align-self:center;" disabled>Take Recovery</button>
+                <button class="recovery-button" style="height:40px;width:90%;align-self:center;" disabled>Take Recovery</button>
+            </div>
+
+            <div class="flexrow flex-group-center borderless">
+                <div class="characteristics characteristic-group grid grid-2col flex1 marginless">
+                    {{#each characteristicSet.combat as |characteristic key|}}
+                    <div class="characteristic flexrow flex-group-center">
+                        <label for="data.characteristics.{{characteristic.key}}.value" class="resource-label">{{characteristic.name}}</label>
+                        <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" disabled />
+                    </div>
+                    {{/each}}
+                </div>
+
+                <div class="characteristics characteristic-group grid grid-3col flex2 marginless">
+                    {{#each characteristicSet.rollable as |characteristic key|}}
+                    <div class="flexrow flex-group-center characteristic">
+                        <label for="data.characteristics.{{characteristic.key}}.value" class="resource-label">{{characteristic.name}}</label>
+                        <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" disabled />
+                        <button class="characteristic-roll rollable-characteristic" data-roll="3d6" data-label="{{characteristic.key}}" >{{numberFormat characteristic.roll decimals=0 sign=false}}-</button>
+                    </div>
+                    {{/each}}
+                </div>
             </div>
 
             <div class="grid grid-4col">
@@ -148,7 +149,8 @@
         <div class="tab tab-body powers" data-group="primary" data-tab="powers">
             <header class="tab-header flexrow">
                 <span class="item-name flex3">Name</span>
-                <span class="item-name flex3">Data</span>
+                <span class="item-name flex3">ID</span>
+                <span class="item-name flex3">Rules</span>
             </header>
             <section class="powers-group">
                 <ol class="items-list">
@@ -156,6 +158,7 @@
                     <li class="item flexrow" data-item-id="{{item._id}}">
                         <h4 class="item-name flex3">{{item.name}}</h4>
                         <h4 class="item-name flex3">{{item.data.description}}</h4>
+                        <h4 class="item-name flex3">{{item.data.rules}}</h4>
                     </li>
                     {{/each}}
                 </ol>

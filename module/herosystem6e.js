@@ -37,7 +37,7 @@ Hooks.once('init', async function() {
 
     CONFIG.HERO = HERO;
 
-    CONFIG.POWERS = POWERS
+    CONFIG.POWERS = POWERS;
 
     CONFIG.Combat.documentClass = HeroSystem6eCombat;
 

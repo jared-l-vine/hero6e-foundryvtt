@@ -1,3 +1,5 @@
+//import { POWERS } from "../powers/powers-rules";
+
 /**
  * Extend the basic ActorSheet with some very simple modifications
  * @extends {ActorSheet}
@@ -303,6 +305,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 	}
 
 	async _onRecovery(event) {
+		console.log("recovery")
+
 		let newStun = this.actor.data.data.stun.value + this.actor.data.data.characteristics['rec'].current;
 		let newEnd = this.actor.data.data.end.value + this.actor.data.data.characteristics['rec'].current;
 
@@ -363,8 +367,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		}
 
 		await this.actor.update(changes);
-
-		console.log(changes)
 
 		for (let item of this.actor.items) {			
 			await item.delete()
@@ -451,7 +453,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 					actor.setCharacteristic('leaping.value', newValue)
 					break;
 				case "FLIGHT":
-					newValue = parseFloat(actor.data.data.characteristics.flying.value) + parseFloat(itemData.levels)
+					newValue = parseFloat(itemData.levels)
 					actor.setCharacteristic('flying.value', newValue)
 					break;
 				case "RUNNING":
@@ -473,8 +475,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			let alias = power.getAttribute("ALIAS");
 			let levels = power.getAttribute("LEVELS");
 
-			console.log(name)
-
 			let itemName = name;
 			if (name === undefined || name === "") {
 				itemName = alias
@@ -492,13 +492,20 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 				}
 			}
 
-			data.description = alias
+			data.description = alias;
+
+			if (CONFIG["POWERS"][alias.toUpperCase()] !== undefined) {
+				data.rules = CONFIG["POWERS"][alias.toUpperCase()];
+			}
+			else {
+				data.rules = "No rules available";
+			}
 
 			const itemData = {
 				name: itemName,
 				type: "power",
 				data: data,
-				levels, levels,
+				levels: levels,
 			};
 
 			await Item.create(itemData, { parent: this.actor });
