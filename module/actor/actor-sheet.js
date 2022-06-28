@@ -494,11 +494,14 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 			data.description = alias;
 
-			if (CONFIG["POWERS"][alias.toUpperCase()] !== undefined) {
-				data.rules = CONFIG["POWERS"][alias.toUpperCase()];
+			console.log(alias.toUpperCase())
+
+			if (CONFIG["POWERS"][xmlid.toUpperCase()] !== undefined) {
+				//data.rules = CONFIG["POWERS"][alias.toUpperCase()];
+				data.rules = "/powers " + xmlid.toLowerCase();
 			}
 			else {
-				data.rules = "No rules available";
+				data.rules = "undefined";
 			}
 
 			const itemData = {

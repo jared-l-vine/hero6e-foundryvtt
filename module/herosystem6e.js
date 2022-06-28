@@ -110,6 +110,35 @@ Hooks.on("updateActor", (app, html, data) => {
     }
 });
 
+Hooks.on("chatCommandsReady", function(chatCommands) {
+    // This uses the optional createdMessageType option to make the created message "Out of Character"
+    chatCommands.registerCommand(chatCommands.createCommandFromData({
+        commandKey: "/powers",
+        invokeOnCommand: (chatlog, messageText, chatdata) => {
+            var powerKey = messageText.toUpperCase();
+            if (CONFIG.POWERS[powerKey] === undefined) {
+                var usage = 'USAGE: /powers key || valid keys:';
+
+                
+                for (var key of Object.keys(CONFIG.POWERS).sort()) {
+                    usage += "\n\t" + key.toLowerCase();
+                }
+
+                console.log(usage)
+                
+                return usage
+            }
+            else {
+                return CONFIG.POWERS[powerKey];
+            }
+        },
+        shouldDisplayToChat: true,
+        createdMessageType: 0,
+        iconClass: "fa-sticky-note",
+        description: "Prints power rules",
+    }));
+}); 
+
 /* -------------------------------------------- */
 /*  Hotbar Macros                               */
 /* -------------------------------------------- */
