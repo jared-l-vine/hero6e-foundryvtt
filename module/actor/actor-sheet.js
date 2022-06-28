@@ -494,12 +494,19 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 				}
 			}
 
+			let modifiers = [];
+			for (let modifier of power.children) {
+				let xmlidModifier = modifier.getAttribute("XMLID");
+
+				if (xmlidModifier !== null) {
+					modifiers.push(xmlidModifier);
+				}
+			}
+			data.modifiers = modifiers;
+
 			data.description = alias;
 
-			console.log(alias.toUpperCase())
-
 			if (CONFIG["POWERS"][xmlid.toUpperCase()] !== undefined) {
-				//data.rules = CONFIG["POWERS"][alias.toUpperCase()];
 				data.rules = "/powers " + xmlid.toLowerCase();
 			}
 			else {
@@ -510,7 +517,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 				name: itemName,
 				type: "power",
 				data: data,
-				levels: levels,
+				levels: levels
 			};
 
 			await Item.create(itemData, { parent: this.actor });

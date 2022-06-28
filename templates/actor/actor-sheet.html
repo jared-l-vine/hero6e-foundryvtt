@@ -151,14 +151,20 @@
                 <span class="item-name flex3">Name</span>
                 <span class="item-name flex3">ID</span>
                 <span class="item-name flex3">Rules</span>
+                <span class="item-name flex3">Modifiers</span>
             </header>
             <section class="powers-group">
                 <ol class="items-list">
                     {{#each powers as |item id|}}
-                    <li class="item flexrow" data-item-id="{{item._id}}">
-                        <h4 class="item-name flex3">{{item.name}}</h4>
-                        <h4 class="item-name flex3">{{item.data.description}}</h4>
-                        <h4 class="item-name flex3">{{item.data.rules}}</h4>
+                    <li class="item flexrow" data-item-id="{{item._id}}" style="height:100%">
+                        <h4 class="item-name flex3" style="flex-grow:1">{{item.name}}</h4>
+                        <h4 class="item-name flex3" style="flex-grow:1">{{item.data.description}}</h4>
+                        <h4 class="item-name flex3" style="flex-grow:1">{{item.data.rules}}</h4>
+                        <ol class="items-list">
+                            {{#each item.data.modifiers as |mod id|}}
+                            <h4 class="item-name flex3" style="flex-grow:1">{{mod}}</h4>
+                            {{/each}}
+                        </ol>
                     </li>
                     {{/each}}
                 </ol>
