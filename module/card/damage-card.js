@@ -77,7 +77,9 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
             targetTokenId: targetToken?.uuid || null,
         };
 
-        return await renderTemplate("systems/herosystem6e/templates/chat/item-damage-card.html", templateData);
+        var path = "systems/hero6e-foundryvtt-experimental/templates/chat/item-damage-card.html";
+
+        return await renderTemplate(path, templateData);
     }
 
     async render() {
@@ -102,7 +104,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
         return game.actors.get(targetId) || null;
     }
 
-    static DAMAGE_TEMPLATE = "systems/herosystem6e/templates/chat/damage-dialog.html";
+    static DAMAGE_TEMPLATE = "systems/hero6e-foundryvtt-experimental/templates/chat/damage-dialog.html";
 
     static async createFromAttackCard(attackCard, target) {
         let item = attackCard.item;

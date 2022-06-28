@@ -79,7 +79,10 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
             state: stateData,
         };
 
-        return await renderTemplate("systems/herosystem6e/templates/chat/item-attack-card.html", templateData);
+        var path = "systems/hero6e-foundryvtt-experimental/templates/chat/item-attack-card.html";
+        console.log(path);
+
+        return await renderTemplate(path, templateData);
     }
 
     async render() {

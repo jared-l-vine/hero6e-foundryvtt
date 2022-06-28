@@ -8,9 +8,11 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 	/** @override */
 	static get defaultOptions() {
+		var path = "systems/hero6e-foundryvtt-experimental/templates/actor/actor-sheet.html";
+
 		return mergeObject(super.defaultOptions, {
 			classes: ["herosystem6e", "sheet", "actor"],
-			template: "systems/hero6e-foundryvtt-experimental/templates/actor/actor-sheet.html",
+			template: path,
 			width: 800,
 			height: 700,
 			tabs: [
