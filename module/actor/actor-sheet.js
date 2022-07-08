@@ -370,8 +370,10 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 		await this.actor.update(changes);
 
-		for (let item of this.actor.items) {			
-			await item.delete()
+		for (let item of this.actor.items) {
+			if (item.type !== 'attack') {		
+				await item.delete()
+			}
 		}
 
 		for (let skill of skills.children) {

@@ -80,7 +80,6 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         };
 
         var path = "systems/hero6e-foundryvtt-experimental/templates/chat/item-attack-card.html";
-        console.log(path);
 
         return await renderTemplate(path, templateData);
     }
@@ -161,35 +160,6 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         let stun = 0;
         let countedBody = 0;
 
-        for (let die of result.terms[0].results) {
-            switch (die.result) {
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                    countedBody += 1;
-                    break;
-                case 6:
-                    countedBody += 2;
-                    break;
-            }
-        }
-
-        if (result.terms.length >= 3) {
-            for (let die of result.terms[2].results) {
-                switch (die.result) {
-                    case 2:
-                        if (Math.random() >= 0.5) {
-                            countedBody += 1;
-                        }
-                        break;
-                    case 3:
-                        countedBody += 1;
-                        break;
-                }
-            }
-        }
-
         if (itemData.killing) {
             await this.modifyCardState("hasStunMultiplierRoll", true);
             body = result.total;
@@ -202,6 +172,21 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
             stun = body * stunResult.total;
         }
         else {
+            // counts body damage for non-killing attack
+            for (let die of result.terms[0].results) {
+                switch (die.result) {
+                    case 1:
+                        countedBody += 0;
+                        break;
+                    case 6:
+                        countedBody += 2;
+                        break;
+                    default:
+                        countedBody += 1;
+                        break;
+                }
+            }
+
             stun = result.total;
             body = countedBody;
         }
