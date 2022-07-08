@@ -34,27 +34,27 @@
         <section>
             <div class="grid grid-3col">
                 <div class="resource flex-group-center">
-                    <label for="data.body.value" class="resource-label">BODY</label>
+                    <label for="BODY" class="resource-label">BODY</label>
                     <div class="resource-content flexrow flex-center flex-between">
-                        <input type="text" value="{{data.characteristics.body.current}}" data-dtype="Number" />
+                        <input type="text" name="body.value" value="{{data.characteristics.body.value}}" data-dtype="Number"/>
                         <span> / </span>
-                        <input type="text" name="data.characteristics.body.value" value="{{data.characteristics.body.value}}" data-dtype="Number" disabled />
+                        <input type="text" value="{{data.characteristics.body.max}}" data-dtype="Number" disabled />
                     </div>
                 </div>
                 <div class="resource flex-group-center">
-                    <label for="data.stun.value" class="resource-label">STUN</label>
+                    <label for="STUN" class="resource-label">STUN</label>
                     <div class="resource-content flexrow flex-center flex-between">
-                        <input type="text" value="{{data.characteristics.stun.current}}" data-dtype="Number" />
+                        <input type="text" name="stun.value" value="{{data.characteristics.stun.value}}" data-dtype="Number" />
                         <span> / </span>
-                        <input type="text" name="data.characteristics.stun.value" value="{{data.characteristics.stun.value}}" data-dtype="Number" disabled />
+                        <input type="text" value="{{data.characteristics.stun.max}}" data-dtype="Number" disabled />
                     </div>
                 </div>
                 <div class="resource flex-group-center">
-                    <label for="data.end.value" class="resource-label">END</label>
+                    <label for="END" class="resource-label">END</label>
                     <div class="resource-content flexrow flex-center flex-between">
-                        <input type="text" value="{{data.characteristics.end.current}}" data-dtype="Number" />
+                        <input type="text" name="end.value" value="{{data.characteristics.end.value}}" data-dtype="Number" />
                         <span> / </span>
-                        <input type="text" name="data.characteristics.end.value" value="{{data.characteristics.end.value}}" data-dtype="Number" disabled />
+                        <input type="text" value="{{data.characteristics.end.max}}" data-dtype="Number" disabled />
                     </div>
                 </div>
             </div>
@@ -120,7 +120,7 @@
                 <div class="resource flex-group-center">
                     <label for="data.flying.value" class="resource-label">FLYING</label>
                     <div class="resource-content flexrow flex-center flex-between">
-                        <input type="text" name="data.characteristics.flying.value" value="{{data.characteristics.flying.value}}" data-dtype="Number" disabled />
+                        <input type="text" name="flying.value" value="{{data.characteristics.flying.value}}" data-dtype="Number" disabled />
                     </div>
                 </div>
             </div>

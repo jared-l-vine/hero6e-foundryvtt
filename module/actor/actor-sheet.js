@@ -220,6 +220,20 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 				li.addEventListener("dragstart", handler, false);
 			});
 		}
+
+		html.find('input').each((id, inp) => {
+			this.changeValue = function(e) {
+				if (e.code === "Enter") {
+					if (isNaN(parseInt(e.target.value))) {
+						return
+					}
+
+					this.actor.setCharacteristic(e.target.name, e.target.value);
+				}
+			}
+
+			inp.addEventListener("keydown", this.changeValue.bind(this));
+		})
 	}
 
 	/**
@@ -362,10 +376,14 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 		//changes['data.characteristics.flying.value'] = 0;
 
+		var value; 
 		for (let characteristic of characteristics.children) {
 			let key = CONFIG.HERO.characteristicsXMLKey[characteristic.getAttribute("XMLID")];
-			changes[`data.characteristics.${key}.value`] = CONFIG.HERO.characteristicDefaults[key] + parseInt(characteristic.getAttribute("LEVELS"));
-			changes[`data.characteristics.${key}.current`] = changes[`data.characteristics.${key}.value`]
+			value = CONFIG.HERO.characteristicDefaults[key] + parseInt(characteristic.getAttribute("LEVELS"));
+
+			changes[`data.characteristics.${key}.value`] = value;
+			//changes[`data.characteristics.${key}.current`] = 0;
+			changes[`data.characteristics.${key}.max`] = value;
 		}
 
 		await this.actor.update(changes);
