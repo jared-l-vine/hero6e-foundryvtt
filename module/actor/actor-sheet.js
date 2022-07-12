@@ -71,6 +71,36 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 				characteristicSet[type] = [];
 			}
 
+			if (type === 'rollable') {
+				if (characteristic.value === 0) {
+					characteristic.roll = 8;
+				} else if (characteristic.value <= 2) {
+					characteristic.roll = 9;
+				} else if (characteristic.value <= 7) {
+					characteristic.roll = 10;
+				} else if (characteristic.value <= 12) {
+					characteristic.roll = 11;
+				} else if (characteristic.value <= 17) {
+					characteristic.roll = 12;
+				} else if (characteristic.value <= 22) {
+					characteristic.roll = 13;
+				} else if (characteristic.value <= 27) {
+					characteristic.roll = 14;
+				} else if (characteristic.value <= 32) {
+					characteristic.roll = 15;
+				} else if (characteristic.value <= 37) {
+					characteristic.roll = 16;
+				} else if (characteristic.value <= 42) {
+					characteristic.roll = 17;
+				} else if (characteristic.value <= 47) {
+					characteristic.roll = 18;
+				} else if (characteristic.value <= 52) {
+					characteristic.roll = 19;
+				} else {
+					characteristic.roll = 20;
+				}
+			}
+
 			characteristicSet[type].push(characteristic);
 		}
 
@@ -89,7 +119,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			let item = i.data;
 			i.img = i.img || DEFAULT_TOKEN;
 			// Append to skills.
-			if (i.type === 'skill') {
+			if (i.type === 'skill') { 
 				i.characteristic = CONFIG.HERO.skillCharacteristics[item.characteristic];
 				i.roll = item.roll;
 				i.rollable = item.rollable;
@@ -290,14 +320,22 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		const element = event.currentTarget;
 		const dataset = element.dataset;
 
+		let charRoll = parseInt(element.innerText.slice(0, -1));
+
 		if (dataset.roll) {
+			var actor = this.actor;			
+
 			let roll = new Roll(dataset.roll, this.actor.getRollData());
-			let result = roll.roll();
-			let margin = this.actor.data.data.characteristics[dataset.label].roll - roll.total;
-			result.toMessage({
-				speaker: ChatMessage.getSpeaker({ actor: this.actor }),
-				flavor: dataset.label.toUpperCase() + " roll " + (margin >= 0 ? "succeeded" : "failed") + " by " + Math.abs(margin),
-				borderColor: margin >= 0  ? 0x00FF00 : 0xFF0000
+			roll.evaluate().then(function(result) {
+				console.log(actor.data.data.characteristics[dataset.label])
+				//let margin = actor.data.data.characteristics[dataset.label].roll - result.total;
+				let margin = charRoll - result.total;
+				
+				result.toMessage({
+					speaker: ChatMessage.getSpeaker({ actor: actor }),
+					flavor: dataset.label.toUpperCase() + " roll " + (margin >= 0 ? "succeeded" : "failed") + " by " + Math.abs(margin),
+					borderColor: margin >= 0  ? 0x00FF00 : 0xFF0000		
+				});
 			});
 		}
 	}
@@ -406,7 +444,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			}
 
 			let name = "";
-
+ 
 			if (skill.hasAttribute("NAME") && skill.getAttribute("NAME") != "") {
 				name = skill.getAttribute("NAME");
 			} else {
