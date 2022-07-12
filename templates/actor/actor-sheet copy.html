@@ -1,0 +1,332 @@
+<form class="hero {{cssClass}} flexcol actor-sheet" autocomplete="off">
+    <nav class="sheet-edit-tabs sheet-tabs tabs" data-group="mode">
+        <a class="item" data-tab="play">Play</a>
+        <a class="item" data-tab="edit">Edit</a>
+        <label class="upload-button">
+            <span>Upload .HDC</span>
+            <input type="file" />
+        </label>
+    </nav>
+
+    <section class="sheet-mode">
+        <section class="tab play" data-group="mode" data-tab="play">
+            <header class="sheet-header">
+                <img class="profile-img borderless" src="{{actor.img}}" title="{{actor.name}}" height="200" width="200" />
+                <div class="header-fields">
+                    <h1 class="charname">
+                        <input type="text" value="{{actor.name}}" placeholder="Name" disabled />
+                    </h1>
+                </div>
+            </header>
+        </section>
+
+        <section class="tab edit" data-group="mode" data-tab="edit">
+            <header class="sheet-header">
+                <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" height="100" width="100" />
+                <div class="header-fields">
+                    <h1 class="charname">
+                        <input name="name" type="text" value="{{actor.name}}" placeholder="Name" />
+                    </h1>
+                </div>
+            </header>
+        </section>
+
+        <section>
+            <div class="grid grid-3col">
+                <!-- Characteristics -->
+                <section>
+                        {{#each characteristicSet.combat as |characteristic key|}}
+                        <div class="characteristic flexrow flex-group-center">
+                            <label for="data.characteristics.{{characteristic.key}}.value" class="resource-label">{{characteristic.name}}</label>
+                            <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" disabled />
+                        </div>
+                        {{/each}}
+
+                        {{#each characteristicSet.rollable as |characteristic key|}}
+                        <div class="flexrow flex-group-center characteristic">
+                            <label for="data.characteristics.{{characteristic.key}}.value" class="resource-label">{{characteristic.name}}</label>
+                            <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" disabled />
+                            <button class="characteristic-roll rollable-characteristic" data-roll="3d6" data-label="{{characteristic.key}}" >{{numberFormat characteristic.roll decimals=0 sign=false}}-</button>
+                        </div>
+                        {{/each}}
+                </section>
+
+                <section>
+                    <div class="resource flex-group-center">
+                        <div class="resource-content flexrow flex-center flex-between">
+                            <span>Current</span>
+                            <span>Maximum</span>
+                        </div>
+
+                        <div class="resource-content flexrow flex-center flex-between">
+                            <label for="BODY" class="resource-label">BODY</label>
+                            <input type="text" name="body.value" value="{{data.characteristics.body.value}}" data-dtype="Number"/>
+                            <span> / </span>
+                            <input type="text" value="{{data.characteristics.body.max}}" data-dtype="Number" disabled />
+                        </div>
+
+                        <div class="resource-content flexrow flex-center flex-between">
+                            <label for="STUN" class="resource-label">STUN</label>
+                            <input type="text" name="stun.value" value="{{data.characteristics.stun.value}}" data-dtype="Number" />
+                            <span> / </span>
+                            <input type="text" value="{{data.characteristics.stun.max}}" data-dtype="Number" disabled />
+                        </div>
+
+                        <div class="resource-content flexrow flex-center flex-between">
+                            <label for="END" class="resource-label">END</label>
+                            <input type="text" name="end.value" value="{{data.characteristics.end.value}}" data-dtype="Number" />
+                            <span> / </span>
+                            <input type="text" value="{{data.characteristics.end.max}}" data-dtype="Number" disabled />
+                        </div>
+                    </div>
+
+                    <div class="resource flex-group-center">
+                        <span>VITAL INFORMATION</span>
+                    </div>
+
+                    <div class="resource flex-group-center">
+                        <span>DEFENSES</span>
+                        <header class="tab-header flexrow">
+                            <span class="item-name flex3">Type</span>
+                            <span class="item-value">Value</span>
+                            <span class="item-value">Active</span>
+                            <span class="item-controls">
+                                <a class="item-control item-create" title="Create defense" data-type="defense"><i class="fas fa-plus"></i></a>
+                            </span>
+                        </header>
+                        <section class="defenses-group">
+                            <ol class="items-list">
+                                {{#each defenses as |item id|}}
+                                <li class="item flexrow" data-item-id="{{item._id}}">
+                                    <h4 class="item-name flex3">{{item.defenseType}}</h4>
+                                    <h4 class="item-value">{{item.value}}</h4>
+                                    <h4 class="item-toggle"><input type="checkbox" name="data.active" {{checked data.active}} data-dtype="Boolean" /></h4>
+                                    <div class="item-controls">
+                                        <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                        <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                                    </div>
+                                </li>
+                                {{/each}}
+                            </ol>
+                        </section>
+                    </div>
+
+                    <div class="resource flex-group-center">
+                        <span>SENSES</span>
+                    </div>
+                </section>
+
+                <section>
+                    <section>
+                        <div class="resource-content flexrow flex-center flex-between">
+                            <label for="" class="resource-label">Experience Points</label>
+                        </div>
+                        <div class="resource-content flexrow flex-center flex-between">
+                            <label for="" class="resource-label">Total Points</label>
+                            <input type="text" name="totalExp.value" value="0" data-dtype="Number" disabled />
+                        </div>
+                        <div class="resource-content flexrow flex-center flex-between">
+                            <label for="" class="resource-label">Total Experience Earned</label>
+                            <input type="text" name="totalExpEarned.value" value="0" data-dtype="Number" disabled />
+                        </div>
+                        <div class="resource-content flexrow flex-center flex-between">
+                            <label for="" class="resource-label">Experience Spent</label>
+                            <input type="text" name="spentExp.value" value="0" data-dtype="Number" disabled />
+                        </div>
+                        <div class="resource-content flexrow flex-center flex-between">
+                            <label for="" class="resource-label">Experience Unspent</label>
+                            <input type="text" name="unspentExp.value" value="0" data-dtype="Number" disabled />
+                        </div>
+                    </section>
+
+                    <section>
+                        <div class="resource flex-group-center">
+                            <header>Hit Location Chart</header>
+                        </div>
+                    </section>
+
+                    <section>
+                        <div class="resource flex-group-center">
+                            <header>Combat Modifiers</header>       
+                        </div>        
+                    </section>
+
+                    <section>
+                        <div class="resource flex-group-center">
+                            <header>Movement</header>  
+                        </div>        
+                    </section>
+
+                    <div class="resource flex-group-center">
+                        <div class="resource-content flexrow flex-center flex-between">
+                            <span>Type</span>
+                            <span>Combat</span>
+                            <span>Noncombat</span>
+                        </div>
+
+                        <div class="resource-content flexrow flex-center flex-between">
+                            <label for="data.running.value" class="resource-label">Run</label>
+                            <input type="text" name="data.characteristics.running.value" value="{{data.characteristics.running.value}}" data-dtype="Number" disabled />
+                            <input type="text" name="data.characteristics.running.value" value="{{data.characteristics.running.value}}" data-dtype="Number" disabled />
+                        </div>
+
+                        <div class="resource-content flexrow flex-center flex-between">
+                            <label for="data.swimming.value" class="resource-label">Swim</label>
+                            <input type="text" name="data.characteristics.swimming.value" value="{{data.characteristics.swimming.value}}" data-dtype="Number" disabled />
+                            <input type="text" name="data.characteristics.swimming.value" value="{{data.characteristics.swimming.value}}" data-dtype="Number" disabled />
+                        </div>
+
+                        <div class="resource-content flexrow flex-center flex-between">
+                            <label for="data.leaping.value" class="resource-label">H. Leap</label>
+                            <input type="text" name="data.characteristics.leaping.value" value="{{data.characteristics.leaping.value}}" data-dtype="Number" disabled />
+                            <input type="text" name="data.characteristics.leaping.value" value="{{data.characteristics.leaping.value}}" data-dtype="Number" disabled />
+                        </div>
+
+                        <div class="resource-content flexrow flex-center flex-between">
+                            <label for="data.leaping.value" class="resource-label">V. Leap</label>
+                            <input type="text" name="data.characteristics.leaping.value" value="{{data.characteristics.leaping.value}}" data-dtype="Number" disabled />
+                            <input type="text" name="data.characteristics.leaping.value" value="{{data.characteristics.leaping.value}}" data-dtype="Number" disabled />
+                        </div>
+ 
+                        <div class="resource-content flexrow flex-center flex-between">
+                            <label for="data.flying.value" class="resource-label">Fly</label>
+                            <input type="text" name="flying.value" value="{{data.characteristics.flying.value}}" data-dtype="Number" disabled />
+                            <input type="text" name="flying.value" value="{{data.characteristics.flying.value}}" data-dtype="Number" disabled />
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </section>
+
+        <section>
+            <!-- Powers -->
+            <header class="tab-header flexrow">
+                <span class="item-name flex3">Name</span>
+                <span class="item-name flex3">ID</span>
+                <span class="item-name flex3">Modifiers</span>
+            </header>
+            <section class="powers-group">
+                <ol class="items-list">
+                    {{#each powers as |item id|}}
+                    <li class="item flexrow" data-item-id="{{item._id}}" style="height:100%">
+                        <h4 class="item-name flex3" style="flex-grow:1">{{item.name}}</h4>
+                        <h4 class="item-name flex3" style="flex-grow:1">{{item.data.description}}</h4>
+                        <ol class="items-list">
+                            {{#each item.data.modifiers as |mod id|}}
+                            <h4 class="item-name flex3" style="flex-grow:1">{{mod}}</h4>
+                            {{/each}}
+                        </ol>
+                    </li>
+                    {{/each}}
+                </ol>
+            </section>
+
+            <!-- Attacks -->
+            <header class="tab-header flexrow">
+                <span class="item-image"></span>
+                <span class="item-name flex3">Name</span>
+                <span class="item-name flex2">Dmg.</span>
+                <span class="item-value flex3">Res.</span>
+                <span class="item-value">END</span>
+                <span class="item-value">Prc.</span>
+                <span class="item-value">Pen.</span>
+                <span class="item-value">Off.</span>
+                <span class="item-value">Def.</span>
+                <span class="item-controls">
+                    <a class="item-control item-create" title="Create attack" data-type="attack"><i class="fas fa-plus"></i> Add attack</a>
+                </span>
+            </header>
+            <section class="attacks-group">
+                <ol class="items-list">
+                    {{#each attacks as |item id|}}
+                    <li class="item flexrow" data-item-id="{{item._id}}">
+                        <div class="item-image item-attack"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
+                        <h4 class="item-name flex3">{{item.name}}</h4>
+                        <h4 class="item-name flex2">{{item.damage}}</h4>
+                        <h4 class="item-name flex3">{{item.defense}}</h4>
+                        <h4 class="item-value">{{item.end}}</h4>
+                        <h4 class="item-value">{{item.piercing}}</h4>
+                        <h4 class="item-value">{{item.penetrating}}</h4>
+                        <h4 class="item-value">{{item.uses}}</h4>
+                        <h4 class="item-value">{{item.targets}}</h4>
+                        <div class="item-controls">
+                            <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                            <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </li>
+                    {{/each}}
+                </ol>
+            </section>
+
+            <!-- Skills -->
+            <header class="tab-header flexrow">
+                <span class="item-image"></span>
+                <span class="item-name">Name</span>
+                <span class="item-characterstic">Characteristic</span>
+                <span class="item-roll">Roll</span>
+                <span class="item-controls">
+                    <a class="item-control item-create" title="Create skill" data-type="skill"><i class="fas fa-plus"></i> Add skill</a>
+                </span>
+            </header>
+            <section class="skills-group">
+                <ol class="items-list">
+                    {{#each skills as |item id|}}
+                    <li class="item" data-item-id="{{item._id}}" {{#if item.children}} style="height:auto;" {{/if}}>
+                        <div class="flexrow">
+                            <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
+                            <h4 class="item-name">{{item.name}}</h4>
+                            <h4 class="item-name">{{item.characteristic}}</h4>
+                            <div>
+                                {{#if item.roll}}
+                                <button class="item-roll rollable-skill" data-roll="{{item.roll}}" data-label="{{item._id}}">{{numberFormat item.roll decimals=0 sign=false}}-</button>
+                                {{/if}}
+                            </div>
+                            <div class="item-controls">
+                                <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                            </div>
+                        </div>
+                        {{#if item.children}}
+                        <ol class="items-list">
+                            {{#each item.children as |child childId|}}
+                            <li class="item" data-item-id="{{child._id}}">
+                                <div class="flexrow">
+                                    <div class="flex0" style="margin-left:15px;margin-right:5px">&#8226;</div>
+                                    <div class="item-image"><img src="{{child.img}}" title="{{child.name}}" width="24" height="24" /></div>
+                                    <h4 class="item-name"  style="margin-right:-20px">{{child.name}}</h4>
+                                    <h4 class="item-name">{{child.characteristic}}</h4>
+                                    <div>
+                                        {{#if child.roll}}
+                                        <button class="item-roll rollable-skill" data-roll="{{child.roll}}" data-label="{{child._id}}">{{numberFormat child.roll decimals=0 sign=false}}-</button>
+                                        {{/if}}
+                                    </div>
+                                    <div class="item-controls">
+                                        <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                        <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                                    </div>
+                                </div>
+                            </li>
+                            {{/each}}
+                        </ol>
+                        {{/if}}
+                    </li>
+                    {{/each}}
+                </ol>
+            </section>
+        </section>
+    </section>
+
+    {{!-- Sheet Tab Navigation --}}
+    <nav class="sheet-tabs sheet-item-tabs tabs" data-group="primary">
+        <a class="item" data-tab="description">Description</a>
+    </nav>
+
+    {{!-- Sheet Body --}}
+    <section class="sheet-body">
+        {{!-- Biography Tab --}}
+        <div class="tab biography" data-group="primary" data-tab="description">
+            {{editor content=data.biography target="data.biography" button=true owner=owner editable=editable}}
+        </div>
+    </section>
+</form>
+
