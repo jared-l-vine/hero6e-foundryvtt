@@ -1,4 +1,5 @@
 import { HeroSystem6eItem } from "../item/item.js"
+import { HeroSystem6eAttackCard } from "../card/attack-card.js";
 
 /**
  * Extend the basic ActorSheet with some very simple modifications
@@ -290,13 +291,16 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		delete itemData.data["type"];
 
 		// Finally, create the item!
-		return await Item.create(itemData, { parent: this.actor });
+		return await HeroSystem6eItem.create(itemData, { parent: this.actor });
 	}
 
 	async _onItemAttack(event) {
 		event.preventDefault();
 		const itemId = event.currentTarget.closest(".item").dataset.itemId;
 		const item = this.actor.items.get(itemId);
+
+		console.log(item);
+
 		let rollMode = "core";
 		let createMessage = true;
 		let createChatMessage = true;
@@ -306,6 +310,13 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		ChatMessage.applyRollMode(attackCard, rollMode || game.settings.get("core", "rollMode"));
 		return createMessage ? ChatMessage.create(attackCard) : attackCard;
 		*/
+
+		//let heroItem = new HeroSystem6eItem();
+		//heroItem.name = item.name;
+
+		//return heroItem.displayCard({ rollMode, createChatMessage });
+
+		item.displayCard = displayCard;
 
 		return item.displayCard({ rollMode, createChatMessage });
 	}
@@ -505,7 +516,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 				data: data,
 			};
 
-			await Item.create(itemData, { parent: this.actor });
+			await HeroSystem6eItem.create(itemData, { parent: this.actor });
 		}
 
 		function loadPower(actor, itemData, xmlid, sheet) {
@@ -586,9 +597,19 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 				levels: levels
 			};
 
-			await Item.create(itemData, { parent: this.actor });
+			await HeroSystem6eItem.create(itemData, { parent: this.actor });
 
 			loadPower(this.actor, itemData, xmlid, sheet);
 		}
     }
+}
+
+async function displayCard({ rollMode, createMessage = true } = {}) {
+	switch (this.data.type) {
+		case "attack":
+			const attackCard = await HeroSystem6eAttackCard.createChatDataFromItem(this);
+			ChatMessage.applyRollMode(attackCard, rollMode || game.settings.get("core", "rollMode"));
+			return createMessage ? ChatMessage.create(attackCard) : attackCard;
+			break;
+	}
 }

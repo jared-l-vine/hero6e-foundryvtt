@@ -70,6 +70,8 @@ export class HeroSystem6eItem extends Item {
    * @param {boolean} createMessage   Whether to automatically create a ChatMessage entity (if true), or only return
    *                                  the prepared message data (if false)
    */
+
+    /*
     async displayCard({ rollMode, createMessage = true } = {}) {
         switch (this.data.type) {
             case "attack":
@@ -79,4 +81,5 @@ export class HeroSystem6eItem extends Item {
                 break;
         }
     }
+    */
 }
