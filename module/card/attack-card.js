@@ -123,7 +123,13 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         let hitCharacteristic = this.actor.data.data.characteristics[this.item.data.data.uses].current;
 
         let roll = new Roll("11 + " + hitCharacteristic + " - 3D6", this.actor.getRollData());
-        let result = roll.roll();
+
+        console.log(roll)
+
+        let result = await roll.roll();
+
+        console.log(result)
+
         let renderedResult = await result.render();
 
         let hitRollText = "Hits a " + CONFIG.HERO.defendsWith[this.item.data.data.targets] + " of " + result.total;
@@ -154,7 +160,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         }
 
         let roll = new Roll(damageRoll, this.actor.getRollData());
-        let result = roll.roll();
+        let result = await roll.roll();
         let renderedResult = await result.render();
         let body = 0;
         let stun = 0;
