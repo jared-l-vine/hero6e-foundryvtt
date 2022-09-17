@@ -13,6 +13,7 @@ import { HeroSystem6eActorActiveEffects } from "./actor/actor-active-effects.js"
 import HeroSystem6eTemplate from "./template.js";
 import { HeroSystem6eRuler } from "./ruler.js";
 import { HeroSystem6eCombat, HeroSystem6eCombatTracker } from "./combat.js";
+import SettingsHelpers from "./settings/settings-helpers.js";
 
 Hooks.once('init', async function() {
 
@@ -62,6 +63,8 @@ Hooks.once('init', async function() {
     CONFIG.MeasuredTemplate.objectClass = HeroSystem6eTemplate;
     CONFIG.ui.combat = HeroSystem6eCombatTracker;
 
+    SettingsHelpers.initLevelSettings();
+
     // Register sheet application classes
     Actors.unregisterSheet("core", ActorSheet);
     Actors.registerSheet("herosystem6e", HeroSystem6eActorSheet, { makeDefault: true });
@@ -93,8 +96,8 @@ Hooks.once("init", () => {
 })
 
 Hooks.once("ready", async function() {
-  // Wait to register hotbar drop hook on ready so that modules could register earlier if they want to
-  Hooks.on("hotbarDrop", (bar, data, slot) => createHeroSystem6eMacro(data, slot));
+    // Wait to register hotbar drop hook on ready so that modules could register earlier if they want to
+    Hooks.on("hotbarDrop", (bar, data, slot) => createHeroSystem6eMacro(data, slot));
 });
 
 Hooks.on("renderChatMessage", (app, html, data) => {
@@ -110,8 +113,8 @@ Hooks.on("updateActor", (app, html, data) => {
     }
 });
 
+/*
 Hooks.on("chatCommandsReady", function(chatCommands) {
-    // This uses the optional createdMessageType option to make the created message "Out of Character"
     chatCommands.registerCommand(chatCommands.createCommandFromData({
         commandKey: "/powers",
         invokeOnCommand: (chatlog, messageText, chatdata) => {
@@ -137,7 +140,31 @@ Hooks.on("chatCommandsReady", function(chatCommands) {
         iconClass: "fa-sticky-note",
         description: "Prints power rules",
     }));
+
+    chatCommands.registerCommand(chatCommands.createCommandFromData({
+        commandKey: "/load",
+        invokeOnCommand: (chatlog, messageText, chatdata) => {
+            var actor;
+            var actorName;
+            for (const value of window.game.actors.values()) {
+                actor = value.data;
+                actorName = actor.name.replace(/ /g, "_");
+                console.log(actorName);
+            }
+
+            for (const folder of window.game.folders.values()) {
+                console.log(folder.data.name)
+            }
+
+            console.log(window.game.data.system.path + '\\..\\..\\' + window.game.data.world.id)
+        },
+        shouldDisplayToChat: false,
+        createdMessageType: 0,
+        iconClass: "fa-sticky-note",
+        description: "Loads hdcs",
+    }));
 }); 
+*/
 
 /* -------------------------------------------- */
 /*  Hotbar Macros                               */

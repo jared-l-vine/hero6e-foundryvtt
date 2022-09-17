@@ -1,4 +1,4 @@
-//import { POWERS } from "../powers/powers-rules";
+import { HeroSystem6eItem } from "../item/item.js"
 
 /**
  * Extend the basic ActorSheet with some very simple modifications
@@ -298,7 +298,15 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		const itemId = event.currentTarget.closest(".item").dataset.itemId;
 		const item = this.actor.items.get(itemId);
 		let rollMode = "core";
+		let createMessage = true;
 		let createChatMessage = true;
+
+		/*
+		const attackCard = await HeroSystem6eAttackCard.createChatDataFromItem(item);
+		ChatMessage.applyRollMode(attackCard, rollMode || game.settings.get("core", "rollMode"));
+		return createMessage ? ChatMessage.create(attackCard) : attackCard;
+		*/
+
 		return item.displayCard({ rollMode, createChatMessage });
 	}
 
