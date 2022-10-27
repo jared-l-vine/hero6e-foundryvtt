@@ -120,19 +120,37 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
     }
 
     async makeHitRoll() {
-        let hitCharacteristic = this.actor.data.data.characteristics[this.item.data.data.uses].current;
+        let hitCharacteristic = this.actor.data.data.characteristics[this.item.data.data.uses].value;
 
         let roll = new Roll("11 + " + hitCharacteristic + " - 3D6", this.actor.getRollData());
 
-        console.log(roll)
-
         let result = await roll.roll();
-
-        console.log(result)
 
         let renderedResult = await result.render();
 
         let hitRollText = "Hits a " + CONFIG.HERO.defendsWith[this.item.data.data.targets] + " of " + result.total;
+
+        if (game.settings.get("hero6e-foundryvtt-experimental", "use endurance")) {
+            console.log('using end')
+            let newEnd = this.actor.data.data.characteristics.end.current - this.item.data.data.end;
+            
+            await this.actor.data.update({
+                "data.characteristics.end.current": newEnd,
+            });
+
+            console.log(this.actor.data.data.characteristics.end)
+
+            let enduranceText = ""
+            if (newEnd < 0) {
+                enduranceText = 'Overspent endurance by ' + newEnd;
+            } else {
+                enduranceText = 'Spent ' + this.item.data.data.end + ' endurance';
+            }
+
+            await this.modifyCardState("enduranceText", enduranceText);
+        }
+
+
 
         await this.modifyCardState("canMakeHitRoll", false);
         await this.modifyCardState("hasRenderedHitRoll", true);
@@ -171,7 +189,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
             body = result.total;
 
             let stunRoll = new Roll("1D3", this.actor.getRollData());
-            let stunResult = stunRoll.roll();
+            let stunResult = await stunRoll.roll();
             let renderedStunResult = await stunResult.render();
             await this.modifyCardState("renderedStunMultiplierRoll", renderedStunResult);
             await this.modifyCardState("stunMultiplier", stunResult.total);

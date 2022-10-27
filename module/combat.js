@@ -408,7 +408,7 @@ export class HeroSystem6eCombat extends Combat {
             segments[i] = [];
 
             for (let j = 0; j < turnSet.length; j++) {
-                if (HeroSystem6eCombat.hasPhase(turnSet[j].actor.data.data.characteristics.spd.current, i)) {
+                if (HeroSystem6eCombat.hasPhase(turnSet[j].actor.data.data.characteristics.spd.value, i)) {
                     segments[i].push(turnSet[j]);
                 }
             }

@@ -204,6 +204,8 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
 
         let minimumDamage = state['countedBody'];
 
+        console.log(game.settings.get("hero6e-foundryvtt-experimental", "hit locations"))
+
         if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations")) {
             //let locationRoll = new Roll("3D6", this.actor.getRollData());
             let locationRoll = new Roll("3D6")
@@ -319,7 +321,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
             if (newStun <= 0) {
                 await HeroSystem6eCard.removeStatusEffect(this.target, HeroSystem6eActorActiveEffects.stunEffect);
                 await HeroSystem6eCard.applyStatusEffect(this.target, HeroSystem6eActorActiveEffects.unconsciousEffect);
-            } else if (this.message.data.flags['state'].finalStun > this.target.data.data.characteristics['con'].current) {
+            } else if (this.message.data.flags['state'].finalStun > this.target.data.data.characteristics['con'].value) {
                 await HeroSystem6eCard.applyStatusEffect(this.target, HeroSystem6eActorActiveEffects.stunEffect);
             }
         }

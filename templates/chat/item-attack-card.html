@@ -6,6 +6,11 @@
     </header>
 
     <div class="card-buttons card-content">
+        <select name="aim" id="aim">
+            <option value="none">None</option>
+            <option value="head">Head</option>
+        </select>
+
         {{#if state.canMakeHitRoll}}
         <button class="hit-button" data-action="hit-roll">Roll to Hit</button>
         {{/if}}
@@ -14,6 +19,12 @@
         <div class="card-section">
             <div class="hit-roll">{{{ state.renderedHitRoll }}}</div>
             <div class="description">{{{ state.hitRollText }}}</div>
+        </div>
+        {{/if}}
+
+        {{#if state.hasRenderedHitRoll}}
+        <div class="card-section">
+            <div class="description">{{{ state.enduranceText }}}</div>
         </div>
         {{/if}}
 
