@@ -1,5 +1,6 @@
 import { HeroSystem6eCard } from "./card.js";
 import { HeroSystem6eDamageCard } from "./damage-card.js";
+import { HeroSystem6eHitLocCard } from "./hitLoc-card.js";
 
 export class HeroSystem6eAttackCard extends HeroSystem6eCard {
     static chatListeners(html) {
@@ -56,6 +57,8 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
                 await cardObject.makeHitRoll(); break;
             case "damage-roll":
                 await cardObject.makeDamageRoll(); break;
+            case "hitLoc-ref":
+                await HeroSystem6eHitLocCard.createFromAttackCard();
             case "apply-defenses":
                 const targets = HeroSystem6eCard._getChatCardTargets();
                 for (let token of targets) {
@@ -96,8 +99,23 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
       *                                  the prepared message data (if false)
       */
     static async createChatDataFromItem(item) {
+        let useEndVal = false;
+        if (game.settings.get("hero6e-foundryvtt-experimental", "use endurance")) {
+            useEndVal = true;
+        }
+
+        let useHitLocVal = false;
+        if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations")) {
+            useHitLocVal = true;
+        }
+
+        console.log(CONFIG.HERO.hitLocations)
+
         const stateData = {
-            canMakeHitRoll: true
+            canMakeHitRoll: true,
+            useEnd: useEndVal,
+            useHitLoc: useHitLocVal,
+            hitLoc: CONFIG.HERO.hitLocations
         };
         const token = item.actor.token;
         let html = await this._renderInternal(item, item.actor, stateData);

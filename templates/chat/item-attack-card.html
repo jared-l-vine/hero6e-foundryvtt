@@ -6,10 +6,15 @@
     </header>
 
     <div class="card-buttons card-content">
+        {{#if state.useHitLoc}}
         <select name="aim" id="aim">
             <option value="none">None</option>
-            <option value="head">Head</option>
+            {{#each state.hitLoc as |hitLoc key|}}
+                <option value="none">{{key}}</option>
+            {{/each}}
         </select>
+        <button class="hitLoc-button" data-action="hitLoc-ref">Reference Hit Location Table?</button>
+        {{/if}}
 
         {{#if state.canMakeHitRoll}}
         <button class="hit-button" data-action="hit-roll">Roll to Hit</button>
@@ -22,10 +27,12 @@
         </div>
         {{/if}}
 
+        {{#if state.useEnd}}
         {{#if state.hasRenderedHitRoll}}
         <div class="card-section">
             <div class="description">{{{ state.enduranceText }}}</div>
         </div>
+        {{/if}}
         {{/if}}
 
         {{#if state.canMakeDamageRoll}}

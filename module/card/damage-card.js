@@ -204,14 +204,12 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
 
         let minimumDamage = state['countedBody'];
 
-        console.log(game.settings.get("hero6e-foundryvtt-experimental", "hit locations"))
-
         if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations")) {
             //let locationRoll = new Roll("3D6", this.actor.getRollData());
             let locationRoll = new Roll("3D6")
             let locationResult = locationRoll.roll().total
 
-            console.log(CONFIG.HERO.hitLocations[locationResult])
+            //console.log(CONFIG.HERO.hitLocations[locationResult])
         }
 
         if (attack.killing) {
