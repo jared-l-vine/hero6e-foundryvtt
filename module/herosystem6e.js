@@ -108,6 +108,8 @@ Hooks.on("renderChatMessage", (app, html, data) => {
 Hooks.on("renderChatLog", (app, html, data) => HeroSystem6eCardHelpers.chatListeners(html));
 Hooks.on("renderChatPopout", (app, html, data) => HeroSystem6eCardHelpers.chatListeners(html));
 Hooks.on("updateActor", (app, html, data) => {
+    app.sheet._render()
+
     for (let combat of game.combats) {
         combat._onActorDataUpdate();
     }

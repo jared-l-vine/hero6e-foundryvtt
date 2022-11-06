@@ -259,13 +259,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 						return
 					}
 
-					//this.actor.setCharacteristic(e.target.name, e.target.value);
 					let changes = []
 					changes[`data.characteristics.${e.target.name}`] = e.target.value
 					this.actor.data.update(changes);
-					//this.actor.data.update({
-					//	`data.characteristics.${characteristic}`: newEnd,
-					//});
 				}
 			}
 

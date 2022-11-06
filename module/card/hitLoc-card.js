@@ -41,11 +41,7 @@ export class HeroSystem6eHitLocCard extends HeroSystem6eCard {
         this.target = await HeroSystem6eHitLocCard._getChatCardTarget(card);
     }
 
-    static DAMAGE_TEMPLATE = "systems/hero6e-foundryvtt-experimental/templates/chat/damage-dialog.html";
-
     static async createFromAttackCard() {
-        console.log('create from attack card!')
-
         let cardHtml = await HeroSystem6eHitLocCard._renderInternal();
         
         const chatData = {
