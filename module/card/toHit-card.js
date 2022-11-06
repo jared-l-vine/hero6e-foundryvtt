@@ -74,7 +74,6 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
 
     static async _renderInternal(item, actor, target, stateData) {
         const token = actor.token;
-        //const targetToken = target.token;
 
         const templateData = {
             actor: actor.data,
@@ -84,15 +83,6 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             //target: target.data,
             //targetTokenId: targetToken?.uuid || null,
         };
-
-        /*
-        if (game.settings.get("hero6e-foundryvtt-experimental", "use endurance")) {
-            templateData["useEnd"] = true;
-        }
-        if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations")) {
-            templateData["useHitLoc"] = true;
-        }
-        */
 
         var path = "systems/hero6e-foundryvtt-experimental/templates/chat/item-toHit-card.html";
 
@@ -122,7 +112,6 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
     }
 
     static async createFromAttackCard(attackCard, target, stateData) {
-        console.log("CREATE FROM ATTACK CARD")
         let targetCharacter = game.actors.get(target.data.actorId).name;
         stateData["targetCharacter"] = targetCharacter;
 
