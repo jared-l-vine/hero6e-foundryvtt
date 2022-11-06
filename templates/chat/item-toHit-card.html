@@ -2,20 +2,20 @@
      {{#if tokenId}}data-token-id="{{tokenId}}"{{/if}}>
     <header class="card-header flexrow">
         <img src="{{item.img}}" title="{{item.name}}" width="36" height="36"/>
-        <h3 class="item-name">{{item.name}}</h3>
+        <h3 class="item-name">{{item.name}} vs {{state.targetCharacter}}</h3>
     </header>
+
+    {{#if state.useEnd}}
+    <div class="card-section">
+        <div class="description">{{{ state.enduranceText }}}</div>
+    </div>
+    {{/if}}
 
     <div class="card-buttons card-content">
         <div class="card-section">
             <div class="hit-roll">{{{ state.renderedHitRoll }}}</div>
             <div class="description">{{{ state.hitRollText }}}</div>
         </div>
-
-        {{#if state.useEnd}}
-        <div class="card-section">
-            <div class="description">{{{ state.enduranceText }}}</div>
-        </div>
-        {{/if}}
 
         {{#if state.canMakeDamageRoll}}
         <button class="damage-button" data-action="damage-roll">Roll for Damage</button>

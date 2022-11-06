@@ -144,6 +144,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
     }
 
     async makeHitRoll() {
+        // I don't think this is being called anymore
         let hitCharacteristic = this.actor.data.data.characteristics[this.item.data.data.uses].value;
 
         let roll = new Roll("11 + " + hitCharacteristic + " - 3D6", this.actor.getRollData());
@@ -153,45 +154,6 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         let renderedResult = await result.render();
 
         let hitRollText = "Hits a " + CONFIG.HERO.defendsWith[this.item.data.data.targets] + " of " + result.total;
-
-        if (game.settings.get("hero6e-foundryvtt-experimental", "use endurance")) {
-            let newEnd = this.actor.data.data.characteristics.end.value - this.item.data.data.end;
-            
-            console.log(newEnd)
-
-            console.log(this.actor)
-
-            /* fix this lol
-            // updates token
-            await this.actor.update({
-                "data.data.characteristics.end.current": newEnd,
-                "data.data.characteristics.end.value": newEnd,
-            })
-
-            // updates sheet
-            await this.actor.data.update({
-                "data.characteristics.end.current": newEnd,
-                "data.characteristics.end.value": newEnd,
-            });
-            */
-
-            this.actor._sheet._render();
-
-            console.log(this.actor._sheet.object.data.data.characteristics.end)
-            console.log(this.actor.items)
-
-            console.log(this.actor.data.data.characteristics.end)
-
-            let enduranceText = ""
-            if (newEnd < 0) {
-                enduranceText = 'Overspent endurance by ' + newEnd;
-            } else {
-                enduranceText = 'Spent ' + this.item.data.data.end + ' endurance';
-            }
-
-            await this.modifyCardState("enduranceText", enduranceText);
-
-        }
 
         await this.modifyCardState("canMakeHitRoll", false);
         await this.modifyCardState("hasRenderedHitRoll", true);

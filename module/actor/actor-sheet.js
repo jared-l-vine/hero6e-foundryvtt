@@ -443,8 +443,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			changes[`data.characteristics.${key}.max`] = value;
 		}
 
-		console.log(changes)
-
 		await this.actor.update(changes);
 
 		for (let item of this.actor.items) {

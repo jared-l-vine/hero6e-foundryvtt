@@ -122,11 +122,44 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
     }
 
     static async createFromAttackCard(attackCard, target, stateData) {
+        console.log("CREATE FROM ATTACK CARD")
+        let targetCharacter = game.actors.get(target.data.actorId).name;
+        stateData["targetCharacter"] = targetCharacter;
+
+        if (game.settings.get("hero6e-foundryvtt-experimental", "use endurance")) {
+            stateData["useEnd"] = true;
+            let actor = attackCard.actor;
+            let valueEnd = actor.data.data.characteristics.end.value
+            let itemEnd = attackCard.item.data.data.end;
+            let newEnd = valueEnd - itemEnd;
+            
+            let enduranceText = ""
+            let changes = {};
+            if (newEnd < 0) {
+                enduranceText = 'Spent ' + valueEnd + ' END and ' + Math.abs(newEnd) + ' STUN';
+                changes = {
+                    "data.characteristics.end.value": 0,
+                    "data.characteristics.stun.value": actor.data.data.characteristics.stun.value + newEnd,
+                }
+            } else {
+                enduranceText = 'Spent ' + itemEnd + ' END';
+                changes = {
+                    "data.characteristics.end.value": newEnd,
+                }
+            }
+            await actor.update(changes);
+
+            stateData["enduranceText"] = enduranceText;
+        }
+
         let cardHtml = await HeroSystem6eToHitCard._renderInternal(attackCard.item, attackCard.actor, target, stateData);
         
+        let token = attackCard.item.actor.token;
+
         const chatData = {
             user:  game.user.data._id,
             content: cardHtml,
+            speaker: ChatMessage.getSpeaker({ actor: attackCard.item.actor, token }),
         }
 
         return ChatMessage.create(chatData);
