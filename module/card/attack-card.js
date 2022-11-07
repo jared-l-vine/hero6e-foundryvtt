@@ -1,5 +1,7 @@
 import { HeroSystem6eCard } from "./card.js";
 import { HeroSystem6eDamageCard } from "./damage-card.js";
+import { HeroSystem6eHitLocCard } from "./hitLoc-card.js";
+import { HeroSystem6eToHitCard } from "./toHit-card.js";
 
 export class HeroSystem6eAttackCard extends HeroSystem6eCard {
     static chatListeners(html) {
@@ -50,14 +52,23 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         const isValid = action === "apply-defenses";
         if (!(isValid || game.user.isGM || cardObject.message.isAuthor)) return;
 
+        const targets = HeroSystem6eCard._getChatCardTargets();
+
         // Handle different actions
         switch (action) {
             case "hit-roll":
-                await cardObject.makeHitRoll(); break;
+                for (let token of targets) {
+                    await HeroSystem6eToHitCard.createFromAttackCard(cardObject, token, await cardObject.makeHitRoll());
+                }
+                //await cardObject.makeHitRoll(); 
+                break;
             case "damage-roll":
-                await cardObject.makeDamageRoll(); break;
+                //await cardObject.makeDamageRoll();
+                break;
+            case "hitLoc-ref":
+                await HeroSystem6eHitLocCard.createFromAttackCard();
+                break;
             case "apply-defenses":
-                const targets = HeroSystem6eCard._getChatCardTargets();
                 for (let token of targets) {
                     await HeroSystem6eDamageCard.createFromAttackCard(cardObject, token.actor);
                 }
@@ -96,8 +107,21 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
       *                                  the prepared message data (if false)
       */
     static async createChatDataFromItem(item) {
+        let useEndVal = false;
+        if (game.settings.get("hero6e-foundryvtt-experimental", "use endurance")) {
+            useEndVal = true;
+        }
+
+        let useHitLocVal = false;
+        if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations")) {
+            useHitLocVal = true;
+        }
+
         const stateData = {
-            canMakeHitRoll: true
+            canMakeHitRoll: true,
+            useEnd: useEndVal,
+            useHitLoc: useHitLocVal,
+            hitLoc: CONFIG.HERO.hitLocations
         };
         const token = item.actor.token;
         let html = await this._renderInternal(item, item.actor, stateData);
@@ -120,10 +144,13 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
     }
 
     async makeHitRoll() {
-        let hitCharacteristic = this.actor.data.data.characteristics[this.item.data.data.uses].current;
+        // I don't think this is being called anymore
+        let hitCharacteristic = this.actor.data.data.characteristics[this.item.data.data.uses].value;
 
         let roll = new Roll("11 + " + hitCharacteristic + " - 3D6", this.actor.getRollData());
-        let result = roll.roll();
+
+        let result = await roll.roll();
+
         let renderedResult = await result.render();
 
         let hitRollText = "Hits a " + CONFIG.HERO.defendsWith[this.item.data.data.targets] + " of " + result.total;
@@ -134,6 +161,16 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         await this.modifyCardState("renderedHitRoll", renderedResult);
         await this.modifyCardState("hitRollText", hitRollText);
         await this.refresh();
+
+        let stateData = {
+            canMakeHitRoll: false,
+            hasRenderedHitRoll: true,
+            canMakeDamageRoll: true,
+            renderedHitRoll: renderedResult,
+            hitRollText: hitRollText,
+        };
+
+        return stateData;
     }
 
     async makeDamageRoll() {
@@ -154,7 +191,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         }
 
         let roll = new Roll(damageRoll, this.actor.getRollData());
-        let result = roll.roll();
+        let result = await roll.roll();
         let renderedResult = await result.render();
         let body = 0;
         let stun = 0;
@@ -165,7 +202,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
             body = result.total;
 
             let stunRoll = new Roll("1D3", this.actor.getRollData());
-            let stunResult = stunRoll.roll();
+            let stunResult = await stunRoll.roll();
             let renderedStunResult = await stunResult.render();
             await this.modifyCardState("renderedStunMultiplierRoll", renderedStunResult);
             await this.modifyCardState("stunMultiplier", stunResult.total);

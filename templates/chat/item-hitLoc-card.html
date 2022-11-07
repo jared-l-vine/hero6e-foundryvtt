@@ -1,0 +1,27 @@
+<form>
+    <header class="tab-header flexrow">
+        <span class="item-name flex5" style="flex-grow:2">Location</span>
+        <span class="item-name flex5" style="flex-grow:1">Stun</span>
+        <span class="item-name flex5" style="flex-grow:1">NStun</span>
+        <span class="item-name flex5" style="flex-grow:1">Body</span>
+        <span class="item-name flex5" style="flex-grow:1">OCV</span>
+    </header>
+    <section class="powers-group">
+        <ol class="items-list">
+            {{#each hitLoc as |data key|}}
+            <li class="item flexrow" data-item-id="{{item._id}}" style="height:100%">
+                <h4 class="item-name flex5" style="flex-grow:2">{{key}}</h4>
+                <h4 class="item-name flex5" style="flex-grow:1">{{data.stunx}}</h4>
+                <h4 class="item-name flex5" style="flex-grow:1">{{data.nstunx}}</h4>
+                <h4 class="item-name flex5" style="flex-grow:1">{{data.bodyx}}</h4>
+                <h4 class="item-name flex5" style="flex-grow:1">{{data.tohit}}</h4>
+                <ol class="items-list">
+                    {{#each item.data.modifiers as |mod id|}}
+                    <h4 class="item-name flex3" style="flex-grow:1">{{key}}</h4>
+                    {{/each}}
+                </ol>
+            </li>
+            {{/each}}
+        </ol>
+    </section>
+</form>

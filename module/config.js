@@ -119,7 +119,7 @@ HERO.skillTraining = {
     "trained": "Trained",
 };
 
-HERO.hitLocations = {
+HERO.hitLocationsToHit = {
     "3": "Head",
     "4": "Head",
     "5": "Head",
@@ -136,6 +136,9 @@ HERO.hitLocations = {
     "16": "Legs",
     "17": "Feet",
     "18": "Feet",
+}
+
+HERO.hitLocations = {
     "Head": [5, 2, 2, -8],
     "Hands": [1, 0.5, 0.5, -6],
     "Arms": [2, 0.5, 0.5, -5],

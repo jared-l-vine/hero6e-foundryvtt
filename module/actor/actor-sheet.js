@@ -259,7 +259,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 						return
 					}
 
-					this.actor.setCharacteristic(e.target.name, e.target.value);
+					let changes = []
+					changes[`data.characteristics.${e.target.name}`] = e.target.value
+					this.actor.data.update(changes);
 				}
 			}
 
@@ -298,8 +300,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		event.preventDefault();
 		const itemId = event.currentTarget.closest(".item").dataset.itemId;
 		const item = this.actor.items.get(itemId);
-
-		console.log(item);
 
 		let rollMode = "core";
 		let createMessage = true;
@@ -380,8 +380,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 	async _onRecovery(event) {
 		console.log("recovery")
 
-		let newStun = this.actor.data.data.stun.value + this.actor.data.data.characteristics['rec'].current;
-		let newEnd = this.actor.data.data.end.value + this.actor.data.data.characteristics['rec'].current;
+		let newStun = this.actor.data.data.stun.value + this.actor.data.data.characteristics['rec'].value;
+		let newEnd = this.actor.data.data.end.value + this.actor.data.data.characteristics['rec'].value;
 
 		if (newStun > this.actor.data.data.stun.max) {
 			newStun = this.actor.data.data.stun.max
@@ -439,7 +439,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			value = CONFIG.HERO.characteristicDefaults[key] + parseInt(characteristic.getAttribute("LEVELS"));
 
 			changes[`data.characteristics.${key}.value`] = value;
-			//changes[`data.characteristics.${key}.current`] = 0;
+			changes[`data.characteristics.${key}.current`] = value;
 			changes[`data.characteristics.${key}.max`] = value;
 		}
 
@@ -610,6 +610,5 @@ async function displayCard({ rollMode, createMessage = true } = {}) {
 			const attackCard = await HeroSystem6eAttackCard.createChatDataFromItem(this);
 			ChatMessage.applyRollMode(attackCard, rollMode || game.settings.get("core", "rollMode"));
 			return createMessage ? ChatMessage.create(attackCard) : attackCard;
-			break;
 	}
 }

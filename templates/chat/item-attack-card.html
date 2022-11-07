@@ -6,33 +6,17 @@
     </header>
 
     <div class="card-buttons card-content">
-        {{#if state.canMakeHitRoll}}
+        {{#if state.useHitLoc}}
+        <label>Aim:</label>
+        <select name="aim" id="aim">
+            <option value="none">None</option>
+            {{#each state.hitLoc as |hitLoc key|}}
+                <option value="none">{{key}}</option>
+            {{/each}}
+        </select>
+        <button class="hitLoc-button" data-action="hitLoc-ref">Reference Hit Location Table?</button>
+        {{/if}}
+
         <button class="hit-button" data-action="hit-roll">Roll to Hit</button>
-        {{/if}}
-
-        {{#if state.hasRenderedHitRoll}}
-        <div class="card-section">
-            <div class="hit-roll">{{{ state.renderedHitRoll }}}</div>
-            <div class="description">{{{ state.hitRollText }}}</div>
-        </div>
-        {{/if}}
-
-        {{#if state.canMakeDamageRoll}}
-        <button class="damage-button" data-action="damage-roll">Roll for Damage</button>
-        {{/if}}
-
-        {{#if state.hasRenderedDamageRoll}}
-    <div class="card-section">
-        <div class="damage-roll">{{{ state.renderedDamageRoll }}}</div>
-        <div class="description">{{ state.bodyDamage }} BODY</div>
-        {{#if state.hasStunMultiplierRoll}}
-        <div class="stun-x-roll">{{{ state.renderedStunMultiplierRoll }}}</div>
-        <div class="description">{{ state.stunMultiplier }}X STUN MULTIPLIER</div>
-        {{/if}}
-        <div class="description">{{ state.stunDamage }} STUN</div>
-    </div>
-
-        <button class="apply-defenses" data-action="apply-defenses">Apply Defenses</button>
-        {{/if}}
     </div>
 </div>

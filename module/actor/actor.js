@@ -45,10 +45,10 @@ export class HeroSystem6eActor extends Actor {
         characteristic.current = characteristic.value;
 
         if (characteristic.modifier) {
-            characteristic.current *= characteristic.modifier;
+            characteristic.value *= characteristic.modifier;
         }
 
-        characteristic.current = Math.round(characteristic.current);
+        characteristic.value = Math.round(characteristic.current);
     }
 
     _prepareResource(resource, characteristic) {

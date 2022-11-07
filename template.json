@@ -5,14 +5,17 @@
             "base": {
                 "body": {
                     "value": 10,
+                    "current": 10,
                     "max": 10
                 },
                 "stun": {
                     "value": 20,
+                    "current": 10,
                     "max": 20
                 },
                 "end": {
                     "value": 20,
+                    "current": 20,
                     "max": 20
                 }
             }

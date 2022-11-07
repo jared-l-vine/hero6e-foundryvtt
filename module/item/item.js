@@ -10,6 +10,12 @@ export class HeroSystem6eItem extends Item {
     /**
      * Augment the basic Item data model with additional dynamic data.
      */
+
+    // static async create(data, context={}) {
+    //     console.log('created hero6e item!')
+    //     super.create(data, context);
+    // }
+
     prepareData() {
         super.prepareData();
 
@@ -71,15 +77,12 @@ export class HeroSystem6eItem extends Item {
    *                                  the prepared message data (if false)
    */
 
-    /*
-    async displayCard({ rollMode, createMessage = true } = {}) {
-        switch (this.data.type) {
-            case "attack":
-                const attackCard = await HeroSystem6eAttackCard.createChatDataFromItem(this);
-                ChatMessage.applyRollMode(attackCard, rollMode || game.settings.get("core", "rollMode"));
-                return createMessage ? ChatMessage.create(attackCard) : attackCard;
-                break;
-        }
-    }
-    */
+    // async displayCard({ rollMode, createMessage = true } = {}) {
+    //     switch (this.data.type) {
+    //         case "attack":
+    //             const attackCard = await HeroSystem6eAttackCard.createChatDataFromItem(this);
+    //             ChatMessage.applyRollMode(attackCard, rollMode || game.settings.get("core", "rollMode"));
+    //             return createMessage ? ChatMessage.create(attackCard) : attackCard;
+    //     }
+    // }
 }

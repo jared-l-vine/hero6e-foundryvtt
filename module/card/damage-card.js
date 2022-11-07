@@ -209,7 +209,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
             let locationRoll = new Roll("3D6")
             let locationResult = locationRoll.roll().total
 
-            console.log(CONFIG.HERO.hitLocations[locationResult])
+            //console.log(CONFIG.HERO.hitLocations[locationResult])
         }
 
         if (attack.killing) {
@@ -319,7 +319,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
             if (newStun <= 0) {
                 await HeroSystem6eCard.removeStatusEffect(this.target, HeroSystem6eActorActiveEffects.stunEffect);
                 await HeroSystem6eCard.applyStatusEffect(this.target, HeroSystem6eActorActiveEffects.unconsciousEffect);
-            } else if (this.message.data.flags['state'].finalStun > this.target.data.data.characteristics['con'].current) {
+            } else if (this.message.data.flags['state'].finalStun > this.target.data.data.characteristics['con'].value) {
                 await HeroSystem6eCard.applyStatusEffect(this.target, HeroSystem6eActorActiveEffects.stunEffect);
             }
         }
