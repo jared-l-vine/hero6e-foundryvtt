@@ -20,5 +20,14 @@ export default class SettingsHelpers {
         default: false,
         onChange: value=> console.log(value)
       });
+
+      game.settings.register(module, "automation", {
+        name: "Attack Card Automation",
+        scope: "world",
+        config: true,
+        type: Boolean,
+        default: false,
+        onChange: value=> console.log(value)
+      });
     }
   }

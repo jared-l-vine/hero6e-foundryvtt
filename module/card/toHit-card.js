@@ -117,20 +117,23 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             let newEnd = valueEnd - itemEnd;
             
             let enduranceText = ""
-            let changes = {};
-            if (newEnd < 0) {
-                enduranceText = 'Spent ' + valueEnd + ' END and ' + Math.abs(newEnd) + ' STUN';
-                changes = {
-                    "data.characteristics.end.value": 0,
-                    "data.characteristics.stun.value": actor.data.data.characteristics.stun.value + newEnd,
+
+            if (game.settings.get("hero6e-foundryvtt-experimental", "automation")) {
+                let changes = {};
+                if (newEnd < 0) {
+                    enduranceText = 'Spent ' + valueEnd + ' END and ' + Math.abs(newEnd) + ' STUN';
+                    changes = {
+                        "data.characteristics.end.value": 0,
+                        "data.characteristics.stun.value": actor.data.data.characteristics.stun.value + newEnd,
+                    }
+                } else {
+                    enduranceText = 'Spent ' + itemEnd + ' END';
+                    changes = {
+                        "data.characteristics.end.value": newEnd,
+                    }
                 }
-            } else {
-                enduranceText = 'Spent ' + itemEnd + ' END';
-                changes = {
-                    "data.characteristics.end.value": newEnd,
-                }
+                await actor.update(changes);
             }
-            await actor.update(changes);
 
             stateData["enduranceText"] = enduranceText;
         }
@@ -279,6 +282,24 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         stateData["bodyDamageEffective"] = body;
         stateData["stunDamageEffective"] = stun;
         stateData["countedBody"] = countedBody;
+
+        if (game.settings.get("hero6e-foundryvtt-experimental", "automation")) {
+            let targetActorChars = targetActor.data.data.characteristics;
+            let newStun = targetActorChars.stun.value - stun;
+            let newBody = targetActorChars.body.value - body;
+
+            console.log(newStun)
+            console.log(newBody)
+
+            console.log(targetActor)
+
+            let changes = {
+                "data.characteristics.stun.value": newStun,
+                "data.characteristics.body.value": newBody,
+            }
+            
+            await targetActor.update(changes);
+        }
 
         return stateData;
     }
