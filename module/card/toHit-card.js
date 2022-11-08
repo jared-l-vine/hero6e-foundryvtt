@@ -139,7 +139,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         }
 
         let cardObject = new HeroSystem6eToHitCard();
-        let damageData = await cardObject.makeDamageRoll(attackCard.item, attackCard.actor, target);
+        let damageData = await cardObject.makeDamageRoll(attackCard.item, attackCard.actor, target, stateData);
         stateData = Object.assign({}, stateData, damageData);
 
         let cardHtml = await HeroSystem6eToHitCard._renderInternal(attackCard.item, attackCard.actor, target, stateData);
@@ -155,7 +155,9 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         return ChatMessage.create(chatData);
     }
 
-    async makeDamageRoll(item, actor, target) {
+    async makeDamageRoll(item, actor, target, attackRollData) {
+        let targetActor = game.actors.get(target.data.actorId)
+        let targetActorChars = targetActor.data.data.characteristics;
         let stateData = {};
 
         // get hit location
@@ -234,7 +236,6 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         stateData["stunDamage"] = stun;
 
         // apply defenses only PD and ED for now
-        let targetActor = game.actors.get(target.data.actorId)
         let defense = item.data.data.defense;
         let defenseValue = 0;
         switch(defense) {
@@ -276,6 +277,13 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             stateData["hitLocText"] = hitLocText;
         }
 
+        if (game.settings.get("hero6e-foundryvtt-experimental", "stunned")) {
+            // determine if target was Stunned
+            if (stun > targetActorChars.con.value) {
+                stateData["effects"] = "; inflicts Stunned"
+            }
+        }
+
         stateData["hasRenderedDamageRoll"] = true;
         stateData["canMakeDamageRoll"] = false;
         stateData["renderedDamageRoll"] = renderedResult;
@@ -284,21 +292,25 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         stateData["countedBody"] = countedBody;
 
         if (game.settings.get("hero6e-foundryvtt-experimental", "automation")) {
-            let targetActorChars = targetActor.data.data.characteristics;
-            let newStun = targetActorChars.stun.value - stun;
-            let newBody = targetActorChars.body.value - body;
+            let toHitChar = attackRollData.toHitChar.toLowerCase();
 
-            console.log(newStun)
-            console.log(newBody)
+            if (targetActorChars[`${toHitChar}`].value <= attackRollData.hitRollValue) {
+                // attack success
+                stateData["hitRollText"] = attackRollData["hitRollText"] + "; SUCCESS!"
 
-            console.log(targetActor)
-
-            let changes = {
-                "data.characteristics.stun.value": newStun,
-                "data.characteristics.body.value": newBody,
+                let newStun = targetActorChars.stun.value - stun;
+                let newBody = targetActorChars.body.value - body;
+    
+                let changes = {
+                    "data.characteristics.stun.value": newStun,
+                    "data.characteristics.body.value": newBody,
+                }
+                
+                await targetActor.update(changes);
+            } else {
+                // attack failure
+                stateData["hitRollText"] = attackRollData["hitRollText"] + "; FAILURE"
             }
-            
-            await targetActor.update(changes);
         }
 
         return stateData;

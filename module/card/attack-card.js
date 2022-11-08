@@ -153,14 +153,19 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
 
         let renderedResult = await result.render();
 
-        let hitRollText = "Hits a " + CONFIG.HERO.defendsWith[this.item.data.data.targets] + " of " + result.total;
+        let toHitChar = CONFIG.HERO.defendsWith[this.item.data.data.targets];
 
+        let hitRollText = "Hits a " + toHitChar + " of " + result.total;
+
+        /*
         await this.modifyCardState("canMakeHitRoll", false);
         await this.modifyCardState("hasRenderedHitRoll", true);
         await this.modifyCardState("canMakeDamageRoll", true);
         await this.modifyCardState("renderedHitRoll", renderedResult);
         await this.modifyCardState("hitRollText", hitRollText);
+        await this.modifyCardState("hitRollValue", result.total);
         await this.refresh();
+        */
 
         let stateData = {
             canMakeHitRoll: false,
@@ -168,6 +173,8 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
             canMakeDamageRoll: true,
             renderedHitRoll: renderedResult,
             hitRollText: hitRollText,
+            hitRollValue: result.total,
+            toHitChar: toHitChar,
         };
 
         return stateData;

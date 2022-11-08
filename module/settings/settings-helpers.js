@@ -3,6 +3,15 @@ export default class SettingsHelpers {
     static initLevelSettings() {
       let module = "hero6e-foundryvtt-experimental";
 
+      game.settings.register(module, "stunned", {
+        name: "Use Stunned",
+        scope: "world",
+        config: true,
+        type: Boolean,
+        default: true,
+        onChange: value=> console.log(value)
+      });
+
       game.settings.register(module, "use endurance", {
         name: "Use Endurance",
         scope: "world",
