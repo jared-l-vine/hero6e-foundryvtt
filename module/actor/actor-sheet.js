@@ -608,7 +608,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 async function displayCard({ rollMode, createMessage = true } = {}) {
 	switch (this.data.type) {
 		case "attack":
-			const attackCard = await HeroSystem6eAttackCard.createChatDataFromItem(this);
+			const attackCard = await HeroSystem6eAttackCard.createAttackPopOutFromItem(this);
 			//ChatMessage.applyRollMode(attackCard, rollMode || game.settings.get("core", "rollMode"));
 			//return createMessage ? ChatMessage.create(attackCard) : attackCard;
 	}

@@ -41,15 +41,21 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         // not being used anymore, leaving in here for now just in case
     }
 
-    static async _RollToHit(item) {
+    static async _RollToHit(item, html) {
         const cardObject = new HeroSystem6eAttackCard();
         cardObject['actor'] = item.actor;
         cardObject['item'] = item;
 
+        // get attack card input
+        let form = html[0].querySelector("form");
+        let data = {};
+        data['toHitModTemp'] = form.toHitMod.value;
+        data['aim'] = form.aim.value;
+
         const targets = HeroSystem6eCard._getChatCardTargets();
         
         for (let token of targets) {
-            await HeroSystem6eToHitCard.createFromAttackCard(cardObject, token, await cardObject.makeHitRoll(item));
+            await HeroSystem6eToHitCard.createFromAttackCard(cardObject, token, await cardObject.makeHitRoll(item, data));
         }
     }
 
@@ -57,21 +63,10 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         // Render the chat card template
         const token = actor.token;
 
-        const templateData = {
-            actor: actor.data,
-            tokenId: token?.uuid || null,
-            item: item.data,
-            state: stateData,
-        };
-
-        var path = "systems/hero6e-foundryvtt-experimental/templates/chat/item-attack-card.html";
-
-        return await renderTemplate(path, templateData);
-    }
-
-    static async _renderInternal(item, actor, stateData) {
-        // Render the chat card template
-        const token = actor.token;
+        if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations")) {
+            stateData['useHitLoc'] = true;
+            stateData['hitLoc'] = CONFIG.HERO.hitLocations;
+        }
 
         const templateData = {
             actor: actor.data,
@@ -80,7 +75,8 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
             state: stateData,
         };
 
-        var path = "systems/hero6e-foundryvtt-experimental/templates/chat/item-attack-card.html";
+        //var path = "systems/hero6e-foundryvtt-experimental/templates/chat/item-attack-card.html";
+        var path = "systems/hero6e-foundryvtt-experimental/templates/attack/item-attack-card.hbs";
 
         return await renderTemplate(path, templateData);
     }
@@ -96,39 +92,10 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
       * @param {boolean} createMessage   Whether to automatically create a ChatMessage entity (if true), or only return
       *                                  the prepared message data (if false)
       */
-    static async createChatDataFromItem(item) {
-        let useEndVal = false;
-        if (game.settings.get("hero6e-foundryvtt-experimental", "use endurance")) {
-            useEndVal = true;
-        }
-
-        let useHitLocVal = false;
-        if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations")) {
-            useHitLocVal = true;
-        }
-
-        const stateData = {
-            canMakeHitRoll: true,
-            useEnd: useEndVal,
-            useHitLoc: useHitLocVal,
-            hitLoc: CONFIG.HERO.hitLocations
-        };
-        const token = item.actor.token;
-        let html = await this._renderInternal(item, item.actor, stateData);
-
-        // Create the ChatMessage data object
-        const chatData = {
-            user: game.user.data._id,
-            type: CONST.CHAT_MESSAGE_TYPES.OTHER,
-            content: html,
-            flavor: item.data.data.chatFlavor || item.name,
-            speaker: ChatMessage.getSpeaker({ actor: item.actor, token }),
-            flags: { "core.canPopout": true, "state": stateData },
-        };
-
-        if (!item.actor.items.has(item.id)) {
-            chatData["flags.hero.itemData"] = item.data;
-        }
+    static async createAttackPopOutFromItem(item) {
+        //const template = "systems/hero6e-foundryvtt-experimental/templates/chat/item-attack-card.html";
+        const template = "systems/hero6e-foundryvtt-experimental/templates/chat/item-attack-card.hbs";
+        const content = await this._renderInternal(item, item.actor, {});
 
         // Attack Card as a Pop Out
         let options = {
@@ -138,17 +105,19 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         return new Promise(resolve => {
             const data = {
                 title: "Roll to Hit",
-                content: html,
+                content: content,
                 buttons: {
                     rollToHit: {
                         label: "Roll to Hit",
-                        callback: html => resolve(this._RollToHit(item))
+                        callback: html => resolve(this._RollToHit(item, html))
+                        //callback: html => resolve(this._RollToHit(item, html))
                     },
                 },
                 default: "rollToHit",
                 close: () => resolve({})
             }
 
+            /*
             if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations")) {
                 data['buttons'] = Object.assign({}, 
                     {
@@ -159,25 +128,36 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
                     }, 
                     data['buttons']);
             }
+            */
 
             new Dialog(data, options).render(true);;
         });
     }
 
-    async makeHitRoll(item) {
+    async makeHitRoll(item, data) {
         let actor = item.actor;
 
         let hitCharacteristic = actor.data.data.characteristics[item.data.data.uses].value;
 
-        let rollEquation = "11 + " + hitCharacteristic;
-        if (item.data.data.toHitMod != 0) {
-            let sign = " + ";
-            if (item.data.data.toHitMod < 0) {
-                sign = " ";
+        function modifyHitRollEquation(equation, value) {
+            if (value != 0) {
+                let sign = " + ";
+                if (value < 0) {
+                    sign = " ";
+                }
+                equation = equation + sign + value;
             }
-            rollEquation = rollEquation + sign + item.data.data.toHitMod;
+
+            return equation
         }
-        rollEquation = rollEquation + " - 3D6"
+
+        let rollEquation = "11 + " + hitCharacteristic;
+        rollEquation = modifyHitRollEquation(rollEquation, item.data.data.toHitMod);
+        rollEquation = modifyHitRollEquation(rollEquation, data.toHitModTemp);
+        if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations") && data.aim !== "none") {
+            rollEquation = modifyHitRollEquation(rollEquation, CONFIG.HERO.hitLocations[data.aim][3]);
+        }
+        rollEquation = rollEquation + " - 3D6";
 
         let roll = new Roll(rollEquation, actor.getRollData());
 
@@ -197,6 +177,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
             hitRollText: hitRollText,
             hitRollValue: result.total,
             toHitChar: toHitChar,
+            aim: data.aim,
         };
 
         return stateData;

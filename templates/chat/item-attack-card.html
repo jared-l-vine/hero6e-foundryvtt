@@ -5,6 +5,7 @@
             <img src="{{item.img}}" title="{{item.name}}" width="36" height="36"/>
             <h3 class="item-name">{{item.name}}</h3>
         </header>
+    </div>
 
         <div class="card-buttons card-content">
             {{#if state.useHitLoc}}
@@ -17,5 +18,9 @@
             </select>
             {{/if}}
         </div>
-    </div>
+
+        <div class="form-group">
+            <label>To Hit Modifier</label>
+            <input type="text" name="toHitMod" value="0"/>
+        </div>
 </form>

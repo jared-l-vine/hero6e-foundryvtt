@@ -233,8 +233,7 @@
                 <span class="item-image"></span>
                 <span class="item-name flex3">Name</span>
                 <span class="item-name flex2">Hit Mod</span>
-                <span class="item-value">Off.</span>
-                <span class="item-value">Def.</span>
+                <span class="item-value flex3">Off. vs Def.</span>
                 <span class="item-name flex2">Dmg.</span>
                 <span class="item-value flex3">Res.</span>
                 <span class="item-value">END</span>
@@ -250,9 +249,8 @@
                     <li class="item flexrow" data-item-id="{{item._id}}">
                         <div class="item-image item-attack"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
                         <h4 class="item-name flex3">{{item.name}}</h4>
-                        <h4 class="item-value">{{item.toHitMod}}</h4>
-                        <h4 class="item-value">{{item.uses}}</h4>
-                        <h4 class="item-value">{{item.targets}}</h4>
+                        <h4 class="item-value flex2">{{item.toHitMod}}</h4>
+                        <h4 class="item-value flex3">{{item.uses}} vs {{item.targets}}</h4>
                         <h4 class="item-name flex2">{{item.damage}}</h4>
                         <h4 class="item-name flex3">{{item.defense}}</h4>
                         <h4 class="item-value">{{item.end}}</h4>

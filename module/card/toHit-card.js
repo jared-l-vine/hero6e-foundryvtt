@@ -166,10 +166,14 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations")) {
             stateData["useHitLoc"] = true;
 
-            let locationRoll = new Roll("3D6")
-            let locationResult = await locationRoll.roll();
+            hitLocation = attackRollData.aim;
+            if (attackRollData.aim === 'none') {
+                console.log('no aim')
+                let locationRoll = new Roll("3D6")
+                let locationResult = await locationRoll.roll();
+                hitLocation = CONFIG.HERO.hitLocationsToHit[locationResult.total];
+            }
 
-            hitLocation = CONFIG.HERO.hitLocationsToHit[locationResult.total];
             hitLocationModifiers = CONFIG.HERO.hitLocations[hitLocation];
         }
 
