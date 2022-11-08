@@ -176,6 +176,7 @@
             "penetrating": 0,
             "advantages": 0,
             "dice": 1,
+            "toHitMod": 0,
             "extraDice": "zero",
             "uses": "ocv",
             "targets": "dcv",

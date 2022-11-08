@@ -7,19 +7,19 @@
 
     {{#if state.useEnd}}
     <div class="card-section">
-        <div class="summary">{{{ state.enduranceText }}}</div>
+        <div class="description-small">{{{ state.enduranceText }}}</div>
     </div>
     {{/if}}
 
     <div class="card-section">
-        <div class="summary">To Hit</div>
+        <div class="description-small">To Hit</div>
         <div class="hit-roll">{{{ state.renderedHitRoll }}}</div>
         <div class="description">{{{ state.hitRollText }}}</div>
     </div>
 
     <div class="card-section">
         {{#if state.useHitLoc}}
-        <div class="summary">{{ state.hitLocText }}</div>
+        <div class="description-small">{{ state.hitLocText }}</div>
         {{/if}}
     </div>
 
@@ -27,13 +27,13 @@
         <div class="damage-roll">{{{ state.renderedDamageRoll }}}</div>
         {{#if state.hasStunMultiplierRoll}}
         <div class="stun-x-roll">{{{ state.renderedStunMultiplierRoll }}}</div>
-        <div class="summary">{{ state.stunMultiplier }}X STUN MULTIPLIER</div>
+        <div class="description-small">{{ state.stunMultiplier }}X STUN MULTIPLIER</div>
         {{/if}}
-        <div class="summary">(Raw Damage) {{ state.bodyDamage }} BODY; {{ state.stunDamage }} STUN</div>
+        <div class="description-small">(Raw Damage) {{ state.bodyDamage }} BODY; {{ state.stunDamage }} STUN</div>
     </div>
 
     <div class="card-section">
-        <div class="summary">Defense: {{ state.defenseValue }} {{ state.defense }}</summary>
+        <div class="description-small">Defense: {{ state.defenseValue }} {{ state.defense }}</div>
     </div>
 
     <div class="card-section">

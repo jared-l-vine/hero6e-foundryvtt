@@ -161,6 +161,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 				i.uses = CONFIG.HERO.attacksWith[item.uses];
 				i.targets = CONFIG.HERO.defendsWith[item.targets];
 				i.end = item.end;
+				i.toHitMod = item.toHitMod;
 
 				i.damage = item.dice;
 

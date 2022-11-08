@@ -147,7 +147,18 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         // I don't think this is being called anymore
         let hitCharacteristic = this.actor.data.data.characteristics[this.item.data.data.uses].value;
 
-        let roll = new Roll("11 + " + hitCharacteristic + " - 3D6", this.actor.getRollData());
+        let rollEquation = "11 + " + hitCharacteristic;
+        if (this.item.data.data.toHitMod != 0) {
+            let sign = " + ";
+            if (this.item.data.data.toHitMod < 0) {
+                sign = " ";
+            }
+            rollEquation = rollEquation + sign + this.item.data.data.toHitMod;
+        }
+        rollEquation = rollEquation + " - 3D6"
+
+        //let roll = new Roll("11 + " + hitCharacteristic + " - 3D6", this.actor.getRollData());
+        let roll = new Roll(rollEquation, this.actor.getRollData());
 
         let result = await roll.roll();
 
