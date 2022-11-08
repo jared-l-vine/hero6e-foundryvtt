@@ -42,12 +42,22 @@ export class HeroSystem6eHitLocCard extends HeroSystem6eCard {
     }
 
     static async createFromAttackCard() {
-        let cardHtml = await HeroSystem6eHitLocCard._renderInternal();
+        let html = await HeroSystem6eHitLocCard._renderInternal();
         
-        const chatData = {
-            content: cardHtml
+        let options = {
+            'width' : 300,
         }
 
-        return ChatMessage.create(chatData);
+        return new Promise(resolve => {
+            const data = {
+                title: "Hit Location Chart",
+                content: html,
+                buttons: {},
+                default: "",
+                close: () => resolve({})
+            }
+
+            new Dialog(data, options).render(true);;
+        });
     }
 }

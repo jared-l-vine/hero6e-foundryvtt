@@ -38,45 +38,35 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
     static async _onChatCardAction(event) {
         event.preventDefault();
 
-        // Extract card data
-        const button = event.currentTarget;
+        // not being used anymore, leaving in here for now just in case
+    }
 
-        const action = button.dataset.action;
-        button.disabled = true;
-
-        const card = button.closest(".chat-card");
+    static async _RollToHit(item) {
         const cardObject = new HeroSystem6eAttackCard();
-        await cardObject.init(card);
-
-        // Validate permission to proceed with the roll
-        const isValid = action === "apply-defenses";
-        if (!(isValid || game.user.isGM || cardObject.message.isAuthor)) return;
+        cardObject['actor'] = item.actor;
+        cardObject['item'] = item;
 
         const targets = HeroSystem6eCard._getChatCardTargets();
-
-        // Handle different actions
-        switch (action) {
-            case "hit-roll":
-                for (let token of targets) {
-                    await HeroSystem6eToHitCard.createFromAttackCard(cardObject, token, await cardObject.makeHitRoll());
-                }
-                //await cardObject.makeHitRoll(); 
-                break;
-            case "damage-roll":
-                //await cardObject.makeDamageRoll();
-                break;
-            case "hitLoc-ref":
-                await HeroSystem6eHitLocCard.createFromAttackCard();
-                break;
-            case "apply-defenses":
-                for (let token of targets) {
-                    await HeroSystem6eDamageCard.createFromAttackCard(cardObject, token.actor);
-                }
-                break;
+        
+        for (let token of targets) {
+            await HeroSystem6eToHitCard.createFromAttackCard(cardObject, token, await cardObject.makeHitRoll(item));
         }
+    }
 
-        // Re-enable the button
-        button.disabled = false;
+    static async _renderInternal(item, actor, stateData) {
+        // Render the chat card template
+        const token = actor.token;
+
+        const templateData = {
+            actor: actor.data,
+            tokenId: token?.uuid || null,
+            item: item.data,
+            state: stateData,
+        };
+
+        var path = "systems/hero6e-foundryvtt-experimental/templates/chat/item-attack-card.html";
+
+        return await renderTemplate(path, templateData);
     }
 
     static async _renderInternal(item, actor, stateData) {
@@ -140,43 +130,64 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
             chatData["flags.hero.itemData"] = item.data;
         }
 
-        return chatData;
+        // Attack Card as a Pop Out
+        let options = {
+            'width' : 300,
+        }
+
+        return new Promise(resolve => {
+            const data = {
+                title: "Roll to Hit",
+                content: html,
+                buttons: {
+                    rollToHit: {
+                        label: "Roll to Hit",
+                        callback: html => resolve(this._RollToHit(item))
+                    },
+                },
+                default: "rollToHit",
+                close: () => resolve({})
+            }
+
+            if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations")) {
+                data['buttons'] = Object.assign({}, 
+                    {
+                        hitLoc : {
+                            label: "Reference Hit Location Table?",
+                            callback: html => resolve(HeroSystem6eHitLocCard.createFromAttackCard()),
+                        }
+                    }, 
+                    data['buttons']);
+            }
+
+            new Dialog(data, options).render(true);;
+        });
     }
 
-    async makeHitRoll() {
-        // I don't think this is being called anymore
-        let hitCharacteristic = this.actor.data.data.characteristics[this.item.data.data.uses].value;
+    async makeHitRoll(item) {
+        let actor = item.actor;
+
+        let hitCharacteristic = actor.data.data.characteristics[item.data.data.uses].value;
 
         let rollEquation = "11 + " + hitCharacteristic;
-        if (this.item.data.data.toHitMod != 0) {
+        if (item.data.data.toHitMod != 0) {
             let sign = " + ";
-            if (this.item.data.data.toHitMod < 0) {
+            if (item.data.data.toHitMod < 0) {
                 sign = " ";
             }
-            rollEquation = rollEquation + sign + this.item.data.data.toHitMod;
+            rollEquation = rollEquation + sign + item.data.data.toHitMod;
         }
         rollEquation = rollEquation + " - 3D6"
 
-        //let roll = new Roll("11 + " + hitCharacteristic + " - 3D6", this.actor.getRollData());
-        let roll = new Roll(rollEquation, this.actor.getRollData());
+        let roll = new Roll(rollEquation, actor.getRollData());
 
         let result = await roll.roll();
 
         let renderedResult = await result.render();
 
-        let toHitChar = CONFIG.HERO.defendsWith[this.item.data.data.targets];
+        let toHitChar = CONFIG.HERO.defendsWith[item.data.data.targets];
 
         let hitRollText = "Hits a " + toHitChar + " of " + result.total;
-
-        /*
-        await this.modifyCardState("canMakeHitRoll", false);
-        await this.modifyCardState("hasRenderedHitRoll", true);
-        await this.modifyCardState("canMakeDamageRoll", true);
-        await this.modifyCardState("renderedHitRoll", renderedResult);
-        await this.modifyCardState("hitRollText", hitRollText);
-        await this.modifyCardState("hitRollValue", result.total);
-        await this.refresh();
-        */
 
         let stateData = {
             canMakeHitRoll: false,

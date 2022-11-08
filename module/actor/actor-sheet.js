@@ -609,7 +609,7 @@ async function displayCard({ rollMode, createMessage = true } = {}) {
 	switch (this.data.type) {
 		case "attack":
 			const attackCard = await HeroSystem6eAttackCard.createChatDataFromItem(this);
-			ChatMessage.applyRollMode(attackCard, rollMode || game.settings.get("core", "rollMode"));
-			return createMessage ? ChatMessage.create(attackCard) : attackCard;
+			//ChatMessage.applyRollMode(attackCard, rollMode || game.settings.get("core", "rollMode"));
+			//return createMessage ? ChatMessage.create(attackCard) : attackCard;
 	}
 }

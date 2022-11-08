@@ -1,22 +1,21 @@
-<div class="hero chat-card item-card attack-card" data-actor-id="{{actor._id}}" data-item-id="{{item._id}}"
-     {{#if tokenId}}data-token-id="{{tokenId}}"{{/if}}>
-    <header class="card-header flexrow">
-        <img src="{{item.img}}" title="{{item.name}}" width="36" height="36"/>
-        <h3 class="item-name">{{item.name}}</h3>
-    </header>
+<form>
+    <div class="hero chat-card item-card attack-card" data-actor-id="{{actor._id}}" data-item-id="{{item._id}}"
+        {{#if tokenId}}data-token-id="{{tokenId}}"{{/if}}>
+        <header class="card-header flexrow">
+            <img src="{{item.img}}" title="{{item.name}}" width="36" height="36"/>
+            <h3 class="item-name">{{item.name}}</h3>
+        </header>
 
-    <div class="card-buttons card-content">
-        {{#if state.useHitLoc}}
-        <label>Aim:</label>
-        <select name="aim" id="aim">
-            <option value="none">None</option>
-            {{#each state.hitLoc as |hitLoc key|}}
-                <option value="none">{{key}}</option>
-            {{/each}}
-        </select>
-        <button class="hitLoc-button" data-action="hitLoc-ref">Reference Hit Location Table?</button>
-        {{/if}}
-
-        <button class="hit-button" data-action="hit-roll">Roll to Hit</button>
+        <div class="card-buttons card-content">
+            {{#if state.useHitLoc}}
+            <label>Aim:</label>
+            <select name="aim" id="aim">
+                <option value="none">None</option>
+                {{#each state.hitLoc as |hitLoc key|}}
+                    <option value="none">{{key}}</option>
+                {{/each}}
+            </select>
+            {{/if}}
+        </div>
     </div>
-</div>
+</form>
