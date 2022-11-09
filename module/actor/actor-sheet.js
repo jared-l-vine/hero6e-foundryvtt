@@ -162,6 +162,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 				i.targets = CONFIG.HERO.defendsWith[item.targets];
 				i.end = item.end;
 				i.toHitMod = item.toHitMod;
+				i.knockback = item.knockback;
 
 				i.damage = item.dice;
 
@@ -347,7 +348,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 			let roll = new Roll(dataset.roll, this.actor.getRollData());
 			roll.evaluate().then(function(result) {
-				console.log(actor.data.data.characteristics[dataset.label])
 				//let margin = actor.data.data.characteristics[dataset.label].roll - result.total;
 				let margin = charRoll - result.total;
 				

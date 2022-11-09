@@ -48,8 +48,10 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
             'toHitModTemp': form.toHitMod.value,
             'aim': form.aim.value,
         };
-        //data['toHitModTemp'] = form.toHitMod.value;
-        //data['aim'] = form.aim.value;
+
+        if (game.settings.get("hero6e-foundryvtt-experimental", "knockback")) {
+            data['knockbackMod'] = form.knockbackMod.value;
+        }
 
         const targets = HeroSystem6eCard._getChatCardTargets();
         
@@ -67,6 +69,10 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
             stateData['hitLoc'] = CONFIG.HERO.hitLocations;
         }
 
+        if (game.settings.get("hero6e-foundryvtt-experimental", "knockback")) {
+            stateData['useKnockback'] = true;
+        }
+
         const templateData = {
             actor: actor.data,
             tokenId: token?.uuid || null,
@@ -74,7 +80,6 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
             state: stateData,
         };
 
-        //var path = "systems/hero6e-foundryvtt-experimental/templates/chat/item-attack-card.html";
         var path = "systems/hero6e-foundryvtt-experimental/templates/attack/item-attack-card.hbs";
 
         return await renderTemplate(path, templateData);
@@ -92,7 +97,6 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
       *                                  the prepared message data (if false)
       */
     static async createAttackPopOutFromItem(item) {
-        //const template = "systems/hero6e-foundryvtt-experimental/templates/chat/item-attack-card.html";
         const template = "systems/hero6e-foundryvtt-experimental/templates/chat/item-attack-card.hbs";
         const content = await this._renderInternal(item, item.actor, {});
 
@@ -109,7 +113,6 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
                     rollToHit: {
                         label: "Roll to Hit",
                         callback: html => resolve(this._RollToHit(item, html))
-                        //callback: html => resolve(this._RollToHit(item, html))
                     },
                 },
                 default: "rollToHit",

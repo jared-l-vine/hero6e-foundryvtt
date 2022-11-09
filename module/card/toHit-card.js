@@ -37,6 +37,8 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
     static async _onChatCardAction(event) {
         event.preventDefault();
 
+        // may be able to remove this, leaving it for now
+
         // Extract card data
         const button = event.currentTarget;
 
@@ -208,8 +210,8 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         }
 
         let roll = new Roll(damageRoll, actor.getRollData());
-        result = await roll.roll();
-        renderedResult = await result.render();
+        let damageResult = await roll.roll();
+        let damageRenderedResult = await damageResult.render();
         let body = 0;
         let stun = 0;
         let countedBody = 0;
@@ -236,7 +238,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         }
         else {
             // counts body damage for non-killing attack
-            for (let die of result.terms[0].results) {
+            for (let die of damageResult.terms[0].results) {
                 switch (die.result) {
                     case 1:
                         countedBody += 0;
@@ -327,6 +329,28 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
                 hitRollText = hitRollText + "; FAILURE"
             }
         }
+
+        let useKnockBack = false;
+        let knockback = "";
+        let knockbackRenderedResult = null;
+        if (game.settings.get("hero6e-foundryvtt-experimental", "knockback") && itemData.knockback) {
+            useKnockBack = true;
+            // body - 2d6 m
+            let knockBackEquation = body + " - 2D6"
+            knockBackEquation = modifyHitRollEquation(knockBackEquation, data.knockbackMod + "D6");
+            let knockbackRoll = new Roll(knockBackEquation);
+            let knockbackResult = await knockbackRoll.roll();
+            knockbackRenderedResult = await knockbackResult.render();
+
+            if (knockbackResult.total < 0) {
+                knockback = "No knockback";
+            } else if (knockbackResult.total == 0) {
+                knockback = "inflicts Knockdown";
+            } else {
+                knockback= "Knocked back " + knockbackResult.total + "m";
+            }
+
+        }
         // -------------------------------------------------
 
         let stateData = {
@@ -334,7 +358,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             renderedHitRoll: renderedResult,
             hitRollText: hitRollText,
             hitRollValue: result.total,
-            renderedDamageRoll: renderedResult,
+            renderedDamageRoll: damageRenderedResult,
             renderedStunMultiplierRoll: renderedStunMultiplierRoll,
 
             // hit locations
@@ -364,6 +388,11 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             // defense
             defense: defense.toUpperCase(),
             defenseValue: defenseValue,
+
+            // knockback
+            knockback: knockback,
+            useKnockBack: useKnockBack,
+            knockbackRenderedResult: knockbackRenderedResult,
 
             // misc
             targetCharacter: targetActor.name,

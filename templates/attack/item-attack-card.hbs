@@ -7,8 +7,8 @@
         </header>
     </div>
 
+    {{#if state.useHitLoc}}
     <div class="card-buttons card-content">
-        {{#if state.useHitLoc}}
         <label>Aim:</label>
         <select name="aim" id="aim">
             <option value="none">None</option>
@@ -16,11 +16,19 @@
                 <option value={{key}}>{{key}}</option>
             {{/each}}
         </select>
-        {{/if}}
     </div>
+    {{/if}}
 
     <div class="form-group">
         <label>To Hit Modifier</label>
         <input type="text" name="toHitMod" value="0"/>
     </div>
+
+    {{#if state.useKnockback}}
+    <div class="form-group flexrow">
+        <label>Knockback Modifier</label>
+        <input type="text" name="knockbackMod" value="0"/>
+        <label>d6</label>
+    </div>
+    {{/if}}
 </form>

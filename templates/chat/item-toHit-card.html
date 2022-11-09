@@ -39,4 +39,11 @@
     <div class="card-section">
         <div class="description">{{ state.bodyDamageEffective }} BODY; {{ state.stunDamageEffective }} STUN{{ state.effects }}</div>
     </div>
+
+    {{#if state.useKnockBack}}
+    <div class="card-section">
+        <div class="hit-roll">{{{ state.knockbackRenderedResult }}}</div>
+        <div class="description-small">{{ state.knockback }}</div>
+    <div class="card-section">
+    {{/if}}
 </div>

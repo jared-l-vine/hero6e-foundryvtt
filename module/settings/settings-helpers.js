@@ -21,6 +21,15 @@ export default class SettingsHelpers {
         onChange: value=> console.log(value)
       });
 
+      game.settings.register(module, "knockback", {
+        name: "Use Knockback",
+        scope: "world",
+        config: true,
+        type: Boolean,
+        default: false,
+        onChange: value=> console.log(value)
+      });
+
       game.settings.register(module, "hit locations", {
         name: "Hit Locations",
         scope: "world",
