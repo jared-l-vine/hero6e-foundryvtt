@@ -52,6 +52,7 @@ HERO.characteristics = {
     "running": "Running",
     "swimming": "Swimming",
     "leaping": "Leaping",
+    "flying": "Flying",
 };
 
 HERO.characteristicDefaults = {
@@ -98,6 +99,7 @@ HERO.characteristicsXMLKey = {
     "RUNNING": "running",
     "SWIMMING": "swimming",
     "LEAPING": "leaping",
+    "FLIGHT": "flying",
     "GENERAL": "general"
 };
 

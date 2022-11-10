@@ -433,7 +433,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			changes["name"] = characterInfo.getAttribute("CHARACTER_NAME");
         }
 
-		//changes['data.characteristics.flying.value'] = 0;
+		changes['data.characteristics.flying.value'] = 0;
 
 		var value; 
 		for (let characteristic of characteristics.children) {
@@ -603,6 +603,22 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 			loadPower(this.actor, itemData, xmlid, sheet);
 		}
+
+		let velocity = [];
+		// Determine max velocities
+		velocity['data.characteristics.running.velocity.value'] = 0;
+		velocity['data.characteristics.running.velocity.base'] = Math.round((changes['data.characteristics.spd.value'] * changes['data.characteristics.running.value']) / 12);
+
+		velocity['data.characteristics.swimming.velocity.value'] = 0;
+		velocity['data.characteristics.swimming.velocity.base'] = Math.round((changes['data.characteristics.spd.value'] * changes['data.characteristics.swimming.value']) / 12);
+
+		velocity['data.characteristics.leaping.velocity.value'] = 0;
+		velocity['data.characteristics.leaping.velocity.base'] = Math.round((changes['data.characteristics.spd.value'] * changes['data.characteristics.leaping.value']) / 12);
+
+		velocity['data.characteristics.flying.velocity.value'] = 0;
+		velocity['data.characteristics.flying.velocity.base'] = Math.round((changes['data.characteristics.spd.value'] * changes['data.characteristics.flying.value']) / 12);
+
+		await this.actor.update(velocity);
     }
 }
 
