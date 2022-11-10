@@ -73,6 +73,10 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
             stateData['useKnockback'] = true;
         }
 
+        if (game.settings.get("hero6e-foundryvtt-experimental", "use endurance")) {
+            stateData['useEnd'] = true;
+        }
+
         const templateData = {
             actor: actor.data,
             tokenId: token?.uuid || null,
