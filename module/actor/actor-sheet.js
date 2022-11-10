@@ -163,6 +163,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 				i.end = item.end;
 				i.toHitMod = item.toHitMod;
 				i.knockback = item.knockback;
+				i.usesStrength = item.usesStrength;
 
 				i.damage = item.dice;
 
