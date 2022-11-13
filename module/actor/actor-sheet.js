@@ -110,6 +110,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		const attacks = [];
 		const defenses = [];
 		const powers = [];
+		const maneuvers= [];
 
 		let orphanedSkills = [];
 		let skillIndex = [];
@@ -190,6 +191,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			else if (i.type === 'power') {
 				powers.push(i);
 			}
+			else if (i.type === 'maneuver') {
+				maneuvers.push(i);
+			}
 		}
 
 		// Assign and return
@@ -197,6 +201,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		sheetData.defenses = defenses;
 		sheetData.attacks = attacks;
 		sheetData.powers = powers;
+		sheetData.maneuvers = maneuvers;
 		sheetData.characteristicSet = characteristicSet;
 	}
 
@@ -329,6 +334,11 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		const itemId = event.currentTarget.closest(".item").dataset.itemId;
 		const item = this.actor.items.get(itemId);
 		const attr = "data.active";
+
+		if (item.type === "maneuver") {
+			console.log(item);
+		}
+
 		return item.update({ [attr]: !getProperty(item.data, attr) });
     }
 
@@ -524,31 +534,35 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		function loadPower(actor, itemData, xmlid, sheet) {
 			let newValue = undefined;
 
+			let changes = {};
+
 			switch(xmlid) {
 				case "SWIMMING":
 					newValue = parseFloat(actor.data.data.characteristics.swimming.value) + parseFloat(itemData.levels)
-					actor.setCharacteristic('swimming.value', newValue)
+					changes['data.characteristics.swimming.value'] = newValue;
 					break;
 				case "LEAPING":
 					newValue = parseFloat(actor.data.data.characteristics.leaping.value) + parseFloat(itemData.levels)
-					actor.setCharacteristic('leaping.value', newValue)
+					changes['data.characteristics.leaping.value'] = newValue;
 					break;
 				case "FLIGHT":
 					newValue = parseFloat(itemData.levels)
-					actor.setCharacteristic('flying.value', newValue)
+					changes['data.characteristics.flying.value'] = newValue;
 					break;
 				case "RUNNING":
 					newValue = parseFloat(actor.data.data.characteristics.running.value) + parseFloat(itemData.levels)
-					actor.setCharacteristic('running.value', newValue)
+					changes['data.characteristics.running.value'] = newValue;
 					break;
 				default:
 					console.log(xmlid);
 					break;
 			}
+
+			//actor.update(changes);
 		}
 
 		let powers = sheet.getElementsByTagName("POWERS")[0];
-		
+
 		const relevantFields = ["BASECOST", "LEVELS", "ALIAS", "MULTIPLIER", "NAME", "OPTION_ALIAS"]
 		for (let power of powers.children) {
 			let xmlid = power.getAttribute("XMLID");
@@ -602,6 +616,24 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			await HeroSystem6eItem.create(itemData, { parent: this.actor });
 
 			loadPower(this.actor, itemData, xmlid, sheet);
+		}
+
+		// combat maneuvers
+		for (const entry of Object.entries(CONFIG.HERO.combatManeuvers)) {
+			let v = entry[1];
+			const itemData = {
+				name: entry[0],
+				type: "maneuver",
+				data: {
+					phase: v[0],
+					ocv: v[1],
+					dcv: v[2],
+					effects: v[3],
+					active: false,
+				},
+			};
+
+			await HeroSystem6eItem.create(itemData, { parent: this.actor });
 		}
 
 		let velocity = [];

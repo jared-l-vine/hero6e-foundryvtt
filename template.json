@@ -140,7 +140,7 @@
         }
     },
     "Item": {
-        "types": [ "skill", "perk", "talent", "martialart", "power", "complication", "equipment", "attack", "defense" ],
+        "types": [ "skill", "perk", "talent", "martialart", "power", "complication", "equipment", "attack", "defense", "maneuver" ],
         "templates": {
             "base": {
                 "description": "",
@@ -191,6 +191,14 @@
             "hardened": 0,
             "impenetrable": 0,
             "value": 0
+        },
+        "maneuver": {
+            "templates": [ "base" ],
+            "phase": 0,
+            "ocv": 0,
+            "dcv": 0,
+            "effects": "",
+            "active": false
         }
     }
 }

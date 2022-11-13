@@ -141,6 +141,7 @@ HERO.hitLocationsToHit = {
 }
 
 HERO.hitLocations = {
+    // Location : [x Stun, x N Stun, x Body, OCV modifier]
     "Head": [5, 2, 2, -8],
     "Hands": [1, 0.5, 0.5, -6],
     "Arms": [2, 0.5, 0.5, -5],
@@ -152,3 +153,23 @@ HERO.hitLocations = {
     "Legs": [2, 0.5, 0.5, -6],
     "Feet": [1, 0.5, 0.5, -8],
 };
+
+HERO.combatManeuvers = {
+    // Maneuver : [phase, OCV, DCV, Effects]
+    "Block": ["1/2", "+0", "+0", "Blocks HTH attacks, Abort"],
+    "Brace": ["0", "+2", "1/2", "+2 OCV only to offset the Range Modifier"],
+    "Disarm": ["1/2", "-2", "+0", "Disarm target, requires STR vs. STR Roll"],
+    "Dodge": ["1/2", "+0", "+3", "Dodge all attacks, Abort"],
+    "Grab": ["1/2", "-1", "-2", "Grab Two Limbs; can Squeeze, Slam, or Throw"],
+    "Grab By": ["1/2 †", "-3", "-4", "Move and Grab object, +(v/10) to STR"],
+    "Haymaker": ["1/2*", "+0", "-5", "+4 Damage Classes to any attack"],
+    "Move By": ["1/2 †", "-2", "-2", "((STR/2) + (v/10))d6; attacker takes 1/3 damage"],
+    "Move Through": ["1/2 †", "-v/10", "-3", "(STR + (v/6))d6; attacker takes 1/2 or full damage"],
+    "Multiple Attack": ["1", "var", "1/2", "Attack one or more targets multiple times"],
+    "Set": ["1", "+1", "+0", "Take extra time to aim a Ranged attack at a target"],
+    "Shove": ["1/2", "-1", "-1", "Push target back 1m per 5 STR used"],
+    "Strike": ["1/2", "+0", "+0", "STR damage or by weapon type"],
+    "Throw": ["1/2", "+0", "+0", "Throw object or character, does STR damage"],
+    "Trip": ["1/2", "-1", "-2", "Knock a target to the ground, making him Prone"],
+    "Other Attacks": ["1/2", "+0", "+0", ""],
+}
