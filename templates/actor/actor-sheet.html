@@ -86,14 +86,6 @@
                 </div>
                 {{/each}}
             </div>
-            <div class="characteristics characteristic-group grid grid-4col flex1 marginless">
-                {{#each characteristicSet.combat as |characteristic key|}}
-                <div class="characteristic flexrow flex-group-center">
-                    <label for="data.characteristics.{{characteristic.key}}.current" class="resource-label">{{characteristic.name}}</label>
-                    <input type="text" name="data.characteristics.{{characteristic.key}}.current" value="{{characteristic.current}}" data-dtype="Number" disabled />
-                </div>
-                {{/each}}
-            </div>
             <div class="characteristics characteristic-group grid grid-2col flex1 marginless">
                 {{#each characteristicSet.defense as |characteristic key|}}
                 <div class="characteristic flexrow flex-group-center">
@@ -227,6 +219,18 @@
 
         {{!-- Combat Tab --}}
         <div class="tab tab-body attacks" data-group="primary" data-tab="combat">
+            {{#each characteristicSet.combat as |characteristic key|}}
+            <div class="characteristics characteristic-group grid grid-4col flex1 marginless">
+                <div class="characteristic flexrow flex-group-center">
+                    <label class="resource-label">{{characteristic.name}}</label>
+                    <label class="resource-label">{{characteristic.base}}</label>
+                    <label class="resource-label">{{characteristic.autoMod}}</label>
+                    <input type="text" name="data.characteristics.{{characteristic.key}}.userMod" value="{{characteristic.userMod}}" data-dtype="Number"/>
+                    <label class="resource-label">=</label>
+                    <label class="resource-label">{{characteristic.value}}</label>
+                </div>
+            </div>
+            {{/each}}
             <header class="tab-header flexrow">
                 <span class="item-value">Active</span>
                 <span class="item-name flex2">Name</span>

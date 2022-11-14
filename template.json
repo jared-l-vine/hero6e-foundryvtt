@@ -60,26 +60,34 @@
                     "type": "rollable"
                 },
                 "ocv": {
+                    "base": 3,
+                    "autoMod": "0",
+                    "userMod": "0",
                     "value": 3,
-                    "current": 3,
                     "modifier": 1,
                     "type": "combat"
                 },
                 "dcv": {
+                    "base": 3,
+                    "autoMod": "0",
+                    "userMod": "0",
                     "value": 3,
-                    "current": 3,
                     "modifier": 1,
                     "type": "combat"
                 },
                 "omcv": {
+                    "base": 3,
+                    "autoMod": "0",
+                    "userMod": "0",
                     "value": 3,
-                    "current": 3,
                     "modifier": 1,
                     "type": "combat"
                 },
                 "dmcv": {
+                    "base": 3,
+                    "autoMod": "0",
+                    "userMod": "0",
                     "value": 3,
-                    "current": 3,
                     "modifier": 1,
                     "type": "combat"
                 },

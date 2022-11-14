@@ -338,18 +338,23 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 		// only have one combat maneuver selected at a time except for Set or Brace
 		if(newValue && item.type === "maneuver") {
-			let exceptions = ["Set", "Brace"]
+			if (newValue) {
+				let exceptions = ["Set", "Brace"]
 
-			for (let i of this.actor.items) {
-				if (i.type === "maneuver" && i.id !== itemId) {
-					if (!exceptions.includes(i.name) || item.name.includes("Move")) {
-						await i.update({ [attr]: false });
+				for (let i of this.actor.items) {
+					if (i.type === "maneuver" && i.id !== itemId) {
+						if (!exceptions.includes(i.name) || item.name.includes("Move")) {
+							await i.update({ [attr]: false });
+						}
 					}
 				}
 			}
 		}
 
-		return item.update({ [attr]: newValue });
+		await item.update({ [attr]: newValue });
+		await updateCombatAutoMod(this.actor, item);
+
+		return;
     }
 
 	/**
@@ -463,6 +468,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			changes[`data.characteristics.${key}.value`] = value;
 			changes[`data.characteristics.${key}.current`] = value;
 			changes[`data.characteristics.${key}.max`] = value;
+			changes[`data.characteristics.${key}.base`] = value;
 		}
 
 		await this.actor.update(changes);
@@ -681,4 +687,54 @@ async function displayCard({ rollMode, createMessage = true } = {}) {
 			//ChatMessage.applyRollMode(attackCard, rollMode || game.settings.get("core", "rollMode"));
 			//return createMessage ? ChatMessage.create(attackCard) : attackCard;
 	}
+}
+
+async function updateCombatAutoMod(actor, item) {
+	let changes = [];
+	let enabled = [];
+
+	let ocvEq = 0;
+	let dcvEq = "+0";
+	
+	for (let i of actor.items) {
+		if (i.data.data.active) {
+			enabled.push(i.data.name)
+
+			ocvEq = ocvEq + parseInt(i.data.data.ocv);
+
+			if (dcvEq.includes("/") && !i.data.data.dcv.includes("/")) {
+				dcvEq = dcvEq;
+			} else if (!dcvEq.includes("/") && i.data.data.dcv.includes("/")) {
+				dcvEq = i.data.data.dcv;
+			} else if (parseFloat(dcvEq) <= parseFloat(i.data.data.dcv)) {
+				dcvEq = i.data.data.dcv;
+			}
+		}
+	}
+
+	if (isNaN(ocvEq)) {
+		ocvEq = item.data.data.ocv;
+	} else if (ocvEq >=0) {
+		ocvEq = "+" + ocvEq.toString();
+	} else {
+		ocvEq = ocvEq.toString();
+	}
+
+	changes['data.characteristics.ocv.autoMod'] = ocvEq;
+	//changes['data.characteristics.omcv.autoMod'] = ocvEq;
+	changes['data.characteristics.dcv.autoMod'] = dcvEq;
+	//changes['data.characteristics.dmcv.autoMod'] = dcvEq;
+
+	changes['data.characteristics.ocv.value'] = actor.data.data.characteristics.ocv.base + parseInt(ocvEq);
+	//changes['data.characteristics.omcv.value'] = actor.data.data.characteristics.omcv.base + parseInt(ocvEq);
+
+	if (dcvEq.includes("/")) {
+		changes['data.characteristics.dcv.value'] = Math.round(actor.data.data.characteristics.dcv.base * (parseFloat(dcvEq.split("/")[0]) / parseFloat(dcvEq.split("/")[1])));
+		//changes['data.characteristics.dmcv.value'] = Math.round(actor.data.data.characteristics.dmcv.base * (parseFloat(dcvEq.split("/")[0]) / parseFloat(dcvEq.split("/")[1])));
+	} else {
+		changes['data.characteristics.dcv.value'] = actor.data.data.characteristics.dcv.base + parseInt(dcvEq);
+		//changes['data.characteristics.dmcv.value'] = actor.data.data.characteristics.dmcv.base + parseInt(dcvEq);
+	}
+
+	await actor.update(changes);
 }
