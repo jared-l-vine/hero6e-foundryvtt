@@ -195,8 +195,8 @@
         "maneuver": {
             "templates": [ "base" ],
             "phase": 0,
-            "ocv": 0,
-            "dcv": 0,
+            "ocv": "+0",
+            "dcv": "+0",
             "effects": "",
             "active": false
         }

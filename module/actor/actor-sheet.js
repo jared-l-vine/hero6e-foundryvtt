@@ -334,12 +334,22 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		const itemId = event.currentTarget.closest(".item").dataset.itemId;
 		const item = this.actor.items.get(itemId);
 		const attr = "data.active";
+		let newValue = !getProperty(item.data, "data.active")
 
-		if (item.type === "maneuver") {
-			console.log(item);
+		// only have one combat maneuver selected at a time except for Set or Brace
+		if(newValue && item.type === "maneuver") {
+			let exceptions = ["Set", "Brace"]
+
+			for (let i of this.actor.items) {
+				if (i.type === "maneuver" && i.id !== itemId) {
+					if (!exceptions.includes(i.name) || item.name.includes("Move")) {
+						await i.update({ [attr]: false });
+					}
+				}
+			}
 		}
 
-		return item.update({ [attr]: !getProperty(item.data, attr) });
+		return item.update({ [attr]: newValue });
     }
 
 	/**
@@ -619,21 +629,31 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		}
 
 		// combat maneuvers
-		for (const entry of Object.entries(CONFIG.HERO.combatManeuvers)) {
-			let v = entry[1];
-			const itemData = {
-				name: entry[0],
-				type: "maneuver",
-				data: {
-					phase: v[0],
-					ocv: v[1],
-					dcv: v[2],
-					effects: v[3],
-					active: false,
-				},
-			};
+		async function loadCombatManeuvers(dict, actor) {
+			for (const entry of Object.entries(dict)) {
+				let v = entry[1];
+				const itemData = {
+					name: entry[0],
+					type: "maneuver",
+					data: {
+						phase: v[0],
+						ocv: v[1],
+						dcv: v[2],
+						effects: v[3],
+						active: false,
+					},
+				};
+				
+				console.log(entry[0])
 
-			await HeroSystem6eItem.create(itemData, { parent: this.actor });
+				await HeroSystem6eItem.create(itemData, { parent: actor });
+			}
+		}
+
+		await loadCombatManeuvers(CONFIG.HERO.combatManeuvers, this.actor)
+
+		if (game.settings.get("hero6e-foundryvtt-experimental", "optionalManeuvers")) {
+			await loadCombatManeuvers(CONFIG.HERO.combatManeuversOptional, this.actor)
 		}
 
 		let velocity = [];

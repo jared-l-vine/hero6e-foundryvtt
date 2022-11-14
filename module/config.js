@@ -173,3 +173,17 @@ HERO.combatManeuvers = {
     "Trip": ["1/2", "-1", "-2", "Knock a target to the ground, making him Prone"],
     "Other Attacks": ["1/2", "+0", "+0", ""],
 }
+
+HERO.combatManeuversOptional = {
+    // Maneuver : [phase, OCV, DCV, Effects]
+    "Choke": ["1/2", "-2", "-2", "NND 1d6, Grab One Limb"],
+    "Club Weapon": ["1/2", "+0", "+0", "Killing weapon does equivalent Normal Damage"],
+    "Cover": ["1/2", "-2", "+0", "Target held at gunpoint"],
+    "Dive For Cover": ["1/2", "+0", "+0", "Character avoids attack; Abort"],
+    "Hipshot": ["1/2", "-1", "+0", "+1", "DEX only for purposes of initiative"],
+    "Pulling A Punch": ["1/2", "-1/5d6", "+0", "Strike, normal STUN damage, 1/2 BODY damage"],
+    "Roll With A Punch": ["1/2", "-2", "-2", "Block after being hit, take 1/2 damage; Abort"],
+    "Snap Shot": ["1", "-1", "+0", "Lets character duck back behind cover"],
+    "Strafe": ["1/2 †", "-v/6", "-2", "Make Ranged attack while moving"],
+    "Suppression Fire": ["1/2", "-2", "+0", "Continuous fire through an area, must be Autofire"],
+}

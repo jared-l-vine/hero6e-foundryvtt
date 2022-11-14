@@ -39,6 +39,15 @@ export default class SettingsHelpers {
         onChange: value=> console.log(value)
       });
 
+      game.settings.register(module, "optionalManeuvers", {
+        name: "Optional Maneuvers",
+        scope: "world",
+        config: true,
+        type: Boolean,
+        default: false,
+        onChange: value=> console.log(value)
+      });
+
       game.settings.register(module, "automation", {
         name: "Attack Card Automation",
         scope: "world",
