@@ -574,7 +574,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 					break;
 			}
 
-			//actor.update(changes);
+			actor.update(changes);
 		}
 
 		let powers = sheet.getElementsByTagName("POWERS")[0];
@@ -650,8 +650,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 					},
 				};
 				
-				console.log(entry[0])
-
 				await HeroSystem6eItem.create(itemData, { parent: actor });
 			}
 		}
