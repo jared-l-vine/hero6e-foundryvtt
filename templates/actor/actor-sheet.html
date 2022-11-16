@@ -57,7 +57,7 @@
                         <input type="text" value="{{data.characteristics.end.max}}" data-dtype="Number" disabled />
                     </div>
                 </div>
-                <button class="recovery-button" style="height:40px;width:90%;align-self:center;" disabled>Take Recovery</button>
+                <button type="button" class="recovery-button" style="height:40px;width:90%;align-self:center;">Take Recovery</button>
             </div>
         </section>
     </section>
@@ -82,7 +82,7 @@
                 <div class="flexrow flex-group-center characteristic">
                     <label for="data.characteristics.{{characteristic.key}}.current" class="resource-label">{{characteristic.name}}</label>
                     <input type="text" name="data.characteristics.{{characteristic.key}}.current" value="{{characteristic.current}}" data-dtype="Number" disabled />
-                    <button class="characteristic-roll rollable-characteristic" data-roll="3d6" data-label="{{characteristic.key}}" >{{numberFormat characteristic.roll decimals=0 sign=false}}-</button>
+                    <button type="button" class="characteristic-roll rollable-characteristic" data-roll="3d6" data-label="{{characteristic.key}}" >{{numberFormat characteristic.roll decimals=0 sign=false}}-</button>
                 </div>
                 {{/each}}
             </div>

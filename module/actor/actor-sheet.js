@@ -262,7 +262,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 		html.find('input').each((id, inp) => {
 			this.changeValue = function(e) {
-				if (e.code === "Enter") {
+				if (e.code === "Enter" || e.code === "Tab") {
 					if (isNaN(parseInt(e.target.value))) {
 						return
 					}
@@ -407,21 +407,32 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 	async _onRecovery(event) {
 		console.log("recovery")
 
-		let newStun = this.actor.data.data.stun.value + this.actor.data.data.characteristics['rec'].value;
-		let newEnd = this.actor.data.data.end.value + this.actor.data.data.characteristics['rec'].value;
+		let chars = this.actor.data.data.characteristics
 
-		if (newStun > this.actor.data.data.stun.max) {
-			newStun = this.actor.data.data.stun.max
+		let newStun = parseInt(chars.stun.value) + parseInt(chars.rec.value);
+		let newEnd = parseInt(chars.end.value) + parseInt(chars.rec.value);
+
+		if (newStun > chars.stun.max) {
+			newStun = chars.stun.max
         }
 
-		if (newEnd > this.actor.data.data.end.max) {
-			newEnd = this.actor.data.data.end.max
+		if (newEnd > chars.end.max) {
+			newEnd = chars.end.max
 		}
 
 		await this.actor.update({
-			"data.stun.value": newStun,
-			"data.end.value": newEnd,
+			"data.characteristics.stun.value": newStun,
+			"data.characteristics.end.value": newEnd,
 		});
+
+		const chatData = {
+            user: game.user.data._id,
+            type: CONST.CHAT_MESSAGE_TYPES.OTHER,
+            content: this.actor.name + " recovers!",
+            speaker: this.actor.token,
+        };
+
+        return ChatMessage.create(chatData);
 	}
 
 	async _uploadCharacterSheet(event) {
