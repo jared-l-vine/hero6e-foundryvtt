@@ -386,27 +386,31 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		}
 	}
 
-	_onRollSkill(event) {
+	async _onRollSkill(event) {
 		event.preventDefault();
 		const element = event.currentTarget;
 		const dataset = element.dataset;
 
-		if (dataset.roll) {
+		//if (dataset.roll) {
 			let roll = new Roll("3D6", this.actor.getRollData());
-			let result = roll.roll();
 			let item = this.actor.items.get(dataset.label);
-			let margin = dataset.roll - roll.total;
-			result.toMessage({
-				speaker: ChatMessage.getSpeaker({ actor: this.actor }),
-				flavor: item.name.toUpperCase() + " roll " + (margin >= 0 ? "succeeded" : "failed") + " by " + Math.abs(margin),
-				borderColor: margin >= 0 ? 0x00FF00 : 0xFF0000,
+			//let margin = dataset.roll - roll.total;
+
+			let actor = this.actor;
+
+			roll.evaluate().then(function(result) {
+				let margin = result.total;
+				
+				result.toMessage({
+					speaker: ChatMessage.getSpeaker({ actor: actor }),
+					flavor: item.name.toUpperCase() + " roll " + (margin >= 0 ? "succeeded" : "failed") + " by " + Math.abs(margin),
+					borderColor: margin >= 0 ? 0x00FF00 : 0xFF0000,	
+				});
 			});
-		}
+		//}
 	}
 
 	async _onRecovery(event) {
-		console.log("recovery")
-
 		let chars = this.actor.data.data.characteristics
 
 		let newStun = parseInt(chars.stun.value) + parseInt(chars.rec.value);
@@ -477,7 +481,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			value = CONFIG.HERO.characteristicDefaults[key] + parseInt(characteristic.getAttribute("LEVELS"));
 
 			changes[`data.characteristics.${key}.value`] = value;
-			changes[`data.characteristics.${key}.current`] = value;
 			changes[`data.characteristics.${key}.max`] = value;
 			changes[`data.characteristics.${key}.base`] = value;
 		}

@@ -59,6 +59,12 @@
                 </div>
                 <button type="button" class="recovery-button" style="height:40px;width:90%;align-self:center;">Take Recovery</button>
             </div>
+            <div class="characteristic flexrow flex-group-center">
+                {{#each characteristicSet.combat as |characteristic key|}}
+                <label class="resource-label">{{characteristic.name}}</label>
+                <label class="resource-label">{{characteristic.value}}</label>
+                {{/each}}
+            </div>
         </section>
     </section>
 
@@ -80,8 +86,8 @@
             <div class="characteristics characteristic-group grid grid-3col flex2 marginless">
                 {{#each characteristicSet.rollable as |characteristic key|}}
                 <div class="flexrow flex-group-center characteristic">
-                    <label for="data.characteristics.{{characteristic.key}}.current" class="resource-label">{{characteristic.name}}</label>
-                    <input type="text" name="data.characteristics.{{characteristic.key}}.current" value="{{characteristic.current}}" data-dtype="Number" disabled />
+                    <label class="resource-label">{{characteristic.name}}</label>
+                    <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" disabled />
                     <button type="button" class="characteristic-roll rollable-characteristic" data-roll="3d6" data-label="{{characteristic.key}}" >{{numberFormat characteristic.roll decimals=0 sign=false}}-</button>
                 </div>
                 {{/each}}
@@ -89,16 +95,16 @@
             <div class="characteristics characteristic-group grid grid-2col flex1 marginless">
                 {{#each characteristicSet.defense as |characteristic key|}}
                 <div class="characteristic flexrow flex-group-center">
-                    <label for="data.characteristics.{{characteristic.key}}.current" class="resource-label">{{characteristic.name}}</label>
-                    <input type="text" name="data.characteristics.{{characteristic.key}}.current" value="{{characteristic.current}}" data-dtype="Number" disabled />
+                    <label class="resource-label">{{characteristic.name}}</label>
+                    <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" disabled />
                 </div>
                 {{/each}}
             </div>
             <div class="characteristics characteristic-group grid grid-2col flex1 marginless">
                 {{#each characteristicSet.other as |characteristic key|}}
                 <div class="characteristic flexrow flex-group-center">
-                    <label for="data.characteristics.{{characteristic.key}}.current" class="resource-label">{{characteristic.name}}</label>
-                    <input type="text" name="data.characteristics.{{characteristic.key}}.current" value="{{characteristic.current}}" data-dtype="Number" disabled />
+                    <label class="resource-label">{{characteristic.name}}</label>
+                    <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" disabled />
                 </div>
                 {{/each}}
             </div>
@@ -117,15 +123,15 @@
                         <span></span>
                     </div>
                     <div class="resource-content flexrow flex-center flex-between">
-                        <input type="text" name="data.characteristics.{{characteristic.key}}.current" value="{{characteristic.current}}" data-dtype="Number" disabled />
+                        <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" disabled />
                         <div>m</div>
-                        <input type="text" name="data.characteristics.{{characteristic.key}}.current" value="{{characteristic.current}}" data-dtype="Number" disabled />
+                        <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" disabled />
                         <div>m</div>
                     </div>
                     <div class="resource-content flexrow flex-center flex-between">
-                        <input type="text" name="data.characteristics.{{characteristic.key}}.current" value="{{characteristic.velocity.value}}" data-dtype="Number" disabled />
+                        <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.velocity.value}}" data-dtype="Number" disabled />
                         <div>m/s</div>
-                        <input type="text" name="data.characteristics.{{characteristic.key}}.current" value="{{characteristic.velocity.base}}" data-dtype="Number" disabled />
+                        <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.velocity.base}}" data-dtype="Number" disabled />
                         <div>m/s</div>
                     </div>
                 </div>
@@ -179,9 +185,7 @@
                             <h4 class="item-name">{{item.name}}</h4>
                             <h4 class="item-name">{{item.characteristic}}</h4>
                             <div>
-                                {{#if item.roll}}
                                 <button class="item-roll rollable-skill" data-roll="{{item.roll}}" data-label="{{item._id}}">{{numberFormat item.roll decimals=0 sign=false}}-</button>
-                                {{/if}}
                             </div>
                             <div class="item-controls">
                                 <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
@@ -219,18 +223,6 @@
 
         {{!-- Combat Tab --}}
         <div class="tab tab-body attacks" data-group="primary" data-tab="combat">
-            {{#each characteristicSet.combat as |characteristic key|}}
-            <div class="characteristics characteristic-group grid grid-4col flex1 marginless">
-                <div class="characteristic flexrow flex-group-center">
-                    <label class="resource-label">{{characteristic.name}}</label>
-                    <label class="resource-label">{{characteristic.base}}</label>
-                    <label class="resource-label">{{characteristic.autoMod}}</label>
-                    <input type="text" name="data.characteristics.{{characteristic.key}}.userMod" value="{{characteristic.userMod}}" data-dtype="Number"/>
-                    <label class="resource-label">=</label>
-                    <label class="resource-label">{{characteristic.value}}</label>
-                </div>
-            </div>
-            {{/each}}
             <header class="tab-header flexrow">
                 <span class="item-value">Active</span>
                 <span class="item-name flex2">Name</span>

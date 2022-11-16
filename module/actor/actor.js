@@ -42,13 +42,11 @@ export class HeroSystem6eActor extends Actor {
     }
 
     _prepareCharacteristic(characteristic) {
-        characteristic.current = characteristic.value;
-
         if (characteristic.modifier) {
             characteristic.value *= characteristic.modifier;
         }
 
-        characteristic.value = Math.round(characteristic.current);
+        characteristic.value = Math.round(characteristic.value);
     }
 
     _prepareResource(resource, characteristic) {
