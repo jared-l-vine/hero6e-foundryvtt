@@ -157,6 +157,13 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             let valueEnd = actor.data.data.characteristics.end.value
             let itemEnd = item.data.data.end;
             let newEnd = valueEnd - itemEnd;
+            let spentEnd = itemEnd;
+
+            if(itemData.usesStrength) {
+                let strEnd =  Math.round(actor.data.data.characteristics.str.value / 10);
+                newEnd = newEnd -strEnd;
+                spentEnd = spentEnd + strEnd;
+            }
             
             if (game.settings.get("hero6e-foundryvtt-experimental", "automation")) {
                 let changes = {};
@@ -167,7 +174,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
                         "data.characteristics.stun.value": actor.data.data.characteristics.stun.value + newEnd,
                     }
                 } else {
-                    enduranceText = 'Spent ' + itemEnd + ' END';
+                    enduranceText = 'Spent ' + spentEnd + ' END';
                     changes = {
                         "data.characteristics.end.value": newEnd,
                     }
@@ -207,6 +214,13 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             case 'half':
                 damageRoll += "D6+1D3"
                 break;
+        }
+
+        if(itemData.usesStrength) {
+            let strDamage = Math.floor((actor.data.data.characteristics.str.value - 10)/5)
+            if (strDamage > 0) {
+                damageRoll = damageRoll + " + " + strDamage + "D6";
+            }
         }
 
         let roll = new Roll(damageRoll, actor.getRollData());

@@ -110,6 +110,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		const attacks = [];
 		const defenses = [];
 		const powers = [];
+		const maneuvers= [];
 
 		let orphanedSkills = [];
 		let skillIndex = [];
@@ -163,6 +164,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 				i.end = item.end;
 				i.toHitMod = item.toHitMod;
 				i.knockback = item.knockback;
+				i.usesStrength = item.usesStrength;
 
 				i.damage = item.dice;
 
@@ -189,6 +191,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			else if (i.type === 'power') {
 				powers.push(i);
 			}
+			else if (i.type === 'maneuver') {
+				maneuvers.push(i);
+			}
 		}
 
 		// Assign and return
@@ -196,6 +201,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		sheetData.defenses = defenses;
 		sheetData.attacks = attacks;
 		sheetData.powers = powers;
+		sheetData.maneuvers = maneuvers;
 		sheetData.characteristicSet = characteristicSet;
 	}
 
@@ -256,7 +262,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 		html.find('input').each((id, inp) => {
 			this.changeValue = function(e) {
-				if (e.code === "Enter") {
+				if (e.code === "Enter" || e.code === "Tab") {
 					if (isNaN(parseInt(e.target.value))) {
 						return
 					}
@@ -328,7 +334,27 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		const itemId = event.currentTarget.closest(".item").dataset.itemId;
 		const item = this.actor.items.get(itemId);
 		const attr = "data.active";
-		return item.update({ [attr]: !getProperty(item.data, attr) });
+		let newValue = !getProperty(item.data, "data.active")
+
+		// only have one combat maneuver selected at a time except for Set or Brace
+		if(newValue && item.type === "maneuver") {
+			if (newValue) {
+				let exceptions = ["Set", "Brace"]
+
+				for (let i of this.actor.items) {
+					if (i.type === "maneuver" && i.id !== itemId) {
+						if (!exceptions.includes(i.name) || item.name.includes("Move")) {
+							await i.update({ [attr]: false });
+						}
+					}
+				}
+			}
+		}
+
+		await item.update({ [attr]: newValue });
+		await updateCombatAutoMod(this.actor, item);
+
+		return;
     }
 
 	/**
@@ -360,42 +386,57 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		}
 	}
 
-	_onRollSkill(event) {
+	async _onRollSkill(event) {
 		event.preventDefault();
 		const element = event.currentTarget;
 		const dataset = element.dataset;
 
-		if (dataset.roll) {
+		//if (dataset.roll) {
 			let roll = new Roll("3D6", this.actor.getRollData());
-			let result = roll.roll();
 			let item = this.actor.items.get(dataset.label);
-			let margin = dataset.roll - roll.total;
-			result.toMessage({
-				speaker: ChatMessage.getSpeaker({ actor: this.actor }),
-				flavor: item.name.toUpperCase() + " roll " + (margin >= 0 ? "succeeded" : "failed") + " by " + Math.abs(margin),
-				borderColor: margin >= 0 ? 0x00FF00 : 0xFF0000,
+			//let margin = dataset.roll - roll.total;
+
+			let actor = this.actor;
+
+			roll.evaluate().then(function(result) {
+				let margin = result.total;
+				
+				result.toMessage({
+					speaker: ChatMessage.getSpeaker({ actor: actor }),
+					flavor: item.name.toUpperCase() + " roll " + (margin >= 0 ? "succeeded" : "failed") + " by " + Math.abs(margin),
+					borderColor: margin >= 0 ? 0x00FF00 : 0xFF0000,	
+				});
 			});
-		}
+		//}
 	}
 
 	async _onRecovery(event) {
-		console.log("recovery")
+		let chars = this.actor.data.data.characteristics
 
-		let newStun = this.actor.data.data.stun.value + this.actor.data.data.characteristics['rec'].value;
-		let newEnd = this.actor.data.data.end.value + this.actor.data.data.characteristics['rec'].value;
+		let newStun = parseInt(chars.stun.value) + parseInt(chars.rec.value);
+		let newEnd = parseInt(chars.end.value) + parseInt(chars.rec.value);
 
-		if (newStun > this.actor.data.data.stun.max) {
-			newStun = this.actor.data.data.stun.max
+		if (newStun > chars.stun.max) {
+			newStun = chars.stun.max
         }
 
-		if (newEnd > this.actor.data.data.end.max) {
-			newEnd = this.actor.data.data.end.max
+		if (newEnd > chars.end.max) {
+			newEnd = chars.end.max
 		}
 
 		await this.actor.update({
-			"data.stun.value": newStun,
-			"data.end.value": newEnd,
+			"data.characteristics.stun.value": newStun,
+			"data.characteristics.end.value": newEnd,
 		});
+
+		const chatData = {
+            user: game.user.data._id,
+            type: CONST.CHAT_MESSAGE_TYPES.OTHER,
+            content: this.actor.name + " recovers!",
+            speaker: this.actor.token,
+        };
+
+        return ChatMessage.create(chatData);
 	}
 
 	async _uploadCharacterSheet(event) {
@@ -432,7 +473,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			changes["name"] = characterInfo.getAttribute("CHARACTER_NAME");
         }
 
-		//changes['data.characteristics.flying.value'] = 0;
+		changes['data.characteristics.flying.value'] = 0;
 
 		var value; 
 		for (let characteristic of characteristics.children) {
@@ -440,8 +481,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			value = CONFIG.HERO.characteristicDefaults[key] + parseInt(characteristic.getAttribute("LEVELS"));
 
 			changes[`data.characteristics.${key}.value`] = value;
-			changes[`data.characteristics.${key}.current`] = value;
 			changes[`data.characteristics.${key}.max`] = value;
+			changes[`data.characteristics.${key}.base`] = value;
 		}
 
 		await this.actor.update(changes);
@@ -523,31 +564,35 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		function loadPower(actor, itemData, xmlid, sheet) {
 			let newValue = undefined;
 
+			let changes = {};
+
 			switch(xmlid) {
 				case "SWIMMING":
 					newValue = parseFloat(actor.data.data.characteristics.swimming.value) + parseFloat(itemData.levels)
-					actor.setCharacteristic('swimming.value', newValue)
+					changes['data.characteristics.swimming.value'] = newValue;
 					break;
 				case "LEAPING":
 					newValue = parseFloat(actor.data.data.characteristics.leaping.value) + parseFloat(itemData.levels)
-					actor.setCharacteristic('leaping.value', newValue)
+					changes['data.characteristics.leaping.value'] = newValue;
 					break;
 				case "FLIGHT":
 					newValue = parseFloat(itemData.levels)
-					actor.setCharacteristic('flying.value', newValue)
+					changes['data.characteristics.flying.value'] = newValue;
 					break;
 				case "RUNNING":
 					newValue = parseFloat(actor.data.data.characteristics.running.value) + parseFloat(itemData.levels)
-					actor.setCharacteristic('running.value', newValue)
+					changes['data.characteristics.running.value'] = newValue;
 					break;
 				default:
 					console.log(xmlid);
 					break;
 			}
+
+			actor.update(changes);
 		}
 
 		let powers = sheet.getElementsByTagName("POWERS")[0];
-		
+
 		const relevantFields = ["BASECOST", "LEVELS", "ALIAS", "MULTIPLIER", "NAME", "OPTION_ALIAS"]
 		for (let power of powers.children) {
 			let xmlid = power.getAttribute("XMLID");
@@ -602,6 +647,48 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 			loadPower(this.actor, itemData, xmlid, sheet);
 		}
+
+		// combat maneuvers
+		async function loadCombatManeuvers(dict, actor) {
+			for (const entry of Object.entries(dict)) {
+				let v = entry[1];
+				const itemData = {
+					name: entry[0],
+					type: "maneuver",
+					data: {
+						phase: v[0],
+						ocv: v[1],
+						dcv: v[2],
+						effects: v[3],
+						active: false,
+					},
+				};
+				
+				await HeroSystem6eItem.create(itemData, { parent: actor });
+			}
+		}
+
+		await loadCombatManeuvers(CONFIG.HERO.combatManeuvers, this.actor)
+
+		if (game.settings.get("hero6e-foundryvtt-experimental", "optionalManeuvers")) {
+			await loadCombatManeuvers(CONFIG.HERO.combatManeuversOptional, this.actor)
+		}
+
+		let velocity = [];
+		// Determine max velocities
+		velocity['data.characteristics.running.velocity.value'] = 0;
+		velocity['data.characteristics.running.velocity.base'] = Math.round((changes['data.characteristics.spd.value'] * changes['data.characteristics.running.value']) / 12);
+
+		velocity['data.characteristics.swimming.velocity.value'] = 0;
+		velocity['data.characteristics.swimming.velocity.base'] = Math.round((changes['data.characteristics.spd.value'] * changes['data.characteristics.swimming.value']) / 12);
+
+		velocity['data.characteristics.leaping.velocity.value'] = 0;
+		velocity['data.characteristics.leaping.velocity.base'] = Math.round((changes['data.characteristics.spd.value'] * changes['data.characteristics.leaping.value']) / 12);
+
+		velocity['data.characteristics.flying.velocity.value'] = 0;
+		velocity['data.characteristics.flying.velocity.base'] = Math.round((changes['data.characteristics.spd.value'] * changes['data.characteristics.flying.value']) / 12);
+
+		await this.actor.update(velocity);
     }
 }
 
@@ -612,4 +699,54 @@ async function displayCard({ rollMode, createMessage = true } = {}) {
 			//ChatMessage.applyRollMode(attackCard, rollMode || game.settings.get("core", "rollMode"));
 			//return createMessage ? ChatMessage.create(attackCard) : attackCard;
 	}
+}
+
+async function updateCombatAutoMod(actor, item) {
+	let changes = [];
+	let enabled = [];
+
+	let ocvEq = 0;
+	let dcvEq = "+0";
+	
+	for (let i of actor.items) {
+		if (i.data.data.active) {
+			enabled.push(i.data.name)
+
+			ocvEq = ocvEq + parseInt(i.data.data.ocv);
+
+			if (dcvEq.includes("/") && !i.data.data.dcv.includes("/")) {
+				dcvEq = dcvEq;
+			} else if (!dcvEq.includes("/") && i.data.data.dcv.includes("/")) {
+				dcvEq = i.data.data.dcv;
+			} else if (parseFloat(dcvEq) <= parseFloat(i.data.data.dcv)) {
+				dcvEq = i.data.data.dcv;
+			}
+		}
+	}
+
+	if (isNaN(ocvEq)) {
+		ocvEq = item.data.data.ocv;
+	} else if (ocvEq >=0) {
+		ocvEq = "+" + ocvEq.toString();
+	} else {
+		ocvEq = ocvEq.toString();
+	}
+
+	changes['data.characteristics.ocv.autoMod'] = ocvEq;
+	//changes['data.characteristics.omcv.autoMod'] = ocvEq;
+	changes['data.characteristics.dcv.autoMod'] = dcvEq;
+	//changes['data.characteristics.dmcv.autoMod'] = dcvEq;
+
+	changes['data.characteristics.ocv.value'] = actor.data.data.characteristics.ocv.base + parseInt(ocvEq);
+	//changes['data.characteristics.omcv.value'] = actor.data.data.characteristics.omcv.base + parseInt(ocvEq);
+
+	if (dcvEq.includes("/")) {
+		changes['data.characteristics.dcv.value'] = Math.round(actor.data.data.characteristics.dcv.base * (parseFloat(dcvEq.split("/")[0]) / parseFloat(dcvEq.split("/")[1])));
+		//changes['data.characteristics.dmcv.value'] = Math.round(actor.data.data.characteristics.dmcv.base * (parseFloat(dcvEq.split("/")[0]) / parseFloat(dcvEq.split("/")[1])));
+	} else {
+		changes['data.characteristics.dcv.value'] = actor.data.data.characteristics.dcv.base + parseInt(dcvEq);
+		//changes['data.characteristics.dmcv.value'] = actor.data.data.characteristics.dmcv.base + parseInt(dcvEq);
+	}
+
+	await actor.update(changes);
 }

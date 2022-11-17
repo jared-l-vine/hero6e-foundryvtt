@@ -3,10 +3,9 @@ export class HeroSystem6eRuler extends Ruler {
 		let label = super._getSegmentLabel(segmentDistance, totalDistance, isTotal);
 
         let rangeMod = Math.ceil(Math.log2(totalDistance / 8)) * 2;
+        rangeMod = rangeMod < 0 ? 0: rangeMod;
 
-        if (rangeMod > 0) {
-            label += "\n-" + rangeMod + " Range Modifier";
-        }
+        label += "\n-" + rangeMod + " Range Modifier";
 
 		return label;
     }

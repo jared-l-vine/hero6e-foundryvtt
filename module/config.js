@@ -52,6 +52,7 @@ HERO.characteristics = {
     "running": "Running",
     "swimming": "Swimming",
     "leaping": "Leaping",
+    "flying": "Flying",
 };
 
 HERO.characteristicDefaults = {
@@ -98,6 +99,7 @@ HERO.characteristicsXMLKey = {
     "RUNNING": "running",
     "SWIMMING": "swimming",
     "LEAPING": "leaping",
+    "FLIGHT": "flying",
     "GENERAL": "general"
 };
 
@@ -139,6 +141,7 @@ HERO.hitLocationsToHit = {
 }
 
 HERO.hitLocations = {
+    // Location : [x Stun, x N Stun, x Body, OCV modifier]
     "Head": [5, 2, 2, -8],
     "Hands": [1, 0.5, 0.5, -6],
     "Arms": [2, 0.5, 0.5, -5],
@@ -150,3 +153,37 @@ HERO.hitLocations = {
     "Legs": [2, 0.5, 0.5, -6],
     "Feet": [1, 0.5, 0.5, -8],
 };
+
+HERO.combatManeuvers = {
+    // Maneuver : [phase, OCV, DCV, Effects]
+    "Block": ["1/2", "+0", "+0", "Blocks HTH attacks, Abort"],
+    "Brace": ["0", "+2", "1/2", "+2 OCV only to offset the Range Modifier"],
+    "Disarm": ["1/2", "-2", "+0", "Disarm target, requires STR vs. STR Roll"],
+    "Dodge": ["1/2", "+0", "+3", "Dodge all attacks, Abort"],
+    "Grab": ["1/2", "-1", "-2", "Grab Two Limbs; can Squeeze, Slam, or Throw"],
+    "Grab By": ["1/2 †", "-3", "-4", "Move and Grab object, +(v/10) to STR"],
+    "Haymaker": ["1/2*", "+0", "-5", "+4 Damage Classes to any attack"],
+    "Move By": ["1/2 †", "-2", "-2", "((STR/2) + (v/10))d6; attacker takes 1/3 damage"],
+    "Move Through": ["1/2 †", "-v/10", "-3", "(STR + (v/6))d6; attacker takes 1/2 or full damage"],
+    "Multiple Attack": ["1", "var", "1/2", "Attack one or more targets multiple times"],
+    "Set": ["1", "+1", "+0", "Take extra time to aim a Ranged attack at a target"],
+    "Shove": ["1/2", "-1", "-1", "Push target back 1m per 5 STR used"],
+    "Strike": ["1/2", "+0", "+0", "STR damage or by weapon type"],
+    "Throw": ["1/2", "+0", "+0", "Throw object or character, does STR damage"],
+    "Trip": ["1/2", "-1", "-2", "Knock a target to the ground, making him Prone"],
+    "Other Attacks": ["1/2", "+0", "+0", ""],
+}
+
+HERO.combatManeuversOptional = {
+    // Maneuver : [phase, OCV, DCV, Effects]
+    "Choke": ["1/2", "-2", "-2", "NND 1d6, Grab One Limb"],
+    "Club Weapon": ["1/2", "+0", "+0", "Killing weapon does equivalent Normal Damage"],
+    "Cover": ["1/2", "-2", "+0", "Target held at gunpoint"],
+    "Dive For Cover": ["1/2", "+0", "+0", "Character avoids attack; Abort"],
+    "Hipshot": ["1/2", "-1", "+0", "+1", "DEX only for purposes of initiative"],
+    "Pulling A Punch": ["1/2", "-1/5d6", "+0", "Strike, normal STUN damage, 1/2 BODY damage"],
+    "Roll With A Punch": ["1/2", "-2", "-2", "Block after being hit, take 1/2 damage; Abort"],
+    "Snap Shot": ["1", "-1", "+0", "Lets character duck back behind cover"],
+    "Strafe": ["1/2 †", "-v/6", "-2", "Make Ranged attack while moving"],
+    "Suppression Fire": ["1/2", "-2", "+0", "Continuous fire through an area, must be Autofire"],
+}

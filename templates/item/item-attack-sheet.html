@@ -73,7 +73,12 @@
 
     <div class="form-group">
         <label>Does Knockback</label>
-        <input type="checkbox" name="data.knockback" {{checked data.killing}} data-dtype="Boolean" />
+        <input type="checkbox" name="data.knockback" {{checked data.knockback}} data-dtype="Boolean" />
+    </div>
+
+    <div class="form-group">
+        <label>Uses Strength</label>
+        <input type="checkbox" name="data.usesStrength" {{checked data.usesStrength}} data-dtype="Boolean" />
     </div>
 
     {{editor content=data.description target="data.description" button=true owner=owner editable=editable}}
