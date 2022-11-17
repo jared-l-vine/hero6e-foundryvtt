@@ -15,26 +15,32 @@
             "characteristics": {
                 "str": {
                     "value": 10,
+                    "base": 10,
                     "type": "rollable"
                 },
                 "dex": {
                     "value": 10,
+                    "base": 10,
                     "type": "rollable"
                 },
                 "con": {
                     "value": 10,
+                    "base": 10,
                     "type": "rollable"
                 },
                 "int": {
                     "value": 10,
+                    "base": 10,
                     "type": "rollable"
                 },
                 "ego": {
                     "value": 10,
+                    "base": 10,
                     "type": "rollable"
                 },
                 "pre": {
                     "value": 10,
+                    "base": 10,
                     "type": "rollable"
                 },
                 "ocv": {
@@ -71,30 +77,30 @@
                 },
                 "spd": {
                     "value": 2,
-                    "current": 2
+                    "base": 2
                 },
                 "pd": {
                     "value": 2,
-                    "current": 2,
+                    "base": 2,
                     "type": "defense"
                 },
                 "ed": {
                     "value": 2,
-                    "current": 2,
+                    "base": 2,
                     "type": "defense"
                 },
                 "rec": {
                     "value": 4,
-                    "current": 4
+                    "base": 4
                 },
                 "end": {
                     "value": 20,
-                    "current": 20,
+                    "base": 20,
                     "type": "resource"
                 },
                 "stun": {
                     "value": 20,
-                    "current": 20,
+                    "base": 20,
                     "type": "resource"
                 },
                 "body": {
@@ -103,22 +109,22 @@
                 },
                 "running": {
                     "value": 12,
-                    "current": 12,
+                    "base": 12,
                     "type": "movement"
                 },
                 "swimming": {
                     "value": 4,
-                    "current": 4,
+                    "base": 4,
                     "type": "movement"
                 },
                 "leaping": {
                     "value": 4,
-                    "current": 4,
+                    "base": 4,
                     "type": "movement"
                 },
                 "flying": {
                     "value": 0,
-                    "current": 0,
+                    "base": 0,
                     "type": "movement"
                 }
             }
@@ -146,7 +152,8 @@
             "type": "blast",
             "effect": 0,
             "levels": 0,
-            "rules": ""
+            "rules": "",
+            "items": {}
         },
         "equipment": {
             "templates": [ "base" ],
