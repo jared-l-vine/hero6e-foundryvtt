@@ -145,7 +145,8 @@
             "templates": [ "base" ],
             "characteristic": "general",
             "levels": 0,
-            "state": "untrained"
+            "state": "untrained",
+            "roll": "6-"
         },
         "power": {
             "templates": [ "base" ],
