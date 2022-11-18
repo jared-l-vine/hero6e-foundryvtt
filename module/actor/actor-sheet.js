@@ -352,7 +352,10 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		}
 
 		await item.update({ [attr]: newValue });
-		await updateCombatAutoMod(this.actor, item);
+
+		if (item.type === "maneuver") {
+			await updateCombatAutoMod(this.actor, item);
+		}
 
 		return;
     }
