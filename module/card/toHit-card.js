@@ -202,6 +202,20 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             }
 
             hitLocationModifiers = CONFIG.HERO.hitLocations[hitLocation];
+
+            if (game.settings.get("hero6e-foundryvtt-experimental", "hitLocTracking") === "all") {
+                let sidedLocations = ["Hand", "Shoulder", "Arm", "Thigh", "Leg", "Foot"]
+                if (sidedLocations.includes(hitLocation)) {
+                    let sideRoll = new Roll("1D2", actor.getRollData());
+                    let sideResult = await sideRoll.roll();
+
+                    if (sideResult.result === 1) {
+                        hitLocation = "Left " + hitLocation;
+                    } else {
+                        hitLocation = "Right " + hitLocation;
+                    }
+                }   
+            }
         }
 
         switch (itemData.extraDice) {
@@ -266,7 +280,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
                 }
             }
 
-            stun = result.total;
+            stun = damageResult.total;
             body = countedBody;
         }
 
@@ -320,7 +334,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         if (game.settings.get("hero6e-foundryvtt-experimental", "stunned")) {
             // determine if target was Stunned
             if (stun > targetActorChars.con.value) {
-                effects = "; inflicts Stunned"
+                effects = effects + "; inflicts Stunned"
             }
         }
 
@@ -335,6 +349,15 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
                 let changes = {
                     "data.characteristics.stun.value": newStun,
                     "data.characteristics.body.value": newBody,
+                }
+
+                if (game.settings.get("hero6e-foundryvtt-experimental", "hitLocTracking") === "all") {
+                    let bodyPartHP = targetActorChars.body.loc[hitLocation] + body
+                    changes["data.characteristics.body.loc." + hitLocation] = bodyPartHP;
+
+                    if (bodyPartHP > targetActorChars.body.value) {
+                        effects = effects + "; inflicts Impaired " + hitLocation;
+                    }
                 }
                 
                 await targetActor.update(changes);
