@@ -19,6 +19,13 @@
     </div>
 
     <div class="form-group">
+        <label>Class</label>
+        <select name="data.class" data-dtype="text">
+            {{selectOptions config.attackClasses selected=data.class}}
+        </select>
+    </div>
+
+    <div class="form-group">
         <label>Value</label>
         <input type="text" name="data.value" value="{{data.value}}" data-dtype="Number" />
     </div>

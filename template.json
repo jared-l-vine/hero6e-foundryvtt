@@ -181,7 +181,7 @@
         },
         "attack": {
             "templates": [ "base" ],
-            "defense": "misc",
+            "defense": "pd",
             "killing": 0,
             "piercing": 0,
             "penetrating": 0,
@@ -192,16 +192,18 @@
             "uses": "ocv",
             "targets": "dcv",
             "end": 0,
-            "stunX": 0
+            "stunX": 0,
+            "class": "physical"
         },
         "defense": {
             "templates": [ "base" ],
-            "defenseType": "misc",
+            "defenseType": "pd",
             "active": "false",
             "resistant": "false",
             "hardened": 0,
             "impenetrable": 0,
-            "value": 0
+            "value": 0,
+            "class": "physical"
         },
         "maneuver": {
             "templates": [ "base" ],

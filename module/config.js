@@ -24,11 +24,22 @@ HERO.defendsWith = {
 HERO.defenseTypes = {
     "pd": "Physical Defense",
     "ed": "Energy Defense",
+    "rpd": "Resistant PD",
+    "red": "Resistant ED",
     "md": "Mental Defense",
     "powd": "Power Defense",
     "dn": "Damage Negative",
     "dr": "Damage Reduction",
-    "misc": "Miscellaneous",
+    "kbr": "Knockback Resistance",
+    "fd": "Flash Defense",
+    "br": "Barrier",
+    "df": "Deflection"
+};
+
+HERO.attackClasses = {
+    "physical": "Physical",
+    "energy": "Energy",
+    "mental": "Mental"
 };
 
 HERO.characteristics = {

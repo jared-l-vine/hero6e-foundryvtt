@@ -184,6 +184,32 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         }
 
         // -------------------------------------------------
+        // determine active defenses
+        // -------------------------------------------------
+        let PD = parseInt(targetActor.data.data.characteristics.pd.value);
+        let ED = parseInt(targetActor.data.data.characteristics.ed.value);
+        let knockbackResistance = 0;
+
+        for (let i of target.data.actorData.items) {
+            if (i.type === "defense" && i.data.active) {
+                console.log(i)
+                switch (i.data.defenseType) {
+                    case "pd":
+                        PD += parseInt(i.data.value);
+                        break;
+                    case "ed":
+                        Ed += parseInt(i.data.value);
+                    case "kbr":
+                        knockbackResistance += parseInt(i.data.value);
+                        break;
+                    default:
+                        console.log(i.data.defenseType + " not yet supported!");
+                        break;
+                }
+            }
+        }
+
+        // -------------------------------------------------
         // damage roll
         // -------------------------------------------------
 
@@ -292,18 +318,22 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         // -------------------------------------------------
         // determine effective damage
         // -------------------------------------------------
+
         // apply defenses only PD and ED for now
-        let defense = item.data.data.defense;
+        let defense = "Total Defense";
         let defenseValue = 0;
-        switch(defense) {
-            case 'pd':
-                defenseValue = targetActor.data.data.characteristics.pd.value;
+        switch(item.data.data.class) {
+            case 'physical':
+                defenseValue = PD;
                 break;
-            case 'ed':
-                defenseValue = targetActor.data.data.characteristics.ed.value;
+            case 'energy':
+                defenseValue = ED;
+                break;
+            case 'mental':
                 break;
             default:
-                console.log(defense);
+                console.log(item.data.data.class);
+                break;
         }
 
         stun = stun - defenseValue;
@@ -374,17 +404,25 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             useKnockBack = true;
             // body - 2d6 m
             let knockBackEquation = body + " - 2D6"
-            knockBackEquation = modifyHitRollEquation(knockBackEquation, data.knockbackMod + "D6");
+            // knockback modifier added on an attack by attack basis
+            if (data.knockbackMod != 0 ) {
+                knockBackEquation = modifyHitRollEquation(knockBackEquation, data.knockbackMod + "D6");
+            }
+            console.log(data.knockbackMod)
+            // knockback resistance effect
+            knockBackEquation = modifyHitRollEquation(knockBackEquation, " -" + knockbackResistance);
+
             let knockbackRoll = new Roll(knockBackEquation);
             let knockbackResult = await knockbackRoll.roll();
             knockbackRenderedResult = await knockbackResult.render();
+            let knockbackResultTotal = knockbackResult.total;
 
-            if (knockbackResult.total < 0) {
+            if (knockbackResultTotal < 0) {
                 knockback = "No knockback";
-            } else if (knockbackResult.total == 0) {
+            } else if (knockbackResultTotal == 0) {
                 knockback = "inflicts Knockdown";
             } else {
-                knockback= "Knocked back " + knockbackResult.total + "m";
+                knockback= "Knocked back " + knockbackResultTotal + "m";
             }
 
         }
