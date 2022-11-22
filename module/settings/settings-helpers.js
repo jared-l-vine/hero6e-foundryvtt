@@ -39,6 +39,19 @@ export default class SettingsHelpers {
         onChange: value=> console.log(value)
       });
 
+      game.settings.register(module, "hitLocTracking", {
+        name: "Hit Location: Track Damage Done to Individual Body Parts",
+        scope: "world",
+        config: true,
+        type: String,
+        choices: {
+          none: "Don't track",
+          all: "Track for all"
+        },
+        default: false,
+        onChange: value=> console.log(value)
+      });
+
       game.settings.register(module, "optionalManeuvers", {
         name: "Optional Maneuvers",
         scope: "world",

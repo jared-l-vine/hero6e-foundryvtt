@@ -352,7 +352,10 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		}
 
 		await item.update({ [attr]: newValue });
-		await updateCombatAutoMod(this.actor, item);
+
+		if (item.type === "maneuver") {
+			await updateCombatAutoMod(this.actor, item);
+		}
 
 		return;
     }
@@ -399,11 +402,11 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			let actor = this.actor;
 
 			roll.evaluate().then(function(result) {
-				let margin = result.total;
+				let margin = parseInt(item.data.data.roll) - result.total;
 				
 				result.toMessage({
 					speaker: ChatMessage.getSpeaker({ actor: actor }),
-					flavor: item.name.toUpperCase() + " roll " + (margin >= 0 ? "succeeded" : "failed") + " by " + Math.abs(margin),
+					flavor: item.name.toUpperCase() + " ( " + item.data.data.roll + " ) roll " + (margin >= 0 ? "succeeded" : "failed") + " by " + Math.abs(margin),
 					borderColor: margin >= 0 ? 0x00FF00 : 0xFF0000,	
 				});
 			});
@@ -514,14 +517,14 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 			const type = "skill";
 			const data = {
-				"levels": CONFIG.HERO.characteristicsXMLKey[skill.getAttribute("LEVELS")],
+				"levels": skill.getAttribute("LEVELS"),
 				"state": "trained"
 			};
 
 			data["description"] = description;
 
 			if (skill.attributes.getNamedItem("CHARACTERISTIC")) {
-				data["characteristic"] = CONFIG.HERO.characteristicsXMLKey[skill.getAttribute("CHARACTERISTIC")];
+				data["characteristic"] = skill.getAttribute("CHARACTERISTIC");
 			} else {
 				data["characteristic"] = "";
             }
@@ -550,6 +553,19 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 			if (skill.hasAttribute("ID")) {
 				data["hdcid"] = skill.getAttribute("ID");
+			}
+
+			// determine Skill Roll
+			if (data.state === "everyman") {
+				data["roll"] = "8-";
+			} else if (data.state === "familiar") {
+				data["roll"] = "8-";			
+			} else if (data.state === "proficient") {
+				data["roll"] = "10-";			
+			} else if (data.state === "trained") {
+				let charValue = this.actor.data.data.characteristics[`${data.characteristic.toLowerCase()}`].value;
+				let rollVal = 9 + Math.round(charValue / 5) + parseInt(data.levels);
+				data["roll"] = rollVal.toString() + "-";
 			}
 
 			const itemData = {
@@ -709,7 +725,7 @@ async function updateCombatAutoMod(actor, item) {
 	let dcvEq = "+0";
 	
 	for (let i of actor.items) {
-		if (i.data.data.active) {
+		if (i.data.data.active && i.type === "maneuver") {
 			enabled.push(i.data.name)
 
 			ocvEq = ocvEq + parseInt(i.data.data.ocv);

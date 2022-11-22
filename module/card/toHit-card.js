@@ -161,7 +161,11 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
 
             if(itemData.usesStrength) {
                 let strEnd =  Math.round(actor.data.data.characteristics.str.value / 10);
-                newEnd = newEnd -strEnd;
+                if (data.effectiveStr <= actor.data.data.characteristics.str.value) {
+                    strEnd =  Math.round(data.effectiveStr / 10);
+                }
+
+                newEnd = newEnd - strEnd;
                 spentEnd = spentEnd + strEnd;
             }
             
@@ -184,6 +188,107 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         }
 
         // -------------------------------------------------
+        // determine active defenses
+        // -------------------------------------------------
+        let PD = parseInt(targetActor.data.data.characteristics.pd.value);
+        let ED = parseInt(targetActor.data.data.characteristics.ed.value);
+        let MD = 0;
+        let rPD = 0; // resistant physical defense
+        let rED = 0; // resistant energy defense
+        let rMD = 0; // resistant mental defense
+        let DRP = 0; // damage reduction physical
+        let DRE = 0; // damage reduction energy
+        let DRM = 0; // damage reduction mental
+        let DNP = 0; // damage negation physical
+        let DNE = 0; // damage negation energy
+        let DNM = 0; // damage negation mental
+        let knockbackResistance = 0;
+
+        for (let i of target.data.actorData.items) {
+            if (i.type === "defense" && i.data.active) {
+                switch (i.data.defenseType) {
+                    case "pd":
+                        PD += parseInt(i.data.value);
+                        break;
+                    case "ed":
+                        ED += parseInt(i.data.value);
+                        break;
+                    case "md":
+                        MD += parseInt(i.data.value);
+                        break;
+                    case "rpd":
+                        rPD += parseInt(i.data.value);
+                        break;
+                    case "red":
+                        rED += parseInt(i.data.value);
+                        break;
+                    case "rmd":
+                        rMD += parseInt(i.data.value);
+                        break;
+                    case "drp":
+                        DRP = Math.max(DRP, parseInt(i.data.value));
+                        break;
+                    case "dre":
+                        DRE = Math.max(DRE, parseInt(i.data.value));
+                        break;
+                    case "drm":
+                        DRM = Math.max(DRM, parseInt(i.data.value));
+                        break;
+                    case "dnp":
+                        DNP += parseInt(i.data.value);
+                        break;
+                    case "dne":
+                        DNE += parseInt(i.data.value);
+                        break;
+                    case "dnm":
+                        DNM += parseInt(i.data.value);
+                        break;
+                    case "kbr":
+                        knockbackResistance += parseInt(i.data.value);
+                        break;
+                    default:
+                        console.log(i.data.defenseType + " not yet supported!");
+                        break;
+                }
+            }
+        }
+
+        let defense = "";
+        let defenseValue = 0;
+        let resistantValue = 0;
+        let damageReductionValue = 0;
+        let damageNegationValue = 0;
+        switch(item.data.data.class) {
+            case 'physical':
+                defenseValue = PD;
+                resistantValue = rPD;
+                damageReductionValue = DRP;
+                damageNegationValue = DNP;
+                break;
+            case 'energy':
+                defenseValue = ED;
+                resistantValue = rED;
+                damageReductionValue = DRE;
+                damageNegationValue = DNE;
+                break;
+            case 'mental':
+                defenseValue = MD;
+                resistantValue = rMD;
+                damageReductionValue = DRM;
+                damageNegationValue = DNM;
+                break;
+            default:
+                console.log(item.data.data.class);
+                break;
+        }
+
+        if (damageNegationValue > 0) {
+            defense += "Damage Negation " + damageNegationValue + "DC(s); "
+        }
+
+        defense = defense + defenseValue + " normal; " + resistantValue + " resistant";
+
+        // -------------------------------------------------
         // damage roll
         // -------------------------------------------------
 
@@ -202,26 +307,80 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             }
 
             hitLocationModifiers = CONFIG.HERO.hitLocations[hitLocation];
-        }
 
-        switch (itemData.extraDice) {
-            case 'zero':
-                damageRoll += "D6";
-                break;
-            case 'pip':
-                damageRoll += "D6+1";
-                break;
-            case 'half':
-                damageRoll += "D6+1D3"
-                break;
+            if (game.settings.get("hero6e-foundryvtt-experimental", "hitLocTracking") === "all") {
+                let sidedLocations = ["Hand", "Shoulder", "Arm", "Thigh", "Leg", "Foot"]
+                if (sidedLocations.includes(hitLocation)) {
+                    let sideRoll = new Roll("1D2", actor.getRollData());
+                    let sideResult = await sideRoll.roll();
+
+                    if (sideResult.result === 1) {
+                        hitLocation = "Left " + hitLocation;
+                    } else {
+                        hitLocation = "Right " + hitLocation;
+                    }
+                }   
+            }
         }
 
         if(itemData.usesStrength) {
             let strDamage = Math.floor((actor.data.data.characteristics.str.value - 10)/5)
+            if (data.effectiveStr <= actor.data.data.characteristics.str.value) {
+                strDamage = Math.floor((data.effectiveStr - 10)/5);
+            }
+
             if (strDamage > 0) {
-                damageRoll = damageRoll + " + " + strDamage + "D6";
+                damageRoll += strDamage;
             }
         }
+
+        let pip = 0;
+
+        // handle damage negation defense
+        if (damageNegationValue > 0) {
+            if (itemData.killing) {
+                pip = (parseInt(damageRoll) * 3) - parseInt(damageNegationValue);
+
+                damageRoll = Math.floor(pip / 3);
+
+                pip = pip % 3
+            } else {
+                damageRoll = damageRoll - damageNegationValue;
+            }
+        }
+
+        damageRoll = damageRoll < 0 ? 0 : damageRoll;
+
+        // needed to split this into two parts for damage negation
+        switch (itemData.extraDice) {
+            case 'zero':
+                pip += 0;
+                break;
+            case 'pip':
+                pip += 1;
+                break;
+            case 'half':
+                pip += 2;
+                break;
+        }
+
+        if (pip < 0) {
+            damageRoll = "0D6";
+        } else {
+            switch (pip) {
+                case 0:
+                    damageRoll += "D6";
+                    break;
+                case 1:
+                    damageRoll += "D6+1";
+                    break;
+                case 2:
+                    damageRoll += "D6+1D3"
+                    break;
+            }
+        }
+
+        damageRoll = modifyHitRollEquation(damageRoll, data.damageMod);
 
         let roll = new Roll(damageRoll, actor.getRollData());
         let damageResult = await roll.roll();
@@ -233,9 +392,10 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         let hasStunMultiplierRoll = false;
         let renderedStunMultiplierRoll = null;
         let stunMultiplier = 1;
+        
         if (itemData.killing) {
             hasStunMultiplierRoll = true;
-            body = result.total;
+            body = damageResult.total;
 
             let stunRoll = new Roll("1D3", actor.getRollData());
             let stunResult = await stunRoll.roll();
@@ -266,36 +426,27 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
                 }
             }
 
-            stun = result.total;
+            stun = damageResult.total;
             body = countedBody;
         }
 
         let bodyDamage = body;
         let stunDamage = stun;
         let effects = "";
-        // -------------------------------------------------
 
         // -------------------------------------------------
         // determine effective damage
         // -------------------------------------------------
-        // apply defenses only PD and ED for now
-        let defense = item.data.data.defense;
-        let defenseValue = 0;
-        switch(defense) {
-            case 'pd':
-                defenseValue = targetActor.data.data.characteristics.pd.value;
-                break;
-            case 'ed':
-                defenseValue = targetActor.data.data.characteristics.ed.value;
-                break;
-            default:
-                console.log(defense);
+
+        if(itemData.killing) {
+            stun = stun - defenseValue - resistantValue;
+            body = body - resistantValue;
+        } else {
+            stun = stun - defenseValue - resistantValue;
+            body = body - defenseValue - resistantValue;
         }
 
-        stun = stun - defenseValue;
         stun = stun < 0 ? 0 : stun;
-
-        body = body - defenseValue;
         body = body < 0 ? 0 : body;
 
         let hitLocText = "";
@@ -315,12 +466,54 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
 
             hasStunMultiplierRoll = false;
         }
-        // -------------------------------------------------
 
+        // determine knockback
+        let useKnockBack = false;
+        let knockback = "";
+        let knockbackRenderedResult = null;
+        if (game.settings.get("hero6e-foundryvtt-experimental", "knockback") && itemData.knockback) {
+            useKnockBack = true;
+            // body - 2d6 m
+            let knockBackEquation = body + " - 2D6"
+            // knockback modifier added on an attack by attack basis
+            if (data.knockbackMod != 0 ) {
+                knockBackEquation = modifyHitRollEquation(knockBackEquation, data.knockbackMod + "D6");
+            }
+            // knockback resistance effect
+            knockBackEquation = modifyHitRollEquation(knockBackEquation, " -" + knockbackResistance);
+
+            let knockbackRoll = new Roll(knockBackEquation);
+            let knockbackResult = await knockbackRoll.roll();
+            knockbackRenderedResult = await knockbackResult.render();
+            let knockbackResultTotal = knockbackResult.total;
+
+            if (knockbackResultTotal < 0) {
+                knockback = "No knockback";
+            } else if (knockbackResultTotal == 0) {
+                knockback = "inflicts Knockdown";
+            } else {
+                knockback= "Knocked back " + knockbackResultTotal + "m";
+            }
+        }
+
+        // apply damage reduction
+        if (damageReductionValue > 0) {
+            defense += "; damage reduction " + damageReductionValue + "%";
+            stun = Math.round(stun * (1 - (damageReductionValue/100)));
+            body = Math.round(body * (1 - (damageReductionValue/100)));
+        }
+
+        // minimum damage rule
+        if (stun < body) {
+            stun = body;
+            effects += "; minimum damage invoked"
+        }
+
+        // check if target is stunned
         if (game.settings.get("hero6e-foundryvtt-experimental", "stunned")) {
             // determine if target was Stunned
             if (stun > targetActorChars.con.value) {
-                effects = "; inflicts Stunned"
+                effects = effects + "; inflicts Stunned"
             }
         }
 
@@ -336,34 +529,21 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
                     "data.characteristics.stun.value": newStun,
                     "data.characteristics.body.value": newBody,
                 }
+
+                if (game.settings.get("hero6e-foundryvtt-experimental", "hitLocTracking") === "all") {
+                    let bodyPartHP = targetActorChars.body.loc[hitLocation] + body
+                    changes["data.characteristics.body.loc." + hitLocation] = bodyPartHP;
+
+                    if (bodyPartHP > targetActorChars.body.value) {
+                        effects = effects + "; inflicts Impaired " + hitLocation;
+                    }
+                }
                 
                 await targetActor.update(changes);
             } else {
                 // attack failure
                 hitRollText = hitRollText + "; FAILURE"
             }
-        }
-
-        let useKnockBack = false;
-        let knockback = "";
-        let knockbackRenderedResult = null;
-        if (game.settings.get("hero6e-foundryvtt-experimental", "knockback") && itemData.knockback) {
-            useKnockBack = true;
-            // body - 2d6 m
-            let knockBackEquation = body + " - 2D6"
-            knockBackEquation = modifyHitRollEquation(knockBackEquation, data.knockbackMod + "D6");
-            let knockbackRoll = new Roll(knockBackEquation);
-            let knockbackResult = await knockbackRoll.roll();
-            knockbackRenderedResult = await knockbackResult.render();
-
-            if (knockbackResult.total < 0) {
-                knockback = "No knockback";
-            } else if (knockbackResult.total == 0) {
-                knockback = "inflicts Knockdown";
-            } else {
-                knockback= "Knocked back " + knockbackResult.total + "m";
-            }
-
         }
         // -------------------------------------------------
 

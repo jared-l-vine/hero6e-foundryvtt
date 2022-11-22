@@ -105,7 +105,25 @@
                 },
                 "body": {
                     "value": 10,
-                    "type": "resource"
+                    "type": "resource",
+                    "loc": {
+                        "Head": 0,
+                        "Left Hand": 0,
+                        "Right Hand": 0,
+                        "Left Shoulder": 0,
+                        "Right Shoulder": 0,
+                        "Left Arm": 0,
+                        "Right Arm": 0,
+                        "Chest": 0,
+                        "Stomach": 0,
+                        "Vitals": 0,
+                        "Left Thigh": 0,
+                        "Right Thigh": 0,
+                        "Left Leg": 0,
+                        "Right Leg": 0,
+                        "Left Foot": 0,
+                        "Right Foot": 0
+                    }
                 },
                 "running": {
                     "value": 12,
@@ -145,7 +163,8 @@
             "templates": [ "base" ],
             "characteristic": "general",
             "levels": 0,
-            "state": "untrained"
+            "state": "untrained",
+            "roll": "6-"
         },
         "power": {
             "templates": [ "base" ],
@@ -162,7 +181,7 @@
         },
         "attack": {
             "templates": [ "base" ],
-            "defense": "misc",
+            "defense": "pd",
             "killing": 0,
             "piercing": 0,
             "penetrating": 0,
@@ -173,11 +192,12 @@
             "uses": "ocv",
             "targets": "dcv",
             "end": 0,
-            "stunX": 0
+            "stunX": 0,
+            "class": "physical"
         },
         "defense": {
             "templates": [ "base" ],
-            "defenseType": "misc",
+            "defenseType": "pd",
             "active": "false",
             "resistant": "false",
             "hardened": 0,

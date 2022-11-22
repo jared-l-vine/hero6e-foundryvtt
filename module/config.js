@@ -25,10 +25,26 @@ HERO.defenseTypes = {
     "pd": "Physical Defense",
     "ed": "Energy Defense",
     "md": "Mental Defense",
+    "rpd": "Resistant PD",
+    "red": "Resistant ED",
+    "rmd": "Resistant MD",
+    "drp": "Damage Reduction Physical",
+    "dre": "Damage Reduction Energy",
+    "drm": "Damage Reduction Mental",
+    "dnp": "Damage Negation Physical",
+    "dne": "Damage Negation Energy",
+    "dnm": "Damage Negation Mental",
     "powd": "Power Defense",
-    "dn": "Damage Negative",
-    "dr": "Damage Reduction",
-    "misc": "Miscellaneous",
+    "kbr": "Knockback Resistance",
+    "fd": "Flash Defense",
+    "br": "Barrier",
+    "df": "Deflection"
+};
+
+HERO.attackClasses = {
+    "physical": "Physical",
+    "energy": "Energy",
+    "mental": "Mental"
 };
 
 HERO.characteristics = {
@@ -125,33 +141,33 @@ HERO.hitLocationsToHit = {
     "3": "Head",
     "4": "Head",
     "5": "Head",
-    "6": "Hands",
-    "7": "Arms",
-    "8": "Arms",
-    "9": "Shoulders",
+    "6": "Hand",
+    "7": "Arm",
+    "8": "Arm",
+    "9": "Shoulder",
     "10": "Chest",
     "11": "Chest",
     "12": "Stomach",
     "13": "Vitals",
-    "14": "Thighs",
-    "15": "Legs",
-    "16": "Legs",
-    "17": "Feet",
-    "18": "Feet",
+    "14": "Thigh",
+    "15": "Leg",
+    "16": "Leg",
+    "17": "Foot",
+    "18": "Foot",
 }
 
 HERO.hitLocations = {
     // Location : [x Stun, x N Stun, x Body, OCV modifier]
     "Head": [5, 2, 2, -8],
-    "Hands": [1, 0.5, 0.5, -6],
-    "Arms": [2, 0.5, 0.5, -5],
-    "Shoulders": [3, 1, 1, -5],
+    "Hand": [1, 0.5, 0.5, -6],
+    "Arm": [2, 0.5, 0.5, -5],
+    "Shoulder": [3, 1, 1, -5],
     "Chest": [3, 1, 1, -5],
     "Stomach": [4, 1.5, 1, -7],
     "Vitals": [4, 1.5, 2, 2, -8],
-    "Thighs": [2, 1, 1, -4],
-    "Legs": [2, 0.5, 0.5, -6],
-    "Feet": [1, 0.5, 0.5, -8],
+    "Thigh": [2, 1, 1, -4],
+    "Leg": [2, 0.5, 0.5, -6],
+    "Foot": [1, 0.5, 0.5, -8],
 };
 
 HERO.combatManeuvers = {
