@@ -31,4 +31,17 @@
         <label>d6</label>
     </div>
     {{/if}}
+
+    {{#if state.useStr}}
+    <div class="form-group">
+        <label>Effective Strength</label>
+        <input type="text" name="effectiveStr" value="{{state.str}}"/>
+        <label>/ {{state.str}}</label>
+    </div>
+    {{/if}}
+
+    <div class="form-group">
+        <label>Damage Mod</label>
+        <input type="text" name="damageMod" value="0"/>
+    </div>
 </form>

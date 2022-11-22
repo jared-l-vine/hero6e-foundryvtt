@@ -47,6 +47,8 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         let data = {
             'toHitModTemp': form.toHitMod.value,
             'aim': form.aim.value,
+            'effectiveStr': form.effectiveStr.value,
+            'damageMod': form.damageMod.value
         };
 
         if (game.settings.get("hero6e-foundryvtt-experimental", "knockback")) {
@@ -76,6 +78,12 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         if (game.settings.get("hero6e-foundryvtt-experimental", "use endurance")) {
             stateData['useEnd'] = true;
         }
+
+        let targetActor = game.actors.get(actor.data._id)
+        let targetActorChars = targetActor.data.data.characteristics;
+        stateData["str"] = targetActorChars.str.value;
+
+        stateData["useStr"] = item.data.data.usesStrength;
 
         const templateData = {
             actor: actor.data,

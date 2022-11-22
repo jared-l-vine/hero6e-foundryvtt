@@ -202,8 +202,7 @@
             "resistant": "false",
             "hardened": 0,
             "impenetrable": 0,
-            "value": 0,
-            "class": "physical"
+            "value": 0
         },
         "maneuver": {
             "templates": [ "base" ],

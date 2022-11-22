@@ -110,12 +110,22 @@ export class HeroSystem6eItemSheet extends ItemSheet {
       let valueName = event.currentTarget.name;
       let value = event.currentTarget.value;
 
-      if (! "linkId" in this.item.data.data || this.item.data.data.linkId === undefined) {
+      // this is necessary for item images
+      if (valueName === "img") {
+        value = event.currentTarget.currentSrc;
+        //console.log(event.currentTarget.currentSrc.replace('http://localhost:30000/', ''))
+      }
+
+      // this is necessary to make sure check boxes work
+      if (event.currentTarget.dataset.dtype === "Boolean") {
+        value = event.currentTarget.checked;
+      }
+
+      if (! "linkId" in this.item.data.data || this.item.data.data.linkId === undefined) {        
         let changes = {};
         changes[`${valueName}`] = value;
 
         return await this.item.update(changes);
-
       } else {
         let linkId = this.item.data.data.linkId;
         let subLinkId = this.item.data.data.subLinkId;

@@ -1,6 +1,6 @@
 <form class="{{cssClass}}" autocomplete="off">
         <header class="sheet-header flexrow">
-            <img class="profile" src="{{item.img}}" title="{{item.name}}" data-edit="img" />
+            <img class="profile" name="img" src="{{item.img}}" title="{{item.name}}" data-edit="img" />
 
             <div class="header-details flexrow">
                 <h1 class="charname">
@@ -15,13 +15,6 @@
         <label>Defense Type</label>
         <select name="data.defenseType" data-dtype="text">
             {{selectOptions config.defenseTypes selected=data.defenseType}}
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label>Class</label>
-        <select name="data.class" data-dtype="text">
-            {{selectOptions config.attackClasses selected=data.class}}
         </select>
     </div>
 
