@@ -44,10 +44,16 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
     static async _RollToHit(item, html) {
         // get attack card input
         let form = html[0].querySelector("form");
+
+        let effectiveStr = 0;
+        if ("effectiveStr" in form) {
+            effectiveStr = form.effectiveStr.value;
+        }
+
         let data = {
             'toHitModTemp': form.toHitMod.value,
             'aim': form.aim.value,
-            'effectiveStr': form.effectiveStr.value,
+            'effectiveStr': effectiveStr,
             'damageMod': form.damageMod.value
         };
 
@@ -109,7 +115,6 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
       *                                  the prepared message data (if false)
       */
     static async createAttackPopOutFromItem(item) {
-        const template = "systems/hero6e-foundryvtt-experimental/templates/chat/item-attack-card.hbs";
         const content = await this._renderInternal(item, item.actor, {});
 
         // Attack Card as a Pop Out

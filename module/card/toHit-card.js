@@ -1,6 +1,7 @@
 import { HeroSystem6eActorActiveEffects } from "../actor/actor-active-effects.js";
 import { HeroSystem6eActorSheet } from "../actor/actor-sheet.js";
 import { HeroSystem6eCard } from "./card.js";
+import { modifyRollEquation, getTokenChar } from "../utility/util.js"
 
 export class HeroSystem6eToHitCard extends HeroSystem6eCard {
     static chatListeners(html) {
@@ -110,7 +111,8 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
     static async createFromAttackCard(target, item, data) {
         let actor = item.actor;
 
-        let targetActor = game.actors.get(target.data.actorId)
+        //let targetActor = game.actors.get(target.data.actorId)
+        let targetActor = target.document._actor;
         let targetActorChars = targetActor.data.data.characteristics;
 
         let itemData = item.data.data;
@@ -118,27 +120,17 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         let hitCharacteristic = actor.data.data.characteristics[itemData.uses].value;
         let toHitChar = CONFIG.HERO.defendsWith[itemData.targets];
 
+        let automation = game.settings.get("hero6e-foundryvtt-experimental", "automation");
+
         // -------------------------------------------------
         // attack roll
         // -------------------------------------------------
 
-        function modifyHitRollEquation(equation, value) {
-            if (value != 0) {
-                let sign = " + ";
-                if (value < 0) {
-                    sign = " ";
-                }
-                equation = equation + sign + value;
-            }
-
-            return equation
-        }
-
         let rollEquation = "11 + " + hitCharacteristic;
-        rollEquation = modifyHitRollEquation(rollEquation, item.data.data.toHitMod);
-        rollEquation = modifyHitRollEquation(rollEquation, data.toHitModTemp);
+        rollEquation = modifyRollEquation(rollEquation, item.data.data.toHitMod);
+        rollEquation = modifyRollEquation(rollEquation, data.toHitModTemp);
         if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations") && data.aim !== "none") {
-            rollEquation = modifyHitRollEquation(rollEquation, CONFIG.HERO.hitLocations[data.aim][3]);
+            rollEquation = modifyRollEquation(rollEquation, CONFIG.HERO.hitLocations[data.aim][3]);
         }
         rollEquation = rollEquation + " - 3D6";
 
@@ -169,7 +161,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
                 spentEnd = spentEnd + strEnd;
             }
             
-            if (game.settings.get("hero6e-foundryvtt-experimental", "automation")) {
+            if ((automation === "all") || (automation === "npcOnly" && !targetActor.hasPlayerOwner) || (automation === "pcEndOnly")) {
                 let changes = {};
                 if (newEnd < 0) {
                     enduranceText = 'Spent ' + valueEnd + ' END and ' + Math.abs(newEnd) + ' STUN';
@@ -204,51 +196,53 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         let DNM = 0; // damage negation mental
         let knockbackResistance = 0;
 
-        for (let i of target.data.actorData.items) {
-            if (i.type === "defense" && i.data.active) {
-                switch (i.data.defenseType) {
-                    case "pd":
-                        PD += parseInt(i.data.value);
-                        break;
-                    case "ed":
-                        ED += parseInt(i.data.value);
-                        break;
-                    case "md":
-                        MD += parseInt(i.data.value);
-                        break;
-                    case "rpd":
-                        rPD += parseInt(i.data.value);
-                        break;
-                    case "red":
-                        rED += parseInt(i.data.value);
-                        break;
-                    case "rmd":
-                        rMD += parseInt(i.data.value);
-                        break;
-                    case "drp":
-                        DRP = Math.max(DRP, parseInt(i.data.value));
-                        break;
-                    case "dre":
-                        DRE = Math.max(DRE, parseInt(i.data.value));
-                        break;
-                    case "drm":
-                        DRM = Math.max(DRM, parseInt(i.data.value));
-                        break;
-                    case "dnp":
-                        DNP += parseInt(i.data.value);
-                        break;
-                    case "dne":
-                        DNE += parseInt(i.data.value);
-                        break;
-                    case "dnm":
-                        DNM += parseInt(i.data.value);
-                        break;
-                    case "kbr":
-                        knockbackResistance += parseInt(i.data.value);
-                        break;
-                    default:
-                        console.log(i.data.defenseType + " not yet supported!");
-                        break;
+        if (target.data.actorData.items > 0) {
+            for (let i of target.data.actorData.items) {
+                if (i.type === "defense" && i.data.active) {
+                    switch (i.data.defenseType) {
+                        case "pd":
+                            PD += parseInt(i.data.value);
+                            break;
+                        case "ed":
+                            ED += parseInt(i.data.value);
+                            break;
+                        case "md":
+                            MD += parseInt(i.data.value);
+                            break;
+                        case "rpd":
+                            rPD += parseInt(i.data.value);
+                            break;
+                        case "red":
+                            rED += parseInt(i.data.value);
+                            break;
+                        case "rmd":
+                            rMD += parseInt(i.data.value);
+                            break;
+                        case "drp":
+                            DRP = Math.max(DRP, parseInt(i.data.value));
+                            break;
+                        case "dre":
+                            DRE = Math.max(DRE, parseInt(i.data.value));
+                            break;
+                        case "drm":
+                            DRM = Math.max(DRM, parseInt(i.data.value));
+                            break;
+                        case "dnp":
+                            DNP += parseInt(i.data.value);
+                            break;
+                        case "dne":
+                            DNE += parseInt(i.data.value);
+                            break;
+                        case "dnm":
+                            DNM += parseInt(i.data.value);
+                            break;
+                        case "kbr":
+                            knockbackResistance += parseInt(i.data.value);
+                            break;
+                        default:
+                            console.log(i.data.defenseType + " not yet supported!");
+                            break;
+                    }
                 }
             }
         }
@@ -380,7 +374,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             }
         }
 
-        damageRoll = modifyHitRollEquation(damageRoll, data.damageMod);
+        damageRoll = modifyRollEquation(damageRoll, data.damageMod);
 
         let roll = new Roll(damageRoll, actor.getRollData());
         let damageResult = await roll.roll();
@@ -477,10 +471,10 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             let knockBackEquation = body + " - 2D6"
             // knockback modifier added on an attack by attack basis
             if (data.knockbackMod != 0 ) {
-                knockBackEquation = modifyHitRollEquation(knockBackEquation, data.knockbackMod + "D6");
+                knockBackEquation = modifyRollEquation(knockBackEquation, data.knockbackMod + "D6");
             }
             // knockback resistance effect
-            knockBackEquation = modifyHitRollEquation(knockBackEquation, " -" + knockbackResistance);
+            knockBackEquation = modifyRollEquation(knockBackEquation, " -" + knockbackResistance);
 
             let knockbackRoll = new Roll(knockBackEquation);
             let knockbackResult = await knockbackRoll.roll();
@@ -509,6 +503,9 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             effects += "; minimum damage invoked"
         }
 
+        stun = Math.round(stun)
+        body = Math.round(body)
+
         // check if target is stunned
         if (game.settings.get("hero6e-foundryvtt-experimental", "stunned")) {
             // determine if target was Stunned
@@ -517,13 +514,16 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             }
         }
 
-        if (game.settings.get("hero6e-foundryvtt-experimental", "automation")) {
-            if (targetActorChars[`${toHitChar.toLowerCase()}`].value <= hitRollData) {
+        if ((automation === "all") || (automation === "npcOnly" && !targetActor.hasPlayerOwner) || (automation === "pcEndOnly" && !targetActor.hasPlayerOwner)) {
+            let toHitVal = getTokenChar(target, toHitChar.toLowerCase(), "value")
+
+            if (toHitVal <= hitRollData) {
                 // attack success
                 hitRollText = hitRollText + "; SUCCESS!"
 
-                let newStun = targetActorChars.stun.value - stun;
-                let newBody = targetActorChars.body.value - body;
+                //let newStun = targetActorChars.stun.value - stun;
+                let newStun = getTokenChar(target, "stun", "value") - stun;
+                let newBody = getTokenChar(target, "body", "value") - body;
     
                 let changes = {
                     "data.characteristics.stun.value": newStun,

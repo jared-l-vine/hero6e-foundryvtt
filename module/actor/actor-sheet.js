@@ -1,5 +1,6 @@
-import { HeroSystem6eItem } from "../item/item.js"
+import { HeroSystem6eItem } from "../item/item.js";
 import { HeroSystem6eAttackCard } from "../card/attack-card.js";
+import { createSkillPopOutFromItem } from "../skill/skill.js";
 
 /**
  * Extend the basic ActorSheet with some very simple modifications
@@ -394,23 +395,10 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		const element = event.currentTarget;
 		const dataset = element.dataset;
 
-		//if (dataset.roll) {
-			let roll = new Roll("3D6", this.actor.getRollData());
-			let item = this.actor.items.get(dataset.label);
-			//let margin = dataset.roll - roll.total;
+		let item = this.actor.items.get(dataset.label);
 
-			let actor = this.actor;
 
-			roll.evaluate().then(function(result) {
-				let margin = parseInt(item.data.data.roll) - result.total;
-				
-				result.toMessage({
-					speaker: ChatMessage.getSpeaker({ actor: actor }),
-					flavor: item.name.toUpperCase() + " ( " + item.data.data.roll + " ) roll " + (margin >= 0 ? "succeeded" : "failed") + " by " + Math.abs(margin),
-					borderColor: margin >= 0 ? 0x00FF00 : 0xFF0000,	
-				});
-			});
-		//}
+		createSkillPopOutFromItem(item)
 	}
 
 	async _onRecovery(event) {
