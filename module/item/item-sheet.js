@@ -1,4 +1,5 @@
-import { HeroSystem6eItem } from "./item.js"
+import { HeroSystem6eItem } from "./item.js";
+import { editSubItem, deleteSubItem } from "../powers/powers.js";
 
 /**
  * Extend the basic ItemSheet with some very simple modifications
@@ -76,6 +77,23 @@ export class HeroSystem6eItemSheet extends ItemSheet {
 		
     // Delete Inventory Item
     html.find('.item-delete').click(this._onDeleteItem.bind(this));
+
+    // Item Description
+    html.find('.textarea').each((id, inp) => {
+			this.changeValue = function(e) {
+				if (e.code === "Enter" || e.code === "Tab") {
+          console.log('hello there')
+
+					let changes = []
+					changes["data.rules"] = e.target.value
+					this.item.update(changes);
+
+          console.log(this.item.data)
+				}
+			}
+
+			inp.addEventListener("keydown", this.changeValue.bind(this));
+		})
   }
 
     /**
@@ -102,6 +120,8 @@ export class HeroSystem6eItemSheet extends ItemSheet {
 
     async _updateObject(event) {
       event.preventDefault();
+
+      console.log('update!')
 
       if (event.currentTarget === null) {
         return
@@ -173,34 +193,10 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     }
 
     async _onEditItem(event) {
-      event.preventDefault();
-
-      let id = event.currentTarget.id;
-      let type = event.currentTarget.type;
-
-      let data = this.item.data.data.items[`${type}`][`${id}`];
-      data["linkId"] = this.item.id;
-      data["subLinkId"] = id;
-
-      const itemData = {
-        name: data.name,
-        type: data.type,
-        data: data
-      };
-
-      let tempItem = new HeroSystem6eItem(itemData);
-      return await tempItem.sheet.render(true);
+      await editSubItem(event, this.item);
     }
 
     async _onDeleteItem(event) {
-      event.preventDefault();
-
-      let id = event.currentTarget.id;
-      let type = event.currentTarget.type;
-
-      let changes = {}
-      changes[`data.items.${type}.${id}.visible`] = false;
-
-      return await this.item.update(changes)     
+      await deleteSubItem(event, this.item);
     }
 }

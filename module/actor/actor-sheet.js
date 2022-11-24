@@ -1,6 +1,7 @@
 import { HeroSystem6eItem } from "../item/item.js";
 import { HeroSystem6eAttackCard } from "../card/attack-card.js";
 import { createSkillPopOutFromItem } from "../skill/skill.js";
+import { editSubItem, deleteSubItem } from "../powers/powers.js";
 
 /**
  * Extend the basic ActorSheet with some very simple modifications
@@ -243,6 +244,12 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			li.slideUp(200, () => this.render(false));
 		});
 
+		// Update Power Inventory Item
+		html.find('.power-item-edit').click(this._onEditPowerItem.bind(this));
+	
+		// Delete Power Inventory Item
+		html.find('.power-item-delete').click(this._onDeletePowerItem.bind(this));
+
 		// Rollable abilities.
 		html.find('.rollable-characteristic').click(this._onRollCharacteristic.bind(this));
 		html.find('.rollable-skill').click(this._onRollSkill.bind(this));
@@ -308,22 +315,18 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 	async _onItemAttack(event) {
 		event.preventDefault();
 		const itemId = event.currentTarget.closest(".item").dataset.itemId;
-		const item = this.actor.items.get(itemId);
+		let item = this.actor.items.get(itemId);
 
 		let rollMode = "core";
-		let createMessage = true;
 		let createChatMessage = true;
 
-		/*
-		const attackCard = await HeroSystem6eAttackCard.createChatDataFromItem(item);
-		ChatMessage.applyRollMode(attackCard, rollMode || game.settings.get("core", "rollMode"));
-		return createMessage ? ChatMessage.create(attackCard) : attackCard;
-		*/
+		if (item === undefined) {
+			// item is power or equipment
+			item = this.actor.items.get(event.currentTarget.id.split(" ")[0])
 
-		//let heroItem = new HeroSystem6eItem();
-		//heroItem.name = item.name;
-
-		//return heroItem.displayCard({ rollMode, createChatMessage });
+			item.displayCard = displayCard;
+			return item.displayCard({ rollMode, createChatMessage }, event.currentTarget.id.split(" ")[1])			
+		}
 
 		item.displayCard = displayCard;
 
@@ -694,14 +697,44 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 		await this.actor.update(velocity);
     }
+
+	async _onEditPowerItem(event) {
+		let id = event.currentTarget.id.split(" ")[0];
+		let item = this.object.data.items.get(id);
+
+		console.log(id)
+
+		await editSubItem(event, item);
+	}
+  
+	async _onDeletePowerItem(event) {
+		let id = event.currentTarget.key;
+		let item = this.object.data.items.get(id);
+
+		await deleteSubItem(event, item);
+	}
 }
 
-async function displayCard({ rollMode, createMessage = true } = {}) {
+async function displayCard({ rollMode, createMessage = true } = {}, subKey = "") {
 	switch (this.data.type) {
 		case "attack":
-			const attackCard = await HeroSystem6eAttackCard.createAttackPopOutFromItem(this);
-			//ChatMessage.applyRollMode(attackCard, rollMode || game.settings.get("core", "rollMode"));
-			//return createMessage ? ChatMessage.create(attackCard) : attackCard;
+			const attackCard = await HeroSystem6eAttackCard.createAttackPopOutFromItem(this, this.actor);
+
+			break;;
+		case "power":
+			let data = this.data.data.items.attack[subKey];
+
+			const itemData = {
+				name: data.name,
+				type: data.type,
+				data: data,
+			};
+		
+			let newItem = new HeroSystem6eItem(itemData)
+
+			await HeroSystem6eAttackCard.createAttackPopOutFromItem(newItem, this.actor);
+
+			break;
 	}
 }
 

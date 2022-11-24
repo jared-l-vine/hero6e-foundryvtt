@@ -171,7 +171,8 @@
             "type": "blast",
             "effect": 0,
             "levels": 0,
-            "rules": "",
+            "end": 0,
+            "rules": "Power Description",
             "items": {}
         },
         "equipment": {

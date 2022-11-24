@@ -108,10 +108,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         return game.actors.get(targetId) || null;
     }
 
-    static async createFromAttackCard(target, item, data) {
-        let actor = item.actor;
-
-        //let targetActor = game.actors.get(target.data.actorId)
+    static async createFromAttackCard(target, item, data, actor) {
         let targetActor = target.document._actor;
         let targetActorChars = targetActor.data.data.characteristics;
 
@@ -521,7 +518,6 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
                 // attack success
                 hitRollText = hitRollText + "; SUCCESS!"
 
-                //let newStun = targetActorChars.stun.value - stun;
                 let newStun = getTokenChar(target, "stun", "value") - stun;
                 let newBody = getTokenChar(target, "body", "value") - body;
     
@@ -595,12 +591,12 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         // render card
         let cardHtml = await HeroSystem6eToHitCard._renderInternal(item, actor, target, stateData);
         
-        let token = item.actor.token;
+        let token = actor.token;
 
         const chatData = {
             user:  game.user.data._id,
             content: cardHtml,
-            speaker: ChatMessage.getSpeaker({ actor: item.actor, token }),
+            speaker: ChatMessage.getSpeaker({ actor: actor, token }),
         }
 
         return ChatMessage.create(chatData);

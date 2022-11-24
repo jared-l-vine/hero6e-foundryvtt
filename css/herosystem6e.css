@@ -585,3 +585,31 @@ form .upload-button {
     width: 40px;
     line-height: normal;
 }
+
+/* ----------------------------------------- */
+/*  Power Cards
+/* ----------------------------------------- */
+.power-card-power-description {
+  width: 100%;
+  height: auto;
+  align-self: center;
+  margin-top: var(--dl-space-space-halfunit);
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-bottom: var(--dl-space-space-halfunit);
+  resize: none;
+}
+
+.power-card-container {
+  width: 100%;
+  display: flex;
+  overflow: auto;
+  min-height: 100vh;
+  align-items: left;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.power-card-power-item-list {
+  align-self: left;
+  list-style-type: none;
+}
