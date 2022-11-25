@@ -758,6 +758,7 @@ async function updateCombatAutoMod(actor, item) {
 			} else if (parseFloat(dcvEq) <= parseFloat(i.data.data.dcv)) {
 				dcvEq = i.data.data.dcv;
 			} else {
+				dcvEq = Math.round(parseFloat(dcvEq) + parseFloat(i.data.data.dcv)).toString();
 			}
 		}
 	}
