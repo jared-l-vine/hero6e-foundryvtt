@@ -9,22 +9,27 @@
         </div>
     </header>
 
-    <header class="tab-header flexrow">
-        <span class="item-controls">
-            <a class="item-control item-create" title="Create skill" data-type="skill"><i class="fas fa-plus"></i> Add skill</a>
-        </span>
-        <span class="item-controls">
-            <a class="item-control item-create" title="Create maneuver" data-type="maneuver"><i class="fas fa-plus"></i> Add maneuver</a>
-        </span>
-        <span class="item-controls">
-            <a class="item-control item-create" title="Create attack" data-type="attack"><i class="fas fa-plus"></i> Add attack</a>
-        </span>
-        <span class="item-controls">
-            <a class="item-control item-create" title="Create defense" data-type="defense"><i class="fas fa-plus"></i> Add defense</a>
-        </span>
-    </header>
-
     <section class="sheet-body">
+        <textarea
+            placeholder="Power Description"
+            class="power-card-power-description textarea input"
+        >{{item.data.rules}}</textarea>
+
+        <header class="iteam-header flexrow">
+            <span class="item-controls">
+                <a class="item-control item-create" title="Create skill" data-type="skill"><i class="fas fa-plus"></i> Add skill</a>
+            </span>
+            <span class="item-controls">
+                <a class="item-control item-create" title="Create maneuver" data-type="maneuver"><i class="fas fa-plus"></i> Add maneuver</a>
+            </span>
+            <span class="item-controls">
+                <a class="item-control item-create" title="Create attack" data-type="attack"><i class="fas fa-plus"></i> Add attack</a>
+            </span>
+            <span class="item-controls">
+                <a class="item-control item-create" title="Create defense" data-type="defense"><i class="fas fa-plus"></i> Add defense</a>
+            </span>
+        </header>
+
         <section class="skills-group">
             <ol class="items-list">
                 {{#each data.items.skill as |item id|}}
@@ -53,12 +58,12 @@
                 {{#each data.items.maneuver as |item id|}}
                     {{#if item.visible}}
                     <li class="item flexrow" data-item-id="{{item._id}}">
-                        <h4 class="item-toggle"><input type="checkbox" name="data.active" {{checked data.active}} data-dtype="Boolean" /></h4>
+                        <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
                         <h4 class="item-name flex2">{{item.name}}</h4>
-                        <h4 class="item-value flex1">{{item.data.phase}}</h4>
-                        <h4 class="item-value flex1">{{item.data.ocv}}</h4>
-                        <h4 class="item-value flex1">{{item.data.dcv}}</h4>
-                        <h4 class="item-name flex4">{{item.data.effects}}</h4>
+                        <h4 class="item-value flex1">{{item.phase}}</h4>
+                        <h4 class="item-value flex1">{{item.ocv}}</h4>
+                        <h4 class="item-value flex1">{{item.dcv}}</h4>
+                        <h4 class="item-toggle"><input type="checkbox" name="data.active" {{checked data.active}} data-dtype="Boolean" /></h4>
                         <div class="item-controls">
                             <a class="item-control item-edit" id="{{id}}" type="maneuver" title="Edit Item"><i class="fas fa-edit"></i></a>
                             <a class="item-control item-delete" id="{{id}}" type="maneuver" title="Delete Item"><i class="fas fa-trash"></i></a>
@@ -79,7 +84,7 @@
                         <h4 class="item-value flex2">{{item.toHitMod}}</h4>
                         <h4 class="item-value flex3">{{item.uses}} vs {{item.targets}}</h4>
                         <h4 class="item-name flex2">{{item.damage}}</h4>
-                        <h4 class="item-name flex3">{{item.defense}}</h4>
+                        <h4 class="item-name flex3">{{item.class}}</h4>
                         <h4 class="item-value">{{item.end}}</h4>
                         <h4 class="item-value">{{item.piercing}}</h4>
                         <h4 class="item-value">{{item.penetrating}}</h4>

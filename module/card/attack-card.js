@@ -41,13 +41,19 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         // not being used anymore, leaving in here for now just in case
     }
 
-    static async _RollToHit(item, html) {
+    static async _RollToHit(item, html, actor) {
         // get attack card input
         let form = html[0].querySelector("form");
+
+        let effectiveStr = 0;
+        if ("effectiveStr" in form) {
+            effectiveStr = form.effectiveStr.value;
+        }
+
         let data = {
             'toHitModTemp': form.toHitMod.value,
             'aim': form.aim.value,
-            'effectiveStr': form.effectiveStr.value,
+            'effectiveStr': effectiveStr,
             'damageMod': form.damageMod.value
         };
 
@@ -58,7 +64,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         const targets = HeroSystem6eCard._getChatCardTargets();
         
         for (let token of targets) {
-            await HeroSystem6eToHitCard.createFromAttackCard(token, item, data);
+            await HeroSystem6eToHitCard.createFromAttackCard(token, item, data, actor);
         }
     }
 
@@ -108,9 +114,8 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
       * @param {boolean} createMessage   Whether to automatically create a ChatMessage entity (if true), or only return
       *                                  the prepared message data (if false)
       */
-    static async createAttackPopOutFromItem(item) {
-        const template = "systems/hero6e-foundryvtt-experimental/templates/chat/item-attack-card.hbs";
-        const content = await this._renderInternal(item, item.actor, {});
+    static async createAttackPopOutFromItem(item, actor) {
+        const content = await this._renderInternal(item, actor, {});
 
         // Attack Card as a Pop Out
         let options = {
@@ -124,7 +129,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
                 buttons: {
                     rollToHit: {
                         label: "Roll to Hit",
-                        callback: html => resolve(this._RollToHit(item, html))
+                        callback: html => resolve(this._RollToHit(item, html, actor))
                     },
                 },
                 default: "rollToHit",

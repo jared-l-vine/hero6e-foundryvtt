@@ -48,7 +48,7 @@ export default class SettingsHelpers {
           none: "Don't track",
           all: "Track for all"
         },
-        default: false,
+        default: "none",
         onChange: value=> console.log(value)
       });
 
@@ -65,8 +65,14 @@ export default class SettingsHelpers {
         name: "Attack Card Automation",
         scope: "world",
         config: true,
-        type: Boolean,
-        default: false,
+        type: String,
+        choices: {
+          none: "No Automation",
+          npcOnly: "NPCs Only (end, stun, body)",
+          pcEndOnly: "PCs (end) and NPCs (end, stun, body)",
+          all: "PCs and NPCs (end, stun, body)"
+        },
+        default: "none",
         onChange: value=> console.log(value)
       });
     }
