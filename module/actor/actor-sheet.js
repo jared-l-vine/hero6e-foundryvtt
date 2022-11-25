@@ -749,8 +749,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		let id = event.currentTarget.id.split(" ")[0];
 		let item = this.object.data.items.get(id);
 
-		console.log(id)
-
 		await editSubItem(event, item);
 	}
   
