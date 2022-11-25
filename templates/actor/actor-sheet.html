@@ -295,13 +295,13 @@
                             {{#each powers as |powerItem key|}}
                                 {{#each powerItem.data.items.skill as |item id|}}
                                     {{#if item.visible}}
-                                    <li class="item" data-item-id="{{item._id}}" {{#if item.children}} style="height:auto;" {{/if}}>
+                                    <li class="item" data-item-id="{{powerItem._id}}" data-subItem-id="{{id}}" {{#if item.children}} style="height:auto;" {{/if}}>
                                         <div class="flexrow">
                                             <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
-                                            <h4 class="item-name">{{item.name}}</h4>
+                                            <h4 class="item-name">({{powerItem.name}}) {{item.name}}</h4>
                                             <h4 class="item-name">{{item.characteristic}}</h4>
                                             <div>
-                                                <button type="button" class="item-roll rollable-skill" data-roll="{{item.roll}}" data-label="{{item._id}}">{{numberFormat item.roll decimals=0 sign=false}}-</button>
+                                                <button type="button" class="item-roll power-rollable-skill" data-roll="{{item.roll}}" data-label="{{item._id}}">{{numberFormat item.roll decimals=0 sign=false}}-</button>
                                             </div>
                                             <div class="item-controls" data-group="mode">
                                                 <a class="item-control item-edit" title="Edit Item"></a>

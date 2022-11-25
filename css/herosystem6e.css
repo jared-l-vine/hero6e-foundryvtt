@@ -586,6 +586,11 @@ form .upload-button {
     line-height: normal;
 }
 
+.hero .power-rollable-skill {
+  width: 40px;
+  line-height: normal;
+}
+
 /* ----------------------------------------- */
 /*  Power Cards
 /* ----------------------------------------- */

@@ -254,6 +254,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		// Power Sub Items
 		html.find('.power-maneuver-item-toggle').click(this._onPowerManeuverItemToggle.bind(this));
 		html.find('.power-defense-item-toggle').click(this._onPowerDefenseItemToggle.bind(this));
+		html.find('.power-rollable-skill').click(this._onPowerRollSkill.bind(this));
 
 		// Rollable abilities.
 		html.find('.rollable-characteristic').click(this._onRollCharacteristic.bind(this));
@@ -427,8 +428,27 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 		let item = this.actor.items.get(dataset.label);
 
+		createSkillPopOutFromItem(item, this.actor)
+	}
 
-		createSkillPopOutFromItem(item)
+	async _onPowerRollSkill(event) {
+		event.preventDefault();
+
+		const itemId = event.currentTarget.closest(".item").dataset.itemId;
+		const subItemId = event.currentTarget.closest(".item").dataset.subitemId;
+		const powerItem = this.actor.items.get(itemId);
+		const item = powerItem.data.data.items.skill[subItemId];
+
+		const itemData = {
+			name: item.name,
+			type: item.type,
+			data: item,
+		};
+	
+		let newItem = new HeroSystem6eItem(itemData);
+
+		createSkillPopOutFromItem(newItem, this.actor);
+
 	}
 
 	async _onRecovery(event) {
