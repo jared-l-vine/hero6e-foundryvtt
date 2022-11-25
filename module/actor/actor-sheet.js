@@ -1,6 +1,6 @@
 import { HeroSystem6eItem } from "../item/item.js";
 import { HeroSystem6eAttackCard } from "../card/attack-card.js";
-import { createSkillPopOutFromItem } from "../skill/skill.js";
+import { createSkillPopOutFromItem } from "../item/skill.js";
 import { editSubItem, deleteSubItem } from "../powers/powers.js";
 import { enforceManeuverLimits } from "../item/manuever.js"
 
@@ -251,8 +251,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		// Delete Power Inventory Item
 		html.find('.power-item-delete').click(this._onDeletePowerItem.bind(this));
 
-		// Power Maneuver Item
+		// Power Sub Items
 		html.find('.power-maneuver-item-toggle').click(this._onPowerManeuverItemToggle.bind(this));
+		html.find('.power-defense-item-toggle').click(this._onPowerDefenseItemToggle.bind(this));
 
 		// Rollable abilities.
 		html.find('.rollable-characteristic').click(this._onRollCharacteristic.bind(this));
@@ -378,6 +379,16 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		await enforceManeuverLimits(this.actor, subItemId, item.name);
 
 		await updateCombatAutoMod(this.actor, newItem);
+	}
+
+	async _onPowerDefenseItemToggle(event) {
+		const itemId = event.currentTarget.closest(".item").dataset.itemId;
+		const subItemId = event.currentTarget.closest(".item").dataset.subitemId;
+		const powerItem = this.actor.items.get(itemId);
+		const item = powerItem.data.data.items.defense[subItemId];
+		let newValue = !item.active;
+
+		await powerItem.update({ [`data.items.defense.${subItemId}.active`]: newValue });
 	}
 
 	/**

@@ -193,7 +193,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         let DNM = 0; // damage negation mental
         let knockbackResistance = 0;
 
-        if (target.data.actorData.items > 0) {
+        if (target.data.actorData.items.length > 0) {
             for (let i of target.data.actorData.items) {
                 if (i.type === "defense" && i.data.active) {
                     switch (i.data.defenseType) {
@@ -239,6 +239,56 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
                         default:
                             console.log(i.data.defenseType + " not yet supported!");
                             break;
+                    }
+                }
+                if (i.type === "power" && "items" in i.data && "defense" in i.data.items) {
+                    for (const [key, value] of Object.entries(i.data.items.defense)) {
+                        if (value.visible && value.active) {
+                            switch (value.defenseType) {
+                                case "pd":
+                                    PD += parseInt(value.value);
+                                    break;
+                                case "ed":
+                                    ED += parseInt(value.value);
+                                    break;
+                                case "md":
+                                    MD += parseInt(value.value);
+                                    break;
+                                case "rpd":
+                                    rPD += parseInt(value.value);
+                                    break;
+                                case "red":
+                                    rED += parseInt(value.value);
+                                    break;
+                                case "rmd":
+                                    rMD += parseInt(value.value);
+                                    break;
+                                case "drp":
+                                    DRP = Math.max(DRP, parseInt(value.value));
+                                    break;
+                                case "dre":
+                                    DRE = Math.max(DRE, parseInt(value.value));
+                                    break;
+                                case "drm":
+                                    DRM = Math.max(DRM, parseInt(value.value));
+                                    break;
+                                case "dnp":
+                                    DNP += parseInt(value.value);
+                                    break;
+                                case "dne":
+                                    DNE += parseInt(value.value);
+                                    break;
+                                case "dnm":
+                                    DNM += parseInt(value.value);
+                                    break;
+                                case "kbr":
+                                    knockbackResistance += parseInt(value.value);
+                                    break;
+                                default:
+                                    console.log(value.defenseType + " not yet supported!");
+                                    break;
+                            }
+                        }
                     }
                 }
             }
