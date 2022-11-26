@@ -149,7 +149,7 @@
         }
     },
     "Item": {
-        "types": [ "skill", "perk", "talent", "martialart", "power", "complication", "equipment", "attack", "defense", "maneuver" ],
+        "types": [ "skill", "perk", "talent", "martialart", "power", "complication", "equipment", "attack", "defense", "maneuver", "movement" ],
         "templates": {
             "base": {
                 "description": "",
@@ -157,6 +157,19 @@
                 "modifiers": [],
                 "hdcid": "",
                 "parentid": ""
+            },
+            "power": {
+                "description": "",
+                "cost": 0,
+                "modifiers": [],
+                "hdcid": "",
+                "parentid": "",
+                "type": "blast",
+                "effect": 0,
+                "levels": 0,
+                "end": 0,
+                "rules": "Power Description",
+                "items": {}
             }
         },
         "skill": {
@@ -167,16 +180,11 @@
             "roll": "6-"
         },
         "power": {
-            "templates": [ "base" ],
-            "type": "blast",
-            "effect": 0,
-            "levels": 0,
-            "end": 0,
-            "rules": "Power Description",
-            "items": {}
+            "templates": [ "power" ],
+            "rules": "Equipment Description"
         },
         "equipment": {
-            "templates": [ "base" ],
+            "templates": [ "power" ],
             "quantity": 1,
             "weight": 0
         },
@@ -212,6 +220,16 @@
             "dcv": "+0",
             "effects": "",
             "active": false
+        },
+        "movement": {
+            "templates": [ "base" ],
+            "class": "Running",
+            "editable": true,
+            "base": 0,
+            "value": 0,
+            "mod": 0,
+            "velBase": 0,
+            "velValue": 0
         }
     }
 }

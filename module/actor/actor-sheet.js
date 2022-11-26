@@ -114,6 +114,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		const defenses = [];
 		const powers = [];
 		const maneuvers= [];
+		const movement= [];
 
 		let orphanedSkills = [];
 		let skillIndex = [];
@@ -197,6 +198,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			else if (i.type === 'maneuver') {
 				maneuvers.push(i);
 			}
+			else if (i.type === 'movement') {
+				movement.push(i);
+			}
 		}
 
 		// Assign and return
@@ -205,6 +209,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		sheetData.attacks = attacks;
 		sheetData.powers = powers;
 		sheetData.maneuvers = maneuvers;
+		sheetData.movement = movement;
 		sheetData.characteristicSet = characteristicSet;
 	}
 
@@ -302,9 +307,10 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		// Get the type of item to create.
 		const type = header.dataset.type;
 		// Grab any data associated with this control.
-		const data = duplicate(header.dataset);
+		let data = duplicate(header.dataset);
 		// Initialize a default name.
 		const name = `New ${type.capitalize()}`;
+
 		// Prepare the item object.
 		const itemData = {
 			name: name,
@@ -501,7 +507,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     }
 
 	async _applyCharacterSheetAsync(sheet) {
-
 		let characterInfo = sheet.getElementsByTagName("CHARACTER_INFO")[0];
 		let characteristics = sheet.getElementsByTagName("CHARACTERISTICS")[0];
 		let skills = sheet.getElementsByTagName("SKILLS")[0];
@@ -514,25 +519,53 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			changes["name"] = characterInfo.getAttribute("CHARACTER_NAME");
         }
 
-		changes['data.characteristics.flying.value'] = 0;
+		//changes['data.characteristics.flying.value'] = 0;
 
-		var value; 
+		for (let item of this.actor.items) {
+			await item.delete()
+		}
+
+		// determine spd upfront for velocity calculations
+		var spd;
 		for (let characteristic of characteristics.children) {
 			let key = CONFIG.HERO.characteristicsXMLKey[characteristic.getAttribute("XMLID")];
 			value = CONFIG.HERO.characteristicDefaults[key] + parseInt(characteristic.getAttribute("LEVELS"));
 
-			changes[`data.characteristics.${key}.value`] = value;
-			changes[`data.characteristics.${key}.max`] = value;
-			changes[`data.characteristics.${key}.base`] = value;
+			if (key === "spd") {
+				spd = value;
+			}
+		}
+
+		var value;
+		for (let characteristic of characteristics.children) {
+			let key = CONFIG.HERO.characteristicsXMLKey[characteristic.getAttribute("XMLID")];
+			value = CONFIG.HERO.characteristicDefaults[key] + parseInt(characteristic.getAttribute("LEVELS"));
+
+			let velocity = Math.round((spd * value) / 12);
+
+			if (key in CONFIG.HERO.movementPowers) {
+				const itemData = {
+					name: key,
+					type: "movement",
+					data: {
+						"type": key,
+						"editable": false,
+						"base": value,
+						"value": value,
+						"velBase": velocity,
+						"velValue": velocity
+					}
+				};
+		
+				await HeroSystem6eItem.create(itemData, { parent: this.actor });
+			} else {
+				changes[`data.characteristics.${key}.value`] = value;
+				changes[`data.characteristics.${key}.max`] = value;
+				changes[`data.characteristics.${key}.base`] = value;
+			}
 		}
 
 		await this.actor.update(changes);
-
-		for (let item of this.actor.items) {
-			if (item.type !== 'attack') {		
-				await item.delete()
-			}
-		}
 
 		for (let skill of skills.children) {
 			const xmlid = skill.getAttribute("XMLID");
@@ -699,7 +732,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 			await HeroSystem6eItem.create(itemData, { parent: this.actor });
 
-			loadPower(this.actor, itemData, xmlid, sheet);
+			//loadPower(this.actor, itemData, xmlid, sheet);
 		}
 
 		// combat maneuvers

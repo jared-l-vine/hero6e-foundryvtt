@@ -74,6 +74,7 @@
             <a class="item" data-tab="movement">Movement</a>
             <a class="item" data-tab="maneuvers">Maneuvers</a>
             <a class="item" data-tab="powers">Powers</a>
+            <a class="item" data-tab="equipment">Equipment</a>
             <a class="item" data-tab="attacks">Attacks</a>
             <a class="item" data-tab="defenses">Defenses</a>
             <a class="item" data-tab="skills">Skills</a>
@@ -125,34 +126,53 @@
 
             {{!-- Movement Tab --}}
             <div class="tab tab-body powers" data-group="primary" data-tab="movement">
-                <div class="grid grid-2col">
-                    {{#each characteristicSet.movement as |characteristic key|}}
-                    <div class="resource flex-group-center">
-                        <div class="resource-label">{{ characteristic.name }}</div>
-                        <div class="resource-content flexrow flex-center flex-between">
-                            <div>value</div>
-                            <span></span>
-                            <div>base</div>
-                            <span></span>
-                        </div>
-                        <div class="resource-content flexrow flex-center flex-between">
-                            <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" disabled />
-                            <div>m</div>
-                            <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" disabled />
-                            <div>m</div>
-                        </div>
-                        <div class="resource-content flexrow flex-center flex-between">
-                            <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.velocity.value}}" data-dtype="Number" disabled />
-                            <div>m/s</div>
-                            <input type="text" name="data.characteristics.{{characteristic.key}}.value" value="{{characteristic.velocity.base}}" data-dtype="Number" disabled />
-                            <div>m/s</div>
-                        </div>
-                    </div>
-                    {{/each}}
-                </div>
+                <header class="tab-header flexrow">
+                    <span class="item-image"></span>
+                    <span class="item-header flex4">Name</span>
+                    <span class="item-header flex2">Base</span>
+                    <span class="item-header flex3">Value</span>
+                    <span class="item-header flex2">Velocity</span>
+                    <span class="item-controls">
+                        <a class="item-control item-create" title="Create movement" data-type="movement"><i class="fas fa-plus"></i> Add movement</a>
+                    </span>
+                </header>
+                <section class="movement-group">
+                    <ol class="items-list">
+                        {{#each movement as |item id|}}
+                        <li class="item flexrow" data-item-id="{{item._id}}">
+                            <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
+                            <div class="resource-label flex4">{{ item.name }}</div>
+                            <div class="item-name">{{ item.data.base }}</div>
+                            <div class="item-name">{{ item.data.value }}</div>
+                            <div class="item-name">{{ item.data.velValue }}</div>
+                            <div class="item-controls" data-group="mode">
+                                <a class="item-control item-edit" title="Edit Item" id="{{id}}"><i class="fas fa-edit"></i></a>
+                                <a class="item-control item-delete" title="Delete Item" id="{{id}}"><i class="fas fa-trash"></i></a>
+                            </div>
+                        </li>
+                        {{/each}}
+                        {{#each powers as |powerItem key|}}
+                            {{#each powerItem.data.items.movement as |item id|}}
+                                {{#if item.visible}}
+                                <li class="item flexrow" data-item-id="{{item._id}}">
+                                    <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
+                                    <div class="resource-label flex4">({{ powerItem.name }}) {{ item.name }}</div>
+                                    <div class="item-name">{{ item.base }}</div>
+                                    <div class="item-name">{{ item.value }}</div>
+                                    <div class="item-name">{{ item.velValue }}</div>
+                                    <div class="item-controls" data-group="mode">
+                                        <a class="item-control item-edit" title="Edit Item" id="{{id}}"></a>
+                                        <a class="item-control item-delete" title="Delete Item" id="{{id}}"></a>
+                                    </div>
+                                </li>
+                                {{/if}}
+                            {{/each}}
+                        {{/each}}
+                    </ol>
+                </section>
             </div>
 
-            {{!-- Owned Attacks Tab --}}
+            {{!-- Attacks Tab --}}
             <div class="tab tab-body powers" data-group="primary" data-tab="attacks">
                 <header class="tab-header flexrow">
                     <span class="item-image"></span>
@@ -206,7 +226,7 @@
                 </section>
             </div>
 
-            {{!-- Owned Defenses Tab --}}
+            {{!-- Defenses Tab --}}
             <div class="tab tab-body powers" data-group="primary" data-tab="defenses">
                 <header class="tab-header flexrow">
                     <span class="item-image"></span>
@@ -263,7 +283,7 @@
                 </section>
             </div>
 
-            {{!-- Owned Skills Tab --}}
+            {{!-- Skills Tab --}}
             <div class="tab tab-body skills" data-group="primary" data-tab="skills">
                     <header class="tab-header flexrow">
                         <span class="item-image"></span>
@@ -370,7 +390,7 @@
                 </section>
             </div>
 
-            {{!-- Owned Powers Tab --}}
+            {{!-- Powers Tab --}}
             <div class="tab tab-body powers" data-group="primary" data-tab="powers">
                 <header class="tab-header flexrow">
                     <span class="item-name flex2">Name</span>
@@ -419,6 +439,11 @@
                         </ol>
                     </div>
                 </section>
+            </div>
+
+            {{!-- Equipment Tab --}}
+            <div class="tab tab-body equipment" data-group="primary" data-tab="equipment">
+
             </div>
 
             {{!-- Biography Tab --}}

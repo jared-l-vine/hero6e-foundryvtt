@@ -1,0 +1,36 @@
+<form class="{{cssClass}}" autocomplete="off">
+        <header class="sheet-header flexrow">
+            <img class="profile" name="img" src="{{item.img}}" title="{{item.name}}" data-edit="img" />
+
+            <div class="header-details flexrow">
+                <h1 class="charname">
+                    <input name="name" type="text" value="{{item.name}}" placeholder="Defense Name" />
+                </h1>
+            </div>
+        </header>
+
+    {{!-- Sheet Body --}}
+    <section class="sheet-body">
+        <div class="form-group">
+            <label>Type</label>
+            <select name="data.class" data-dtype="text">
+                {{selectOptions config.movementPowers selected=data.type}}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Base</label>
+            <input type="text" name="data.base" value="{{data.base}}" data-dtype="Number" />
+        </div>
+
+        <div class="form-group">
+            <label>Modifier</label>
+            <input type="text" name="data.mod" value="{{data.mod}}" data-dtype="Number" />
+        </div>
+
+        <div class="form-group">
+            <label>Value</label>
+            <input type="text" name="data.value" value="{{data.value}}" data-dtype="Number" disabled/>
+        </div>
+    </section>
+</form>

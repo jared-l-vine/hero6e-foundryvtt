@@ -203,3 +203,10 @@ HERO.combatManeuversOptional = {
     "Strafe": ["1/2 †", "-v/6", "-2", "Make Ranged attack while moving"],
     "Suppression Fire": ["1/2", "-2", "+0", "Continuous fire through an area, must be Autofire"],
 }
+
+HERO.movementPowers = {
+    "running": "Running",
+    "swimming": "Swimming",
+    "leaping": "Leaping",
+    "flight": "Flight"
+}

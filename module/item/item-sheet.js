@@ -139,12 +139,30 @@ export class HeroSystem6eItemSheet extends ItemSheet {
         value = event.currentTarget.checked;
       }
 
-      if (! "linkId" in this.item.data.data || this.item.data.data.linkId === undefined) {        
+      if (! "linkId" in this.item.data.data || this.item.data.data.linkId === undefined) {
+        // normal items     
         let changes = {};
         changes[`${valueName}`] = value;
 
-        return await this.item.update(changes);
+        await this.item.update(changes);
+
+        if (this.item.type === "movement") {
+          changes = {};
+          changes["data.value"] = parseInt(this.item.data.data.base) + parseInt(this.item.data.data.mod);
+
+          if (this.item.actor !== null) {
+            let spd = this.item.actor.data.data.characteristics.spd.value;
+            changes["data.velBase"] = Math.round((parseInt(this.item.data.data.base) * spd) / 12);
+            changes["data.velValue"] = Math.round((changes["data.value"] * spd) / 12);
+          }
+
+          await this.item.update(changes)
+        }
+
+        return
+
       } else {
+        // power sub items
         let linkId = this.item.data.data.linkId;
         let subLinkId = this.item.data.data.subLinkId;
 
