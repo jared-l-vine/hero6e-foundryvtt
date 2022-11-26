@@ -1,7 +1,8 @@
 import { HeroSystem6eItem } from "../item/item.js";
 import { HeroSystem6eAttackCard } from "../card/attack-card.js";
-import { createSkillPopOutFromItem } from "../skill/skill.js";
+import { createSkillPopOutFromItem } from "../item/skill.js";
 import { editSubItem, deleteSubItem } from "../powers/powers.js";
+import { enforceManeuverLimits } from "../item/manuever.js"
 
 /**
  * Extend the basic ActorSheet with some very simple modifications
@@ -250,6 +251,11 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		// Delete Power Inventory Item
 		html.find('.power-item-delete').click(this._onDeletePowerItem.bind(this));
 
+		// Power Sub Items
+		html.find('.power-maneuver-item-toggle').click(this._onPowerManeuverItemToggle.bind(this));
+		html.find('.power-defense-item-toggle').click(this._onPowerDefenseItemToggle.bind(this));
+		html.find('.power-rollable-skill').click(this._onPowerRollSkill.bind(this));
+
 		// Rollable abilities.
 		html.find('.rollable-characteristic').click(this._onRollCharacteristic.bind(this));
 		html.find('.rollable-skill').click(this._onRollSkill.bind(this));
@@ -341,18 +347,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		let newValue = !getProperty(item.data, "data.active")
 
 		// only have one combat maneuver selected at a time except for Set or Brace
-		if(newValue && item.type === "maneuver") {
-			if (newValue) {
-				let exceptions = ["Set", "Brace"]
-
-				for (let i of this.actor.items) {
-					if (i.type === "maneuver" && i.id !== itemId) {
-						if (!exceptions.includes(i.name) || item.name.includes("Move")) {
-							await i.update({ [attr]: false });
-						}
-					}
-				}
-			}
+		if(newValue && item.type === "maneuver" && newValue) {
+			await enforceManeuverLimits(this.actor, itemId, item.name);
 		}
 
 		await item.update({ [attr]: newValue });
@@ -363,6 +359,38 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 		return;
     }
+
+	async _onPowerManeuverItemToggle(event) {
+		const itemId = event.currentTarget.closest(".item").dataset.itemId;
+		const subItemId = event.currentTarget.closest(".item").dataset.subitemId;
+		const powerItem = this.actor.items.get(itemId);
+		const item = powerItem.data.data.items.maneuver[subItemId];
+		let newValue = !item.active;
+
+		await powerItem.update({ [`data.items.maneuver.${subItemId}.active`]: newValue });
+
+		const itemData = {
+			name: item.name,
+			type: item.type,
+			data: item,
+		};
+	
+		let newItem = new HeroSystem6eItem(itemData)
+
+		await enforceManeuverLimits(this.actor, subItemId, item.name);
+
+		await updateCombatAutoMod(this.actor, newItem);
+	}
+
+	async _onPowerDefenseItemToggle(event) {
+		const itemId = event.currentTarget.closest(".item").dataset.itemId;
+		const subItemId = event.currentTarget.closest(".item").dataset.subitemId;
+		const powerItem = this.actor.items.get(itemId);
+		const item = powerItem.data.data.items.defense[subItemId];
+		let newValue = !item.active;
+
+		await powerItem.update({ [`data.items.defense.${subItemId}.active`]: newValue });
+	}
 
 	/**
 	 * Handle clickable rolls.
@@ -400,8 +428,27 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 		let item = this.actor.items.get(dataset.label);
 
+		createSkillPopOutFromItem(item, this.actor)
+	}
 
-		createSkillPopOutFromItem(item)
+	async _onPowerRollSkill(event) {
+		event.preventDefault();
+
+		const itemId = event.currentTarget.closest(".item").dataset.itemId;
+		const subItemId = event.currentTarget.closest(".item").dataset.subitemId;
+		const powerItem = this.actor.items.get(itemId);
+		const item = powerItem.data.data.items.skill[subItemId];
+
+		const itemData = {
+			name: item.name,
+			type: item.type,
+			data: item,
+		};
+	
+		let newItem = new HeroSystem6eItem(itemData);
+
+		createSkillPopOutFromItem(newItem, this.actor);
+
 	}
 
 	async _onRecovery(event) {
@@ -702,8 +749,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		let id = event.currentTarget.id.split(" ")[0];
 		let item = this.object.data.items.get(id);
 
-		console.log(id)
-
 		await editSubItem(event, item);
 	}
   
@@ -718,7 +763,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 async function displayCard({ rollMode, createMessage = true } = {}, subKey = "") {
 	switch (this.data.type) {
 		case "attack":
-			const attackCard = await HeroSystem6eAttackCard.createAttackPopOutFromItem(this, this.actor);
+			await HeroSystem6eAttackCard.createAttackPopOutFromItem(this, this.actor);
 
 			break;;
 		case "power":
@@ -740,23 +785,38 @@ async function displayCard({ rollMode, createMessage = true } = {}, subKey = "")
 
 async function updateCombatAutoMod(actor, item) {
 	let changes = [];
-	let enabled = [];
 
 	let ocvEq = 0;
 	let dcvEq = "+0";
 	
+	function dcvEquation(dcvEq, newDcv) {
+		if (dcvEq.includes("/") && !newDcv.includes("/")) {
+			dcvEq = dcvEq;
+		} else if (!dcvEq.includes("/") && newDcv.includes("/")) {
+			dcvEq = newDcv;
+		} else if (parseFloat(dcvEq) <= parseFloat(newDcv)) {
+			dcvEq = newDcv;
+		} else {
+			dcvEq = Math.round(parseFloat(dcvEq) + parseFloat(newDcv)).toString();
+		}
+
+		return dcvEq;
+	}
+
 	for (let i of actor.items) {
 		if (i.data.data.active && i.type === "maneuver") {
-			enabled.push(i.data.name)
-
 			ocvEq = ocvEq + parseInt(i.data.data.ocv);
 
-			if (dcvEq.includes("/") && !i.data.data.dcv.includes("/")) {
-				dcvEq = dcvEq;
-			} else if (!dcvEq.includes("/") && i.data.data.dcv.includes("/")) {
-				dcvEq = i.data.data.dcv;
-			} else if (parseFloat(dcvEq) <= parseFloat(i.data.data.dcv)) {
-				dcvEq = i.data.data.dcv;
+			dcvEq = dcvEquation(dcvEq, i.data.data.dcv);
+		}
+
+		if (i.type === "power" && ("maneuver" in i.data.data.items)) {
+			for (const [key, value] of Object.entries(i.data.data.items.maneuver)) {
+				if (value.type && value.visible && value.active) {
+					ocvEq = ocvEq + parseInt(value.ocv);
+
+					dcvEq = dcvEquation(dcvEq, value.dcv);
+				}
 			}
 		}
 	}

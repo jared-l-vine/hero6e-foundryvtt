@@ -15,8 +15,8 @@ async function _renderSkillForm(item, actor, stateData) {
 	return await renderTemplate(path, templateData);
 }
 
-async function createSkillPopOutFromItem(item) {
-	const content = await _renderSkillForm(item, item.actor, {});
+async function createSkillPopOutFromItem(item, actor) {
+	const content = await _renderSkillForm(item, actor, {});
 
 	// Attack Card as a Pop Out
 	let options = {
@@ -30,7 +30,7 @@ async function createSkillPopOutFromItem(item) {
 			buttons: {
 				rollToHit: {
 					label: "Roll to Hit",
-					callback: html => resolve(skillRoll(item, html))
+					callback: html => resolve(skillRoll(item, actor, html))
 				},
 			},
 			default: "rollToHit",
@@ -41,9 +41,7 @@ async function createSkillPopOutFromItem(item) {
 	});
 }
 
-async function skillRoll(item, html) {
-	let actor = item.actor;
-
+async function skillRoll(item, actor, html) {
 	let form = html[0].querySelector("form");
 
     let rollEquation = "3D6";

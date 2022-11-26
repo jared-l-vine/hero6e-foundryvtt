@@ -242,7 +242,7 @@
                         {{#each powers as |powerItem key|}}
                             {{#each powerItem.data.items.defense as |item id|}}
                                 {{#if item.visible}}
-                                <li class="item flexrow" data-item-id="{{item._id}}">
+                                <li class="item flexrow" data-item-id="{{powerItem._id}}" data-subItem-id="{{id}}">
                                     <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
                                     <h4 class="item-name flex3">({{powerItem.name}}) {{item.name}}</h4>
                                     <h4 class="item-name flex3">{{item.defenseType}}</h4>
@@ -250,7 +250,7 @@
                                     <h4 class="item-value">{{item.resistant}}</h4>
                                     <h4 class="item-value">{{item.hardened}}</h4>
                                     <h4 class="item-value">{{item.impenetrable}}</h4>
-                                    <h4 class="item-toggle"><input type="checkbox" name="data.active" {{checked data.active}} data-dtype="Boolean" /></h4>
+                                    <h4 class="power-defense-item-toggle"><input type="checkbox" name="data.active" {{checked item.active}} data-dtype="Boolean" /></h4>
                                     <div class="item-controls" data-group="mode">
                                         <a class="item-control item-edit" title="Edit Item"></a>
                                         <a class="item-control item-delete" title="Delete Item"></a>
@@ -260,49 +260,6 @@
                             {{/each}}
                         {{/each}}
                     </ol>
-                </section>
-            </div>
-
-            {{!-- Owned Powers Tab --}}
-            <div class="tab tab-body powers" data-group="primary" data-tab="powers">
-                <section class="powers-group">
-                    <div class="power-card-container">
-                        <ul class="power-card-power-item-list list">
-                            {{#each powers as |powerItem key|}}
-                            <li class="list-item flexrow">
-                                <div class="item-image"><img src="{{powerItem.img}}" width="24" height="24" /></div>
-                                <span>{{powerItem.name}}</span>
-                                <span>{{powerItem.data.rules}}</span>
-                                <div class="item-controls">
-                                    <a class="item-control power-item-edit" key="{{powerItem._id}}" id="{{key}}" type="power" title="Edit Item"><i class="fas fa-edit"></i></a>
-                                    <a class="item-control power-item-delete" key="{{powerItem._id}}" id="{{key}}" type="power" title="Delete Item"><i class="fas fa-trash"></i></a>
-                                </div>
-                            </li>
-                            <ul class="power-card-power-item-list list">
-                                {{#each powerItem.data.items.skill as |item id|}}
-                                    {{#if item.visible}}
-                                    <li class="list-item"><span>{{item.name}}</span></li>
-                                    {{/if}}
-                                {{/each}}
-                                {{#each powerItem.data.items.maneuver as |item id|}}
-                                    {{#if item.visible}}
-                                    <li class="list-item"><span>{{item.name}}</span></li>
-                                    {{/if}}
-                                {{/each}}
-                                {{#each powerItem.data.items.attack as |item id|}}
-                                    {{#if item.visible}}
-                                    <li class="list-item"><span>{{item.name}}</span></li>
-                                    {{/if}}
-                                {{/each}}
-                                {{#each powerItem.data.items.defense as |item id|}}
-                                    {{#if item.visible}}
-                                    <li class="list-item"><span>{{item.name}}</span></li>
-                                    {{/if}}
-                                {{/each}}
-                            </ul>
-                            {{/each}}
-                        </ul>
-                    </div>
                 </section>
             </div>
 
@@ -338,13 +295,13 @@
                             {{#each powers as |powerItem key|}}
                                 {{#each powerItem.data.items.skill as |item id|}}
                                     {{#if item.visible}}
-                                    <li class="item" data-item-id="{{item._id}}" {{#if item.children}} style="height:auto;" {{/if}}>
+                                    <li class="item" data-item-id="{{powerItem._id}}" data-subItem-id="{{id}}" {{#if item.children}} style="height:auto;" {{/if}}>
                                         <div class="flexrow">
                                             <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
-                                            <h4 class="item-name">{{item.name}}</h4>
+                                            <h4 class="item-name">({{powerItem.name}}) {{item.name}}</h4>
                                             <h4 class="item-name">{{item.characteristic}}</h4>
                                             <div>
-                                                <button type="button" class="item-roll rollable-skill" data-roll="{{item.roll}}" data-label="{{item._id}}">{{numberFormat item.roll decimals=0 sign=false}}-</button>
+                                                <button type="button" class="item-roll power-rollable-skill" data-roll="{{item.roll}}" data-label="{{item._id}}">{{numberFormat item.roll decimals=0 sign=false}}-</button>
                                             </div>
                                             <div class="item-controls" data-group="mode">
                                                 <a class="item-control item-edit" title="Edit Item"></a>
@@ -378,36 +335,89 @@
                         <ol class="items-list">
                             {{#each maneuvers as |item id|}}
                             <li class="item flexrow" data-item-id="{{item._id}}">
-                                <h4 class="item-toggle"><input type="checkbox" name="data.active" {{checked data.active}} data-dtype="Boolean" /></h4>
+                                <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
                                 <h4 class="item-name flex3">{{item.name}}</h4>
                                 <h4 class="item-value flex1">{{item.data.phase}}</h4>
                                 <h4 class="item-value flex1">{{item.data.ocv}}</h4>
                                 <h4 class="item-value flex1">{{item.data.dcv}}</h4>
+                                <h4 class="item-toggle"><input type="checkbox" name="data.active" {{checked data.active}} data-dtype="Boolean" /></h4>
                                 <div class="item-controls" data-group="mode">
                                     <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
                                     <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
                                 </div>
                             </li>
                             {{/each}}
-                        </ol>
-                        {{#each powers as |powerItem key|}}
-                            {{#each powerItem.data.items.maneuver as |item id|}}
-                                {{#if item.visible}}
-                                <li class="item flexrow" data-item-id="{{item._id}}">
-                                    <h4 class="item-toggle"><input type="checkbox" name="data.active" {{checked data.active}} data-dtype="Boolean" /></h4>
-                                    <h4 class="item-name flex3">({{powerItem.name}}) {{item.name}}</h4>
-                                    <h4 class="item-value flex1">{{item.data.phase}}</h4>
-                                    <h4 class="item-value flex1">{{item.data.ocv}}</h4>
-                                    <h4 class="item-value flex1">{{item.data.dcv}}</h4>
-                                    <div class="item-controls" data-group="mode">
-                                        <a class="item-control item-edit" title="Edit Item"></a>
-                                        <a class="item-control item-delete" title="Delete Item"></a>
-                                    </div>
-                                </li>
-                                {{/if}}
+                            {{#each powers as |powerItem key|}}
+                                {{#each powerItem.data.items.maneuver as |item id|}}
+                                    {{#if item.visible}}
+                                    <li class="item flexrow" data-item-id="{{powerItem._id}}" data-subItem-id="{{id}}">
+                                        <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
+                                        <h4 class="item-name flex3">({{powerItem.name}}) {{item.name}}</h4>
+                                        <h4 class="item-value flex1">{{item.phase}}</h4>
+                                        <h4 class="item-value flex1">{{item.ocv}}</h4>
+                                        <h4 class="item-value flex1">{{item.dcv}}</h4>
+                                        <h4 class="power-maneuver-item-toggle"><input type="checkbox" name="data.active" {{checked item.active}} data-dtype="Boolean" /></h4>
+                                        <div class="item-controls" data-group="mode">
+                                            <a class="item-control item-edit" title="Edit Item"></a>
+                                            <a class="item-control item-delete" title="Delete Item"></a>
+                                        </div>
+                                    </li>
+                                    {{/if}}
+                                {{/each}}
                             {{/each}}
-                        {{/each}}
+                        </ol>
                     </section>
+                </section>
+            </div>
+
+            {{!-- Owned Powers Tab --}}
+            <div class="tab tab-body powers" data-group="primary" data-tab="powers">
+                <header class="tab-header flexrow">
+                    <span class="item-name flex2">Name</span>
+                    <span class="item-name flex2">Description</span>
+                    <span></span>
+                    <span class="item-controls">
+                        <a class="item-control item-create" title="Create power" data-type="power"><i class="fas fa-plus"></i> Add Power</a>
+                    </span>
+                </header>
+                <section class="powers-group">
+                    <div class="power-card-container">
+                        <ol class="items-list">
+                            {{#each powers as |powerItem key|}}
+                            <li class="item flexrow" data-item-id="{{powerItem._id}}">
+                                <div class="item-image"><img src="{{powerItem.img}}" width="24" height="24" /></div>
+                                <span>{{powerItem.name}}</span>
+                                <span>{{powerItem.data.rules}}</span>
+                                <div class="item-controls" data-group="mode">
+                                    <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                    <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                                </div>
+                            </li>
+                            <ul class="power-card-power-item-list list">
+                                {{#each powerItem.data.items.skill as |item id|}}
+                                    {{#if item.visible}}
+                                    <li class="list-item"><span>{{item.name}}</span></li>
+                                    {{/if}}
+                                {{/each}}
+                                {{#each powerItem.data.items.maneuver as |item id|}}
+                                    {{#if item.visible}}
+                                    <li class="list-item"><span>{{item.name}}</span></li>
+                                    {{/if}}
+                                {{/each}}
+                                {{#each powerItem.data.items.attack as |item id|}}
+                                    {{#if item.visible}}
+                                    <li class="list-item"><span>{{item.name}}</span></li>
+                                    {{/if}}
+                                {{/each}}
+                                {{#each powerItem.data.items.defense as |item id|}}
+                                    {{#if item.visible}}
+                                    <li class="list-item"><span>{{item.name}}</span></li>
+                                    {{/if}}
+                                {{/each}}
+                            </ul>
+                            {{/each}}
+                        </ol>
+                    </div>
                 </section>
             </div>
 

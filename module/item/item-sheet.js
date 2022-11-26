@@ -121,8 +121,6 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     async _updateObject(event) {
       event.preventDefault();
 
-      console.log('update!')
-
       if (event.currentTarget === null) {
         return
       }
