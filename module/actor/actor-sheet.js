@@ -113,6 +113,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		const attacks = [];
 		const defenses = [];
 		const powers = [];
+		const equipment = [];
 		const maneuvers= [];
 		const movement= [];
 
@@ -195,6 +196,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			else if (i.type === 'power') {
 				powers.push(i);
 			}
+			else if (i.type === 'equipment') {
+				equipment.push(i);
+			}
 			else if (i.type === 'maneuver') {
 				maneuvers.push(i);
 			}
@@ -208,6 +212,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		sheetData.defenses = defenses;
 		sheetData.attacks = attacks;
 		sheetData.powers = powers;
+		sheetData.equipment = equipment;
 		sheetData.maneuvers = maneuvers;
 		sheetData.movement = movement;
 		sheetData.characteristicSet = characteristicSet;
@@ -799,6 +804,7 @@ async function displayCard({ rollMode, createMessage = true } = {}, subKey = "")
 			await HeroSystem6eAttackCard.createAttackPopOutFromItem(this, this.actor);
 
 			break;;
+		case "equipment":
 		case "power":
 			let data = this.data.data.items.attack[subKey];
 
@@ -843,7 +849,7 @@ async function updateCombatAutoMod(actor, item) {
 			dcvEq = dcvEquation(dcvEq, i.data.data.dcv);
 		}
 
-		if (i.type === "power" && ("maneuver" in i.data.data.items)) {
+		if ((i.type === "power" || i.type === "equipment") && ("maneuver" in i.data.data.items)) {
 			for (const [key, value] of Object.entries(i.data.data.items.maneuver)) {
 				if (value.type && value.visible && value.active) {
 					ocvEq = ocvEq + parseInt(value.ocv);

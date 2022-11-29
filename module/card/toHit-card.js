@@ -241,7 +241,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
                             break;
                     }
                 }
-                if (i.type === "power" && "items" in i.data && "defense" in i.data.items) {
+                if ((i.type === "power" || i.type === "equipment") && "items" in i.data && "defense" in i.data.items) {
                     for (const [key, value] of Object.entries(i.data.items.defense)) {
                         if (value.visible && value.active) {
                             switch (value.defenseType) {

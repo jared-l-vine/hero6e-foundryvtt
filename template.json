@@ -168,7 +168,6 @@
                 "effect": 0,
                 "levels": 0,
                 "end": 0,
-                "rules": "Power Description",
                 "items": {}
             }
         },
@@ -181,12 +180,13 @@
         },
         "power": {
             "templates": [ "power" ],
-            "rules": "Equipment Description"
+            "rules": "Power Description"
         },
         "equipment": {
             "templates": [ "power" ],
             "quantity": 1,
-            "weight": 0
+            "weight": 0,
+            "rules": "Equipment Description"
         },
         "attack": {
             "templates": [ "base" ],
