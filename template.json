@@ -230,6 +230,22 @@
             "mod": 0,
             "velBase": 0,
             "velValue": 0
+        },
+        "perk": {
+            "templates": [ "base" ],
+            "rules": "Perk Description"
+        },
+        "talent": {
+            "templates": [ "base" ],
+            "rules": "Talent Description"
+        },
+        "complication": {
+            "templates": [ "base" ],
+            "rules": "Complication Description"
+        },
+        "martialart": {
+            "templates": [ "base" ],
+            "rules": "Martial Art Description"  
         }
     }
 }

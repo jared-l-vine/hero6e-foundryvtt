@@ -78,6 +78,7 @@
             <a class="item" data-tab="attacks">Attacks</a>
             <a class="item" data-tab="defenses">Defenses</a>
             <a class="item" data-tab="skills">Skills</a>
+            <a class="item" data-tab="other">Other</a>
             <a class="item" data-tab="description">Description</a>
         </nav>
 
@@ -589,6 +590,79 @@
             {{!-- Biography Tab --}}
             <div class="tab biography" data-group="primary" data-tab="description">
                 {{editor content=data.biography target="data.biography" button=true owner=owner editable=editable}}
+            </div>
+
+            {{!-- Others Tab --}}
+            <div class="tab tab-body other" data-group="primary" data-tab="other">
+                <header class="iteam-header flexrow">
+                    <span class="item-controls">
+                        <a class="item-control item-create" title="Create perk" data-type="perk"><i class="fas fa-plus"></i> Perk</a>
+                    </span>
+                    <span class="item-controls">
+                        <a class="item-control item-create" title="Create talent" data-type="talent"><i class="fas fa-plus"></i> Talent</a>
+                    </span>
+                    <span class="item-controls">
+                        <a class="item-control item-create" title="Create complication" data-type="complication"><i class="fas fa-plus"></i> Complication</a>
+                    </span>
+                    <span class="item-controls">
+                        <a class="item-control item-create" title="Create martialart" data-type="martialart"><i class="fas fa-plus"></i> Martial Art</a>
+                    </span>
+                </header>
+                <header class="tab-header flexrow">
+                    <span class="item-name flex2">Name</span>
+                    <span class="item-name flex2">Description</span>
+                    <span></span>
+                </header>
+                <section class="powers-group">
+                    <div class="power-card-container">
+                        <ol class="items-list">
+                            {{#each perk as |item key|}}
+                            <li class="item flexrow" data-item-id="{{item._id}}">
+                                <div class="item-image"><img src="{{item.img}}" width="24" height="24" /></div>
+                                <span>{{item.name}}</span>
+                                <span>{{item.data.rules}}</span>
+                                <div class="item-controls" data-group="mode">
+                                    <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                    <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                                </div>
+                            </li>
+                            {{/each}}
+                            {{#each talent as |item key|}}
+                            <li class="item flexrow" data-item-id="{{item._id}}">
+                                <div class="item-image"><img src="{{item.img}}" width="24" height="24" /></div>
+                                <span>{{item.name}}</span>
+                                <span>{{item.data.rules}}</span>
+                                <div class="item-controls" data-group="mode">
+                                    <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                    <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                                </div>
+                            </li>
+                            {{/each}}
+                            {{#each complication as |item key|}}
+                            <li class="item flexrow" data-item-id="{{item._id}}">
+                                <div class="item-image"><img src="{{item.img}}" width="24" height="24" /></div>
+                                <span>{{item.name}}</span>
+                                <span>{{item.data.rules}}</span>
+                                <div class="item-controls" data-group="mode">
+                                    <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                    <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                                </div>
+                            </li>
+                            {{/each}}
+                            {{#each martialart as |item key|}}
+                            <li class="item flexrow" data-item-id="{{item._id}}">
+                                <div class="item-image"><img src="{{item.img}}" width="24" height="24" /></div>
+                                <span>{{item.name}}</span>
+                                <span>{{item.data.rules}}</span>
+                                <div class="item-controls" data-group="mode">
+                                    <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                    <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                                </div>
+                            </li>
+                            {{/each}}
+                        </ol>
+                    </div>
+                </section>
             </div>
         </section>
     </section>

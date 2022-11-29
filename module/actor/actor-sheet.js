@@ -114,8 +114,13 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		const defenses = [];
 		const powers = [];
 		const equipment = [];
-		const maneuvers= [];
-		const movement= [];
+		const maneuvers = [];
+		const movement = [];
+		const perk = [];
+		const talent = [];
+		const complication= [];
+		const martialart = [];
+
 
 		let orphanedSkills = [];
 		let skillIndex = [];
@@ -205,6 +210,18 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			else if (i.type === 'movement') {
 				movement.push(i);
 			}
+			else if (i.type === 'perk') {
+				perk.push(i);
+			}
+			else if (i.type === 'talent') {
+				talent.push(i);
+			}
+			else if (i.type === 'complication') {
+				complication.push(i);
+			}
+			else if (i.type === 'martialart') {
+				martialart.push(i);
+			}
 		}
 
 		// Assign and return
@@ -215,6 +232,10 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		sheetData.equipment = equipment;
 		sheetData.maneuvers = maneuvers;
 		sheetData.movement = movement;
+		sheetData.perk = perk;
+		sheetData.talent = talent;
+		sheetData.complication = complication;
+		sheetData.martialart = martialart;
 		sheetData.characteristicSet = characteristicSet;
 	}
 
