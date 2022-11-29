@@ -6,47 +6,43 @@
     </header>
 
     <div class="hit-roll">
-
-    {{#if state.useEnd}}
-    <div class="card-section">
-        <div class="description-small">{{{ state.enduranceText }}}</div>
-    </div>
-    {{/if}}
-
-    <div class="card-section">
-        <div class="description-small">To Hit</div>
-        <div class="hit-roll">{{{ state.renderedHitRoll }}}</div>
-        <div class="description">{{{ state.hitRollText }}}</div>
-    </div>
-
-    <div class="card-section">
-        {{#if state.useHitLoc}}
-        <div class="description-small">{{ state.hitLocText }}</div>
+        {{#if state.useEnd}}
+        <div class="card-section">
+            <div class="description-tiny">{{{ state.enduranceText }}}</div>
+        </div>
         {{/if}}
-    </div>
 
-    <div class="card-section">
-        <div class="damage-roll">{{{ state.renderedDamageRoll }}}</div>
-        {{#if state.hasStunMultiplierRoll}}
-        <div class="stun-x-roll">{{{ state.renderedStunMultiplierRoll }}}</div>
-        <div class="description-small">{{ state.stunMultiplier }}X STUN MULTIPLIER</div>
-        {{/if}}
-        <div class="description-small">(Raw Damage) {{ state.bodyDamage }} BODY; {{ state.stunDamage }} STUN</div>
-    </div>
+        <div class="card-section">
+            <div class="description-tiny">To Hit</div>
+            <div class="hit-roll">{{{ state.renderedHitRoll }}}</div>
+            <div class="description-medium">{{{ state.hitRollText }}}</div>
+        </div>
 
-    <div class="card-section">
-        <div class="description-small">Defense: {{ state.defense }}</div>
-    </div>
+        <div class="card-section">
+            <div class="description-tiny">On Hit</div>
+            {{#if state.useHitLoc}}
+                <div class="description-tiny">{{ state.hitLocText }}</div>
+            {{/if}}
+            <div class="damage-roll">{{{ state.renderedDamageRoll }}}</div>
+            {{#if state.hasStunMultiplierRoll}}
+                <div class="stun-x-roll">{{{ state.renderedStunMultiplierRoll }}}</div>
+                <div class="description-tiny">{{ state.stunMultiplier }}X STUN MULTIPLIER</div>
+            {{/if}}
+            <div class="description-tiny">(Raw Damage) {{ state.bodyDamage }} BODY; {{ state.stunDamage }} STUN</div>
+        </div>
 
-    <div class="card-section">
-        <div class="description">{{ state.bodyDamageEffective }} BODY; {{ state.stunDamageEffective }} STUN{{ state.effects }}</div>
-    </div>
+        <div class="card-section">
+            <div class="description-tiny">Defense: {{ state.defense }}</div>
+        </div>
 
-    {{#if state.useKnockBack}}
-    <div class="card-section">
-        <div class="hit-roll">{{{ state.knockbackRenderedResult }}}</div>
-        <div class="description-small">{{ state.knockback }}</div>
-    <div class="card-section">
-    {{/if}}
+        <div class="card-section">
+            <div class="description-tiny">Effect</div>
+            <div class="description-medium">{{ state.bodyDamageEffective }} BODY; {{ state.stunDamageEffective }} STUN</div>
+            <div class="description-tiny">{{ state.effects }}</div>
+            {{#if state.useKnockBack}}
+                <div class="hit-roll">{{{ state.knockbackRenderedResult }}}</div>
+                <div class="description-tiny">{{ state.knockback }}</div>
+            {{/if}}
+        <div class="card-section">
     </div>
 </div>

@@ -526,7 +526,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             let knockbackRoll = new Roll(knockBackEquation);
             let knockbackResult = await knockbackRoll.roll();
             knockbackRenderedResult = await knockbackResult.render();
-            let knockbackResultTotal = knockbackResult.total;
+            let knockbackResultTotal = Math.round(knockbackResult.total);
 
             if (knockbackResultTotal < 0) {
                 knockback = "No knockback";
@@ -547,7 +547,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         // minimum damage rule
         if (stun < body) {
             stun = body;
-            effects += "; minimum damage invoked"
+            effects += "minimum damage invoked; "
         }
 
         stun = Math.round(stun)
@@ -557,7 +557,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         if (game.settings.get("hero6e-foundryvtt-experimental", "stunned")) {
             // determine if target was Stunned
             if (stun > targetActorChars.con.value) {
-                effects = effects + "; inflicts Stunned"
+                effects = effects + "inflicts Stunned; "
             }
         }
 
@@ -581,7 +581,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
                     changes["data.characteristics.body.loc." + hitLocation] = bodyPartHP;
 
                     if (bodyPartHP > targetActorChars.body.value) {
-                        effects = effects + "; inflicts Impaired " + hitLocation;
+                        effects = effects + "inflicts Impaired " + hitLocation + "; ";
                     }
                 }
                 

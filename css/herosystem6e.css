@@ -414,6 +414,16 @@
         text-align: center;
     }
 
+    .hero.chat-card .card-section .description-medium {
+      flex: 1;
+      margin: 0;
+      line-height: 30px;
+      font-size: 15px;
+      font-weight: 700;
+      color: #4b4a44;
+      text-align: center;
+    }
+
     .hero.chat-card .card-section .description-small {
         flex: 1;
         margin: 0;
@@ -423,6 +433,17 @@
         color: #4b4a44;
         text-align: center;
     }
+
+    .hero.chat-card .card-section .description-tiny {
+      flex: 1;
+      margin: 0;
+      line-height: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #4b4a44;
+      text-align: center;
+    }
+
 
     .hero.chat-card .card-header h3:hover {
         color: #111;
