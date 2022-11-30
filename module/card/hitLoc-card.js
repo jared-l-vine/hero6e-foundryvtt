@@ -25,7 +25,7 @@ export class HeroSystem6eHitLocCard extends HeroSystem6eCard {
             hitLoc: hitLocMap
         }
 
-        var path = "systems/hero6e-foundryvtt-experimental/templates/chat/item-hitLoc-card.html";
+        var path = "systems/hero6e-foundryvtt-v2/templates/chat/item-hitLoc-card.html";
 
         return await renderTemplate(path, templateData);
     }

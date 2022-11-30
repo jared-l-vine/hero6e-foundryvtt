@@ -95,16 +95,17 @@
                 },
                 "end": {
                     "value": 20,
-                    "base": 20,
+                    "max": 20,
                     "type": "resource"
                 },
                 "stun": {
                     "value": 20,
-                    "base": 20,
+                    "max": 20,
                     "type": "resource"
                 },
                 "body": {
                     "value": 10,
+                    "max": 10,
                     "type": "resource",
                     "loc": {
                         "Head": 0,

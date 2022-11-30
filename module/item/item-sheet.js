@@ -19,7 +19,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
 
   /** @override */
   get template() {
-    const path = "systems/hero6e-foundryvtt-experimental/templates/item";
+    const path = "systems/hero6e-foundryvtt-v2/templates/item";
     // Return a single sheet for all item types.
     // return `${path}/item-sheet.html`;
 
