@@ -31,7 +31,7 @@ Attacks and defense can be manually added by users.
 
 The character sheet can also be used to take a Recovery.
 
-## Maneuvers
+#### Maneuvers
 
 Activating a maneuver from a character sheet will apply OCV and DCV modifiers with the exception of variable modifiers or modifers that take speed into account. Only one maneuver can be selected at a time with the exception of 'Set' and 'Brace'.
 
@@ -47,7 +47,7 @@ These type of items consist of a description and can hold skill, maneuver, attac
 
 Powers can be read in from a .HDC file, but this will not add any sub items.
 
-### System Options
+## System Options
 - Use Stunned : whether or not attacks can inflict stunned
 - Use Endurance : whether or not endurance will be automatically tracked when using automated attack cards
 - Use Knockback : automates knockback rolls and calculations from attack cards
