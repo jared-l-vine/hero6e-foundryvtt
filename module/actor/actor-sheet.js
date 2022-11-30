@@ -674,36 +674,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			await HeroSystem6eItem.create(itemData, { parent: this.actor });
 		}
 
-		function loadPower(actor, itemData, xmlid, sheet) {
-			let newValue = undefined;
-
-			let changes = {};
-
-			switch(xmlid) {
-				case "SWIMMING":
-					newValue = parseFloat(actor.data.data.characteristics.swimming.value) + parseFloat(itemData.levels)
-					changes['data.characteristics.swimming.value'] = newValue;
-					break;
-				case "LEAPING":
-					newValue = parseFloat(actor.data.data.characteristics.leaping.value) + parseFloat(itemData.levels)
-					changes['data.characteristics.leaping.value'] = newValue;
-					break;
-				case "FLIGHT":
-					newValue = parseFloat(itemData.levels)
-					changes['data.characteristics.flying.value'] = newValue;
-					break;
-				case "RUNNING":
-					newValue = parseFloat(actor.data.data.characteristics.running.value) + parseFloat(itemData.levels)
-					changes['data.characteristics.running.value'] = newValue;
-					break;
-				default:
-					console.log(xmlid);
-					break;
-			}
-
-			actor.update(changes);
-		}
-
 		let powers = sheet.getElementsByTagName("POWERS")[0];
 
 		const relevantFields = ["BASECOST", "LEVELS", "ALIAS", "MULTIPLIER", "NAME", "OPTION_ALIAS"]
@@ -742,23 +712,39 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 			data.description = alias;
 
-			if (CONFIG["POWERS"][xmlid.toUpperCase()] !== undefined) {
-				data.rules = "/powers " + xmlid.toLowerCase();
-			}
-			else {
-				data.rules = "undefined";
-			}
+			data.rules = xmlid;
 
-			const itemData = {
-				name: itemName,
-				type: "power",
-				data: data,
-				levels: levels
-			};
+
+			let type = "";
+			let itemData = {};
+			if (xmlid.toLowerCase() in CONFIG.HERO.movementPowers) {
+				type = "movement";
+
+				let velocity = Math.round((spd * levels) / 12);
+
+				data.base = levels;
+				data.value = levels;
+				data.velBase = velocity;
+				data.velValue = velocity;
+
+				itemData = {
+					name: itemName,
+					type: type,
+					data: data,
+					levels: levels
+				};
+			} else {
+				type = "power";
+
+				itemData = {
+					name: itemName,
+					type: type,
+					data: data,
+					levels: levels
+				};
+			}
 
 			await HeroSystem6eItem.create(itemData, { parent: this.actor });
-
-			//loadPower(this.actor, itemData, xmlid, sheet);
 		}
 
 		// combat maneuvers
@@ -786,22 +772,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		if (game.settings.get("hero6e-foundryvtt-experimental", "optionalManeuvers")) {
 			await loadCombatManeuvers(CONFIG.HERO.combatManeuversOptional, this.actor)
 		}
-
-		let velocity = [];
-		// Determine max velocities
-		velocity['data.characteristics.running.velocity.value'] = 0;
-		velocity['data.characteristics.running.velocity.base'] = Math.round((changes['data.characteristics.spd.value'] * changes['data.characteristics.running.value']) / 12);
-
-		velocity['data.characteristics.swimming.velocity.value'] = 0;
-		velocity['data.characteristics.swimming.velocity.base'] = Math.round((changes['data.characteristics.spd.value'] * changes['data.characteristics.swimming.value']) / 12);
-
-		velocity['data.characteristics.leaping.velocity.value'] = 0;
-		velocity['data.characteristics.leaping.velocity.base'] = Math.round((changes['data.characteristics.spd.value'] * changes['data.characteristics.leaping.value']) / 12);
-
-		velocity['data.characteristics.flying.velocity.value'] = 0;
-		velocity['data.characteristics.flying.velocity.base'] = Math.round((changes['data.characteristics.spd.value'] * changes['data.characteristics.flying.value']) / 12);
-
-		await this.actor.update(velocity);
     }
 
 	async _onEditPowerItem(event) {

@@ -208,5 +208,10 @@ HERO.movementPowers = {
     "running": "Running",
     "swimming": "Swimming",
     "leaping": "Leaping",
-    "flight": "Flight"
+    "flight": "Flight",
+    "swinging": "Swinging",
+    "teleportation": "Teleportation",
+    "tunneling": "Tunneling",
+    "extradimensionalmovement": "Extra Dimensional Movement",
+    "ftl": "Faster Than Light"
 }

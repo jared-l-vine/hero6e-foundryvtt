@@ -122,11 +122,17 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         // -------------------------------------------------
         // attack roll
         // -------------------------------------------------
+        let noHitLocationsPower = false;
+        for (let i of targetActor.items) {
+            if (i.data.data.rules === "NOHITLOCATIONS") {
+                noHitLocationsPower = true;
+            }
+        }
 
         let rollEquation = "11 + " + hitCharacteristic;
         rollEquation = modifyRollEquation(rollEquation, item.data.data.toHitMod);
         rollEquation = modifyRollEquation(rollEquation, data.toHitModTemp);
-        if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations") && data.aim !== "none") {
+        if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations") && data.aim !== "none" && !noHitLocationsPower) {
             rollEquation = modifyRollEquation(rollEquation, CONFIG.HERO.hitLocations[data.aim][3]);
         }
         rollEquation = rollEquation + " - 3D6";
@@ -337,7 +343,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         let hitLocationModifiers = [1, 1, 1, 0];
         let hitLocation = "None";
         let useHitLoc = false;
-        if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations")) {
+        if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations") && !noHitLocationsPower) {
             useHitLoc = true;
 
             hitLocation = data.aim;
@@ -443,7 +449,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             let renderedStunResult = await stunResult.render();
             renderedStunMultiplierRoll = renderedStunResult;
 
-            if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations")) {
+            if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations") && !noHitLocationsPower) {
                 stunMultiplier =  hitLocationModifiers[0];
             } else {
                 stunMultiplier = stunResult.total;
@@ -491,7 +497,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         body = body < 0 ? 0 : body;
 
         let hitLocText = "";
-        if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations")) {
+        if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations") && !noHitLocationsPower) {
             if(itemData.killing) {
                 // killing attacks apply hit location multiplier after resistant damage protection has been subtracted
                 body = body * hitLocationModifiers[2];
