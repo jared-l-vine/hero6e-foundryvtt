@@ -149,7 +149,7 @@
         }
     },
     "Item": {
-        "types": [ "skill", "perk", "talent", "martialart", "power", "complication", "equipment", "attack", "defense", "maneuver" ],
+        "types": [ "skill", "perk", "talent", "martialart", "power", "complication", "equipment", "attack", "defense", "maneuver", "movement" ],
         "templates": {
             "base": {
                 "description": "",
@@ -157,6 +157,18 @@
                 "modifiers": [],
                 "hdcid": "",
                 "parentid": ""
+            },
+            "power": {
+                "description": "",
+                "cost": 0,
+                "modifiers": [],
+                "hdcid": "",
+                "parentid": "",
+                "type": "blast",
+                "effect": 0,
+                "levels": 0,
+                "end": 0,
+                "items": {}
             }
         },
         "skill": {
@@ -167,18 +179,14 @@
             "roll": "6-"
         },
         "power": {
-            "templates": [ "base" ],
-            "type": "blast",
-            "effect": 0,
-            "levels": 0,
-            "end": 0,
-            "rules": "Power Description",
-            "items": {}
+            "templates": [ "power" ],
+            "rules": "Power Description"
         },
         "equipment": {
-            "templates": [ "base" ],
+            "templates": [ "power" ],
             "quantity": 1,
-            "weight": 0
+            "weight": 0,
+            "rules": "Equipment Description"
         },
         "attack": {
             "templates": [ "base" ],
@@ -212,6 +220,32 @@
             "dcv": "+0",
             "effects": "",
             "active": false
+        },
+        "movement": {
+            "templates": [ "base" ],
+            "class": "Running",
+            "editable": true,
+            "base": 0,
+            "value": 0,
+            "mod": 0,
+            "velBase": 0,
+            "velValue": 0
+        },
+        "perk": {
+            "templates": [ "base" ],
+            "rules": "Perk Description"
+        },
+        "talent": {
+            "templates": [ "base" ],
+            "rules": "Talent Description"
+        },
+        "complication": {
+            "templates": [ "base" ],
+            "rules": "Complication Description"
+        },
+        "martialart": {
+            "templates": [ "base" ],
+            "rules": "Martial Art Description"  
         }
     }
 }

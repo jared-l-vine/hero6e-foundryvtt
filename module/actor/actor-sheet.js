@@ -113,7 +113,14 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		const attacks = [];
 		const defenses = [];
 		const powers = [];
-		const maneuvers= [];
+		const equipment = [];
+		const maneuvers = [];
+		const movement = [];
+		const perk = [];
+		const talent = [];
+		const complication= [];
+		const martialart = [];
+
 
 		let orphanedSkills = [];
 		let skillIndex = [];
@@ -194,8 +201,26 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			else if (i.type === 'power') {
 				powers.push(i);
 			}
+			else if (i.type === 'equipment') {
+				equipment.push(i);
+			}
 			else if (i.type === 'maneuver') {
 				maneuvers.push(i);
+			}
+			else if (i.type === 'movement') {
+				movement.push(i);
+			}
+			else if (i.type === 'perk') {
+				perk.push(i);
+			}
+			else if (i.type === 'talent') {
+				talent.push(i);
+			}
+			else if (i.type === 'complication') {
+				complication.push(i);
+			}
+			else if (i.type === 'martialart') {
+				martialart.push(i);
 			}
 		}
 
@@ -204,7 +229,13 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		sheetData.defenses = defenses;
 		sheetData.attacks = attacks;
 		sheetData.powers = powers;
+		sheetData.equipment = equipment;
 		sheetData.maneuvers = maneuvers;
+		sheetData.movement = movement;
+		sheetData.perk = perk;
+		sheetData.talent = talent;
+		sheetData.complication = complication;
+		sheetData.martialart = martialart;
 		sheetData.characteristicSet = characteristicSet;
 	}
 
@@ -302,9 +333,10 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		// Get the type of item to create.
 		const type = header.dataset.type;
 		// Grab any data associated with this control.
-		const data = duplicate(header.dataset);
+		let data = duplicate(header.dataset);
 		// Initialize a default name.
 		const name = `New ${type.capitalize()}`;
+
 		// Prepare the item object.
 		const itemData = {
 			name: name,
@@ -501,7 +533,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     }
 
 	async _applyCharacterSheetAsync(sheet) {
-
 		let characterInfo = sheet.getElementsByTagName("CHARACTER_INFO")[0];
 		let characteristics = sheet.getElementsByTagName("CHARACTERISTICS")[0];
 		let skills = sheet.getElementsByTagName("SKILLS")[0];
@@ -514,25 +545,53 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			changes["name"] = characterInfo.getAttribute("CHARACTER_NAME");
         }
 
-		changes['data.characteristics.flying.value'] = 0;
+		//changes['data.characteristics.flying.value'] = 0;
 
-		var value; 
+		for (let item of this.actor.items) {
+			await item.delete()
+		}
+
+		// determine spd upfront for velocity calculations
+		var spd;
 		for (let characteristic of characteristics.children) {
 			let key = CONFIG.HERO.characteristicsXMLKey[characteristic.getAttribute("XMLID")];
 			value = CONFIG.HERO.characteristicDefaults[key] + parseInt(characteristic.getAttribute("LEVELS"));
 
-			changes[`data.characteristics.${key}.value`] = value;
-			changes[`data.characteristics.${key}.max`] = value;
-			changes[`data.characteristics.${key}.base`] = value;
+			if (key === "spd") {
+				spd = value;
+			}
+		}
+
+		var value;
+		for (let characteristic of characteristics.children) {
+			let key = CONFIG.HERO.characteristicsXMLKey[characteristic.getAttribute("XMLID")];
+			value = CONFIG.HERO.characteristicDefaults[key] + parseInt(characteristic.getAttribute("LEVELS"));
+
+			let velocity = Math.round((spd * value) / 12);
+
+			if (key in CONFIG.HERO.movementPowers) {
+				const itemData = {
+					name: key,
+					type: "movement",
+					data: {
+						"type": key,
+						"editable": false,
+						"base": value,
+						"value": value,
+						"velBase": velocity,
+						"velValue": velocity
+					}
+				};
+		
+				await HeroSystem6eItem.create(itemData, { parent: this.actor });
+			} else {
+				changes[`data.characteristics.${key}.value`] = value;
+				changes[`data.characteristics.${key}.max`] = value;
+				changes[`data.characteristics.${key}.base`] = value;
+			}
 		}
 
 		await this.actor.update(changes);
-
-		for (let item of this.actor.items) {
-			if (item.type !== 'attack') {		
-				await item.delete()
-			}
-		}
 
 		for (let skill of skills.children) {
 			const xmlid = skill.getAttribute("XMLID");
@@ -615,36 +674,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			await HeroSystem6eItem.create(itemData, { parent: this.actor });
 		}
 
-		function loadPower(actor, itemData, xmlid, sheet) {
-			let newValue = undefined;
-
-			let changes = {};
-
-			switch(xmlid) {
-				case "SWIMMING":
-					newValue = parseFloat(actor.data.data.characteristics.swimming.value) + parseFloat(itemData.levels)
-					changes['data.characteristics.swimming.value'] = newValue;
-					break;
-				case "LEAPING":
-					newValue = parseFloat(actor.data.data.characteristics.leaping.value) + parseFloat(itemData.levels)
-					changes['data.characteristics.leaping.value'] = newValue;
-					break;
-				case "FLIGHT":
-					newValue = parseFloat(itemData.levels)
-					changes['data.characteristics.flying.value'] = newValue;
-					break;
-				case "RUNNING":
-					newValue = parseFloat(actor.data.data.characteristics.running.value) + parseFloat(itemData.levels)
-					changes['data.characteristics.running.value'] = newValue;
-					break;
-				default:
-					console.log(xmlid);
-					break;
-			}
-
-			actor.update(changes);
-		}
-
 		let powers = sheet.getElementsByTagName("POWERS")[0];
 
 		const relevantFields = ["BASECOST", "LEVELS", "ALIAS", "MULTIPLIER", "NAME", "OPTION_ALIAS"]
@@ -683,23 +712,39 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 			data.description = alias;
 
-			if (CONFIG["POWERS"][xmlid.toUpperCase()] !== undefined) {
-				data.rules = "/powers " + xmlid.toLowerCase();
-			}
-			else {
-				data.rules = "undefined";
-			}
+			data.rules = xmlid;
 
-			const itemData = {
-				name: itemName,
-				type: "power",
-				data: data,
-				levels: levels
-			};
+
+			let type = "";
+			let itemData = {};
+			if (xmlid.toLowerCase() in CONFIG.HERO.movementPowers) {
+				type = "movement";
+
+				let velocity = Math.round((spd * levels) / 12);
+
+				data.base = levels;
+				data.value = levels;
+				data.velBase = velocity;
+				data.velValue = velocity;
+
+				itemData = {
+					name: itemName,
+					type: type,
+					data: data,
+					levels: levels
+				};
+			} else {
+				type = "power";
+
+				itemData = {
+					name: itemName,
+					type: type,
+					data: data,
+					levels: levels
+				};
+			}
 
 			await HeroSystem6eItem.create(itemData, { parent: this.actor });
-
-			loadPower(this.actor, itemData, xmlid, sheet);
 		}
 
 		// combat maneuvers
@@ -727,22 +772,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		if (game.settings.get("hero6e-foundryvtt-experimental", "optionalManeuvers")) {
 			await loadCombatManeuvers(CONFIG.HERO.combatManeuversOptional, this.actor)
 		}
-
-		let velocity = [];
-		// Determine max velocities
-		velocity['data.characteristics.running.velocity.value'] = 0;
-		velocity['data.characteristics.running.velocity.base'] = Math.round((changes['data.characteristics.spd.value'] * changes['data.characteristics.running.value']) / 12);
-
-		velocity['data.characteristics.swimming.velocity.value'] = 0;
-		velocity['data.characteristics.swimming.velocity.base'] = Math.round((changes['data.characteristics.spd.value'] * changes['data.characteristics.swimming.value']) / 12);
-
-		velocity['data.characteristics.leaping.velocity.value'] = 0;
-		velocity['data.characteristics.leaping.velocity.base'] = Math.round((changes['data.characteristics.spd.value'] * changes['data.characteristics.leaping.value']) / 12);
-
-		velocity['data.characteristics.flying.velocity.value'] = 0;
-		velocity['data.characteristics.flying.velocity.base'] = Math.round((changes['data.characteristics.spd.value'] * changes['data.characteristics.flying.value']) / 12);
-
-		await this.actor.update(velocity);
     }
 
 	async _onEditPowerItem(event) {
@@ -766,6 +795,7 @@ async function displayCard({ rollMode, createMessage = true } = {}, subKey = "")
 			await HeroSystem6eAttackCard.createAttackPopOutFromItem(this, this.actor);
 
 			break;;
+		case "equipment":
 		case "power":
 			let data = this.data.data.items.attack[subKey];
 
@@ -810,7 +840,7 @@ async function updateCombatAutoMod(actor, item) {
 			dcvEq = dcvEquation(dcvEq, i.data.data.dcv);
 		}
 
-		if (i.type === "power" && ("maneuver" in i.data.data.items)) {
+		if ((i.type === "power" || i.type === "equipment") && ("maneuver" in i.data.data.items)) {
 			for (const [key, value] of Object.entries(i.data.data.items.maneuver)) {
 				if (value.type && value.visible && value.active) {
 					ocvEq = ocvEq + parseInt(value.ocv);
