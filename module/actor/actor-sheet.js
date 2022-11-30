@@ -12,7 +12,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 	/** @override */
 	static get defaultOptions() {
-		var path = "systems/hero6e-foundryvtt-experimental/templates/actor/actor-sheet.html";
+		var path = "systems/hero6e-foundryvtt-v2/templates/actor/actor-sheet.html";
 
 		return mergeObject(super.defaultOptions, {
 			classes: ["herosystem6e", "sheet", "actor"],
@@ -237,6 +237,12 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		sheetData.complication = complication;
 		sheetData.martialart = martialart;
 		sheetData.characteristicSet = characteristicSet;
+
+		if (game.settings.get("hero6e-foundryvtt-v2", "hitLocTracking") === "all") {
+			sheetData.hitLocTracking = true;
+		} else {
+			sheetData.hitLocTracking = false;
+		}
 	}
 
 	static _prepareDefenseItem(i, item) {
@@ -769,7 +775,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 		await loadCombatManeuvers(CONFIG.HERO.combatManeuvers, this.actor)
 
-		if (game.settings.get("hero6e-foundryvtt-experimental", "optionalManeuvers")) {
+		if (game.settings.get("hero6e-foundryvtt-v2", "optionalManeuvers")) {
 			await loadCombatManeuvers(CONFIG.HERO.combatManeuversOptional, this.actor)
 		}
     }

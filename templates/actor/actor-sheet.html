@@ -70,7 +70,9 @@
         {{!-- Sheet Tab Navigation --}}
         <nav class="sheet-tabs sheet-item-tabs tabs" data-group="primary">
             <a class="item" data-tab="characteristics">Characteristics</a>
+            {{#if hitLocTracking}}
             <a class="item" data-tab="hitLoc">Hit Locations</a>
+            {{/if}}
             <a class="item" data-tab="movement">Movement</a>
             <a class="item" data-tab="maneuvers">Maneuvers</a>
             <a class="item" data-tab="powers">Powers</a>
