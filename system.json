@@ -23,7 +23,7 @@
     "primaryTokenAttribute": "data.characteristics.body",
     "secondaryTokenAttribute": "data.characteristics.stun",
     "url": "https://github.com/dmdorman/hero6e-foundryvtt",
-    "manifest": "",
+    "manifest": "https://raw.githubusercontent.com/dmdorman/hero6e-foundryvtt/v1.0/system.json",
     "download": "",
     "license": "LICENSE.txt"
 }
