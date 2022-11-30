@@ -224,6 +224,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			}
 		}
 
+		// testing branch security!
+
 		// Assign and return
 		sheetData.skills = skills;
 		sheetData.defenses = defenses;
