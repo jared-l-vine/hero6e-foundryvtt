@@ -82,13 +82,9 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     html.find('.textarea').each((id, inp) => {
 			this.changeValue = function(e) {
 				if (e.code === "Enter" || e.code === "Tab") {
-          console.log('hello there')
-
 					let changes = []
 					changes["data.rules"] = e.target.value
 					this.item.update(changes);
-
-          console.log(this.item.data)
 				}
 			}
 
