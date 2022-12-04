@@ -83,7 +83,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
 			this.changeValue = function(e) {
 				if (e.code === "Enter" || e.code === "Tab") {
 					let changes = []
-					changes["data.rules"] = e.target.value
+					changes[`${e.target.name}`] = e.target.value
 					this.item.update(changes);
 				}
 			}
