@@ -491,6 +491,7 @@
             <div class="tab tab-body powers" data-group="primary" data-tab="powers">
                 <header class="tab-header flexrow">
                     <span class="item-name flex2">Name</span>
+                    <span class="item-name flex2">End</span>
                     <span class="item-name flex2">Description</span>
                     <span></span>
                     <span class="item-controls">
@@ -504,6 +505,7 @@
                             <li class="item flexrow" data-item-id="{{powerItem._id}}">
                                 <div class="item-image"><img src="{{powerItem.img}}" width="24" height="24" /></div>
                                 <span>{{powerItem.name}}</span>
+                                <span>{{powerItem.data.end}}</span>
                                 <span>{{powerItem.data.rules}}</span>
                                 <div class="item-controls" data-group="mode">
                                     <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
@@ -542,6 +544,7 @@
             <div class="tab tab-body equipment" data-group="primary" data-tab="equipment">
                 <header class="tab-header flexrow">
                     <span class="item-name flex2">Name</span>
+                    <span class="item-name flex2">End</span>
                     <span class="item-name flex2">Description</span>
                     <span></span>
                     <span class="item-controls">
@@ -555,6 +558,7 @@
                             <li class="item flexrow" data-item-id="{{powerItem._id}}">
                                 <div class="item-image"><img src="{{powerItem.img}}" width="24" height="24" /></div>
                                 <span>{{powerItem.name}}</span>
+                                <span>{{powerItem.data.end}}</span>
                                 <span>{{powerItem.data.rules}}</span>
                                 <div class="item-controls" data-group="mode">
                                     <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
