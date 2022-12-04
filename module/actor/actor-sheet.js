@@ -547,7 +547,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 		let changes = [];
 
-		if (characterInfo.hasAttribute("CHARACTER_NAME")) {
+		if (characterInfo.getAttribute("CHARACTER_NAME") !== "") {
 			changes["name"] = characterInfo.getAttribute("CHARACTER_NAME");
         }
 
