@@ -65,7 +65,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			characteristic.key = key;
 			characteristic.name = CONFIG.HERO.characteristics[key];
 
-			let type = "other";
+			let type = "undefined";
 
 			if (characteristic.type != undefined) {
 				type = characteristic.type;

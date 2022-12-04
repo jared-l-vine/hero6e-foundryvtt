@@ -77,7 +77,8 @@
                 },
                 "spd": {
                     "value": 2,
-                    "base": 2
+                    "base": 2,
+                    "type": "other"
                 },
                 "pd": {
                     "value": 2,
@@ -91,7 +92,8 @@
                 },
                 "rec": {
                     "value": 4,
-                    "base": 4
+                    "base": 4,
+                    "type": "other"
                 },
                 "end": {
                     "value": 20,
