@@ -312,15 +312,20 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		}
 
 		html.find('input').each((id, inp) => {
-			this.changeValue = function(e) {
+			this.changeValue = async function(e) {
 				if (e.code === "Enter" || e.code === "Tab") {
-					if (isNaN(parseInt(e.target.value))) {
-						return
-					}
+					if (e.target.dataset.dtype === "Number") {
+						if (isNaN(parseInt(e.target.value))) {
+							return
+						}
 
-					let changes = []
-					changes[`data.characteristics.${e.target.name}`] = e.target.value
-					this.actor.data.update(changes);
+						let changes = [];
+						changes[`data.characteristics.${e.target.name}`] = e.target.value;
+						await this.actor.data.update(changes);
+					}
+					else {
+						this._updateName(e.target.value);
+					}
 				}
 			}
 
@@ -778,6 +783,13 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		if (game.settings.get("hero6e-foundryvtt-v2", "optionalManeuvers")) {
 			await loadCombatManeuvers(CONFIG.HERO.combatManeuversOptional, this.actor)
 		}
+    }
+
+	async _updateName(name) {
+		// this needed to be pulled out of the listener for some reason
+		let changes = [];
+		changes["name"] = name;
+		await this.actor.update(changes);
     }
 
 	async _onEditPowerItem(event) {
