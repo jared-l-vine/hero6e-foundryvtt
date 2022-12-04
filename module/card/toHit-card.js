@@ -199,8 +199,8 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         let DNM = 0; // damage negation mental
         let knockbackResistance = 0;
 
-        if (target.data.actorData.items.length > 0) {
-            for (let i of target.data.actorData.items) {
+        if (target.actor.items.length > 0) {
+            for (let i of target.actor.items) {
                 if (i.type === "defense" && i.data.active) {
                     switch (i.data.defenseType) {
                         case "pd":
@@ -479,7 +479,11 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
 
         let bodyDamage = body;
         let stunDamage = stun;
+
         let effects = "";
+        if (item.data.data.effects !== "") {
+            effects = item.data.data.effects + ";"
+        }
 
         // -------------------------------------------------
         // determine effective damage

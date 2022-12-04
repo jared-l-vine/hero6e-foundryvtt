@@ -154,6 +154,8 @@
         "templates": {
             "base": {
                 "description": "",
+                "rules": "",
+                "effects": "",
                 "cost": 0,
                 "modifiers": [],
                 "hdcid": "",
@@ -219,7 +221,6 @@
             "phase": 0,
             "ocv": "+0",
             "dcv": "+0",
-            "effects": "",
             "active": false
         },
         "movement": {
