@@ -172,7 +172,27 @@ export class HeroSystem6eItemSheet extends ItemSheet {
 
         let changes = {};
         changes[`data.items.${type}.${subLinkId}.${valueName}`] = value;
-        return await item.update(changes);
+        await item.update(changes);
+
+        if (type === "movement") {
+          let subItem = item.data.data.items[`${type}`][`${subLinkId}`];
+
+          changes = {};
+          changes[`data.items.${type}.${subLinkId}.value`] = parseInt(subItem.base) + parseInt(subItem.mod);
+
+          await item.update(changes);
+
+          // update item-sheet data
+          changes = {};
+          changes["data.base"] = parseInt(subItem.base);
+          changes["data.mod"] = parseInt(subItem.mod);
+          changes["data.value"] = parseInt(subItem.base) + parseInt(subItem.mod);
+          await this.item.data.update(changes);
+
+          this._render()
+        }
+
+        return
       }
     }
 
