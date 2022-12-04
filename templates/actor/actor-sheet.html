@@ -25,7 +25,7 @@
                 <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" height="100" width="100" />
                 <div class="header-fields">
                     <h1 class="charname">
-                        <input name="name" type="text" value="{{actor.name}}" placeholder="Name" />
+                        <input type="text" value="{{actor.name}}" placeholder="Name" />
                     </h1>
                 </div>
             </header>
@@ -38,7 +38,7 @@
                     <div class="resource-content flexrow flex-center flex-between">
                         <input type="text" name="body.value" value="{{data.characteristics.body.value}}" data-dtype="Number"/>
                         <span> / </span>
-                        <input type="text" value="{{data.characteristics.body.max}}" data-dtype="Number" />
+                        <input type="text" name="body.max" value="{{data.characteristics.body.max}}" data-dtype="Number" />
                     </div>
                 </div>
                 <div class="resource flex-group-center">
@@ -46,7 +46,7 @@
                     <div class="resource-content flexrow flex-center flex-between">
                         <input type="text" name="stun.value" value="{{data.characteristics.stun.value}}" data-dtype="Number" />
                         <span> / </span>
-                        <input type="text" value="{{data.characteristics.stun.max}}" data-dtype="Number" />
+                        <input type="text" name="stun.max" value="{{data.characteristics.stun.max}}" data-dtype="Number" />
                     </div>
                 </div>
                 <div class="resource flex-group-center">
@@ -54,7 +54,7 @@
                     <div class="resource-content flexrow flex-center flex-between">
                         <input type="text" name="end.value" value="{{data.characteristics.end.value}}" data-dtype="Number" />
                         <span> / </span>
-                        <input type="text" value="{{data.characteristics.end.max}}" data-dtype="Number" />
+                        <input type="text" name="end.max" value="{{data.characteristics.end.max}}" data-dtype="Number" />
                     </div>
                 </div>
                 <button type="button" class="recovery-button" style="height:40px;width:90%;align-self:center;">Take Recovery</button>
