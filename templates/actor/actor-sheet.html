@@ -1,7 +1,7 @@
 <form class="hero {{cssClass}} flexcol actor-sheet" autocomplete="off">
     <nav class="sheet-edit-tabs sheet-tabs tabs" data-group="mode">
-        <a class="item" data-tab="play">Play</a>
-        <a class="item" data-tab="edit">Edit</a>
+        <a class="item edit-settings" data-tab="play" data-edit="disabled">Play</a>
+        <a class="item edit-settings" data-tab="edit" data-edit="hello">Edit</a>
         <label class="upload-button">
             <span>Upload .HDC</span>
             <input type="file" />
@@ -38,7 +38,7 @@
                     <div class="resource-content flexrow flex-center flex-between">
                         <input type="text" name="body.value" value="{{data.characteristics.body.value}}" data-dtype="Number"/>
                         <span> / </span>
-                        <input type="text" name="body.max" value="{{data.characteristics.body.max}}" data-dtype="Number" />
+                        <input type="text" name="body.max" class="conditional-input" value="{{data.characteristics.body.max}}" data-dtype="Number" disabled/>
                     </div>
                 </div>
                 <div class="resource flex-group-center">
@@ -46,7 +46,7 @@
                     <div class="resource-content flexrow flex-center flex-between">
                         <input type="text" name="stun.value" value="{{data.characteristics.stun.value}}" data-dtype="Number" />
                         <span> / </span>
-                        <input type="text" name="stun.max" value="{{data.characteristics.stun.max}}" data-dtype="Number" />
+                        <input type="text" name="stun.max" class="conditional-input" value="{{data.characteristics.stun.max}}" data-dtype="Number" disabled/>
                     </div>
                 </div>
                 <div class="resource flex-group-center">
@@ -54,16 +54,21 @@
                     <div class="resource-content flexrow flex-center flex-between">
                         <input type="text" name="end.value" value="{{data.characteristics.end.value}}" data-dtype="Number" />
                         <span> / </span>
-                        <input type="text" name="end.max" value="{{data.characteristics.end.max}}" data-dtype="Number" />
+                        <input type="text" name="end.max" class="conditional-input" value="{{data.characteristics.end.max}}" data-dtype="Number" disabled/>
                     </div>
                 </div>
                 <button type="button" class="recovery-button" style="height:40px;width:90%;align-self:center;">Take Recovery</button>
             </div>
-            <div class="characteristic flexrow flex-group-center">
-                {{#each characteristicSet.combat as |characteristic key|}}
-                <label class="resource-label">{{characteristic.name}}</label>
-                <input type="text" name="{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" />
-                {{/each}}
+            <div class="characteristics characteristic-group grid grid-2col flex1 marginless">
+                    {{#each characteristicSet.combat as |characteristic key|}}
+                        <div class="characteristic flexrow flex-group-center">
+                            <label class="resource-label">{{characteristic.name}}</label>
+                            <input type="text" name="{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" />
+                            <span>/</span>
+                            <input type="text" name="{{characteristic.key}}.base" class="conditional-input" value="{{characteristic.base}}" data-dtype="Number" disabled/>
+                        </div>
+                    {{/each}}
+                </div>
             </div>
         </section>
 
@@ -88,11 +93,13 @@
         <section class="sheet-body">
             {{!-- Characteristics Tab --}}
             <div class="tab tab-body powers" data-group="primary" data-tab="characteristics">
-                <div class="characteristics characteristic-group grid grid-3col flex2 marginless">
+                <div class="characteristics characteristic-group grid grid-2col flex2 marginless">
                     {{#each characteristicSet.rollable as |characteristic key|}}
                     <div class="flexrow flex-group-center characteristic">
                         <label class="resource-label">{{characteristic.name}}</label>
                         <input type="text" name="{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" />
+                        <span>/</span>
+                        <input type="text" name="{{characteristic.key}}.base" class="conditional-input" value="{{characteristic.base}}" data-dtype="Number" disabled/>
                         <button type="button" class="characteristic-roll rollable-characteristic" data-roll="3d6" data-label="{{characteristic.key}}" >{{numberFormat characteristic.roll decimals=0 sign=false}}-</button>
                     </div>
                     {{/each}}
@@ -102,14 +109,16 @@
                     <div class="characteristic flexrow flex-group-center">
                         <label class="resource-label">{{characteristic.name}}</label>
                         <input type="text" name="{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" />
+                        <span>/</span>
+                        <input type="text" name="{{characteristic.key}}.base" class="conditional-input" value="{{characteristic.base}}" data-dtype="Number" disabled/>
                     </div>
                     {{/each}}
-                </div>
-                <div class="characteristics characteristic-group grid grid-2col flex1 marginless">
                     {{#each characteristicSet.other as |characteristic key|}}
                     <div class="characteristic flexrow flex-group-center">
                         <label class="resource-label">{{characteristic.name}}</label>
                         <input type="text" name="{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" />
+                        <span>/</span>
+                        <input type="text" name="{{characteristic.key}}.base" class="conditional-input" value="{{characteristic.base}}" data-dtype="Number" disabled/>
                     </div>
                     {{/each}}
                 </div>

@@ -243,6 +243,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		} else {
 			sheetData.hitLocTracking = false;
 		}
+
+		sheetData.edit = false;
 	}
 
 	static _prepareDefenseItem(i, item) {
@@ -263,6 +265,18 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 		// Everything below here is only needed if the sheet is editable
 		if (!this.options.editable) return;
+
+		// Edit sheet control
+		html.find('.edit-settings').click(e => {
+			html.find('.conditional-input').each((id, inp) => {
+				console.log('hello!')
+				if (e.target.dataset.tab === "play") {
+					inp.disabled = true;
+				} else {
+					inp.disabled = false;
+				}
+			});
+		});
 
 		// Add Inventory Item
 		html.find('.item-create').click(this._onItemCreate.bind(this));
