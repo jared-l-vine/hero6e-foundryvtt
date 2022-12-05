@@ -270,7 +270,7 @@
 .hero .sheet-body .tab,
 .hero .sheet-body .tab .editor {
   height: 100%;
-  overflow: auto;
+  /*overflow-y: scroll;*/
 }
 
 .hero .tox .tox-editor-container {
@@ -326,7 +326,7 @@
   list-style: none;
   margin: 7px 0;
   padding: 0;
-  height:100%;
+  height: 100%;
 }
 
 .hero .items-list .item-header {
@@ -336,10 +336,10 @@
 }
 
 .hero .items-list .item {
-  height: 30px;
+  height: auto;
   line-height: 24px;
   padding: 3px 0;
-  border-bottom: 1px solid #BBB;
+  border-top: 1px solid #BBB;
 }
 
 .hero .items-list .item .item-image,
