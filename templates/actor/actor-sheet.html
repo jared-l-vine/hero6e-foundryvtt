@@ -1,7 +1,7 @@
 <form class="hero {{cssClass}} flexcol actor-sheet" autocomplete="off">
     <nav class="sheet-edit-tabs sheet-tabs tabs" data-group="mode">
-        <a class="item" data-tab="play">Play</a>
-        <a class="item" data-tab="edit">Edit</a>
+        <a class="item edit-settings" data-tab="play" data-edit="disabled">Play</a>
+        <a class="item edit-settings" data-tab="edit" data-edit="hello">Edit</a>
         <label class="upload-button">
             <span>Upload .HDC</span>
             <input type="file" />
@@ -14,7 +14,7 @@
                 <img class="profile-img borderless" src="{{actor.img}}" title="{{actor.name}}" height="100" width="100" />
                 <div class="header-fields">
                     <h1 class="charname">
-                        <input type="text" value="{{actor.name}}" placeholder="Name" />
+                        <input type="text" value="{{actor.name}}" placeholder="Name" disabled/>
                     </h1>
                 </div>
             </header>
@@ -25,7 +25,7 @@
                 <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" height="100" width="100" />
                 <div class="header-fields">
                     <h1 class="charname">
-                        <input name="name" type="text" value="{{actor.name}}" placeholder="Name" />
+                        <input type="text" value="{{actor.name}}" placeholder="Name"/>
                     </h1>
                 </div>
             </header>
@@ -38,7 +38,7 @@
                     <div class="resource-content flexrow flex-center flex-between">
                         <input type="text" name="body.value" value="{{data.characteristics.body.value}}" data-dtype="Number"/>
                         <span> / </span>
-                        <input type="text" value="{{data.characteristics.body.max}}" data-dtype="Number" />
+                        <input type="text" name="body.max" class="conditional-input" value="{{data.characteristics.body.max}}" data-dtype="Number" disabled/>
                     </div>
                 </div>
                 <div class="resource flex-group-center">
@@ -46,7 +46,7 @@
                     <div class="resource-content flexrow flex-center flex-between">
                         <input type="text" name="stun.value" value="{{data.characteristics.stun.value}}" data-dtype="Number" />
                         <span> / </span>
-                        <input type="text" value="{{data.characteristics.stun.max}}" data-dtype="Number" />
+                        <input type="text" name="stun.max" class="conditional-input" value="{{data.characteristics.stun.max}}" data-dtype="Number" disabled/>
                     </div>
                 </div>
                 <div class="resource flex-group-center">
@@ -54,23 +54,30 @@
                     <div class="resource-content flexrow flex-center flex-between">
                         <input type="text" name="end.value" value="{{data.characteristics.end.value}}" data-dtype="Number" />
                         <span> / </span>
-                        <input type="text" value="{{data.characteristics.end.max}}" data-dtype="Number" />
+                        <input type="text" name="end.max" class="conditional-input" value="{{data.characteristics.end.max}}" data-dtype="Number" disabled/>
                     </div>
                 </div>
                 <button type="button" class="recovery-button" style="height:40px;width:90%;align-self:center;">Take Recovery</button>
             </div>
-            <div class="characteristic flexrow flex-group-center">
-                {{#each characteristicSet.combat as |characteristic key|}}
-                <label class="resource-label">{{characteristic.name}}</label>
-                <input type="text" name="{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" />
-                {{/each}}
+            <div class="characteristics characteristic-group grid grid-2col flex1 marginless">
+                    {{#each characteristicSet.combat as |characteristic key|}}
+                        <div class="characteristic flexrow flex-group-center">
+                            <label class="resource-label">{{characteristic.name}}</label>
+                            <input type="text" name="{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" />
+                            <span>/</span>
+                            <input type="text" name="{{characteristic.key}}.base" class="conditional-input" value="{{characteristic.base}}" data-dtype="Number" disabled/>
+                        </div>
+                    {{/each}}
+                </div>
             </div>
         </section>
 
         {{!-- Sheet Tab Navigation --}}
         <nav class="sheet-tabs sheet-item-tabs tabs" data-group="primary">
             <a class="item" data-tab="characteristics">Characteristics</a>
+            {{#if hitLocTracking}}
             <a class="item" data-tab="hitLoc">Hit Locations</a>
+            {{/if}}
             <a class="item" data-tab="movement">Movement</a>
             <a class="item" data-tab="maneuvers">Maneuvers</a>
             <a class="item" data-tab="powers">Powers</a>
@@ -86,11 +93,13 @@
         <section class="sheet-body">
             {{!-- Characteristics Tab --}}
             <div class="tab tab-body powers" data-group="primary" data-tab="characteristics">
-                <div class="characteristics characteristic-group grid grid-3col flex2 marginless">
+                <div class="characteristics characteristic-group grid grid-2col flex2 marginless">
                     {{#each characteristicSet.rollable as |characteristic key|}}
                     <div class="flexrow flex-group-center characteristic">
                         <label class="resource-label">{{characteristic.name}}</label>
                         <input type="text" name="{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" />
+                        <span>/</span>
+                        <input type="text" name="{{characteristic.key}}.base" class="conditional-input" value="{{characteristic.base}}" data-dtype="Number" disabled/>
                         <button type="button" class="characteristic-roll rollable-characteristic" data-roll="3d6" data-label="{{characteristic.key}}" >{{numberFormat characteristic.roll decimals=0 sign=false}}-</button>
                     </div>
                     {{/each}}
@@ -100,14 +109,16 @@
                     <div class="characteristic flexrow flex-group-center">
                         <label class="resource-label">{{characteristic.name}}</label>
                         <input type="text" name="{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" />
+                        <span>/</span>
+                        <input type="text" name="{{characteristic.key}}.base" class="conditional-input" value="{{characteristic.base}}" data-dtype="Number" disabled/>
                     </div>
                     {{/each}}
-                </div>
-                <div class="characteristics characteristic-group grid grid-2col flex1 marginless">
                     {{#each characteristicSet.other as |characteristic key|}}
                     <div class="characteristic flexrow flex-group-center">
                         <label class="resource-label">{{characteristic.name}}</label>
                         <input type="text" name="{{characteristic.key}}.value" value="{{characteristic.value}}" data-dtype="Number" />
+                        <span>/</span>
+                        <input type="text" name="{{characteristic.key}}.base" class="conditional-input" value="{{characteristic.base}}" data-dtype="Number" disabled/>
                     </div>
                     {{/each}}
                 </div>
@@ -489,6 +500,7 @@
             <div class="tab tab-body powers" data-group="primary" data-tab="powers">
                 <header class="tab-header flexrow">
                     <span class="item-name flex2">Name</span>
+                    <span class="item-name flex2">End</span>
                     <span class="item-name flex2">Description</span>
                     <span></span>
                     <span class="item-controls">
@@ -502,6 +514,7 @@
                             <li class="item flexrow" data-item-id="{{powerItem._id}}">
                                 <div class="item-image"><img src="{{powerItem.img}}" width="24" height="24" /></div>
                                 <span>{{powerItem.name}}</span>
+                                <span>{{powerItem.data.end}}</span>
                                 <span>{{powerItem.data.rules}}</span>
                                 <div class="item-controls" data-group="mode">
                                     <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
@@ -529,6 +542,11 @@
                                     <li class="list-item"><span>{{item.name}}</span></li>
                                     {{/if}}
                                 {{/each}}
+                                {{#each powerItem.data.items.movement as |item id|}}
+                                    {{#if item.visible}}
+                                    <li class="list-item"><span>{{item.name}}</span></li>
+                                    {{/if}}
+                                {{/each}}
                             </ul>
                             {{/each}}
                         </ol>
@@ -540,6 +558,7 @@
             <div class="tab tab-body equipment" data-group="primary" data-tab="equipment">
                 <header class="tab-header flexrow">
                     <span class="item-name flex2">Name</span>
+                    <span class="item-name flex2">End</span>
                     <span class="item-name flex2">Description</span>
                     <span></span>
                     <span class="item-controls">
@@ -553,6 +572,7 @@
                             <li class="item flexrow" data-item-id="{{powerItem._id}}">
                                 <div class="item-image"><img src="{{powerItem.img}}" width="24" height="24" /></div>
                                 <span>{{powerItem.name}}</span>
+                                <span>{{powerItem.data.end}}</span>
                                 <span>{{powerItem.data.rules}}</span>
                                 <div class="item-controls" data-group="mode">
                                     <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>

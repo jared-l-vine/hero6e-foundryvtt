@@ -50,14 +50,19 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
             effectiveStr = form.effectiveStr.value;
         }
 
+        let aim = "";
+        if ("aim" in form) {
+            aim = form.aim.value;
+        }
+
         let data = {
             'toHitModTemp': form.toHitMod.value,
-            'aim': form.aim.value,
+            'aim': aim,
             'effectiveStr': effectiveStr,
             'damageMod': form.damageMod.value
         };
 
-        if (game.settings.get("hero6e-foundryvtt-experimental", "knockback")) {
+        if (game.settings.get("hero6e-foundryvtt-v2", "knockback")) {
             data['knockbackMod'] = form.knockbackMod.value;
         }
 
@@ -72,16 +77,16 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         // Render the chat card template
         const token = actor.token;
 
-        if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations")) {
+        if (game.settings.get("hero6e-foundryvtt-v2", "hit locations")) {
             stateData['useHitLoc'] = true;
             stateData['hitLoc'] = CONFIG.HERO.hitLocations;
         }
 
-        if (game.settings.get("hero6e-foundryvtt-experimental", "knockback")) {
+        if (game.settings.get("hero6e-foundryvtt-v2", "knockback")) {
             stateData['useKnockback'] = true;
         }
 
-        if (game.settings.get("hero6e-foundryvtt-experimental", "use endurance")) {
+        if (game.settings.get("hero6e-foundryvtt-v2", "use endurance")) {
             stateData['useEnd'] = true;
         }
 
@@ -98,7 +103,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
             state: stateData,
         };
 
-        var path = "systems/hero6e-foundryvtt-experimental/templates/attack/item-attack-card.hbs";
+        var path = "systems/hero6e-foundryvtt-v2/templates/attack/item-attack-card.hbs";
 
         return await renderTemplate(path, templateData);
     }
@@ -137,7 +142,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
             }
 
             /*
-            if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations")) {
+            if (game.settings.get("hero6e-foundryvtt-v2", "hit locations")) {
                 data['buttons'] = Object.assign({}, 
                     {
                         hitLoc : {

@@ -4,13 +4,24 @@
 
             <div class="header-details flexrow">
                 <h1 class="charname">
-                    <input name="name" type="text" value="{{item.name}}" placeholder="Defense Name" />
+                    <input name="name" type="text" value="{{item.name}}" placeholder="Attack Name" />
                 </h1>
             </div>
         </header>
 
     {{!-- Sheet Body --}}
     <section class="sheet-body">
+        <textarea
+            placeholder="Attack Description"
+            class="power-card-power-description textarea input"
+            name="data.rules"
+        >{{item.data.rules}}</textarea>
+
+        <div class="form-group">
+            <label>END Cost</label>
+            <input type="text" name="data.end" value="{{data.end}}" data-dtype="Number" />
+        </div>
+
         <div class="form-group">
             <label>Class</label>
             <select name="data.class" data-dtype="text">
@@ -67,11 +78,6 @@
         </div>
 
         <div class="form-group">
-            <label>END Cost</label>
-            <input type="text" name="data.end" value="{{data.end}}" data-dtype="Number" />
-        </div>
-
-        <div class="form-group">
             <label>Does Knockback</label>
             <input type="checkbox" name="data.knockback" {{checked data.knockback}} data-dtype="Boolean" />
         </div>
@@ -79,6 +85,15 @@
         <div class="form-group">
             <label>Uses Strength</label>
             <input type="checkbox" name="data.usesStrength" {{checked data.usesStrength}} data-dtype="Boolean" />
+        </div>
+
+        <div class="form-group">
+            <label>Custom Effects</label>
+            <textarea
+                placeholder="Attack Description"
+                class="power-card-power-description textarea input"
+                name="data.effects"
+            >{{item.data.effects}}</textarea>
         </div>
     </section>
 </form>

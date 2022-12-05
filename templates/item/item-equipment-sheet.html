@@ -4,15 +4,21 @@
 
         <div class="header-details flexrow">
             <h1 class="charname">
-                <input name="name" type="text" value="{{item.name}}" placeholder="Defense Name" />
+                <input name="name" type="text" value="{{item.name}}" placeholder="Equipment Name" />
             </h1>
         </div>
     </header>
 
     <section class="sheet-body">
+        <div class="flexrow">
+            <h4 class="item-name">End Cost:</h4>
+            <input type="text" name="data.end" value="{{item.data.end}}" data-dtype="Number" />
+        </div>
+
         <textarea
             placeholder="Equipment Description"
             class="power-card-power-description textarea input"
+            name="data.rules"
         >{{item.data.rules}}</textarea>
 
         <header class="iteam-header flexrow">

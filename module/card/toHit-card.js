@@ -81,7 +81,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             //targetTokenId: targetToken?.uuid || null,
         };
 
-        var path = "systems/hero6e-foundryvtt-experimental/templates/chat/item-toHit-card.html";
+        var path = "systems/hero6e-foundryvtt-v2/templates/chat/item-toHit-card.html";
 
         return await renderTemplate(path, templateData);
     }
@@ -117,7 +117,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         let hitCharacteristic = actor.data.data.characteristics[itemData.uses].value;
         let toHitChar = CONFIG.HERO.defendsWith[itemData.targets];
 
-        let automation = game.settings.get("hero6e-foundryvtt-experimental", "automation");
+        let automation = game.settings.get("hero6e-foundryvtt-v2", "automation");
 
         // -------------------------------------------------
         // attack roll
@@ -132,7 +132,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         let rollEquation = "11 + " + hitCharacteristic;
         rollEquation = modifyRollEquation(rollEquation, item.data.data.toHitMod);
         rollEquation = modifyRollEquation(rollEquation, data.toHitModTemp);
-        if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations") && data.aim !== "none" && !noHitLocationsPower) {
+        if (game.settings.get("hero6e-foundryvtt-v2", "hit locations") && data.aim !== "none" && !noHitLocationsPower) {
             rollEquation = modifyRollEquation(rollEquation, CONFIG.HERO.hitLocations[data.aim][3]);
         }
         rollEquation = rollEquation + " - 3D6";
@@ -147,7 +147,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
 
         let useEnd = false;
         let enduranceText = "";
-        if (game.settings.get("hero6e-foundryvtt-experimental", "use endurance")) {
+        if (game.settings.get("hero6e-foundryvtt-v2", "use endurance")) {
             useEnd = true;
             let valueEnd = actor.data.data.characteristics.end.value
             let itemEnd = item.data.data.end;
@@ -199,8 +199,8 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         let DNM = 0; // damage negation mental
         let knockbackResistance = 0;
 
-        if (target.data.actorData.items.length > 0) {
-            for (let i of target.data.actorData.items) {
+        if (target.actor.items.length > 0) {
+            for (let i of target.actor.items) {
                 if (i.type === "defense" && i.data.active) {
                     switch (i.data.defenseType) {
                         case "pd":
@@ -343,7 +343,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         let hitLocationModifiers = [1, 1, 1, 0];
         let hitLocation = "None";
         let useHitLoc = false;
-        if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations") && !noHitLocationsPower) {
+        if (game.settings.get("hero6e-foundryvtt-v2", "hit locations") && !noHitLocationsPower) {
             useHitLoc = true;
 
             hitLocation = data.aim;
@@ -355,7 +355,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
 
             hitLocationModifiers = CONFIG.HERO.hitLocations[hitLocation];
 
-            if (game.settings.get("hero6e-foundryvtt-experimental", "hitLocTracking") === "all") {
+            if (game.settings.get("hero6e-foundryvtt-v2", "hitLocTracking") === "all") {
                 let sidedLocations = ["Hand", "Shoulder", "Arm", "Thigh", "Leg", "Foot"]
                 if (sidedLocations.includes(hitLocation)) {
                     let sideRoll = new Roll("1D2", actor.getRollData());
@@ -449,7 +449,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             let renderedStunResult = await stunResult.render();
             renderedStunMultiplierRoll = renderedStunResult;
 
-            if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations") && !noHitLocationsPower) {
+            if (game.settings.get("hero6e-foundryvtt-v2", "hit locations") && !noHitLocationsPower) {
                 stunMultiplier =  hitLocationModifiers[0];
             } else {
                 stunMultiplier = stunResult.total;
@@ -479,7 +479,11 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
 
         let bodyDamage = body;
         let stunDamage = stun;
+
         let effects = "";
+        if (item.data.data.effects !== "") {
+            effects = item.data.data.effects + ";"
+        }
 
         // -------------------------------------------------
         // determine effective damage
@@ -497,7 +501,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         body = body < 0 ? 0 : body;
 
         let hitLocText = "";
-        if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations") && !noHitLocationsPower) {
+        if (game.settings.get("hero6e-foundryvtt-v2", "hit locations") && !noHitLocationsPower) {
             if(itemData.killing) {
                 // killing attacks apply hit location multiplier after resistant damage protection has been subtracted
                 body = body * hitLocationModifiers[2];
@@ -518,7 +522,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         let useKnockBack = false;
         let knockback = "";
         let knockbackRenderedResult = null;
-        if (game.settings.get("hero6e-foundryvtt-experimental", "knockback") && itemData.knockback) {
+        if (game.settings.get("hero6e-foundryvtt-v2", "knockback") && itemData.knockback) {
             useKnockBack = true;
             // body - 2d6 m
             let knockBackEquation = body + " - 2D6"
@@ -560,7 +564,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         body = Math.round(body)
 
         // check if target is stunned
-        if (game.settings.get("hero6e-foundryvtt-experimental", "stunned")) {
+        if (game.settings.get("hero6e-foundryvtt-v2", "stunned")) {
             // determine if target was Stunned
             if (stun > targetActorChars.con.value) {
                 effects = effects + "inflicts Stunned; "
@@ -582,7 +586,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
                     "data.characteristics.body.value": newBody,
                 }
 
-                if (game.settings.get("hero6e-foundryvtt-experimental", "hitLocTracking") === "all") {
+                if (game.settings.get("hero6e-foundryvtt-v2", "hitLocTracking") === "all") {
                     let bodyPartHP = targetActorChars.body.loc[hitLocation] + body
                     changes["data.characteristics.body.loc." + hitLocation] = bodyPartHP;
 

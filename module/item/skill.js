@@ -10,7 +10,7 @@ async function _renderSkillForm(item, actor, stateData) {
 		state: stateData,
 	};
 
-	var path = "systems/hero6e-foundryvtt-experimental/templates/skill/item-skill-card.hbs";
+	var path = "systems/hero6e-foundryvtt-v2/templates/skill/item-skill-card.hbs";
 
 	return await renderTemplate(path, templateData);
 }

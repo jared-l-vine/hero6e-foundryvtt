@@ -577,7 +577,7 @@ export class HeroSystem6eCombat extends Combat {
 
 export class HeroSystem6eCombatTracker extends CombatTracker {
     static get defaultOptions() {
-        var path = "systems/hero6e-foundryvtt-experimental/templates/combat/combat-tracker.html";
+        var path = "systems/hero6e-foundryvtt-v2/templates/combat/combat-tracker.html";
         return foundry.utils.mergeObject(super.defaultOptions, {
             template: path,
         });

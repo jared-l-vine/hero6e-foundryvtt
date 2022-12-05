@@ -77,7 +77,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
             targetTokenId: targetToken?.uuid || null,
         };
 
-        var path = "systems/hero6e-foundryvtt-experimental/templates/chat/item-damage-card.html";
+        var path = "systems/hero6e-foundryvtt-v2/templates/chat/item-damage-card.html";
 
         return await renderTemplate(path, templateData);
     }
@@ -104,7 +104,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
         return game.actors.get(targetId) || null;
     }
 
-    static DAMAGE_TEMPLATE = "systems/hero6e-foundryvtt-experimental/templates/chat/damage-dialog.html";
+    static DAMAGE_TEMPLATE = "systems/hero6e-foundryvtt-v2/templates/chat/damage-dialog.html";
 
     static async createFromAttackCard(attackCard, target) {
         let item = attackCard.item;
@@ -204,7 +204,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
 
         let minimumDamage = state['countedBody'];
 
-        if (game.settings.get("hero6e-foundryvtt-experimental", "hit locations")) {
+        if (game.settings.get("hero6e-foundryvtt-v2", "hit locations")) {
             let locationRoll = new Roll("3D6")
             let locationResult = locationRoll.roll().total
         }
