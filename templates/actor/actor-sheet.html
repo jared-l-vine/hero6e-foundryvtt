@@ -533,6 +533,11 @@
                                     <li class="list-item"><span>{{item.name}}</span></li>
                                     {{/if}}
                                 {{/each}}
+                                {{#each powerItem.data.items.movement as |item id|}}
+                                    {{#if item.visible}}
+                                    <li class="list-item"><span>{{item.name}}</span></li>
+                                    {{/if}}
+                                {{/each}}
                             </ul>
                             {{/each}}
                         </ol>

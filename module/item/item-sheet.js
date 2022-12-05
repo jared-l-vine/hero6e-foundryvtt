@@ -163,6 +163,18 @@ export class HeroSystem6eItemSheet extends ItemSheet {
         let subLinkId = this.item.data.data.subLinkId;
 
         let item = game.items.get(linkId);
+
+        if (item === undefined) {
+          // item is not a game item / item belongs to an actor
+          // sub items don't know the actor they belong to
+          for (const key of game.actors.keys()) {
+            let actor = game.actors.get(key);
+            if (actor.items.has(linkId)) {
+              item = actor.items.get(linkId);
+            }
+          }
+        }
+
         let type = this.item.type;
 
         let valueNameSplit = valueName.split(".");
@@ -183,7 +195,8 @@ export class HeroSystem6eItemSheet extends ItemSheet {
           await item.update(changes);
 
           // update item-sheet data
-          changes = {};
+          changes = {};          
+          changes["name"] = subItem.name;
           changes["data.base"] = parseInt(subItem.base);
           changes["data.mod"] = parseInt(subItem.mod);
           changes["data.value"] = parseInt(subItem.base) + parseInt(subItem.mod);
