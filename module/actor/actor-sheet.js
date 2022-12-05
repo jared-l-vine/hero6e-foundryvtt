@@ -65,7 +65,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 			characteristic.key = key;
 			characteristic.name = CONFIG.HERO.characteristics[key];
 
-			let type = "other";
+			let type = "undefined";
 
 			if (characteristic.type != undefined) {
 				type = characteristic.type;
@@ -243,6 +243,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		} else {
 			sheetData.hitLocTracking = false;
 		}
+
+		sheetData.edit = false;
 	}
 
 	static _prepareDefenseItem(i, item) {
@@ -263,6 +265,18 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 		// Everything below here is only needed if the sheet is editable
 		if (!this.options.editable) return;
+
+		// Edit sheet control
+		html.find('.edit-settings').click(e => {
+			html.find('.conditional-input').each((id, inp) => {
+				console.log('hello!')
+				if (e.target.dataset.tab === "play") {
+					inp.disabled = true;
+				} else {
+					inp.disabled = false;
+				}
+			});
+		});
 
 		// Add Inventory Item
 		html.find('.item-create').click(this._onItemCreate.bind(this));
@@ -312,15 +326,20 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		}
 
 		html.find('input').each((id, inp) => {
-			this.changeValue = function(e) {
+			this.changeValue = async function(e) {
 				if (e.code === "Enter" || e.code === "Tab") {
-					if (isNaN(parseInt(e.target.value))) {
-						return
-					}
+					if (e.target.dataset.dtype === "Number") {
+						if (isNaN(parseInt(e.target.value))) {
+							return
+						}
 
-					let changes = []
-					changes[`data.characteristics.${e.target.name}`] = e.target.value
-					this.actor.data.update(changes);
+						let changes = [];
+						changes[`data.characteristics.${e.target.name}`] = e.target.value;
+						await this.actor.data.update(changes);
+					}
+					else {
+						this._updateName(e.target.value);
+					}
 				}
 			}
 
@@ -547,7 +566,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
 		let changes = [];
 
-		if (characterInfo.hasAttribute("CHARACTER_NAME")) {
+		if (characterInfo.getAttribute("CHARACTER_NAME") !== "") {
 			changes["name"] = characterInfo.getAttribute("CHARACTER_NAME");
         }
 
@@ -778,6 +797,13 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		if (game.settings.get("hero6e-foundryvtt-v2", "optionalManeuvers")) {
 			await loadCombatManeuvers(CONFIG.HERO.combatManeuversOptional, this.actor)
 		}
+    }
+
+	async _updateName(name) {
+		// this needed to be pulled out of the listener for some reason
+		let changes = [];
+		changes["name"] = name;
+		await this.actor.update(changes);
     }
 
 	async _onEditPowerItem(event) {

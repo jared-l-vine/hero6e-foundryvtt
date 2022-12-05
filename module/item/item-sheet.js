@@ -82,13 +82,9 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     html.find('.textarea').each((id, inp) => {
 			this.changeValue = function(e) {
 				if (e.code === "Enter" || e.code === "Tab") {
-          console.log('hello there')
-
 					let changes = []
-					changes["data.rules"] = e.target.value
+					changes[`${e.target.name}`] = e.target.value
 					this.item.update(changes);
-
-          console.log(this.item.data)
 				}
 			}
 
@@ -167,6 +163,18 @@ export class HeroSystem6eItemSheet extends ItemSheet {
         let subLinkId = this.item.data.data.subLinkId;
 
         let item = game.items.get(linkId);
+
+        if (item === undefined) {
+          // item is not a game item / item belongs to an actor
+          // sub items don't know the actor they belong to
+          for (const key of game.actors.keys()) {
+            let actor = game.actors.get(key);
+            if (actor.items.has(linkId)) {
+              item = actor.items.get(linkId);
+            }
+          }
+        }
+
         let type = this.item.type;
 
         let valueNameSplit = valueName.split(".");
@@ -176,7 +184,28 @@ export class HeroSystem6eItemSheet extends ItemSheet {
 
         let changes = {};
         changes[`data.items.${type}.${subLinkId}.${valueName}`] = value;
-        return await item.update(changes);
+        await item.update(changes);
+
+        if (type === "movement") {
+          let subItem = item.data.data.items[`${type}`][`${subLinkId}`];
+
+          changes = {};
+          changes[`data.items.${type}.${subLinkId}.value`] = parseInt(subItem.base) + parseInt(subItem.mod);
+
+          await item.update(changes);
+
+          // update item-sheet data
+          changes = {};          
+          changes["name"] = subItem.name;
+          changes["data.base"] = parseInt(subItem.base);
+          changes["data.mod"] = parseInt(subItem.mod);
+          changes["data.value"] = parseInt(subItem.base) + parseInt(subItem.mod);
+          await this.item.data.update(changes);
+
+          this._render()
+        }
+
+        return
       }
     }
 

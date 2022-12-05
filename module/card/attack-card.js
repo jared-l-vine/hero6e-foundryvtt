@@ -50,9 +50,14 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
             effectiveStr = form.effectiveStr.value;
         }
 
+        let aim = "";
+        if ("aim" in form) {
+            aim = form.aim.value;
+        }
+
         let data = {
             'toHitModTemp': form.toHitMod.value,
-            'aim': form.aim.value,
+            'aim': aim,
             'effectiveStr': effectiveStr,
             'damageMod': form.damageMod.value
         };
