@@ -80,11 +80,35 @@ export class HeroSystem6eItemSheet extends ItemSheet {
 
     // Item Description
     html.find('.textarea').each((id, inp) => {
-			this.changeValue = function(e) {
+			this.changeValue = async function(e) {
 				if (e.code === "Enter" || e.code === "Tab") {
-					let changes = []
-					changes[`${e.target.name}`] = e.target.value
-					this.item.update(changes);
+          if (! "linkId" in this.item.data.data || this.item.data.data.linkId === undefined) {
+            let changes = [];
+            changes[`${e.target.name}`] = e.target.value;
+            await this.item.update(changes);
+          } else {
+            let type = this.item.type;
+
+            let linkId = this.item.data.data.linkId;
+            let subLinkId = this.item.data.data.subLinkId;
+    
+            let item = game.items.get(linkId);
+            
+            if (item === undefined) {
+              // item is not a game item / item belongs to an actor
+              // sub items don't know the actor they belong to
+              for (const key of game.actors.keys()) {
+                let actor = game.actors.get(key);
+                if (actor.items.has(linkId)) {
+                  item = actor.items.get(linkId);
+                }
+              }
+            }
+
+            let changes = {};
+            changes[`data.items.${type}.${subLinkId}.rules`] = e.target.value;
+            await item.update(changes);
+          }
 				}
 			}
 
@@ -127,7 +151,6 @@ export class HeroSystem6eItemSheet extends ItemSheet {
       // this is necessary for item images
       if (valueName === "img") {
         value = event.currentTarget.currentSrc;
-        //console.log(event.currentTarget.currentSrc.replace('http://localhost:30000/', ''))
       }
 
       // this is necessary to make sure check boxes work
