@@ -152,7 +152,7 @@
         }
     },
     "Item": {
-        "types": [ "skill", "perk", "talent", "martialart", "power", "complication", "equipment", "attack", "defense", "maneuver", "movement" ],
+        "types": [ "skill", "perk", "talent", "martialart", "power", "complication", "equipment", "attack", "defense", "maneuver", "movement", "misc" ],
         "templates": {
             "base": {
                 "description": "",
