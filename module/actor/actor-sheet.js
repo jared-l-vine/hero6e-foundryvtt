@@ -269,7 +269,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 		// Edit sheet control
 		html.find('.edit-settings').click(e => {
 			html.find('.conditional-input').each((id, inp) => {
-				console.log('hello!')
 				if (e.target.dataset.tab === "play") {
 					inp.disabled = true;
 				} else {
