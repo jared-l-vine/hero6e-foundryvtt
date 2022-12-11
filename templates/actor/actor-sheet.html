@@ -211,6 +211,7 @@
                     <span class="item-header flex2">Dmg.</span>
                     <span class="item-header flex3">Res.</span>
                     <span class="item-header">END</span>
+                    <span class="item-header">Roll</span>
                     <span class="item-controls">
                         <a class="item-control item-create" title="Create attack" data-type="attack"><i class="fas fa-plus"></i> Add attack</a>
                     </span>
@@ -219,13 +220,14 @@
                     <ol class="items-list">
                         {{#each attacks as |item id|}}
                         <li class="item flexrow" data-item-id="{{item._id}}">
-                            <div class="item-image item-attack"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
+                            <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
                             <h4 class="item-name flex3">{{item.name}}</h4>
                             <h4 class="item-value flex2">{{item.toHitMod}}</h4>
                             <h4 class="item-value flex3">{{item.uses}} vs {{item.targets}}</h4>
                             <h4 class="item-name flex2">{{item.damage}}</h4>
                             <h4 class="item-name flex3">{{item.class}}</h4>
                             <h4 class="item-value">{{item.end}}</h4>
+                            <div class="item-image dark item-attack"><img src="icons/svg/dice-target.svg" title="{{item.name}}" width="24" height="24" /></div>
                             <div class="item-controls" data-group="mode">
                                 <a class="item-control item-edit" title="Edit Item" id="{{id}}"><i class="fas fa-edit"></i></a>
                                 <a class="item-control item-delete" title="Delete Item" id="{{id}}"><i class="fas fa-trash"></i></a>
@@ -243,6 +245,7 @@
                                     <h4 class="item-name flex2">{{item.damage}}</h4>
                                     <h4 class="item-name flex3">{{item.class}}</h4>
                                     <h4 class="item-value">{{item.end}}</h4>
+                                    <div class="item-image dark item-attack" id="{{powerItem._id}} {{id}}"><img src="icons/svg/dice-target.svg" title="{{item.name}}" width="24" height="24" /></div>
                                     <div class="item-controls" data-group="mode">
                                         <a class="item-control item-edit" title="Edit Item" id="{{id}}"></a>
                                         <a class="item-control item-delete" title="Delete Item" id="{{id}}"></a>

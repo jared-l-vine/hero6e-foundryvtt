@@ -350,6 +350,11 @@
   margin-right: 5px;
 }
 
+.dark {
+  color: #000;
+  filter: brightness(0);
+}
+
 .hero .items-list .item img {
   display: block;
 }
