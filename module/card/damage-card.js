@@ -1,6 +1,8 @@
 import { HeroSystem6eActorActiveEffects } from "../actor/actor-active-effects.js";
 import { HeroSystem6eActorSheet } from "../actor/actor-sheet.js";
 import { HeroSystem6eCard } from "./card.js";
+import { determineDefense } from "../utility/defense.js";
+import { modifyRollEquation, getTokenChar } from "../utility/util.js"
 
 export class HeroSystem6eDamageCard extends HeroSystem6eCard {
 
@@ -63,15 +65,15 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
         button.disabled = false;
     }
 
-    static async _renderInternal(item, actor, target, stateData) {
+    static async _renderInternal(actor, item, target, stateData) {
         // Render the chat card template
         const token = actor.token;
         const targetToken = target.token;
 
         const templateData = {
             actor: actor.data,
-            tokenId: token?.uuid || null,
             item: item.data,
+            tokenId: token?.uuid || null,
             state: stateData,
             target: target.data,
             targetTokenId: targetToken?.uuid || null,
@@ -83,7 +85,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
     }
 
     async render() {
-        return await HeroSystem6eDamageCard._renderInternal(this.item, this.actor, this.target, this.message.data.flags["state"]);
+        return await HeroSystem6eDamageCard._renderInternal(this.actor, this.item, this.target, this.message.data.flags["state"]);
     }
 
     async init(card) {
@@ -104,226 +106,363 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
         return game.actors.get(targetId) || null;
     }
 
-    static DAMAGE_TEMPLATE = "systems/hero6e-foundryvtt-v2/templates/chat/damage-dialog.html";
+    static async createFromToHitCard(cardObject, token, toHitData) {
+        let targetActor = token.document._actor
+        let targetActorChars = targetActor.data.data.characteristics;
 
-    static async createFromAttackCard(attackCard, target) {
-        let item = attackCard.item;
-        let relevantDefenses = [];
-        let title = "Apply Defenses";
+        const actor = cardObject.actor
 
-        for (let i of target.data.items) {
-            if (i.data.type == 'defense') {
-                if (i.data.data.defenseType == item.data.data.defense) {
-                    let defense = i.data.data;
-                    HeroSystem6eActorSheet._prepareDefenseItem(i, defense);
-                    relevantDefenses.push(i);
-                }
+        const item = cardObject.item
+
+        const itemData = item.data.data;
+
+        let damageRoll = itemData.dice;
+
+        let toHitChar = CONFIG.HERO.defendsWith[itemData.targets];
+
+        let automation = game.settings.get("hero6e-foundryvtt-v2", "automation");
+
+        // -------------------------------------------------
+        // determine active defenses
+        // -------------------------------------------------
+        let defense = "";
+        let [defenseValue, resistantValue, damageReductionValue, damageNegationValue, knockbackResistance] = determineDefense(targetActor, item.data.data.class)
+
+        if (damageNegationValue > 0) {
+            defense += "Damage Negation " + damageNegationValue + "DC(s); "
+        }
+
+        defense = defense + defenseValue + " normal; " + resistantValue + " resistant";
+
+        // -------------------------------------------------
+        // damage roll
+        // -------------------------------------------------
+
+        let noHitLocationsPower = false;
+        for (let i of targetActor.items) {
+            if (i.data.data.rules === "NOHITLOCATIONS") {
+                noHitLocationsPower = true;
             }
         }
 
-        let options = {
-            'width' : 600,
-        }
+        // get hit location
+        let hitLocationModifiers = [1, 1, 1, 0];
+        let hitLocation = "None";
+        let useHitLoc = false;
+        if (game.settings.get("hero6e-foundryvtt-v2", "hit locations") && !noHitLocationsPower) {
+            useHitLoc = true;
 
-        // Render the Dialog inner HTML
-        const content = await renderTemplate(HeroSystem6eDamageCard.DAMAGE_TEMPLATE, {
-            item: item,
-            defenses: relevantDefenses
-        });
-
-        // Create the Dialog window and await submission of the form
-        return new Promise(resolve => {
-            new Dialog({
-                title,
-                content,
-                buttons: {
-                    calculate: {
-                        label: "Calculate",
-                        callback: html => resolve(HeroSystem6eDamageCard._onDamageSubmit(attackCard, target, html))
-                    },
-                    cancel: {
-                        label: "Cancel",
-                        callback: html => resolve(null)
-                    },
-                },
-                default: "cancel",
-                close: () => resolve(null)
-            }, options).render(true);
-        });
-    }
-
-    static async _onDamageSubmit(attackCard, target, html) {
-        let attack = attackCard.item.data.data;
-        let state = attackCard.message.data.flags['state'];
-        let activeDefenses = [];
-
-        html.find('.defense-active:checked').each((i, toggle) => {
-            let defenseID = toggle.closest(".item").getAttribute('data-item-id');
-            activeDefenses.push(target.data.items.get(defenseID));
-        });
-
-        let defenseTotal = 0;
-        let resistantDefenseTotal = 0;
-        let piercedDefenseTotal = 0;
-        let piercedResistantDefenseTotal = 0;
-        let penetratedDefenseTotal = 0;
-        let penetratedResistantDefenseTotal = 0;
-
-        for (let defense of activeDefenses) {
-            defenseTotal += defense.value;
-
-            if (defense.resistant == "True") {
-                resistantDefenseTotal += defense.value;
+            hitLocation = toHitData.aim;
+            if (toHitData.aim === 'none') {
+                let locationRoll = new Roll("3D6")
+                let locationResult = await locationRoll.roll();
+                hitLocation = CONFIG.HERO.hitLocationsToHit[locationResult.total];
             }
 
-            if (defense.hardened >= attack.piercing) {
-                piercedDefenseTotal += defense.value;
+            hitLocationModifiers = CONFIG.HERO.hitLocations[hitLocation];
 
-                if (defense.resistant == "True") {
-                    piercedResistantDefenseTotal += defense.value;
-                }
+            if (game.settings.get("hero6e-foundryvtt-v2", "hitLocTracking") === "all") {
+                let sidedLocations = ["Hand", "Shoulder", "Arm", "Thigh", "Leg", "Foot"]
+                if (sidedLocations.includes(hitLocation)) {
+                    let sideRoll = new Roll("1D2", actor.getRollData());
+                    let sideResult = await sideRoll.roll();
+
+                    if (sideResult.result === 1) {
+                        hitLocation = "Left " + hitLocation;
+                    } else {
+                        hitLocation = "Right " + hitLocation;
+                    }
+                }   
+            }
+        }
+
+        if(itemData.usesStrength) {
+            let strDamage = Math.floor((actor.data.data.characteristics.str.value - 10)/5)
+            if (data.effectiveStr <= actor.data.data.characteristics.str.value) {
+                strDamage = Math.floor((data.effectiveStr - 10)/5);
+            }
+
+            if (strDamage > 0) {
+                damageRoll += strDamage;
+            }
+        }
+
+        let pip = 0;
+
+        // handle damage negation defense
+        if (damageNegationValue > 0) {
+            if (itemData.killing) {
+                pip = (parseInt(damageRoll) * 3) - parseInt(damageNegationValue);
+
+                damageRoll = Math.floor(pip / 3);
+
+                pip = pip % 3
             } else {
-                piercedDefenseTotal += defense.value / 2;
-
-                if (defense.resistant == "True") {
-                    piercedResistantDefenseTotal += defense.value / 2;
-                }
-            }
-
-            if (defense.impenetrable >= attack.penetrating) {
-                penetratedDefenseTotal += defense.value;
-
-                if (defense.resistant == "True") {
-                    penetratedResistantDefenseTotal += defense.value;
-                }
+                damageRoll = damageRoll - damageNegationValue;
             }
         }
 
-        piercedDefenseTotal = Math.round(piercedDefenseTotal);
-        piercedResistantDefenseTotal = Math.round(piercedResistantDefenseTotal);
+        damageRoll = damageRoll < 0 ? 0 : damageRoll;
 
-        let minimumDamage = state['countedBody'];
-
-        if (game.settings.get("hero6e-foundryvtt-v2", "hit locations")) {
-            let locationRoll = new Roll("3D6")
-            let locationResult = locationRoll.roll().total
+        // needed to split this into two parts for damage negation
+        switch (itemData.extraDice) {
+            case 'zero':
+                pip += 0;
+                break;
+            case 'pip':
+                pip += 1;
+                break;
+            case 'half':
+                pip += 2;
+                break;
         }
 
-        if (attack.killing) {
-            minimumDamage -= penetratedResistantDefenseTotal;
+        if (pip < 0) {
+            damageRoll = "0D6";
         } else {
-            minimumDamage -= penetratedDefenseTotal;
+            switch (pip) {
+                case 0:
+                    damageRoll += "D6";
+                    break;
+                case 1:
+                    damageRoll += "D6+1";
+                    break;
+                case 2:
+                    damageRoll += "D6+1D3"
+                    break;
+            }
         }
 
-        if (minimumDamage < 0) {
-            minimumDamage = 0;
+        damageRoll = modifyRollEquation(damageRoll, toHitData.damageMod);
+
+        let roll = new Roll(damageRoll, actor.getRollData());
+        let damageResult = await roll.roll();
+        let damageRenderedResult = await damageResult.render();
+        let body = 0;
+        let stun = 0;
+        let countedBody = 0;
+
+        let hasStunMultiplierRoll = false;
+        let renderedStunMultiplierRoll = null;
+        let stunMultiplier = 1;
+
+        if (itemData.killing) {
+            hasStunMultiplierRoll = true;
+            body = damageResult.total;
+
+            let stunRoll = new Roll("1D3", actor.getRollData());
+            let stunResult = await stunRoll.roll();
+            let renderedStunResult = await stunResult.render();
+            renderedStunMultiplierRoll = renderedStunResult;
+
+            if (game.settings.get("hero6e-foundryvtt-v2", "hit locations") && !noHitLocationsPower) {
+                stunMultiplier =  hitLocationModifiers[0];
+            } else {
+                stunMultiplier = stunResult.total;
+            }
+
+            stun = body * stunMultiplier;
+        }
+        else {
+            // counts body damage for non-killing attack
+            for (let die of damageResult.terms[0].results) {
+                switch (die.result) {
+                    case 1:
+                        countedBody += 0;
+                        break;
+                    case 6:
+                        countedBody += 2;
+                        break;
+                    default:
+                        countedBody += 1;
+                        break;
+                }
+            }
+
+            stun = damageResult.total;
+            body = countedBody;
         }
 
-        let startingDefenseText = defenseTotal + " Def";
+        let bodyDamage = body;
+        let stunDamage = stun;
 
-        if (attack.killing) {
-            startingDefenseText += " and " + resistantDefenseTotal + " rDef";
+        let effects = "";
+        if (item.data.data.effects !== "") {
+            effects = item.data.data.effects + ";"
         }
 
-        let piercedDefenseText = "Defense reduced to " + piercedDefenseTotal + " Def";
+        // -------------------------------------------------
+        // determine effective damage
+        // -------------------------------------------------
 
-        if (attack.killing) {
-            piercedDefenseText += " and " + piercedResistantDefenseTotal + " rDef";
-        }
-
-        piercedDefenseText += " by Armor Piercing";
-
-        let penetratedDefenseText = "Penetrating causes minimum of " + minimumDamage + " ";
-
-        if (attack.killing) {
-            penetratedDefenseText += "BODY";
+        if(itemData.killing) {
+            stun = stun - defenseValue - resistantValue;
+            body = body - resistantValue;
         } else {
-            penetratedDefenseText += "STUN";
+            stun = stun - defenseValue - resistantValue;
+            body = body - defenseValue - resistantValue;
         }
 
-        let resultantBody = attack.killing ? state['bodyDamage'] - piercedResistantDefenseTotal : state['bodyDamage'] - piercedDefenseTotal;
-        let resultantStun = state['stunDamage'] - piercedDefenseTotal;
+        stun = stun < 0 ? 0 : stun;
+        body = body < 0 ? 0 : body;
 
-        if (resultantBody < 0) {
-            resultantBody = 0;
+        let hitLocText = "";
+        if (game.settings.get("hero6e-foundryvtt-v2", "hit locations") && !noHitLocationsPower) {
+            if(itemData.killing) {
+                // killing attacks apply hit location multiplier after resistant damage protection has been subtracted
+                body = body * hitLocationModifiers[2];
+
+                hitLocText = "Hit " + hitLocation + " (x" + hitLocationModifiers[0] + " STUN x" + hitLocationModifiers[2] + " BODY)";
+            } else {
+                // stun attacks apply N STUN hit location multiplier after defenses
+                stun = stun * hitLocationModifiers[1];
+                body = body * hitLocationModifiers[2];
+
+                hitLocText = "Hit " + hitLocation + " (x" + hitLocationModifiers[1] + " STUN x" + hitLocationModifiers[2] + " BODY)";
+            }
+
+            hasStunMultiplierRoll = false;
         }
 
-        if (resultantStun < 0) {
-            resultantStun = 0;
+        // determine knockback
+        let useKnockBack = false;
+        let knockback = "";
+        let knockbackRenderedResult = null;
+        if (game.settings.get("hero6e-foundryvtt-v2", "knockback") && itemData.knockback) {
+            useKnockBack = true;
+            // body - 2d6 m
+            let knockBackEquation = body + " - 2D6"
+            // knockback modifier added on an attack by attack basis
+            if (data.knockbackMod != 0 ) {
+                knockBackEquation = modifyRollEquation(knockBackEquation, data.knockbackMod + "D6");
+            }
+            // knockback resistance effect
+            knockBackEquation = modifyRollEquation(knockBackEquation, " -" + knockbackResistance);
+
+            let knockbackRoll = new Roll(knockBackEquation);
+            let knockbackResult = await knockbackRoll.roll();
+            knockbackRenderedResult = await knockbackResult.render();
+            let knockbackResultTotal = Math.round(knockbackResult.total);
+
+            if (knockbackResultTotal < 0) {
+                knockback = "No knockback";
+            } else if (knockbackResultTotal == 0) {
+                knockback = "inflicts Knockdown";
+            } else {
+                knockback= "Knocked back " + knockbackResultTotal + "m";
+            }
         }
 
-        let reducedDamageText = target.name + " takes " + resultantBody + " BODY and " + resultantStun + " STUN";
+        // apply damage reduction
+        if (damageReductionValue > 0) {
+            defense += "; damage reduction " + damageReductionValue + "%";
+            stun = Math.round(stun * (1 - (damageReductionValue/100)));
+            body = Math.round(body * (1 - (damageReductionValue/100)));
+        }
 
-        const token = target.token;
+        // minimum damage rule
+        if (stun < body) {
+            stun = body;
+            effects += "minimum damage invoked; "
+        }
 
-        const stateData = {
-            initialBody: state['bodyDamage'],
-            initialStun: state['stunDamage'],
-            startingDefenseText: startingDefenseText,
-            piercedDefenseText: piercedDefenseText,
-            penetratedDefenseText: penetratedDefenseText,
-            showPiercedValues: piercedDefenseTotal < defenseTotal,
-            showPenetratedValues: attack.killing ? minimumDamage > resultantBody : minimumDamage > resultantStun,
-            reducedDamageText: reducedDamageText,
-            finalBody: resultantBody,
-            finalStun: resultantStun,
-            canApplyDamage: true,
-            targetID: target.id,
-            targetTokenID: token ? token._id : null,
+        stun = Math.round(stun)
+        body = Math.round(body)
+
+        // check if target is stunned
+        if (game.settings.get("hero6e-foundryvtt-v2", "stunned")) {
+            // determine if target was Stunned
+            if (stun > targetActorChars.con.value) {
+                effects = effects + "inflicts Stunned; "
+            }
+        }
+
+        let hitRollText = ""
+        let hitSuccess = true
+        if ((automation === "all") || (automation === "npcOnly" && !targetActor.hasPlayerOwner) || (automation === "pcEndOnly" && !targetActor.hasPlayerOwner)) {
+            let toHitVal = getTokenChar(token, toHitChar.toLowerCase(), "value")
+
+            if (toHitVal <= toHitData.hitRollData) {
+                // attack success
+                hitRollText = "HIT!"
+
+                let newStun = getTokenChar(token, "stun", "value") - stun;
+                let newBody = getTokenChar(token, "body", "value") - body;
+    
+                let changes = {
+                    "data.characteristics.stun.value": newStun,
+                    "data.characteristics.body.value": newBody,
+                }
+
+                if (game.settings.get("hero6e-foundryvtt-v2", "hitLocTracking") === "all") {
+                    let bodyPartHP = targetActorChars.body.loc[hitLocation] + body
+                    changes["data.characteristics.body.loc." + hitLocation] = bodyPartHP;
+
+                    if (bodyPartHP > targetActorChars.body.value) {
+                        effects = effects + "inflicts Impaired " + hitLocation + "; ";
+                    }
+                }
+                
+                await targetActor.update(changes);
+            } else {
+                // attack failure
+                hitRollText = "MISSED"
+                hitSuccess = false
+            }
+        }
+        // -------------------------------------------------
+
+        let stateData = {
+            // dice rolls
+            hitRollText: hitRollText,
+            hitSuccess: hitSuccess,
+            renderedDamageRoll: damageRenderedResult,
+            renderedStunMultiplierRoll: renderedStunMultiplierRoll,
+
+            // hit locations
+            useHitLoc: useHitLoc,
+            hitLocText: hitLocText,
+
+            // body
+            bodyDamage: bodyDamage,
+            bodyDamageEffective: body,
+            countedBody: countedBody,
+
+            // stun
+            stunDamage: stunDamage,
+            stunDamageEffective: stun,
+            hasRenderedDamageRoll: true,
+            stunMultiplier: stunMultiplier,
+            hasStunMultiplierRoll: hasStunMultiplierRoll,
+
+            // effects
+            effects: effects,
+
+            // defense
+            defense: defense.toUpperCase(),
+            defenseValue: defenseValue,
+
+            // knockback
+            knockback: knockback,
+            useKnockBack: useKnockBack,
+            knockbackRenderedResult: knockbackRenderedResult,
+
+            // misc
+            targetCharacter: targetActor.name,
         };
 
-        let cardHtml = await HeroSystem6eDamageCard._renderInternal(attackCard.item, attackCard.actor, target, stateData);
+        // render card
+        let cardHtml = await HeroSystem6eDamageCard._renderInternal(actor, item, targetActor, stateData);
+        
+        let speaker = ChatMessage.getSpeaker({ actor: actor, token })
+        speaker["alias"] = actor.name;
 
-        // Create the ChatMessage data object
         const chatData = {
-            user: game.user.data._id,
-            type: CONST.CHAT_MESSAGE_TYPES.OTHER,
+            user:  game.user.data._id,
             content: cardHtml,
-            flavor: attackCard.item.data.data.chatFlavor || attackCard.item.name,
-            speaker: ChatMessage.getSpeaker({ actor: target, token }),
-            flags: { "core.canPopout": true, "state": stateData },
-        };
-
-        if (!attackCard.actor.items.has(attackCard.item.id)) {
-            chatData["flags.hero.itemData"] = attackCard.item.data;
+            speaker: speaker,
         }
 
-        // Apply the roll mode to adjust message visibility
-        ChatMessage.applyRollMode(chatData, game.settings.get("core", "rollMode"));
-
-        // Create the Chat Message or return its data
         return ChatMessage.create(chatData);
-    }
-
-    async applyDamage() {
-        let newBody = this.target.data.data.body.value - this.message.data.flags['state'].finalBody;
-        let newStun = this.target.data.data.stun.value - this.message.data.flags['state'].finalStun;
-        await this.target.update({
-            "data.body.value": newBody,
-            "data.stun.value": newStun,
-        });
-
-        if (newBody <= -this.target.data.data.body.max) {
-            await HeroSystem6eCard.removeStatusEffect(this.target, HeroSystem6eActorActiveEffects.stunEffect);
-            await HeroSystem6eCard.removeStatusEffect(this.target, HeroSystem6eActorActiveEffects.unconsciousEffect);
-            await HeroSystem6eCard.removeStatusEffect(this.target, HeroSystem6eActorActiveEffects.bleedingEffect);
-            await HeroSystem6eCard.applyStatusEffect(this.target, HeroSystem6eActorActiveEffects.deadEffect);
-        } else {
-            if (newBody <= 0) {
-                await HeroSystem6eCard.applyStatusEffect(this.target, HeroSystem6eActorActiveEffects.bleedingEffect);
-            }
-
-            if (newStun <= 0) {
-                await HeroSystem6eCard.removeStatusEffect(this.target, HeroSystem6eActorActiveEffects.stunEffect);
-                await HeroSystem6eCard.applyStatusEffect(this.target, HeroSystem6eActorActiveEffects.unconsciousEffect);
-            } else if (this.message.data.flags['state'].finalStun > this.target.data.data.characteristics['con'].value) {
-                await HeroSystem6eCard.applyStatusEffect(this.target, HeroSystem6eActorActiveEffects.stunEffect);
-            }
-        }
-
-        await this.modifyCardState("canApplyDamage", false);
-        await this.modifyCardState("hasAppliedDamage", true);
-        await this.modifyCardState("appliedDamageText", "Reduced to " + newBody + " BODY and " + newStun + " STUN");
-        await this.refresh();
     }
 }
