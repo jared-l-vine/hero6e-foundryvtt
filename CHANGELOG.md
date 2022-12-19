@@ -19,3 +19,8 @@
     - reading in vehicles added additional blank characteristic to character sheet
     - automated attacks fail without Hit Locations setting
     - upload .HDC fails when name is not present in .HDC file
+
+## Version 1.1.1
+-Bugfixes
+    - Split up attack card because players could only make attacks against themselves
+    - Attack card messages had wrong sender name
