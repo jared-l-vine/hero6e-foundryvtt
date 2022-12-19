@@ -1,36 +1,43 @@
-<div class="hero chat-card item-card damage-card" data-actor-id="{{actor._id}}" data-item-id="{{item._id}}" 
-     {{#if tokenId}}data-token-id="{{tokenId}}"{{/if}} 
-    data-target-id="{{target._id}}"
-    {{#if targetTokenId}}data-target-token-id="{{targetTokenId}}"{{/if}}>
+<div class="hero chat-card item-card toHit-card" data-actor-id="{{actor._id}}" data-item-id="{{item._id}}"
+     {{#if tokenId}}data-token-id="{{tokenId}}"{{/if}}>
     <header class="card-header flexrow">
-        <img src="{{item.img}}" title="{{item.name}}" width="36" height="36" />
-        <h3 class="item-name">{{item.name}} VS {{target.name}}</h3>
+        <img src="{{item.img}}" title="{{item.name}}" width="36" height="36"/>
+        <h3 class="item-name">{{item.name}} vs {{state.targetCharacter}}</h3>
     </header>
 
-    <div class="card-buttons card-content">
+    <div class="hit-roll">
         <div class="card-section">
-            <div class="description-small">{{ state.startingDefenseText }}</div>
-        </div>
-        {{#if state.showPiercedValues}}
-        <div class="card-section">
-            <div class="description-small">{{ state.piercedDefenseText }}</div>
-        </div>
-        {{/if}}
-        {{#if state.showPenetratedValues}}
-        <div class="card-section">
-            <div class="description-small">{{ state.penetratedDefenseText }}</div>
-        </div>
-        {{/if}}
-        <div class="card-section">
-            <div class="description-small">{{ state.reducedDamageText }}</div>
+            <div class="description-medium">{{{ state.hitRollText }}}</div>
         </div>
 
-        {{#if state.canApplyDamage}}
-        <button class="damage-apply-button" data-action="damage-apply">Apply</button>
-        {{/if}}
+        {{#if state.hitSuccess}}
+            <div class="card-section">
+                <div class="description-tiny">On Hit</div>
+                {{#if state.useHitLoc}}
+                    <div class="description-tiny">{{ state.hitLocText }}</div>
+                {{/if}}
+                <div class="damage-roll">{{{ state.renderedDamageRoll }}}</div>
+                {{#if state.hasStunMultiplierRoll}}
+                <div class="description-tiny">Stun Multiplier</div>
+                    <div class="stun-x-roll">{{{ state.renderedStunMultiplierRoll }}}</div>
+                    <div class="description-tiny">{{ state.stunMultiplier }}X STUN MULTIPLIER</div>
+                {{/if}}
+                <div class="description-tiny">(Raw Damage) {{ state.bodyDamage }} BODY; {{ state.stunDamage }} STUN</div>
+            </div>
 
-        {{#if state.hasAppliedDamage}}
-        <button class="damage-apply-button" data-action="damage-apply" disabled>{{ state.appliedDamageText }}</button>
+            <div class="card-section">
+                <div class="description-tiny">Defense: {{ state.defense }}</div>
+            </div>
+
+            <div class="card-section">
+                <div class="description-tiny">Effect</div>
+                <div class="description-medium">{{ state.bodyDamageEffective }} BODY; {{ state.stunDamageEffective }} STUN</div>
+                <div class="description-tiny">{{ state.effects }}</div>
+                {{#if state.useKnockBack}}
+                    <div class="hit-roll">{{{ state.knockbackRenderedResult }}}</div>
+                    <div class="description-tiny">{{ state.knockback }}</div>
+                {{/if}}
+            </div>
         {{/if}}
     </div>
 </div>

@@ -68,9 +68,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
 
         const targets = HeroSystem6eCard._getChatCardTargets();
         
-        for (let token of targets) {
-            await HeroSystem6eToHitCard.createFromAttackCard(token, item, data, actor);
-        }
+        await HeroSystem6eToHitCard.createFromAttackCard(item, data, actor);
     }
 
     static async _renderInternal(item, actor, stateData) {
