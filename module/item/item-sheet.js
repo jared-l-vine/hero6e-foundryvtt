@@ -104,7 +104,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
             }
 
             const changes = {}
-            changes[`data.items.${type}.${subLinkId}.rules`] = e.target.value
+            changes[`data.items.${type}.${subLinkId}.${e.target.name.split(".")[1]}`] = e.target.value
             await item.update(changes)
           }
         }

@@ -265,6 +265,7 @@
                                     <h4 class="item-name flex2">{{item.damage}}</h4>
                                     <h4 class="item-name flex3">{{item.class}}</h4>
                                     <h4 class="item-value">{{item.end}}</h4>
+                                    <div class="item-image dark power-item-attack" id="{{powerItem._id}} {{id}}" data-powerId="{{powerItem._id}}" data-subid="{{id}}"><img src="icons/svg/dice-target.svg" title="{{item.name}}" width="24" height="24" /></div>
                                     <div class="item-controls" data-group="mode">
                                         <a class="item-control item-edit" title="Edit Item" id="{{id}}"></a>
                                         <a class="item-control item-delete" title="Delete Item" id="{{id}}"></a>
@@ -504,9 +505,11 @@
                     <span class="item-name flex2">End</span>
                     <span class="item-name flex2">Description</span>
                     <span></span>
+                    {{!--
                     <span class="item-controls">
                         <a class="item-control item-create" title="Create power" data-type="power"><i class="fas fa-plus"></i> Add Power</a>
                     </span>
+                    --}}
                 </header>
                 <section class="powers-group">
                     <div class="power-card-container">
@@ -518,7 +521,9 @@
                                 <span>{{powerItem.data.end}}</span>
                                 <span class="item-name flex4">{{powerItem.data.rules}}</span>
                                 <div class="item-controls" data-group="mode">
+                                    {{!--
                                     <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                    --}}
                                     <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
                                 </div>
                             </li>
@@ -562,9 +567,11 @@
                     <span class="item-name flex2">End</span>
                     <span class="item-name flex2">Description</span>
                     <span></span>
+                    {{!--
                     <span class="item-controls">
                         <a class="item-control item-create" title="Create equipment" data-type="equipment"><i class="fas fa-plus"></i> Add Equipment</a>
                     </span>
+                    --}}
                 </header>
                 <section class="powers-group">
                     <div class="power-card-container">
@@ -577,7 +584,9 @@
                                 <span>{{powerItem.data.rules}}</span>
                                 <div class="item-controls" data-group="mode">
                                     <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                    {{!--
                                     <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                                    --}}
                                 </div>
                             </li>
                             <ul class="power-card-power-item-list list">

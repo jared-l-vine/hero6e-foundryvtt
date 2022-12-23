@@ -36,3 +36,5 @@
 - Known Issues
     - clicking 'Apply to Target' with an attack card generated from a power sub item displays a message
         'Error: Item does not exist', this should be safe to ignore
+    - can't edit power/equpipment 'sub-items' from character sheet (to add powers to a character sheet use the item tab
+        to create and edit the power there then drag the item onto a character sheet)
