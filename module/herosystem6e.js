@@ -115,59 +115,6 @@ Hooks.on("updateActor", (app, html, data) => {
     }
 });
 
-/*
-Hooks.on("chatCommandsReady", function(chatCommands) {
-    chatCommands.registerCommand(chatCommands.createCommandFromData({
-        commandKey: "/powers",
-        invokeOnCommand: (chatlog, messageText, chatdata) => {
-            var powerKey = messageText.toUpperCase();
-            if (CONFIG.POWERS[powerKey] === undefined) {
-                var usage = 'USAGE: /powers key || valid keys:';
-
-                
-                for (var key of Object.keys(CONFIG.POWERS).sort()) {
-                    usage += "\n\t" + key.toLowerCase();
-                }
-
-                console.log(usage)
-                
-                return usage
-            }
-            else {
-                return CONFIG.POWERS[powerKey];
-            }
-        },
-        shouldDisplayToChat: true,
-        createdMessageType: 0,
-        iconClass: "fa-sticky-note",
-        description: "Prints power rules",
-    }));
-
-    chatCommands.registerCommand(chatCommands.createCommandFromData({
-        commandKey: "/load",
-        invokeOnCommand: (chatlog, messageText, chatdata) => {
-            var actor;
-            var actorName;
-            for (const value of window.game.actors.values()) {
-                actor = value.data;
-                actorName = actor.name.replace(/ /g, "_");
-                console.log(actorName);
-            }
-
-            for (const folder of window.game.folders.values()) {
-                console.log(folder.data.name)
-            }
-
-            console.log(window.game.data.system.path + '\\..\\..\\' + window.game.data.world.id)
-        },
-        shouldDisplayToChat: false,
-        createdMessageType: 0,
-        iconClass: "fa-sticky-note",
-        description: "Loads hdcs",
-    }));
-}); 
-*/
-
 /* -------------------------------------------- */
 /*  Hotbar Macros                               */
 /* -------------------------------------------- */

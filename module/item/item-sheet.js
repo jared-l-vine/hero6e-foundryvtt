@@ -18,7 +18,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
 
   /** @override */
   get template () {
-    const path = 'systems/hero6e-foundryvtt-v2/templates/item'
+    const path = 'systems/hero6efoundryvttv2/templates/item'
     // Return a single sheet for all item types.
     // return `${path}/item-sheet.html`;
 
@@ -168,7 +168,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
         changes['data.value'] = parseInt(this.item.data.data.base) + parseInt(this.item.data.data.mod)
 
         if (this.item.actor !== null) {
-          const spd = this.item.actor.data.data.characteristics.spd.value
+          const spd = this.item.actor.system.characteristics.spd.value
           changes['data.velBase'] = Math.round((parseInt(this.item.data.data.base) * spd) / 12)
           changes['data.velValue'] = Math.round((changes['data.value'] * spd) / 12)
         }

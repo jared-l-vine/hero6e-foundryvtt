@@ -11,7 +11,7 @@ import { enforceManeuverLimits } from '../item/manuever.js'
 export class HeroSystem6eActorSheet extends ActorSheet {
   /** @override */
   static get defaultOptions () {
-    const path = 'systems/hero6e-foundryvtt-v2/templates/actor/actor-sheet.html'
+    const path = 'systems/hero6efoundryvttv2/templates/actor/actor-sheet.html'
 
     return mergeObject(super.defaultOptions, {
       classes: ['herosystem6e', 'sheet', 'actor'],
@@ -60,7 +60,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
     const characteristicSet = []
 
-    for (const [key, characteristic] of Object.entries(actorData.data.characteristics)) {
+    for (const [key, characteristic] of Object.entries(actorData.system.characteristics)) {
       characteristic.key = key
       characteristic.name = CONFIG.HERO.characteristics[key]
 
@@ -226,7 +226,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     sheetData.martialart = martialart
     sheetData.characteristicSet = characteristicSet
 
-    if (game.settings.get('hero6e-foundryvtt-v2', 'hitLocTracking') === 'all') {
+    if (game.settings.get('hero6efoundryvttv2', 'hitLocTracking') === 'all') {
       sheetData.hitLocTracking = true
     } else {
       sheetData.hitLocTracking = false
@@ -321,8 +321,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
             }
 
             const changes = []
-            changes[`data.characteristics.${e.target.name}`] = e.target.value
+            changes[`system.characteristics.${e.target.name}`] = e.target.value
             await this.actor.data.update(changes)
+
           } else {
             this._updateName(e.target.value)
           }
@@ -466,7 +467,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
       const roll = new Roll(dataset.roll, this.actor.getRollData())
       roll.evaluate().then(function (result) {
-        // let margin = actor.data.data.characteristics[dataset.label].roll - result.total;
+        // let margin = actor.system.characteristics[dataset.label].roll - result.total;
         const margin = charRoll - result.total
 
         result.toMessage({
@@ -508,7 +509,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
   }
 
   async _onRecovery (event) {
-    const chars = this.actor.data.data.characteristics
+    const chars = this.actor.system.characteristics
 
     let newStun = parseInt(chars.stun.value) + parseInt(chars.rec.value)
     let newEnd = parseInt(chars.end.value) + parseInt(chars.rec.value)
@@ -615,7 +616,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       } else {
         changes[`data.characteristics.${key}.value`] = value
         changes[`data.characteristics.${key}.max`] = value
-        changes[`data.characteristics.${key}.base`] = value
       }
     }
 
@@ -688,7 +688,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       } else if (data.state === 'proficient') {
         data.roll = '10-'
       } else if (data.state === 'trained') {
-        const charValue = this.actor.data.data.characteristics[`${data.characteristic.toLowerCase()}`].value
+        const charValue = this.actor.system.characteristics[`${data.characteristic.toLowerCase()}`].value
         const rollVal = 9 + Math.round(charValue / 5) + parseInt(data.levels)
         data.roll = rollVal.toString() + '-'
       }
@@ -749,7 +749,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
         const velocity = Math.round((spd * levels) / 12)
 
-        data.base = levels
+        data.max = levels
         data.value = levels
         data.velBase = velocity
         data.velValue = velocity
@@ -796,7 +796,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
     await loadCombatManeuvers(CONFIG.HERO.combatManeuvers, this.actor)
 
-    if (game.settings.get('hero6e-foundryvtt-v2', 'optionalManeuvers')) {
+    if (game.settings.get('hero6efoundryvttv2', 'optionalManeuvers')) {
       await loadCombatManeuvers(CONFIG.HERO.combatManeuversOptional, this.actor)
     }
   }
@@ -878,15 +878,15 @@ async function updateCombatAutoMod (actor, item) {
   changes['data.characteristics.dcv.autoMod'] = dcvEq
   // changes['data.characteristics.dmcv.autoMod'] = dcvEq;
 
-  changes['data.characteristics.ocv.value'] = actor.data.data.characteristics.ocv.base + parseInt(ocvEq)
-  // changes['data.characteristics.omcv.value'] = actor.data.data.characteristics.omcv.base + parseInt(ocvEq);
+  changes['data.characteristics.ocv.value'] = actor.system.characteristics.ocv.max + parseInt(ocvEq)
+  // changes['data.characteristics.omcv.value'] = actor.system.characteristics.omcv.max + parseInt(ocvEq);
 
   if (dcvEq.includes('/')) {
-    changes['data.characteristics.dcv.value'] = Math.round(actor.data.data.characteristics.dcv.base * (parseFloat(dcvEq.split('/')[0]) / parseFloat(dcvEq.split('/')[1])))
-    // changes['data.characteristics.dmcv.value'] = Math.round(actor.data.data.characteristics.dmcv.base * (parseFloat(dcvEq.split("/")[0]) / parseFloat(dcvEq.split("/")[1])));
+    changes['data.characteristics.dcv.value'] = Math.round(actor.system.characteristics.dcv.max * (parseFloat(dcvEq.split('/')[0]) / parseFloat(dcvEq.split('/')[1])))
+    // changes['data.characteristics.dmcv.value'] = Math.round(actor.system.characteristics.dmcv.max * (parseFloat(dcvEq.split("/")[0]) / parseFloat(dcvEq.split("/")[1])));
   } else {
-    changes['data.characteristics.dcv.value'] = actor.data.data.characteristics.dcv.base + parseInt(dcvEq)
-    // changes['data.characteristics.dmcv.value'] = actor.data.data.characteristics.dmcv.base + parseInt(dcvEq);
+    changes['data.characteristics.dcv.value'] = actor.system.characteristics.dcv.max + parseInt(dcvEq)
+    // changes['data.characteristics.dmcv.value'] = actor.system.characteristics.dmcv.max + parseInt(dcvEq);
   }
 
   await actor.update(changes)

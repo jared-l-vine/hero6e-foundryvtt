@@ -1,7 +1,7 @@
 export default class SettingsHelpers {
     // Initialize System Settings after the Init Hook
     static initLevelSettings() {
-      let module = "hero6e-foundryvtt-v2";
+      let module = "hero6efoundryvttv2";
 
       game.settings.register(module, "stunned", {
         name: "Use Stunned",

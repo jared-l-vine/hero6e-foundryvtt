@@ -82,7 +82,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             state: stateData,
         };
 
-        var path = "systems/hero6e-foundryvtt-v2/templates/chat/item-toHit-card.html";
+        var path = "systems/hero6efoundryvttv2/templates/chat/item-toHit-card.html";
 
         return await renderTemplate(path, templateData);
     }
@@ -111,10 +111,10 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
 
     static async createFromAttackCard(item, data, actor, itemId) {
         let itemData = item.data.data;
-        let hitCharacteristic = actor.data.data.characteristics[itemData.uses].value;
+        let hitCharacteristic = actor.system.characteristics[itemData.uses].value;
         let toHitChar = CONFIG.HERO.defendsWith[itemData.targets];
 
-        let automation = game.settings.get("hero6e-foundryvtt-v2", "automation");
+        let automation = game.settings.get("hero6efoundryvttv2", "automation");
 
         // -------------------------------------------------
         // attack roll
@@ -123,7 +123,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         rollEquation = modifyRollEquation(rollEquation, item.data.data.toHitMod);
         rollEquation = modifyRollEquation(rollEquation, data.toHitModTemp);
         let noHitLocationsPower = false;
-        if (game.settings.get("hero6e-foundryvtt-v2", "hit locations") && data.aim !== "none" && !noHitLocationsPower) {
+        if (game.settings.get("hero6efoundryvttv2", "hit locations") && data.aim !== "none" && !noHitLocationsPower) {
             rollEquation = modifyRollEquation(rollEquation, CONFIG.HERO.hitLocations[data.aim][3]);
         }
         rollEquation = rollEquation + " - 3D6";
@@ -138,21 +138,21 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
 
         let useEnd = false;
         let enduranceText = "";
-        if (game.settings.get("hero6e-foundryvtt-v2", "use endurance")) {
+        if (game.settings.get("hero6efoundryvttv2", "use endurance")) {
             useEnd = true;
-            let valueEnd = actor.data.data.characteristics.end.value
+            let valueEnd = actor.system.characteristics.end.value
             let itemEnd = item.data.data.end;
             let newEnd = valueEnd - itemEnd;
             let spentEnd = itemEnd;
 
             if(itemData.usesStrength) {
-                let strEnd =  Math.round(actor.data.data.characteristics.str.value / 10);
-                if (data.effectiveStr <= actor.data.data.characteristics.str.value) {
+                let strEnd =  Math.round(actor.system.characteristics.str.value / 10);
+                if (data.effectiveStr <= actor.system.characteristics.str.value) {
                     strEnd =  Math.round(data.effectiveStr / 10);
                 }
 
-                newEnd = newEnd - strEnd;
-                spentEnd = spentEnd + strEnd;
+                newEnd = parseInt(newEnd) - parseInt(strEnd);
+                spentEnd = parseInt(spentEnd) + parseInt(strEnd);
             }
             
             if (newEnd < 0) {
@@ -166,7 +166,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
                 if (newEnd < 0) {
                     changes = {
                         "data.characteristics.end.value": 0,
-                        "data.characteristics.stun.value": actor.data.data.characteristics.stun.value + newEnd,
+                        "data.characteristics.stun.value": parseInt(actor.system.characteristics.stun.value) + parseInt(newEnd),
                     }
                 } else {
                     changes = {
