@@ -1,13 +1,18 @@
 {
-    "name": "hero6e-foundryvtt-v2",
     "id": "hero6efoundryvttv2",
+    "name": "hero6e-foundryvtt-v2",
     "title": "Hero System 6e (Unofficial) v2",
     "description": "The Hero System 6e for FoundryVTT!",
-    "version": "1.1.2",
-    "minimumCoreVersion": "9.280",
-    "compatibleCoreVersion": "9.280",
-    "templateVersion": 3,
-    "author": "Jared Levine, BoDiddleyBeat",
+    "version": "2.0.0",
+    "compatibility": {
+        "minimum": 10,
+        "verified": "10.291",
+        "maximum": 10
+    },
+    "authors": [
+        { "name": "Jared Levine" },
+        { "name" : "BoDiddleyBeat" }
+    ],
     "esmodules": [ "module/herosystem6e.js" ],
     "styles": [ "css/herosystem6e.css" ],
     "scripts": [],
@@ -24,7 +29,9 @@
     "primaryTokenAttribute": "data.characteristics.body",
     "secondaryTokenAttribute": "data.characteristics.stun",
     "url": "https://github.com/dmdorman/hero6e-foundryvtt",
-    "manifest": "https://raw.githubusercontent.com/dmdorman/hero6e-foundryvtt/v1.1.2/system.json",
-    "download": "https://github.com/dmdorman/hero6e-foundryvtt/archive/refs/heads/v1.1.2.zip",
-    "license": "LICENSE.txt"
+    "manifest": "https://raw.githubusercontent.com/dmdorman/hero6e-foundryvtt/main/system.json",
+    "download": "https://github.com/dmdorman/hero6e-foundryvtt/archive/refs/heads/main.zip",
+    "license": "https://raw.githubusercontent.com/dmdorman/hero6e-foundryvtt/main/LICENSE.txt",
+    "changelog": "https://github.com/dmdorman/hero6e-foundryvtt/blob/main/CHANGELOG.md",
+    "bugs": "https://github.com/dmdorman/hero6e-foundryvtt/issues"
 }
