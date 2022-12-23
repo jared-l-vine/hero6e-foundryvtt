@@ -509,11 +509,15 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       'data.characteristics.end.value': newEnd
     })
 
+    let token = this.actor.token
+    let speaker = ChatMessage.getSpeaker({ actor: this.actor, token })
+    speaker["alias"] = this.actor.name
+
     const chatData = {
       user: game.user.data._id,
       type: CONST.CHAT_MESSAGE_TYPES.OTHER,
       content: this.actor.name + ' recovers!',
-      speaker: this.actor.token
+      speaker: speaker
     }
 
     return ChatMessage.create(chatData)
