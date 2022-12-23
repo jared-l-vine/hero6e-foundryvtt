@@ -24,3 +24,20 @@
 -Bugfixes
     - Split up attack card because players could only make attacks against themselves
     - Attack card messages had wrong sender name
+
+## Version 1.1.2
+-Bugfixes
+    - movement powers were showing the wrong type
+    - couldn't update sub item descriptiosn
+    - recovery button didn't produce chat message
+    - attack card automation wouldn't work with power sub items
+    - attack card automation wouldn't work with attacks that used strength or knockback
+    - initative tracking wasn't working
+- Added a dice button for attack roll actions
+- Now prioritizing player characters in initiative tracking
+- Known Issues
+    - clicking 'Apply to Target' with an attack card generated from a power sub item displays a message
+        'Error: Item does not exist', this should be safe to ignore
+    - can't edit power/equpipment 'sub-items' from character sheet (to add powers to a character sheet use the item tab
+        to create and edit the power there then drag the item onto a character sheet)
+    - rolling initiative produces an error message, this can likely be ignored

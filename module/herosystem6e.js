@@ -47,7 +47,7 @@ Hooks.once('init', async function() {
     * @type {String}
     */
     CONFIG.Combat.initiative = {
-        formula: "@characteristics.dex.current",
+        formula: "@characteristics.dex.value + (@characteristics.int.value / 100)",
         decimals: 2
     };
 

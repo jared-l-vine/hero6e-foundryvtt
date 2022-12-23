@@ -41,7 +41,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         // not being used anymore, leaving in here for now just in case
     }
 
-    static async _RollToHit(item, html, actor) {
+    static async _RollToHit(item, html, actor, itemId) {
         // get attack card input
         let form = html[0].querySelector("form");
 
@@ -68,12 +68,12 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
 
         const targets = HeroSystem6eCard._getChatCardTargets();
         
-        await HeroSystem6eToHitCard.createFromAttackCard(item, data, actor);
+        await HeroSystem6eToHitCard.createFromAttackCard(item, data, actor, itemId);
     }
 
-    static async _renderInternal(item, actor, stateData) {
+    static async _renderInternal(item, actor, stateData, itemId) {
         // Render the chat card template
-        const token = actor.token;
+        const token = actor.token
 
         if (game.settings.get("hero6e-foundryvtt-v2", "hit locations")) {
             stateData['useHitLoc'] = true;
@@ -93,6 +93,8 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         stateData["str"] = targetActorChars.str.value;
 
         stateData["useStr"] = item.data.data.usesStrength;
+
+        stateData["itemId"] = itemId;
 
         const templateData = {
             actor: actor.data,
@@ -117,8 +119,8 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
       * @param {boolean} createMessage   Whether to automatically create a ChatMessage entity (if true), or only return
       *                                  the prepared message data (if false)
       */
-    static async createAttackPopOutFromItem(item, actor) {
-        const content = await this._renderInternal(item, actor, {});
+    static async createAttackPopOutFromItem(item, actor, itemId) {
+        const content = await this._renderInternal(item, actor, {}, itemId);
 
         // Attack Card as a Pop Out
         let options = {
@@ -132,7 +134,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
                 buttons: {
                     rollToHit: {
                         label: "Roll to Hit",
-                        callback: html => resolve(this._RollToHit(item, html, actor))
+                        callback: html => resolve(this._RollToHit(item, html, actor, itemId))
                     },
                 },
                 default: "rollToHit",

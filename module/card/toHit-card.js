@@ -34,13 +34,13 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
     static async _onChatCardAction(event) {
         event.preventDefault();
 
-        // may be able to remove this, leaving it for now
-
         // Extract card data
         const button = event.currentTarget;
 
         const action = button.dataset.action;
         //button.disabled = true;
+
+        let itemId = event.currentTarget.attributes["data-itemid"].value;
 
         const card = button.closest(".chat-card");
         const cardObject = new HeroSystem6eToHitCard();
@@ -52,7 +52,8 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             aim: event.currentTarget.attributes["data-aim"].value,
             knockbackMod: event.currentTarget.attributes["data-knockbackmod"].value,
             damageMod: event.currentTarget.attributes["data-damagemod"].value,
-            hitRollData: event.currentTarget.attributes["data-hitrolldata"].value
+            hitRollData: event.currentTarget.attributes["data-hitrolldata"].value,
+            effectiveStr: event.currentTarget.attributes["data-effectiveStr"].value
         };
 
         // Validate permission to proceed with the roll
@@ -64,7 +65,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         if (targets.length === 0) return;
 
         for (let token of targets) {
-            await HeroSystem6eDamageCard.createFromToHitCard(cardObject, token, toHitData);
+            await HeroSystem6eDamageCard.createFromToHitCard(cardObject, token, toHitData, itemId);
         }
 
         // Re-enable the button
@@ -108,7 +109,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         return game.actors.get(targetId) || null;
     }
 
-    static async createFromAttackCard(item, data, actor) {
+    static async createFromAttackCard(item, data, actor, itemId) {
         let itemData = item.data.data;
         let hitCharacteristic = actor.data.data.characteristics[itemData.uses].value;
         let toHitChar = CONFIG.HERO.defendsWith[itemData.targets];
@@ -121,6 +122,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         let rollEquation = "11 + " + hitCharacteristic;
         rollEquation = modifyRollEquation(rollEquation, item.data.data.toHitMod);
         rollEquation = modifyRollEquation(rollEquation, data.toHitModTemp);
+        let noHitLocationsPower = false;
         if (game.settings.get("hero6e-foundryvtt-v2", "hit locations") && data.aim !== "none" && !noHitLocationsPower) {
             rollEquation = modifyRollEquation(rollEquation, CONFIG.HERO.hitLocations[data.aim][3]);
         }
@@ -182,10 +184,13 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             hitRollValue: result.total,
 
             // data for damage card
+            itemId: itemId, 
             aim: data.aim,
             knockbackMod: data.knockbackMod,
             damageMod: data.damageMod,
             hitRollData: hitRollData,
+            effectiveStr: data.effectiveStr,
+            itemId: itemId,
 
             // endurance
             useEnd: useEnd,
