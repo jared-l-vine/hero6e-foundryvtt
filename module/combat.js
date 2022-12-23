@@ -316,7 +316,6 @@ export class HeroSystem6eCombat extends Combat {
      * @return {Promise<Combat>}        A promise which resolves to the updated Combat entity once updates are complete.
      */
     async rollInitiative(ids, { formula = null, updateTurn = true, messageOptions = {} } = {}) {
-
         // Structure input data
         ids = typeof ids === "string" ? [ids] : ids;
         const currentId = this.combatant.id;
@@ -332,10 +331,19 @@ export class HeroSystem6eCombat extends Combat {
             if (!combatant?.isOwner) return results;
 
             // Produce an initiative roll for the Combatant
-            const roll = combatant.getInitiativeRoll(formula);
-            updates.push({ _id: id, initiative: roll.total });
+            let dexValue = combatant.actor.data.data.characteristics.dex.value
+            let intValue = combatant.actor.data.data.characteristics.int.value
+            let initativeValue = dexValue + (intValue / 100)
+
+            //formula = initativeValue.toString()
+
+            //const roll = combatant.getInitiativeRoll(formula);
+
+            updates.push({ _id: id, initiative: initativeValue });
+            //updates.push({ _id: id, initiative: roll.total });
 
             // Construct chat message data
+            /*
             let messageData = foundry.utils.mergeObject({
                 speaker: {
                     scene: this.scene.id,
@@ -350,10 +358,11 @@ export class HeroSystem6eCombat extends Combat {
                 create: false,
                 rollMode: combatant.hidden && (rollMode === "roll") ? "gmroll" : rollMode
             });
+            */
 
             // Play 1 sound for the whole rolled set
-            if (i > 0) chatData.sound = null;
-            messages.push(chatData);
+            //if (i > 0) chatData.sound = null;
+            //messages.push(chatData);
         }
         if (!updates.length) return this;
 
@@ -434,6 +443,30 @@ export class HeroSystem6eCombat extends Combat {
         }
 
         return success;
+    }
+
+    _sortCombatants(a, b) {
+        console.log('I am sorting combatants!')
+
+        const initA = Number.isNumeric(a.initiative) ? a.initiative : -9999;
+        const initB = Number.isNumeric(b.initiative) ? b.initiative : -9999;
+
+        let initDifference = initB - initA;
+        if (initDifference != 0) {
+            return initDifference;
+        }
+
+        const typeA = a.actor.hasPlayerOwner;
+        const typeB = b.actor.hasPlayerOwner;
+
+        if (typeA != typeB) {
+            if (typeA) {
+                return -1;
+            }
+            if (typeB) {
+                return 1;
+            }
+        }
     }
 
     static hasPhase(spd, segment) {
