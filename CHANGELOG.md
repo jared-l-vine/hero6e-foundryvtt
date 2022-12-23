@@ -24,3 +24,10 @@
 -Bugfixes
     - Split up attack card because players could only make attacks against themselves
     - Attack card messages had wrong sender name
+
+## Version 1.1.2
+-Bugfixes
+    - movement powers were showing the wrong type
+    - couldn't update sub item descriptiosn
+    - recovery button didn't produce chat message
+- Added a dice button for attack roll actions
