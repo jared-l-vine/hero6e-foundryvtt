@@ -292,6 +292,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     html.find('.power-maneuver-item-toggle').click(this._onPowerManeuverItemToggle.bind(this))
     html.find('.power-defense-item-toggle').click(this._onPowerDefenseItemToggle.bind(this))
     html.find('.power-rollable-skill').click(this._onPowerRollSkill.bind(this))
+    html.find('.power-item-attack').click(this._onPowerItemAttack.bind(this))
 
     // Rollable abilities.
     html.find('.rollable-characteristic').click(this._onRollCharacteristic.bind(this))
@@ -360,6 +361,30 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     return await HeroSystem6eItem.create(itemData, { parent: this.actor })
   }
 
+  async _onPowerItemAttack(event) {
+    event.preventDefault()
+
+    const powerId = event.currentTarget.attributes["data-powerid"].value
+    const subId = event.currentTarget.attributes["data-subid"].value
+
+    let attackItemData = this.actor.items.get(powerId).data.data.items["attack"][`${subId}`]
+
+    const itemData = {
+      name: attackItemData.name,
+      type: attackItemData.type,
+      data: attackItemData,
+    }
+
+    let item = new HeroSystem6eItem(itemData)
+
+    const rollMode = 'core'
+    const createChatMessage = true
+
+    item.displayCard = displayCard
+
+    return item.displayCard({ rollMode, createChatMessage }, this.actor, powerId + "-" + subId)
+  }
+
   async _onItemAttack (event) {
     event.preventDefault()
     const itemId = event.currentTarget.closest('.item').dataset.itemId
@@ -368,17 +393,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     const rollMode = 'core'
     const createChatMessage = true
 
-    if (item === undefined) {
-      // item is power or equipment
-      item = this.actor.items.get(event.currentTarget.id.split(' ')[0])
-
-      item.displayCard = displayCard
-      return item.displayCard({ rollMode, createChatMessage }, event.currentTarget.id.split(' ')[1])
-    }
-
     item.displayCard = displayCard
 
-    return item.displayCard({ rollMode, createChatMessage })
+    return item.displayCard({ rollMode, createChatMessage }, this.actor, item.id)
   }
 
   async _onItemToggle (event) {
@@ -806,28 +823,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
   }
 }
 
-async function displayCard ({ rollMode, createMessage = true } = {}, subKey = '') {
-  switch (this.data.type) {
-    case 'attack':
-      await HeroSystem6eAttackCard.createAttackPopOutFromItem(this, this.actor)
-
-      break
-    case 'equipment':
-    case 'power':
-      const data = this.data.data.items.attack[subKey]
-
-      const itemData = {
-        name: data.name,
-        type: data.type,
-        data
-      }
-
-      const newItem = new HeroSystem6eItem(itemData)
-
-      await HeroSystem6eAttackCard.createAttackPopOutFromItem(newItem, this.actor)
-
-      break
-  }
+async function displayCard ({ rollMode, createMessage = true } = {}, actor, itemId) {
+  await HeroSystem6eAttackCard.createAttackPopOutFromItem(this, actor, itemId)
 }
 
 async function updateCombatAutoMod (actor, item) {

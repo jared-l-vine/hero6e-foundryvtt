@@ -30,4 +30,9 @@
     - movement powers were showing the wrong type
     - couldn't update sub item descriptiosn
     - recovery button didn't produce chat message
+    - attack card automation wouldn't work with power sub items
+    - attack card automation wouldn't work with attacks that used strength or knockback
 - Added a dice button for attack roll actions
+- Known Issues
+    - clicking 'Apply to Target' with an attack card generated from a power sub item displays a message
+        'Error: Item does not exist', this should be safe to ignore

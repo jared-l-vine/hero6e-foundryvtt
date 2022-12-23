@@ -1,5 +1,6 @@
 import { HeroSystem6eActorActiveEffects } from "../actor/actor-active-effects.js";
 import { HeroSystem6eActorSheet } from "../actor/actor-sheet.js";
+import { HeroSystem6eItem } from "../item/item.js";
 import { HeroSystem6eCard } from "./card.js";
 import { determineDefense } from "../utility/defense.js";
 import { modifyRollEquation, getTokenChar } from "../utility/util.js"
@@ -106,13 +107,30 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
         return game.actors.get(targetId) || null;
     }
 
-    static async createFromToHitCard(cardObject, token, toHitData) {
+    static async createFromToHitCard(cardObject, token, toHitData, itemId) {
         let targetActor = token.document._actor
         let targetActorChars = targetActor.data.data.characteristics;
 
         const actor = cardObject.actor
 
-        const item = cardObject.item
+        let item;
+        if (itemId.includes("-")) {
+            // power or equipment type item
+            let powerId = itemId.split("-")[0];
+            let subId = itemId.split("-")[1];
+
+            let attackItemData = actor.items.get(powerId).data.data.items["attack"][`${subId}`]
+
+            const itemData = {
+              name: attackItemData.name,
+              type: attackItemData.type,
+              data: attackItemData,
+            }
+        
+            item = new HeroSystem6eItem(itemData)
+        } else {
+            item = cardObject.item
+        }
 
         const itemData = item.data.data;
 
@@ -178,8 +196,8 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
 
         if(itemData.usesStrength) {
             let strDamage = Math.floor((actor.data.data.characteristics.str.value - 10)/5)
-            if (data.effectiveStr <= actor.data.data.characteristics.str.value) {
-                strDamage = Math.floor((data.effectiveStr - 10)/5);
+            if (toHitData.effectiveStr <= actor.data.data.characteristics.str.value) {
+                strDamage = Math.floor((toHitData.effectiveStr - 10)/5);
             }
 
             if (strDamage > 0) {
@@ -333,7 +351,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
             // body - 2d6 m
             let knockBackEquation = body + " - 2D6"
             // knockback modifier added on an attack by attack basis
-            if (data.knockbackMod != 0 ) {
+            if (toHitData.knockbackMod != 0 ) {
                 knockBackEquation = modifyRollEquation(knockBackEquation, data.knockbackMod + "D6");
             }
             // knockback resistance effect
