@@ -1,4 +1,5 @@
-<section class="tab sidebar-tab directory flexcol" id="combat" data-tab="combat">
+<section class="tab sidebar-tab directory flexcol combat-sidebar" id="combat" data-tab="combat">
+
     <header id="combat-round">
         {{#if user.isGM}}
         <nav class="encounters flexrow">
@@ -33,9 +34,9 @@
         {{/if}}
 
         {{#if combatCount}}
-        {{#if combat.data.round}}
+        {{#if combat.heroRound}}
         <div>
-            <h3>{{localize 'COMBAT.Round'}} {{combat.data.round}}</h3>
+            <h3>{{localize 'COMBAT.Round'}} {{combat.heroRound}}</h3>
         </div>
         {{else}}
         <h3>{{localize 'COMBAT.NotStarted'}}</h3>
@@ -55,7 +56,7 @@
         {{/if}}
     </nav>
     </header>
-
+    
     <ol id="combat-tracker" class="directory-list">
         {{#each segments}}
         <li class="segment-container">
@@ -76,23 +77,29 @@
                                 <i class="fas fa-skull"></i>
                             </a>
                             {{/if}}
+                            <!-- 
                             <div class="token-effects">
                                 {{#each this.effects}}
                                 <img class="token-effect" src="{{this}}" />
                                 {{/each}}
                             </div>
+                            -->
                         </div>
                     </div>
 
+                    <!-- 
                     {{#if this.hasResource}}
                     <div class="token-resource">
                         <span class="resource">{{this.resource}}</span>
                     </div>
                     {{/if}}
+                    -->
 
+                    <!--
                     <div class="token-initiative">
                         <span class="initiative">{{this.initiative}}</span>
                     </div>
+                    -->
                 </li>
                 {{/each}}
             </ol>

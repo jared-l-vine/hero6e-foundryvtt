@@ -11,11 +11,6 @@ export class HeroSystem6eItem extends Item {
      * Augment the basic Item data model with additional dynamic data.
      */
 
-    // static async create(data, context={}) {
-    //     console.log('created hero6e item!')
-    //     super.create(data, context);
-    // }
-
     prepareData() {
         super.prepareData();
 
