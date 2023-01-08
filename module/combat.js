@@ -599,8 +599,6 @@ export class HeroSystem6eCombat extends Combat {
         this.render(false, { renderContext: `delete${embeddedName}` });
 
         // Update the heroTurn order and adjust the combat to keep the combatant the same (unless they were deleted)
-        const current = this.combatant;
-
         const currId = result
 
         if (currId === undefined) return;

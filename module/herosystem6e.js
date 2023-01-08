@@ -11,7 +11,6 @@ import * as macros from "./macros.js";
 import { HeroSystem6eCardHelpers } from "./card/card-helpers.js";
 import { HeroSystem6eActorActiveEffects } from "./actor/actor-active-effects.js";
 import HeroSystem6eTemplate from "./template.js";
-import { HeroSystem6eRuler } from "./ruler.js";
 import { HeroSystem6eCombat, HeroSystem6eCombatTracker } from "./combat.js";
 import SettingsHelpers from "./settings/settings-helpers.js";
 
@@ -92,7 +91,15 @@ Hooks.once('init', async function() {
 });
 
 Hooks.once("init", () => {
-    Ruler = HeroSystem6eRuler;
+    Ruler.prototype._getSegmentLabel = function _getSegmentLabel(segmentDistance, totalDistance, isTotal) {
+        let rangeMod = Math.ceil(Math.log2(totalDistance / 8)) * 2;
+
+        rangeMod = rangeMod < 0 ? 0: rangeMod;
+
+        let label = "[" + Math.round(segmentDistance.distance) + " m]" +  "\n-" + rangeMod + " Range Modifier"
+
+        return label
+    };
 })
 
 Hooks.once("ready", async function() {
