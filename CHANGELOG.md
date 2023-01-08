@@ -41,3 +41,10 @@
     - can't edit power/equpipment 'sub-items' from character sheet (to add powers to a character sheet use the item tab
         to create and edit the power there then drag the item onto a character sheet)
     - rolling initiative produces an error message, this can likely be ignored
+
+## Version 2.0-alpha
+- V10 migration
+- changed characteristic keys so that other charactersitics can work with Barbrawl
+- Known Issues:
+    - can't edit power/equpipment 'sub-items' from character sheet (to add powers to a character sheet use the item tab
+        to create and edit the power there then drag the item onto a character sheet)

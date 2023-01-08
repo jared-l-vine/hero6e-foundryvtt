@@ -15,36 +15,36 @@
             "characteristics": {
                 "str": {
                     "value": 10,
-                    "base": 10,
+                    "max": 10,
                     "type": "rollable"
                 },
                 "dex": {
                     "value": 10,
-                    "base": 10,
+                    "max": 10,
                     "type": "rollable"
                 },
                 "con": {
                     "value": 10,
-                    "base": 10,
+                    "max": 10,
                     "type": "rollable"
                 },
                 "int": {
                     "value": 10,
-                    "base": 10,
+                    "max": 10,
                     "type": "rollable"
                 },
                 "ego": {
                     "value": 10,
-                    "base": 10,
+                    "max": 10,
                     "type": "rollable"
                 },
                 "pre": {
                     "value": 10,
-                    "base": 10,
+                    "max": 10,
                     "type": "rollable"
                 },
                 "ocv": {
-                    "base": 3,
+                    "max": 3,
                     "autoMod": "0",
                     "userMod": "0",
                     "value": 3,
@@ -52,7 +52,7 @@
                     "type": "combat"
                 },
                 "dcv": {
-                    "base": 3,
+                    "max": 3,
                     "autoMod": "0",
                     "userMod": "0",
                     "value": 3,
@@ -60,7 +60,7 @@
                     "type": "combat"
                 },
                 "omcv": {
-                    "base": 3,
+                    "max": 3,
                     "autoMod": "0",
                     "userMod": "0",
                     "value": 3,
@@ -68,7 +68,7 @@
                     "type": "combat"
                 },
                 "dmcv": {
-                    "base": 3,
+                    "max": 3,
                     "autoMod": "0",
                     "userMod": "0",
                     "value": 3,
@@ -77,22 +77,22 @@
                 },
                 "spd": {
                     "value": 2,
-                    "base": 2,
+                    "max": 2,
                     "type": "other"
                 },
                 "pd": {
                     "value": 2,
-                    "base": 2,
+                    "max": 2,
                     "type": "defense"
                 },
                 "ed": {
                     "value": 2,
-                    "base": 2,
+                    "max": 2,
                     "type": "defense"
                 },
                 "rec": {
                     "value": 4,
-                    "base": 4,
+                    "max": 4,
                     "type": "other"
                 },
                 "end": {
@@ -130,22 +130,22 @@
                 },
                 "running": {
                     "value": 12,
-                    "base": 12,
+                    "max": 12,
                     "type": "movement"
                 },
                 "swimming": {
                     "value": 4,
-                    "base": 4,
+                    "max": 4,
                     "type": "movement"
                 },
                 "leaping": {
                     "value": 4,
-                    "base": 4,
+                    "max": 4,
                     "type": "movement"
                 },
                 "flying": {
                     "value": 0,
-                    "base": 0,
+                    "max": 0,
                     "type": "movement"
                 }
             }
@@ -200,7 +200,7 @@
             "piercing": 0,
             "penetrating": 0,
             "advantages": 0,
-            "dice": 1,
+            "dice": 0,
             "toHitMod": 0,
             "extraDice": "zero",
             "uses": "ocv",
