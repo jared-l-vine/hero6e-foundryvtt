@@ -16,6 +16,6 @@ export function getTokenChar(token, char, data) {
     try {
         return token.data.actorData.data.characteristics[`${char}`][`${data}`];
     } catch (TypeError) {
-        return baseactor.system.characteristics[`${char}`][`${data}`];
+        return baseActor.system.characteristics[`${char}`][`${data}`];
     }
 }

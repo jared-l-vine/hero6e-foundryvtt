@@ -1,6 +1,6 @@
 function determineDefense(targetActor, attackType) {
-    let PD = parseInt(targetactor.system.characteristics.pd.value);
-    let ED = parseInt(targetactor.system.characteristics.ed.value);
+    let PD = parseInt(targetActor.system.characteristics.pd.value);
+    let ED = parseInt(targetActor.system.characteristics.ed.value);
     let MD = 0;
     let rPD = 0; // resistant physical defense
     let rED = 0; // resistant energy defense

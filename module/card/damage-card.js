@@ -109,7 +109,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
 
     static async createFromToHitCard(cardObject, token, toHitData, itemId) {
         let targetActor = token.document._actor
-        let targetActorChars = targetactor.system.characteristics;
+        let targetActorChars = targetActor.system.characteristics;
 
         const actor = cardObject.actor
 
