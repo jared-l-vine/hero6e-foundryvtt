@@ -32,7 +32,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     const data = super.getData()
     data.dtypes = ['String', 'Number', 'Boolean']
 
-    const actorData = this.actor.data.toObject(false)
+    const actorData = this.actor.toObject(false)
     data.actor = actorData
     data.data = actorData.data
     data.rollData = this.actor.getRollData.bind(this.actor)
@@ -321,9 +321,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
             }
 
             const changes = []
-            changes[`system.characteristics.${e.target.name}`] = e.target.value
-            await this.actor.data.update(changes)
-
+            changes[`system.characteristics.${e.target.name}`] = parseInt(e.target.value)
+            await this.actor.update(changes)
+            
           } else {
             this._updateName(e.target.value)
           }
