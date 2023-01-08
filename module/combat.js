@@ -601,7 +601,9 @@ export class HeroSystem6eCombat extends Combat {
         // Update the heroTurn order and adjust the combat to keep the combatant the same (unless they were deleted)
         const current = this.combatant;
 
-        if (current === undefined) return;
+        const currId = result
+
+        if (currId === undefined) return;
 
         const nextSurvivor = this.segments[this.segment].find((i, t) => {
             return !result.includes(t.id) && (i >= this.heroTurn) && !t.data.defeated;
@@ -610,12 +612,12 @@ export class HeroSystem6eCombat extends Combat {
 
         // If the current combatant was removed, update the heroTurn order to the next survivor
         let heroTurn = this.heroTurn;
-        if (result.includes(current.id)) {
+        if (result.includes(currId)) {
             if (nextSurvivor) heroTurn = this.segments[this.segment].findIndex(t => t.id === nextSurvivor.id);
         }
 
         // Otherwise keep the combatant the same
-        else heroTurn = this.segments[this.segment].findIndex(t => t.id === current.id);
+        else heroTurn = this.segments[this.segment].findIndex(t => t.id === currId);
 
         // Update database or perform a local override
         heroTurn = Math.max(heroTurn, 0);
