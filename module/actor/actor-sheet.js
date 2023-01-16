@@ -1,8 +1,10 @@
+import { HEROSYS } from '../herosystem6e.js'
 import { HeroSystem6eItem } from '../item/item.js'
 import { HeroSystem6eAttackCard } from '../card/attack-card.js'
 import { createSkillPopOutFromItem } from '../item/skill.js'
 import { editSubItem, deleteSubItem } from '../powers/powers.js'
 import { enforceManeuverLimits } from '../item/manuever.js'
+import { presenceAttackPopOut } from '../utility/presence-attack.js'
 
 /**
  * Extend the basic ActorSheet with some very simple modifications
@@ -11,41 +13,40 @@ import { enforceManeuverLimits } from '../item/manuever.js'
 export class HeroSystem6eActorSheet extends ActorSheet {
   /** @override */
   static get defaultOptions () {
-    const path = 'systems/hero6efoundryvttv2/templates/actor/actor-sheet.html'
+    const path = 'systems/hero6efoundryvttv2/templates/actor/actor-sheet.hbs'
 
     return mergeObject(super.defaultOptions, {
       classes: ['herosystem6e', 'sheet', 'actor'],
       template: path,
       width: 800,
       height: 700,
+      resizable: false,
       tabs: [
         { navSelector: '.sheet-item-tabs', contentSelector: '.sheet-body', initial: 'description' },
         { navSelector: '.sheet-edit-tabs', contentSelector: '.sheet-mode', initial: 'play' }
-      ]
+      ],
+      heroEditable: false
     })
   }
-
-  /* -------------------------------------------- */
 
   /** @override */
   getData () {
     const data = super.getData()
-    data.dtypes = ['String', 'Number', 'Boolean']
 
-    const actorData = this.actor.toObject(false)
-    data.actor = actorData
-    data.data = actorData.data
-    data.rollData = this.actor.getRollData.bind(this.actor)
-
-    data.items = actorData.items
-    data.items.sort((a, b) => (a.sort || 0) - (b.sort || 0))
-
-    // Prepare items.
-    if (this.actor.data.type === 'character') {
+    // Prepare items
+    if (this.actor.type === 'character') {
       this._prepareCharacterItems(data)
     }
 
     return data
+  }
+
+  async _updateObject(event, formData) {
+    const expandedData = foundry.utils.expandObject(formData);
+
+    await this.actor.update(expandedData)
+
+    this.render();
   }
 
   /**
@@ -126,7 +127,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     // Iterate through items, allocating to containers
     // let totalWeight = 0;
     for (const i of sheetData.items) {
-      const item = i.data
+      const item = i.system
       i.img = i.img || DEFAULT_TOKEN
       // Append to skills.
       if (i.type === 'skill') {
@@ -255,13 +256,20 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
     // Edit sheet control
     html.find('.edit-settings').click(e => {
-      html.find('.conditional-input').each((id, inp) => {
-        if (e.target.dataset.tab === 'play') {
-          inp.disabled = true
-        } else {
-          inp.disabled = false
-        }
-      })
+      switch (e.target.dataset.tab) {
+        case "play":
+          HEROSYS.log(false, 'play tab!')
+          this.options.heroEditable = false
+          break;
+        case "edit":
+          HEROSYS.log(false, 'edit tab!')
+          this.options.heroEditable = true
+          break;
+        default:
+          break;
+      }
+
+      this.render()
     })
 
     // Add Inventory Item
@@ -274,18 +282,11 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       item.sheet.render(true)
     })
 
-    // Delete Inventory Item
-    html.find('.item-delete').click(ev => {
-      const li = $(ev.currentTarget).parents('.item')
-      const item = this.actor.items.get(li.data('itemId'))
-      item.delete()
-      li.slideUp(200, () => this.render(false))
-    })
-
     // Update Power Inventory Item
     html.find('.power-item-edit').click(this._onEditPowerItem.bind(this))
 
-    // Delete Power Inventory Item
+    // Delete Inventory Items
+    html.find('.item-delete').click(this._onDeleteItem.bind(this))
     html.find('.power-item-delete').click(this._onDeletePowerItem.bind(this))
 
     // Power Sub Items
@@ -300,6 +301,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     html.find('.item-attack').click(this._onItemAttack.bind(this))
     html.find('.item-toggle').click(this._onItemToggle.bind(this))
     html.find('.recovery-button').click(this._onRecovery.bind(this))
+    html.find('.presence-button').click(this._onPresenseAttack.bind(this))
     html.find('.upload-button').change(this._uploadCharacterSheet.bind(this))
 
     // Drag events for macros.
@@ -311,27 +313,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         li.addEventListener('dragstart', handler, false)
       })
     }
-
-    html.find('input').each((id, inp) => {
-      this.changeValue = async function (e) {
-        if (e.code === 'Enter' || e.code === 'Tab') {
-          if (e.target.dataset.dtype === 'Number') {
-            if (isNaN(parseInt(e.target.value))) {
-              return
-            }
-
-            const changes = []
-            changes[`system.characteristics.${e.target.name}`] = parseInt(e.target.value)
-            await this.actor.update(changes)
-            
-          } else {
-            this._updateName(e.target.value)
-          }
-        }
-      }
-
-      inp.addEventListener('keydown', this.changeValue.bind(this))
-    })
   }
 
   /**
@@ -539,6 +520,10 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     }
 
     return ChatMessage.create(chatData)
+  }
+
+  _onPresenseAttack (event) {
+    presenceAttackPopOut(this.actor)
   }
 
   async _uploadCharacterSheet (event) {
@@ -815,11 +800,34 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     await editSubItem(event, item)
   }
 
+  async _onDeleteItem (event) {
+    const li = $(event.currentTarget).parents('.item')
+    const item = this.actor.items.get(li.data('itemId'))
+
+    const confirmed = await Dialog.confirm({
+        title: game.i18n.localize("HERO6EFOUNDRYVTTV2.confirms.deleteConfirm.Title"),
+        content: game.i18n.localize("HERO6EFOUNDRYVTTV2.confirms.deleteConfirm.Content")
+    });
+
+    if (confirmed) {
+        item.delete()
+        li.slideUp(200, () => this.render(false))
+        this.render();
+    }
+  }
+
   async _onDeletePowerItem (event) {
     const id = event.currentTarget.key
     const item = this.object.data.items.get(id)
 
-    await deleteSubItem(event, item)
+    const confirmed = await Dialog.confirm({
+      title: game.i18n.localize("HERO6EFOUNDRYVTTV2.confirms.deleteConfirm.Title"),
+      content: game.i18n.localize("HERO6EFOUNDRYVTTV2.confirms.deleteConfirm.Content")
+    });
+
+    if (confirmed) {
+      await deleteSubItem(event, item)
+    }
   }
 }
 

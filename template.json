@@ -95,16 +95,6 @@
                     "max": 4,
                     "type": "other"
                 },
-                "end": {
-                    "value": 20,
-                    "max": 20,
-                    "type": "resource"
-                },
-                "stun": {
-                    "value": 20,
-                    "max": 20,
-                    "type": "resource"
-                },
                 "body": {
                     "value": 10,
                     "max": 10,
@@ -127,6 +117,16 @@
                         "Left Foot": 0,
                         "Right Foot": 0
                     }
+                },
+                "stun": {
+                    "value": 20,
+                    "max": 20,
+                    "type": "resource"
+                },
+                "end": {
+                    "value": 20,
+                    "max": 20,
+                    "type": "resource"
                 },
                 "running": {
                     "value": 12,
