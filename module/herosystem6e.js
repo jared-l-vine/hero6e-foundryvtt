@@ -122,6 +122,21 @@ Hooks.on("updateActor", (app, html, data) => {
     }
 });
 
+Hooks.once('devModeReady', ({ registerPackageDebugFlag }) => {
+    registerPackageDebugFlag(HEROSYS.ID);
+});
+export class HEROSYS {
+    static ID = "HEROSYS";
+
+    static log(force, ...args) {
+        const shouldLog = force || game.modules.get('_dev-mode')?.api?.getPackageDebugValue(this.ID);
+
+        //if (shouldLog) {
+            console.log(this.ID, '|', ...args);
+        //}
+    }
+}
+
 /* -------------------------------------------- */
 /*  Hotbar Macros                               */
 /* -------------------------------------------- */
