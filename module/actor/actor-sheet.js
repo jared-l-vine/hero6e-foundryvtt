@@ -132,7 +132,30 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       // Append to skills.
       if (i.type === 'skill') {
         i.characteristic = CONFIG.HERO.skillCharacteristics[item.characteristic]
-        i.roll = item.roll
+
+        // determine Skill Roll
+        let roll;
+        if (i.system.state === 'untrained') {
+          roll = '6-'
+        } if (i.system.state === 'everyman') {
+          roll = '8-'
+        } else if (i.system.state === 'familiar') {
+          roll = '8-'
+        } else if (i.system.state === 'proficient') {
+          roll = '10-'
+        } else if (i.system.state === 'trained') {
+          let charValue;
+          if (i.system.characteristic !== 'general') {
+            charValue = this.actor.system.characteristics[`${i.system.characteristic.toLowerCase()}`].value
+          } else {
+            charValue = 0
+          }
+          const rollVal = 9 + Math.round(charValue / 5) + parseInt(i.system.levels)
+          roll = rollVal.toString() + '-'
+        }
+
+
+        i.roll = roll
         i.rollable = item.rollable
 
         if (!item.parentid) {

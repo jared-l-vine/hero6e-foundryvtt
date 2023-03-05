@@ -185,7 +185,7 @@
 }
 
 .hero.actor-sheet {
-    overflow:hidden;
+    overflow:auto;
 }
 
 .hero .sheet-mode {
