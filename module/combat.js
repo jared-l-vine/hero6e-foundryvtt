@@ -17,6 +17,10 @@ export class HeroSystem6eCombat extends Combat {
             12: []
         };
 
+        this.segment = 12;
+
+        this.setSegment(12)
+
         this.current = this.current || {
             heroRound: null,
             segment: null,
@@ -52,7 +56,7 @@ export class HeroSystem6eCombat extends Combat {
      * @type {Combatant}
      */
     get combatant() {
-        return this.segment ? this.currentSegment[this.heroTurn] : undefined;
+        return this.segment ? this.currentSegment[this.turn] : undefined;
     }
 
     /* -------------------------------------------- */
@@ -66,7 +70,11 @@ export class HeroSystem6eCombat extends Combat {
     }
 
     get segment() {
-        return Math.max(this._segment, 1);
+        return Math.max(this.flags.world.segment, 1);
+    }
+
+    setSegment(value) {
+        this.setFlag('world', 'segment', value)
     }
 
     set segment(segment) {
@@ -167,16 +175,19 @@ export class HeroSystem6eCombat extends Combat {
         //let advanceTime = Math.max(this.turns.length - this.heroTurn, 1) * CONFIG.time.turnTime;
         let advanceTime = Math.max(this.segments.length - this.segment, 1) * CONFIG.time.segmentTime
         advanceTime += CONFIG.time.heroRoundTime;
-        return await this.update({ heroRound: this.heroRound + 1, segment: segment, heroTurn: heroTurn }, { advanceTime });
+
+        return await this.update({ round: this.round + 1, segment: segment, heroTurn: heroTurn }, { advanceTime });
     }
 
     async nextSegment() {
         let segment = this.segment;
+
         let skip = this.settings.skipDefeated;
 
         // Determine the next heroTurn number
         let next = null;
         let nextTurn = null;
+
         if (skip) {
             for (let [i, s] of this.segments.entries()) {
                 if (i <= this.segment) continue;
@@ -191,7 +202,7 @@ export class HeroSystem6eCombat extends Combat {
         }
         else {
             for (let [i, s] of this.segments.entries()) {
-                if (i <= this.segment) continue;
+                if (i < this.segment) continue;
                 nextTurn = (s.findIndex(t => {
                     return true;
                 }));
@@ -201,15 +212,46 @@ export class HeroSystem6eCombat extends Combat {
             }
         }
 
+        nextTurn += 1
+        next = nextTurn
+
         // Maybe advance to the next heroRound
-        let heroRound = this.heroRound;
-        if ((this.heroRound === 0) || (next === null) || (next >= this.segments.length)) {
+        let round = this.round;
+        if ((this.round === 0) || (next === null) || (next >= this.segments.length)) {
             return this.nextheroRound();
         }
 
         // Update the encounter
         const advanceTime = CONFIG.time.segmentTime;
-        return this.update({ heroRound: heroRound, segment: next, heroTurn: nextTurn }, { advanceTime });
+
+        let segement = this.segment
+
+        let nextSegment;
+
+        const segementIndexes = this.segments.reduce((accumulator, currentValue, currentIndex) => {
+            if (currentValue.length > 0) {
+            accumulator.push(currentIndex);
+            }
+            return accumulator;
+        }, []);
+
+        
+        if (Number(segement) === 12) {
+            nextSegment = segementIndexes[0]
+        }
+
+        let nextIndex = segementIndexes.indexOf(segement) + 1
+
+        if (nextIndex > (segementIndexes.length - 1)) {
+            round += 1
+            nextIndex = 0
+        }
+
+        this.update({ round: round, turn: 0 });
+
+        this.setSegment(segementIndexes[nextIndex])
+
+        return
     }
 
     /* -------------------------------------------- */
@@ -219,7 +261,7 @@ export class HeroSystem6eCombat extends Combat {
      * @return {Promise<Combat>}
      */
     async nextTurn() {
-        let heroTurn = this.heroTurn;
+        let heroTurn = this.turn;
         let skip = this.settings.skipDefeated;
 
         // Determine the next heroTurn number
@@ -243,7 +285,10 @@ export class HeroSystem6eCombat extends Combat {
 
         // Update the encounter
         const advanceTime = CONFIG.time.turnTime;
-        return this.update({ heroRound: heroRound, heroTurn: next }, { advanceTime });
+
+        // return this.update({ heroRound: heroRound, turn: next }, { advanceTime });
+
+        return this.update({ heroRound: heroRound, turn: next });
     }
 
     /* -------------------------------------------- */
@@ -270,7 +315,7 @@ export class HeroSystem6eCombat extends Combat {
     }
 
     async previousSegment() {
-        if (this.heroTurn === 0 && this.heroRound === 0) return this;
+        if (this.turn === 0 && this.heroRound === 0) return this;
 
         let previousSegment = -1;
 
@@ -284,7 +329,10 @@ export class HeroSystem6eCombat extends Combat {
         if (previousSegment < 1 || this.heroRound === 1) return this.previousheroRound();
 
         const advanceTime = -1 * CONFIG.time.segmentTime;
-        return this.update({ segment: previousSegment, heroTurn: this.segments[previousSegment].length - 1 }, { advanceTime });
+
+        await this.setSegment(previousSegment)
+
+        return this.update({ turn: this.segments[previousSegment].length - 1 }, { advanceTime });
     }
 
     /* -------------------------------------------- */
@@ -294,10 +342,10 @@ export class HeroSystem6eCombat extends Combat {
      * @return {Promise<Combat>}
      */
     async previousTurn() {
-        if (this.heroTurn === 0 && this.heroRound === 0) return this;
-        else if (this.heroTurn <= 0) return this.previousSegment();
+        if (this.turn === 0 && this.heroRound === 0) return this;
+        else if (this.turn <= 0) return this.previousSegment();
         const advanceTime = -1 * CONFIG.time.turnTime;
-        return this.update({ heroTurn: this.heroTurn - 1 }, { advanceTime });
+        return this.update({ turn: this.turn - 1 }, { advanceTime });
     }
 
     /* -------------------------------------------- */
@@ -523,7 +571,8 @@ export class HeroSystem6eCombat extends Combat {
      * @return {Promise<Combat>}
      */
     async startCombat() {
-        return this.update({ heroRound: 1, segment: 12, heroTurn: 0 });
+        this.setSegment(12)
+        return await this.update({ round: 1, turn: 0 });
     }
 
     /* -------------------------------------------- */
@@ -629,7 +678,7 @@ export class HeroSystem6eCombat extends Combat {
 
 export class HeroSystem6eCombatTracker extends CombatTracker {
     static get defaultOptions() {
-        var path = "systems/hero6efoundryvttv2/templates/combat/combat-tracker2.html";
+        var path = "systems/hero6efoundryvttv2/templates/combat/combat-tracker.hbs";
         return foundry.utils.mergeObject(super.defaultOptions, {
             template: path,
         });
@@ -638,6 +687,52 @@ export class HeroSystem6eCombatTracker extends CombatTracker {
     activateListeners(html) {
         super.activateListeners(html);
         html.find('.segment-active').click(ev => this._onSegmentToggleContent(ev));
+
+        html.on('click', "[data-control]", this._handleButtonClick.bind(this));
+
+    }
+
+    async _handleButtonClick(event) {
+        const clickedElement = $(event.currentTarget);
+        const control = clickedElement.data().control;
+
+        const relevantCombat = game.combats.combats.find(e => e.active === true);
+
+        switch(control) {
+            case 'startCombat': {
+                relevantCombat.startCombat()
+                this.render();
+                break;
+            }
+
+            case 'endCombat': {
+                break;
+            }
+
+            case 'nextTurn': {
+                relevantCombat.nextTurn()
+                this.render()
+                break;
+            }
+
+            case 'nextRound': {
+                break;
+            }
+
+            case 'previousTurn': {
+                relevantCombat.previousTurn()
+                this.render()
+                break;
+            }
+
+            case 'previousRound': {
+                break;
+            }
+
+            default:
+                console.log('Invalid action detected ' + control)
+                break;
+        }
     }
 
     _onSegmentToggleContent(event) {
@@ -651,6 +746,7 @@ export class HeroSystem6eCombatTracker extends CombatTracker {
     async getData(options) {
         // Get the combat encounters possible for the viewed 
         const combat = this.viewed;
+
         const hasCombat = combat !== null;
         const combats = this.combats;
         const currentIdx = combats.findIndex(c => c === combat);
@@ -681,7 +777,7 @@ export class HeroSystem6eCombatTracker extends CombatTracker {
 
         for (let i = 1; i <= 12; i++) {
             let heroTurns = [];
-            if (combat.heroRound != 1 || i == 12) {
+            if (combat.round != 1 || i == 12) {
                 for (let [j, combatant] of combat.segments[i].entries()) {
                     //if (!combatant.isVisible) continue;
                     if (!combatant.visible) continue;
@@ -749,9 +845,10 @@ export class HeroSystem6eCombatTracker extends CombatTracker {
 
         // Merge update data for rendering
         return foundry.utils.mergeObject(data, {
-            heroRound: combat.heroRound,
+            round: combat.round,
             heroTurn: combat.turn,
             segments: segments,
+            // segments:game.combats.combats.find(e => e.active === true).segments,
             activeSegments: activeSegments,
             control: combat.combatant?.players?.includes(game.user)
         });
