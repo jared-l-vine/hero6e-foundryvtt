@@ -48,3 +48,9 @@
 - Known Issues:
     - can't edit power/equpipment 'sub-items' from character sheet (to add powers to a character sheet use the item tab
         to create and edit the power there then drag the item onto a character sheet)
+
+# Version 2.0.4-alpha
+- fixed an issue with the combat tracker not working
+- fixed an issue with the Upload .HDC button that caused it to fail
+- Upload .HDC now reads in perks, talents, complications, and martial arts
+- additional V10 migration

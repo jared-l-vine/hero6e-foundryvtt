@@ -50,11 +50,11 @@ async function skillRoll(item, actor, html) {
 	let roll = new Roll(rollEquation, actor.getRollData());
 
 	roll.evaluate().then(function(result) {
-		let margin = parseInt(item.data.data.roll) - result.total;
+		let margin = parseInt(item.system.roll) - result.total;
 		
 		result.toMessage({
 			speaker: ChatMessage.getSpeaker({ actor: actor }),
-			flavor: item.name.toUpperCase() + " ( " + item.data.data.roll + " ) roll " + (margin >= 0 ? "succeeded" : "failed") + " by " + Math.abs(margin),
+			flavor: item.name.toUpperCase() + " ( " + item.system.roll + " ) roll " + (margin >= 0 ? "succeeded" : "failed") + " by " + Math.abs(margin),
 			borderColor: margin >= 0 ? 0x00FF00 : 0xFF0000,	
 		});
 	});

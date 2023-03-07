@@ -80,15 +80,15 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     html.find('.textarea').each((id, inp) => {
       this.changeValue = async function (e) {
         if (e.code === 'Enter' || e.code === 'Tab') {
-          if (!'linkId' in this.item.data.data || this.item.data.data.linkId === undefined) {
+          if (!'linkId' in this.item.system || this.item.system.linkId === undefined) {
             const changes = []
             changes[`${e.target.name}`] = e.target.value
             await this.item.update(changes)
           } else {
             const type = this.item.type
 
-            const linkId = this.item.data.data.linkId
-            const subLinkId = this.item.data.data.subLinkId
+            const linkId = this.item.system.linkId
+            const subLinkId = this.item.system.subLinkId
 
             let item = game.items.get(linkId)
 
@@ -156,7 +156,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
       value = event.currentTarget.checked
     }
 
-    if (!'linkId' in this.item.data.data || this.item.data.data.linkId === undefined) {
+    if (!'linkId' in this.item.system || this.item.system.linkId === undefined) {
       // normal items
       let changes = {}
       changes[`${valueName}`] = value
@@ -165,11 +165,11 @@ export class HeroSystem6eItemSheet extends ItemSheet {
 
       if (this.item.type === 'movement') {
         changes = {}
-        changes['data.value'] = parseInt(this.item.data.data.base) + parseInt(this.item.data.data.mod)
+        changes['data.value'] = parseInt(this.item.system.base) + parseInt(this.item.system.mod)
 
         if (this.item.actor !== null) {
           const spd = this.item.actor.system.characteristics.spd.value
-          changes['data.velBase'] = Math.round((parseInt(this.item.data.data.base) * spd) / 12)
+          changes['data.velBase'] = Math.round((parseInt(this.item.system.base) * spd) / 12)
           changes['data.velValue'] = Math.round((changes['data.value'] * spd) / 12)
         }
 
@@ -177,8 +177,8 @@ export class HeroSystem6eItemSheet extends ItemSheet {
       }
     } else {
       // power sub items
-      const linkId = this.item.data.data.linkId
-      const subLinkId = this.item.data.data.subLinkId
+      const linkId = this.item.system.linkId
+      const subLinkId = this.item.system.subLinkId
 
       let item = game.items.get(linkId)
 
@@ -205,7 +205,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
       await item.update(changes)
 
       if (type === 'movement') {
-        const subItem = item.data.data.items[`${type}`][`${subLinkId}`]
+        const subItem = item.system.items[`${type}`][`${subLinkId}`]
 
         changes = {}
         changes[`data.items.${type}.${subLinkId}.value`] = parseInt(subItem.base) + parseInt(subItem.mod)
@@ -245,7 +245,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
 
     const id = Date.now().toString(32) + Math.random().toString(16).substring(2)
     const changes = {}
-    changes[`data.items.${type}.${id}`] = newItem.data.data
+    changes[`data.items.${type}.${id}`] = newItem.system
     changes[`data.items.${type}.${id}.img`] = this.item.img
     changes[`data.items.${type}.${id}.name`] = name
     changes[`data.items.${type}.${id}.visible`] = true

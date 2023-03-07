@@ -92,7 +92,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         let targetActorChars = targetActor.system.characteristics;
         stateData["str"] = targetActorChars.str.value;
 
-        stateData["useStr"] = item.data.data.usesStrength;
+        stateData["useStr"] = item.system.usesStrength;
 
         stateData["itemId"] = itemId;
 

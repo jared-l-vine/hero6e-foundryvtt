@@ -5,6 +5,7 @@ import { createSkillPopOutFromItem } from '../item/skill.js'
 import { editSubItem, deleteSubItem } from '../powers/powers.js'
 import { enforceManeuverLimits } from '../item/manuever.js'
 import { presenceAttackPopOut } from '../utility/presence-attack.js'
+import { HERO } from '../config.js'
 
 /**
  * Extend the basic ActorSheet with some very simple modifications
@@ -144,16 +145,14 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         } else if (i.system.state === 'proficient') {
           roll = '10-'
         } else if (i.system.state === 'trained') {
-          let charValue;
-          if (i.system.characteristic !== 'general') {
-            charValue = this.actor.system.characteristics[`${i.system.characteristic.toLowerCase()}`].value
-          } else {
-            charValue = 0
-          }
+          const charValue = ((i.system.characteristic.toLowerCase() !== 'general') && (i.system.characteristic.toLowerCase() != '')) ?
+            this.actor.system.characteristics[`${i.system.characteristic.toLowerCase()}`].value : 0
+
           const rollVal = 9 + Math.round(charValue / 5) + parseInt(i.system.levels)
           roll = rollVal.toString() + '-'
+        } else if (i.system.state === 'noroll') {
+          roll = "n/a"
         }
-
 
         i.roll = roll
         i.rollable = item.rollable
@@ -184,7 +183,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         HeroSystem6eActorSheet._prepareDefenseItem(i, item)
         defenses.push(i)
       } else if (i.type === 'attack') {
-        i.data = item
+        i.system = item
         i.defense = CONFIG.HERO.defenseTypes[item.defense]
         i.piercing = item.piercing
         i.penetrating = item.penetrating
@@ -357,10 +356,10 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     const itemData = {
       name,
       type,
-      data
+      system: data
     }
     // Remove the type from the dataset since it's in the itemData.type prop.
-    delete itemData.data.type
+    delete itemData.system.type
 
     // Finally, create the item!
     return await HeroSystem6eItem.create(itemData, { parent: this.actor })
@@ -372,7 +371,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     const powerId = event.currentTarget.attributes["data-powerid"].value
     const subId = event.currentTarget.attributes["data-subid"].value
 
-    let attackItemData = this.actor.items.get(powerId).data.data.items["attack"][`${subId}`]
+    let attackItemData = this.actor.items.get(powerId).system.items["attack"][`${subId}`]
 
     const itemData = {
       name: attackItemData.name,
@@ -407,8 +406,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     event.preventDefault()
     const itemId = event.currentTarget.closest('.item').dataset.itemId
     const item = this.actor.items.get(itemId)
-    const attr = 'data.active'
-    const newValue = !getProperty(item.data, 'data.active')
+    const attr = 'active'
+    const newValue = !getProperty(item.system, attr)
 
     // only have one combat maneuver selected at a time except for Set or Brace
     if (newValue && item.type === 'maneuver' && newValue) {
@@ -426,7 +425,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     const itemId = event.currentTarget.closest('.item').dataset.itemId
     const subItemId = event.currentTarget.closest('.item').dataset.subitemId
     const powerItem = this.actor.items.get(itemId)
-    const item = powerItem.data.data.items.maneuver[subItemId]
+    const item = powerItem.system.items.maneuver[subItemId]
     const newValue = !item.active
 
     await powerItem.update({ [`data.items.maneuver.${subItemId}.active`]: newValue })
@@ -448,7 +447,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     const itemId = event.currentTarget.closest('.item').dataset.itemId
     const subItemId = event.currentTarget.closest('.item').dataset.subitemId
     const powerItem = this.actor.items.get(itemId)
-    const item = powerItem.data.data.items.defense[subItemId]
+    const item = powerItem.system.items.defense[subItemId]
     const newValue = !item.active
 
     await powerItem.update({ [`data.items.defense.${subItemId}.active`]: newValue })
@@ -499,7 +498,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     const itemId = event.currentTarget.closest('.item').dataset.itemId
     const subItemId = event.currentTarget.closest('.item').dataset.subitemId
     const powerItem = this.actor.items.get(itemId)
-    const item = powerItem.data.data.items.skill[subItemId]
+    const item = powerItem.system.items.skill[subItemId]
 
     const itemData = {
       name: item.name,
@@ -527,8 +526,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     }
 
     await this.actor.update({
-      'data.characteristics.stun.value': newStun,
-      'data.characteristics.end.value': newEnd
+      'system.characteristics.stun.value': newStun,
+      'system.characteristics.end.value': newEnd
     })
 
     let token = this.actor.token
@@ -536,7 +535,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     speaker["alias"] = this.actor.name
 
     const chatData = {
-      user: game.user.data._id,
+      user: game.user._id,
       type: CONST.CHAT_MESSAGE_TYPES.OTHER,
       content: this.actor.name + ' recovers!',
       speaker: speaker
@@ -573,6 +572,11 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     const characterInfo = sheet.getElementsByTagName('CHARACTER_INFO')[0]
     const characteristics = sheet.getElementsByTagName('CHARACTERISTICS')[0]
     const skills = sheet.getElementsByTagName('SKILLS')[0]
+    const powers = sheet.getElementsByTagName('POWERS')[0]
+    const perks = sheet.getElementsByTagName('PERKS')[0]
+    const talents = sheet.getElementsByTagName('TALENTS')[0]
+    const martialarts = sheet.getElementsByTagName('MARTIALARTS')[0]
+    const complications = sheet.getElementsByTagName('DISADVANTAGES')[0]
 
     // let elementsToLoad = ["POWERS", "PERKS", "TALENTS", "MARTIALARTS", "DISADVANTAGES"]
 
@@ -581,8 +585,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     if (characterInfo.getAttribute('CHARACTER_NAME') !== '') {
       changes.name = characterInfo.getAttribute('CHARACTER_NAME')
     }
-
-    // changes['data.characteristics.flying.value'] = 0;
 
     for (const item of this.actor.items) {
       await item.delete()
@@ -622,8 +624,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
         await HeroSystem6eItem.create(itemData, { parent: this.actor })
       } else {
-        changes[`data.characteristics.${key}.value`] = value
-        changes[`data.characteristics.${key}.max`] = value
+        changes[`system.characteristics.${key}.value`] = value
+        changes[`system.characteristics.${key}.max`] = value
       }
     }
 
@@ -649,68 +651,70 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       }
 
       const type = 'skill'
-      const data = {
+      const skillData = {
         levels: skill.getAttribute('LEVELS'),
         state: 'trained'
       }
 
-      data.description = description
+      skillData.description = description
 
       if (skill.attributes.getNamedItem('CHARACTERISTIC')) {
-        data.characteristic = skill.getAttribute('CHARACTERISTIC')
+        skillData.characteristic = skill.getAttribute('CHARACTERISTIC')
       } else {
-        data.characteristic = ''
+        skillData.characteristic = ''
       }
 
       if (skill.attributes.getNamedItem('FAMILIARITY')) {
         if (skill.getAttribute('FAMILIARITY') === 'Yes') {
-          data.state = 'familiar'
+          skillData.state = 'familiar'
 
           if (skill.getAttribute('EVERYMAN') === 'Yes') {
-            data.state = 'everyman'
+            skillData.state = 'everyman'
           }
         }
 
         if (skill.getAttribute('PROFICIENCY') === 'Yes') {
-          data.state = 'proficient'
+          skillData.state = 'proficient'
         }
       } else {
-        data.state = 'noroll'
+        skillData.state = 'noroll'
       }
 
-      if (xmlid === 'PROFESSIONAL_SKILL') data.ps = true
+      if (xmlid === 'PROFESSIONAL_SKILL') skillData.ps = true
 
       if (skill.hasAttribute('PARENTID')) {
-        data.parentid = skill.getAttribute('PARENTID')
+        skillData.parentid = skill.getAttribute('PARENTID')
       }
 
       if (skill.hasAttribute('ID')) {
-        data.hdcid = skill.getAttribute('ID')
+        skillData.hdcid = skill.getAttribute('ID')
       }
 
       // determine Skill Roll
-      if (data.state === 'everyman') {
-        data.roll = '8-'
-      } else if (data.state === 'familiar') {
-        data.roll = '8-'
-      } else if (data.state === 'proficient') {
-        data.roll = '10-'
-      } else if (data.state === 'trained') {
-        const charValue = this.actor.system.characteristics[`${data.characteristic.toLowerCase()}`].value
-        const rollVal = 9 + Math.round(charValue / 5) + parseInt(data.levels)
-        data.roll = rollVal.toString() + '-'
+      if (skillData.state === 'everyman') {
+        skillData.roll = '8-'
+      } else if (skillData.state === 'familiar') {
+        skillData.roll = '8-'
+      } else if (skillData.state === 'proficient') {
+        skillData.roll = '10-'
+      } else if (skillData.state === 'trained') {
+        const charValue = ((skillData.characteristic.toLowerCase() !== 'general') && (skillData.characteristic.toLowerCase() != '')) ?
+          this.actor.system.characteristics[`${skillData.characteristic.toLowerCase()}`].value : 0
+
+        const rollVal = 9 + Math.round(charValue / 5) + parseInt(skillData.levels)
+        skillData.roll = rollVal.toString() + '-'
       }
+
+      name = (name === '') ? description : name
 
       const itemData = {
         name,
         type,
-        data
+        system: skillData
       }
 
       await HeroSystem6eItem.create(itemData, { parent: this.actor })
     }
-
-    const powers = sheet.getElementsByTagName('POWERS')[0]
 
     const relevantFields = ['BASECOST', 'LEVELS', 'ALIAS', 'MULTIPLIER', 'NAME', 'OPTION_ALIAS']
     for (const power of powers.children) {
@@ -724,7 +728,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         itemName = alias
       }
 
-      const data = []
+      const powerData = []
 
       for (const attribute of power.attributes) {
         const attName = attribute.name
@@ -732,7 +736,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         if (relevantFields.includes(attName)) {
           const attValue = attribute.value
 
-          data[attName] = attValue
+          powerData[attName] = attValue
         }
       }
 
@@ -744,11 +748,11 @@ export class HeroSystem6eActorSheet extends ActorSheet {
           modifiers.push(xmlidModifier)
         }
       }
-      data.modifiers = modifiers
+      powerData.modifiers = modifiers
 
-      data.description = alias
+      powerData.description = alias
 
-      data.rules = xmlid
+      powerData.rules = xmlid
 
       let type = ''
       let itemData = {}
@@ -757,29 +761,76 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
         const velocity = Math.round((spd * levels) / 12)
 
-        data.max = levels
-        data.value = levels
-        data.velBase = velocity
-        data.velValue = velocity
+        powerData.max = levels
+        powerData.value = levels
+        powerData.velBase = velocity
+        powerData.velValue = velocity
 
         itemData = {
           name: itemName,
           type,
-          data,
+          powerData,
           levels
         }
       } else {
         type = 'power'
 
+        itemName = (itemName === '') ? 'unnamed' : itemName
+
         itemData = {
           name: itemName,
           type,
-          data,
+          system: powerData,
           levels
         }
       }
 
       await HeroSystem6eItem.create(itemData, { parent: this.actor })
+    }
+
+    for (const perk of perks.children) {
+      let name = perk.getAttribute('NAME')
+      name = (name === '') ? perk.getAttribute('ALIAS') : name
+
+      await HeroSystem6eItem.create({
+        'type': 'perk',
+        'name': name,
+        'system.rules': perk.getAttribute('ALIAS')
+      }, { parent: this.actor })    }
+
+    for (const talent of talents.children) {
+      let name = talent.getAttribute('NAME')
+      name = (name === '') ? talent.getAttribute('ALIAS') : name
+
+      await HeroSystem6eItem.create({
+        'type': 'talent',
+        'name': name,
+        'system.rules': talent.getAttribute('ALIAS')
+      }, { parent: this.actor })
+    }
+
+    for (const complication of complications.children) {
+      let name = complication.getAttribute('NAME')
+
+      name = (name === '') ? complication.getAttribute('ALIAS') : name
+
+      await HeroSystem6eItem.create({
+        'type': 'complication',
+        'name': name,
+        'system.rules': complication.getAttribute('ALIAS')
+      }, { parent: this.actor })
+    }
+
+    for (const martialart of martialarts.children) {
+      let name = martialart.getAttribute('NAME')
+
+      name = (name === '') ? martialart.getAttribute('ALIAS') : name
+      
+      await HeroSystem6eItem.create({
+        'type': 'martialart',
+        'name': name,
+        'system.rules': martialart.getAttribute('ALIAS')
+      }, { parent: this.actor })
     }
 
     // combat maneuvers
@@ -818,7 +869,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
   async _onEditPowerItem (event) {
     const id = event.currentTarget.id.split(' ')[0]
-    const item = this.object.data.items.get(id)
+    const item = this.object.system.items.get(id)
 
     await editSubItem(event, item)
   }
@@ -841,7 +892,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
   async _onDeletePowerItem (event) {
     const id = event.currentTarget.key
-    const item = this.object.data.items.get(id)
+    const item = this.object.system.items.get(id)
 
     const confirmed = await Dialog.confirm({
       title: game.i18n.localize("HERO6EFOUNDRYVTTV2.confirms.deleteConfirm.Title"),
@@ -879,14 +930,14 @@ async function updateCombatAutoMod (actor, item) {
   }
 
   for (const i of actor.items) {
-    if (i.data.data.active && i.type === 'maneuver') {
-      ocvEq = ocvEq + parseInt(i.data.data.ocv)
+    if (i.system.active && i.type === 'maneuver') {
+      ocvEq = ocvEq + parseInt(i.system.ocv)
 
-      dcvEq = dcvEquation(dcvEq, i.data.data.dcv)
+      dcvEq = dcvEquation(dcvEq, i.system.dcv)
     }
 
-    if ((i.type === 'power' || i.type === 'equipment') && ('maneuver' in i.data.data.items)) {
-      for (const [key, value] of Object.entries(i.data.data.items.maneuver)) {
+    if ((i.type === 'power' || i.type === 'equipment') && ('maneuver' in i.system.items)) {
+      for (const [key, value] of Object.entries(i.system.items.maneuver)) {
         if (value.type && value.visible && value.active) {
           ocvEq = ocvEq + parseInt(value.ocv)
 
@@ -897,27 +948,27 @@ async function updateCombatAutoMod (actor, item) {
   }
 
   if (isNaN(ocvEq)) {
-    ocvEq = item.data.data.ocv
+    ocvEq = item.system.ocv
   } else if (ocvEq >= 0) {
     ocvEq = '+' + ocvEq.toString()
   } else {
     ocvEq = ocvEq.toString()
   }
 
-  changes['data.characteristics.ocv.autoMod'] = ocvEq
-  // changes['data.characteristics.omcv.autoMod'] = ocvEq;
-  changes['data.characteristics.dcv.autoMod'] = dcvEq
-  // changes['data.characteristics.dmcv.autoMod'] = dcvEq;
+  changes['system.characteristics.ocv.autoMod'] = ocvEq
+  changes['system.characteristics.omcv.autoMod'] = ocvEq;
+  changes['system.characteristics.dcv.autoMod'] = dcvEq
+  changes['system.characteristics.dmcv.autoMod'] = dcvEq;
 
-  changes['data.characteristics.ocv.value'] = actor.system.characteristics.ocv.max + parseInt(ocvEq)
-  // changes['data.characteristics.omcv.value'] = actor.system.characteristics.omcv.max + parseInt(ocvEq);
+  changes['system.characteristics.ocv.value'] = actor.system.characteristics.ocv.max + parseInt(ocvEq)
+  changes['system.characteristics.omcv.value'] = actor.system.characteristics.omcv.max + parseInt(ocvEq);
 
   if (dcvEq.includes('/')) {
-    changes['data.characteristics.dcv.value'] = Math.round(actor.system.characteristics.dcv.max * (parseFloat(dcvEq.split('/')[0]) / parseFloat(dcvEq.split('/')[1])))
-    // changes['data.characteristics.dmcv.value'] = Math.round(actor.system.characteristics.dmcv.max * (parseFloat(dcvEq.split("/")[0]) / parseFloat(dcvEq.split("/")[1])));
+    changes['system.characteristics.dcv.value'] = Math.round(actor.system.characteristics.dcv.max * (parseFloat(dcvEq.split('/')[0]) / parseFloat(dcvEq.split('/')[1])))
+    changes['system.characteristics.dmcv.value'] = Math.round(actor.system.characteristics.dmcv.max * (parseFloat(dcvEq.split("/")[0]) / parseFloat(dcvEq.split("/")[1])));
   } else {
-    changes['data.characteristics.dcv.value'] = actor.system.characteristics.dcv.max + parseInt(dcvEq)
-    // changes['data.characteristics.dmcv.value'] = actor.system.characteristics.dmcv.max + parseInt(dcvEq);
+    changes['system.characteristics.dcv.value'] = actor.system.characteristics.dcv.max + parseInt(dcvEq)
+    changes['system.characteristics.dmcv.value'] = actor.system.characteristics.dmcv.max + parseInt(dcvEq);
   }
 
   await actor.update(changes)

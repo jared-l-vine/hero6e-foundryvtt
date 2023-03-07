@@ -119,7 +119,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
             let powerId = itemId.split("-")[0];
             let subId = itemId.split("-")[1];
 
-            let attackItemData = actor.items.get(powerId).data.data.items["attack"][`${subId}`]
+            let attackItemData = actor.items.get(powerId).system.items["attack"][`${subId}`]
 
             const itemData = {
               name: attackItemData.name,
@@ -132,7 +132,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
             item = cardObject.item
         }
 
-        const itemData = item.data.data;
+        const itemData = item.system;
 
         let damageRoll = itemData.dice;
 
@@ -144,7 +144,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
         // determine active defenses
         // -------------------------------------------------
         let defense = "";
-        let [defenseValue, resistantValue, damageReductionValue, damageNegationValue, knockbackResistance] = determineDefense(targetActor, item.data.data.class)
+        let [defenseValue, resistantValue, damageReductionValue, damageNegationValue, knockbackResistance] = determineDefense(targetActor, item.system.class)
 
         if (damageNegationValue > 0) {
             defense += "Damage Negation " + damageNegationValue + "DC(s); "
@@ -158,7 +158,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
 
         let noHitLocationsPower = false;
         for (let i of targetActor.items) {
-            if (i.data.data.rules === "NOHITLOCATIONS") {
+            if (i.system.rules === "NOHITLOCATIONS") {
                 noHitLocationsPower = true;
             }
         }
@@ -305,8 +305,8 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
         let stunDamage = stun;
 
         let effects = "";
-        if (item.data.data.effects !== "") {
-            effects = item.data.data.effects + ";"
+        if (item.system.effects !== "") {
+            effects = item.system.effects + ";"
         }
 
         // -------------------------------------------------
