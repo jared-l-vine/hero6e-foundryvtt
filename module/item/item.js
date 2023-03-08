@@ -1,6 +1,7 @@
 import { HeroSystem6eActorSheet } from "../actor/actor-sheet.js";
 import { HeroSystem6eAttackCard } from "../card/attack-card.js";
 import { HeroSystem6eCard } from "../card/card.js";
+import { HEROSYS } from "../herosystem6e.js";
 
 /**
  * Extend the basic Item with some very simple modifications.

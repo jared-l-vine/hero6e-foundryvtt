@@ -609,8 +609,12 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       const velocity = Math.round((spd * value) / 12)
 
       if (key in CONFIG.HERO.movementPowers) {
+        let name = characteristic.getAttribute('NAME')
+        name = (name === '') ? characteristic.getAttribute('ALIAS') : name
+
         const itemData = {
-          name: key,
+          // name: key,
+          name: name,
           type: 'movement',
           data: {
             type: key,
@@ -633,6 +637,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
     for (const skill of skills.children) {
       const xmlid = skill.getAttribute('XMLID')
+      
+      if (xmlid === 'GENERIC_OBJECT') { continue; }
 
       let description = skill.getAttribute('ALIAS')
 
@@ -723,6 +729,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       const alias = power.getAttribute('ALIAS')
       const levels = power.getAttribute('LEVELS')
 
+      if (xmlid === 'GENERIC_OBJECT') { continue; }
+
       let itemName = name
       if (name === undefined || name === '') {
         itemName = alias
@@ -792,6 +800,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       let name = perk.getAttribute('NAME')
       name = (name === '') ? perk.getAttribute('ALIAS') : name
 
+      const xmlid = perk.getAttribute('XMLID')
+      if (xmlid === 'GENERIC_OBJECT') { continue; }
+
       await HeroSystem6eItem.create({
         'type': 'perk',
         'name': name,
@@ -802,6 +813,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       let name = talent.getAttribute('NAME')
       name = (name === '') ? talent.getAttribute('ALIAS') : name
 
+      const xmlid = talent.getAttribute('XMLID')
+      if (xmlid === 'GENERIC_OBJECT') { continue; }
+
       await HeroSystem6eItem.create({
         'type': 'talent',
         'name': name,
@@ -811,8 +825,10 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
     for (const complication of complications.children) {
       let name = complication.getAttribute('NAME')
-
       name = (name === '') ? complication.getAttribute('ALIAS') : name
+
+      const xmlid = complication.getAttribute('XMLID')
+      if (xmlid === 'GENERIC_OBJECT') { continue; }
 
       await HeroSystem6eItem.create({
         'type': 'complication',
@@ -823,8 +839,10 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
     for (const martialart of martialarts.children) {
       let name = martialart.getAttribute('NAME')
-
       name = (name === '') ? martialart.getAttribute('ALIAS') : name
+
+      const xmlid = martialart.getAttribute('XMLID')
+      if (xmlid === 'GENERIC_OBJECT') { continue; }
       
       await HeroSystem6eItem.create({
         'type': 'martialart',
