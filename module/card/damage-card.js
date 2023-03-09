@@ -4,6 +4,7 @@ import { HeroSystem6eItem } from "../item/item.js";
 import { HeroSystem6eCard } from "./card.js";
 import { determineDefense } from "../utility/defense.js";
 import { modifyRollEquation, getTokenChar } from "../utility/util.js"
+import { HEROSYS } from "../herosystem6e.js";
 
 export class HeroSystem6eDamageCard extends HeroSystem6eCard {
 
@@ -201,7 +202,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
             }
 
             if (strDamage > 0) {
-                damageRoll += strDamage;
+                damageRoll = parseInt(damageRoll) + parseInt(strDamage)
             }
         }
 

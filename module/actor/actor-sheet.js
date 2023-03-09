@@ -154,6 +154,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
           roll = "n/a"
         }
 
+        actorData.items.get(i._id).update({ [`system.roll`]: roll })
+
         i.roll = roll
         i.rollable = item.rollable
 
