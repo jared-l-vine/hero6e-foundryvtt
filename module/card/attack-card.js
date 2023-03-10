@@ -88,8 +88,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
             stateData['useEnd'] = true;
         }
 
-        let targetActor = game.actors.get(actor.data._id)
-        let targetActorChars = targetActor.system.characteristics;
+        let targetActorChars = actor.system.characteristics;
         stateData["str"] = targetActorChars.str.value;
 
         stateData["useStr"] = item.system.usesStrength;

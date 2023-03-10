@@ -198,7 +198,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
         if(itemData.usesStrength) {
             let strDamage = Math.floor((actor.system.characteristics.str.value - 10)/5)
             if (toHitData.effectiveStr <= actor.system.characteristics.str.value) {
-                strDamage = Math.floor((toHitData.effectiveStr - 10)/5);
+                strDamage = Math.floor((toHitData.effectiveStr)/5);
             }
 
             if (strDamage > 0) {

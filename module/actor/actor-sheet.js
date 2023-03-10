@@ -6,6 +6,7 @@ import { editSubItem, deleteSubItem } from '../powers/powers.js'
 import { enforceManeuverLimits } from '../item/manuever.js'
 import { presenceAttackPopOut } from '../utility/presence-attack.js'
 import { HERO } from '../config.js'
+import { uploadSkill } from '../utility/upload_hdc.js'
 
 /**
  * Extend the basic ActorSheet with some very simple modifications
@@ -122,9 +123,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     const complication = []
     const martialart = []
 
-    const orphanedSkills = []
-    const skillIndex = []
-
     // Iterate through items, allocating to containers
     // let totalWeight = 0;
     for (const i of sheetData.items) {
@@ -159,28 +157,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         i.roll = roll
         i.rollable = item.rollable
 
-        if (!item.parentid) {
-          skills.push(i)
-          skillIndex[item.hdcid] = i
-
-          if (orphanedSkills[item.hdcid]) {
-            i.children = orphanedSkills[item.hdcid]
-          }
-        } else {
-          if (skillIndex[item.parentid]) {
-            if (!skillIndex[item.parentid].children) {
-              skillIndex[item.parentid].children = []
-            }
-
-            skillIndex[item.parentid].children.push(i)
-          } else {
-            if (!orphanedSkills[item.parentid]) {
-              orphanedSkills[item.parentid] = []
-            }
-
-            orphanedSkills[item.parentid].push(i)
-          }
-        }
+        skills.push(i)
       } else if (i.type === 'defense') {
         HeroSystem6eActorSheet._prepareDefenseItem(i, item)
         defenses.push(i)
@@ -638,90 +615,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     await this.actor.update(changes)
 
     for (const skill of skills.children) {
-      const xmlid = skill.getAttribute('XMLID')
-      
-      if (xmlid === 'GENERIC_OBJECT') { continue; }
-
-      let description = skill.getAttribute('ALIAS')
-
-      if (xmlid === 'KNOWLEDGE_SKILL' || xmlid === 'PROFESSIONAL_SKILL' || xmlid === 'SCIENCE_SKILL') {
-        if (skill.hasAttribute('INPUT')) {
-          description += ': ' + skill.getAttribute('INPUT')
-        }
-      }
-
-      let name = ''
-
-      if (skill.hasAttribute('NAME') && skill.getAttribute('NAME') !== '') {
-        name = skill.getAttribute('NAME')
-      } else {
-        name = description
-      }
-
-      const type = 'skill'
-      const skillData = {
-        levels: skill.getAttribute('LEVELS'),
-        state: 'trained'
-      }
-
-      skillData.description = description
-
-      if (skill.attributes.getNamedItem('CHARACTERISTIC')) {
-        skillData.characteristic = skill.getAttribute('CHARACTERISTIC')
-      } else {
-        skillData.characteristic = ''
-      }
-
-      if (skill.attributes.getNamedItem('FAMILIARITY')) {
-        if (skill.getAttribute('FAMILIARITY') === 'Yes') {
-          skillData.state = 'familiar'
-
-          if (skill.getAttribute('EVERYMAN') === 'Yes') {
-            skillData.state = 'everyman'
-          }
-        }
-
-        if (skill.getAttribute('PROFICIENCY') === 'Yes') {
-          skillData.state = 'proficient'
-        }
-      } else {
-        skillData.state = 'noroll'
-      }
-
-      if (xmlid === 'PROFESSIONAL_SKILL') skillData.ps = true
-
-      if (skill.hasAttribute('PARENTID')) {
-        skillData.parentid = skill.getAttribute('PARENTID')
-      }
-
-      if (skill.hasAttribute('ID')) {
-        skillData.hdcid = skill.getAttribute('ID')
-      }
-
-      // determine Skill Roll
-      if (skillData.state === 'everyman') {
-        skillData.roll = '8-'
-      } else if (skillData.state === 'familiar') {
-        skillData.roll = '8-'
-      } else if (skillData.state === 'proficient') {
-        skillData.roll = '10-'
-      } else if (skillData.state === 'trained') {
-        const charValue = ((skillData.characteristic.toLowerCase() !== 'general') && (skillData.characteristic.toLowerCase() != '')) ?
-          this.actor.system.characteristics[`${skillData.characteristic.toLowerCase()}`].value : 0
-
-        const rollVal = 9 + Math.round(charValue / 5) + parseInt(skillData.levels)
-        skillData.roll = rollVal.toString() + '-'
-      }
-
-      name = (name === '') ? description : name
-
-      const itemData = {
-        name,
-        type,
-        system: skillData
-      }
-
-      await HeroSystem6eItem.create(itemData, { parent: this.actor })
+      uploadSkill.call(this, skill)
     }
 
     const relevantFields = ['BASECOST', 'LEVELS', 'ALIAS', 'MULTIPLIER', 'NAME', 'OPTION_ALIAS']
