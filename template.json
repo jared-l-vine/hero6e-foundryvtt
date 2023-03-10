@@ -237,19 +237,30 @@
         },
         "perk": {
             "templates": [ "base" ],
-            "rules": "Perk Description"
+            "id": "",
+            "rules": "Perk Description",
+            "other": {}
         },
         "talent": {
             "templates": [ "base" ],
-            "rules": "Talent Description"
+            "id": "",
+            "rules": "Talent Description",
+            "other": {}
         },
         "complication": {
             "templates": [ "base" ],
-            "rules": "Complication Description"
+            "id": "",
+            "rules": "Complication Description",
+            "other": {
+                "levels": 0,
+                "option_alias": ""
+            }
         },
         "martialart": {
             "templates": [ "base" ],
-            "rules": "Martial Art Description"  
+            "id": "",
+            "rules": "Martial Art Description",
+            "other": {} 
         }
     }
 }

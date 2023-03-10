@@ -6,7 +6,7 @@ import { editSubItem, deleteSubItem } from '../powers/powers.js'
 import { enforceManeuverLimits } from '../item/manuever.js'
 import { presenceAttackPopOut } from '../utility/presence-attack.js'
 import { HERO } from '../config.js'
-import { uploadSkill } from '../utility/upload_hdc.js'
+import { uploadBasic, uploadTalent, uploadSkill } from '../utility/upload_hdc.js'
 
 /**
  * Extend the basic ActorSheet with some very simple modifications
@@ -693,58 +693,19 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     }
 
     for (const perk of perks.children) {
-      let name = perk.getAttribute('NAME')
-      name = (name === '') ? perk.getAttribute('ALIAS') : name
-
-      const xmlid = perk.getAttribute('XMLID')
-      if (xmlid === 'GENERIC_OBJECT') { continue; }
-
-      await HeroSystem6eItem.create({
-        'type': 'perk',
-        'name': name,
-        'system.rules': perk.getAttribute('ALIAS')
-      }, { parent: this.actor })    }
+      uploadBasic.call(this, perk, 'perk')
+    }
 
     for (const talent of talents.children) {
-      let name = talent.getAttribute('NAME')
-      name = (name === '') ? talent.getAttribute('ALIAS') : name
-
-      const xmlid = talent.getAttribute('XMLID')
-      if (xmlid === 'GENERIC_OBJECT') { continue; }
-
-      await HeroSystem6eItem.create({
-        'type': 'talent',
-        'name': name,
-        'system.rules': talent.getAttribute('ALIAS')
-      }, { parent: this.actor })
+      uploadTalent.call(this, talent, 'talent')
     }
 
     for (const complication of complications.children) {
-      let name = complication.getAttribute('NAME')
-      name = (name === '') ? complication.getAttribute('ALIAS') : name
-
-      const xmlid = complication.getAttribute('XMLID')
-      if (xmlid === 'GENERIC_OBJECT') { continue; }
-
-      await HeroSystem6eItem.create({
-        'type': 'complication',
-        'name': name,
-        'system.rules': complication.getAttribute('ALIAS')
-      }, { parent: this.actor })
+      uploadBasic.call(this, complication, 'complication')
     }
 
     for (const martialart of martialarts.children) {
-      let name = martialart.getAttribute('NAME')
-      name = (name === '') ? martialart.getAttribute('ALIAS') : name
-
-      const xmlid = martialart.getAttribute('XMLID')
-      if (xmlid === 'GENERIC_OBJECT') { continue; }
-      
-      await HeroSystem6eItem.create({
-        'type': 'martialart',
-        'name': name,
-        'system.rules': martialart.getAttribute('ALIAS')
-      }, { parent: this.actor })
+      uploadBasic.call(this, martialart, 'martialart')
     }
 
     // combat maneuvers

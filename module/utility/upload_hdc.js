@@ -1,6 +1,58 @@
 import { HEROSYS } from "../herosystem6e.js";
 import { HeroSystem6eItem } from "../item/item.js";
 
+export async function uploadBasic(xml, type) {
+  let name = xml.getAttribute('NAME')
+  name = (name === '') ? xml.getAttribute('ALIAS') : name
+
+  const xmlid = xml.getAttribute('XMLID')
+
+  if (xmlid === 'GENERIC_OBJECT') { return; }
+
+  let itemData = {
+    'type': type,
+    'name': name,
+    'system.id': xmlid,
+    'system.rules': xml.getAttribute('ALIAS')
+  }
+
+  await HeroSystem6eItem.create(itemData, { parent: this.actor })
+}
+
+export async function uploadTalent(xml, type) {
+  let name = xml.getAttribute('NAME')
+  name = (name === '') ? xml.getAttribute('ALIAS') : name
+
+  const xmlid = xml.getAttribute('XMLID')
+
+  if (xmlid === 'GENERIC_OBJECT') { return; }
+
+  let other = {}
+
+  switch (xmlid) {
+    case ('LIGHTNING_REFLEXES_ALL'): {
+      other = {
+        'levels': xml.getAttribute('LEVELS'),
+        'option_alias': xml.getAttribute('OPTION_ALIAS')
+      }
+      break;
+    }
+    default: {
+      break;
+    }
+  }
+
+  const itemData = {
+    'type': type,
+    'name': name,
+    'system.id': xmlid,
+    'system.rules': xml.getAttribute('ALIAS'),
+    'system.other': other
+  }
+
+  await HeroSystem6eItem.create(itemData, { parent: this.actor })
+}
+
 export async function uploadSkill(skill) {
     const xmlid = skill.getAttribute('XMLID')
     

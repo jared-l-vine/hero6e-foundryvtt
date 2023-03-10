@@ -1,3 +1,6 @@
+import { HERO } from "./config.js";
+import { HEROSYS } from "./herosystem6e.js";
+
 export class HeroSystem6eCombat extends Combat {
     constructor(data, context) {
         super(data, context);
@@ -401,7 +404,35 @@ export class HeroSystem6eCombat extends Combat {
 
             //const roll = combatant.getInitiativeRoll(formula);
 
-            updates.push({ _id: id, initiative: initativeValue });
+            const name = combatant.actor.name
+
+            // const allInitiatives = [[name, initativeValue]]
+            const allInitiatives = []
+            for (const item of combatant.actor.items) {
+                if (! item.system.hasOwnProperty('id')) { continue; }
+
+                switch(item.system.id) {
+                    case ('LIGHTNING_REFLEXES_ALL'): {
+                        const lightning_reflex_initiative = (parseInt(dexValue) + parseInt(item.system.other.levels)) + (parseInt(initativeValue) / 100)
+                        const lightning_reflex_alias = '(' + item.system.other.option_alias + ')'
+                        
+                        allInitiatives.push([name, lightning_reflex_alias, lightning_reflex_initiative])
+                        break;
+                    }
+                    default: {
+                        break;
+                    }
+                }
+            }
+
+            allInitiatives.sort((a, b) => b[2] - a[2])
+
+            updates.push({ 
+                _id: id, initiative: initativeValue, 
+                name: name,
+                'flags.initiatives': allInitiatives
+            });
+
             //updates.push({ _id: id, initiative: roll.total });
 
             // Construct chat message data
@@ -484,6 +515,31 @@ export class HeroSystem6eCombat extends Combat {
 
             for (let j = 0; j < heroTurnSet.length; j++) {
                 if (HeroSystem6eCombat.hasPhase(heroTurnSet[j].actor.system.characteristics.spd.value, i)) {
+                    let allInitiatives = heroTurnSet[j].flags.initiatives
+
+                    if (typeof allInitiatives === 'undefined' || allInitiatives === null) { continue; }
+
+                    HEROSYS.log(heroTurnSet[j])
+
+                    for (let k = 0; k < allInitiatives.length; k++) {
+                        const fakeCombatantData = {
+                            'name': allInitiatives[k][0],
+                            'alias': allInitiatives[k][1],
+                            'initiative': allInitiatives[k][2],
+                            'img': heroTurnSet[j].img,
+                            'actorId': heroTurnSet[j].actorId,
+                            'tokenId': heroTurnSet[j].tokenId,
+                            'hidden': heroTurnSet[j].hidden,
+                            'defeated': heroTurnSet[j].defeated,
+                            'visible': heroTurnSet[j].visible,
+                            'token': heroTurnSet[j].token,
+                            'owner': heroTurnSet[j].owner,
+                            'resource': heroTurnSet[j].resource
+                        }
+
+                        segments[i].push(fakeCombatantData)
+                    }
+
                     segments[i].push(heroTurnSet[j]);
                 }
             }
@@ -596,7 +652,7 @@ export class HeroSystem6eCombat extends Combat {
                     segment: this.segment,
                     heroTurn: this.heroTurn,
                     combatantId: c ? c.id : null,
-                    tokenId: c ? c.data.tokenId : null
+                    tokenId: c ? c.tokenId : null
                 };
             }
 
@@ -689,7 +745,6 @@ export class HeroSystem6eCombatTracker extends CombatTracker {
         html.find('.segment-active').click(ev => this._onSegmentToggleContent(ev));
 
         html.on('click', "[data-control]", this._handleButtonClick.bind(this));
-
     }
 
     async _handleButtonClick(event) {
@@ -780,6 +835,7 @@ export class HeroSystem6eCombatTracker extends CombatTracker {
             if (combat.round != 1 || i == 12) {
                 for (let [j, combatant] of combat.segments[i].entries()) {
                     //if (!combatant.isVisible) continue;
+
                     if (!combatant.visible) continue;
 
                     // Prepare heroTurn data
@@ -792,6 +848,7 @@ export class HeroSystem6eCombatTracker extends CombatTracker {
                     const heroTurn = {
                         id: combatant.id,
                         name: combatant.name,
+                        alias: combatant.alias ? combatant.alias : "",
                         img: combatant.img,
                         active: combat.segment === i && combat.turn === j,
                         owner: combatant.isOwner,
@@ -832,10 +889,10 @@ export class HeroSystem6eCombatTracker extends CombatTracker {
         }
 
         // Format initiative numeric precision
-        const precision = CONFIG.Combat.initiative.decimals;
-        segments.forEach(s => s.forEach(t => {
-            if (t.initiative !== null) t.initiative = t.initiative.toFixed(hasDecimals ? precision : 0);
-        }));
+        // const precision = CONFIG.Combat.initiative.decimals;
+        // segments.forEach(s => s.forEach(t => {
+        //     if (t.initiative !== null) t.initiative = t.initiative.toFixed(hasDecimals ? precision : 0);
+        // }));
 
         let activeSegments = [];
 
