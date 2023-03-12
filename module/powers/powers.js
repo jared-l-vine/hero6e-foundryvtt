@@ -8,6 +8,9 @@ async function editSubItem(event, item) {
     const clickedElement = $(event.currentTarget);
     const id = clickedElement.parents('[data-id]')?.data().id
     const type = clickedElement.parents('[data-type]')?.data().type
+    // const formData = clickedElement.closest('form[data-id][data-realId]')
+    // const id = formData.data().id
+    // const realId = formData.data().realId
 
     const [powerItemId, subItemId] = splitPowerId(id)
 

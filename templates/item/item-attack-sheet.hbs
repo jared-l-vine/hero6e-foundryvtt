@@ -1,100 +1,101 @@
-<form class="{{cssClass}}" autocomplete="off">
-    <header class="sheet-header flexrow" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+{{ log 'HEROSYS ATTACK SHEET' this }}
+<form class="{{cssClass}}" autocomplete="off" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+    <header class="sheet-header flexrow" >
         <img class="profile" name="img" src="{{item.img}}" title="{{item.name}}" data-edit="img" />
 
         <div class="header-details flexrow">
-            <h1 class="charname" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+            <h1 class="charname" >
                 <input name="name" type="text" value="{{item.name}}" placeholder="Attack Name" />
             </h1>
         </div>
     </header>
 
     {{!-- Sheet Body --}}
-    <section class="sheet-body" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+    <section class="sheet-body" >
         <textarea
             placeholder="Attack Description"
             class="power-card-power-description textarea input"
-            name="data.rules"
+            name="system.rules"
         >{{item.data.rules}}</textarea>
 
-        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <div class="form-group" >
             <label>END Cost</label>
-            <input type="text" name="data.end" value="{{data.end}}" data-dtype="Number" />
+            <input type="text" name="system.end" value="{{data.end}}" data-dtype="Number" />
         </div>
 
-        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <div class="form-group" >
             <label>Class</label>
-            <select name="data.class" data-dtype="text">
+            <select name="system.class" data-dtype="text">
                 {{selectOptions config.attackClasses selected=data.class}}
             </select>
         </div>
 
-        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <div class="form-group" >
             <label>To Hit Modifier</label>
-            <input type="text" name="data.toHitMod" value="{{data.toHitMod}}" data-dtype="Number" />
+            <input type="text" name="system.toHitMod" value="{{data.toHitMod}}" data-dtype="Number" />
         </div>
 
-        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <div class="form-group" >
             <label>Value</label>
-            <input type="text" name="data.dice" value="{{data.dice}}" data-dtype="Number" />
+            <input type="text" name="system.dice" value="{{data.dice}}" data-dtype="Number" />
             D6
-            <select name="data.extraDice" data-dtype="text">
+            <select name="system.extraDice" data-dtype="text">
                 {{selectOptions config.extraDice selected=data.extraDice}}
             </select>
         </div>
 
-        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <div class="form-group" >
             <label>Killing Attack</label>
-            <input type="checkbox" name="data.killing" {{checked data.killing}} data-dtype="Boolean" />
+            <input type="checkbox" name="system.killing" {{checked data.killing}} data-dtype="Boolean" />
         </div>
 
         {{!--
         <div class="form-group">
             <label>Levels of Armor Piercing</label>
-            <input type="text" name="data.piercing" value="{{data.piercing}}" data-dtype="Number" />
+            <input type="text" name="system.piercing" value="{{data.piercing}}" data-dtype="Number" />
         </div>
 
         <div class="form-group">
             <label>Levels of Penetrating</label>
-            <input type="text" name="data.penetrating" value="{{data.penetrating}}" data-dtype="Number" />
+            <input type="text" name="system.penetrating" value="{{data.penetrating}}" data-dtype="Number" />
         </div>
 
         <div class="form-group">
             <label>Total Attack Advantages</label>
-            <input type="text" name="data.advantages" value="{{data.advantages}}" data-dtype="Number" />
+            <input type="text" name="system.advantages" value="{{data.advantages}}" data-dtype="Number" />
         </div>
         --}}
 
-        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <div class="form-group" >
             <label>Targets Using</label>
-            <select name="data.uses" data-dtype="text">
+            <select name="system.uses" data-dtype="text">
                 {{selectOptions config.attacksWith selected=data.uses}}
             </select>
         </div>
 
-        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <div class="form-group" >
             <label>Avoided By</label>
-            <select name="data.targets" data-dtype="text">
+            <select name="system.targets" data-dtype="text">
                 {{selectOptions config.defendsWith selected=data.targets}}
             </select>
         </div>
 
-        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <div class="form-group" >
             <label>Does Knockback</label>
-            <input type="checkbox" name="data.knockback" {{checked data.knockback}} data-dtype="Boolean" />
+            <input type="checkbox" name="system.knockback" {{checked data.knockback}} data-dtype="Boolean" />
         </div>
 
-        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <div class="form-group" >
             <label>Uses Strength</label>
-            <input type="checkbox" name="data.usesStrength" {{checked data.usesStrength}} data-dtype="Boolean" />
+            <input type="checkbox" name="system.usesStrength" {{checked data.usesStrength}} data-dtype="Boolean" />
         </div>
 
-        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <div class="form-group" >
             <label>Custom Effects</label>
             <textarea
                 placeholder="Attack Description"
                 class="power-card-power-description textarea input"
-                name="data.effects"
+                name="system.effects"
             >{{item.data.effects}}</textarea>
         </div>
     </section>

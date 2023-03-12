@@ -1,9 +1,9 @@
-<form class="{{cssClass}}" autocomplete="off">
-        <header class="sheet-header flexrow" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+<form class="{{cssClass}}" autocomplete="off" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <header class="sheet-header flexrow">
             <img class="profile" name="img" src="{{item.img}}" title="{{item.name}}" data-edit="img" />
 
             <div class="header-details flexrow">
-                <h1 class="charname" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+                <h1 class="charname">
                     <input name="name" type="text" value="{{item.name}}" placeholder="Movement Name" />
                 </h1>
             </div>
@@ -11,24 +11,24 @@
 
     {{!-- Sheet Body --}}
     <section class="sheet-body">
-        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <div class="form-group">
             <label>Type</label>
             <select name="system.class" data-dtype="text">
                 {{selectOptions config.movementPowers selected=data.class}}
             </select>
         </div>
 
-        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <div class="form-group">
             <label>Base</label>
             <input type="text" name="system.base" value="{{data.base}}" data-dtype="Number" />
         </div>
 
-        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <div class="form-group">
             <label>Modifier</label>
             <input type="text" name="system.mod" value="{{data.mod}}" data-dtype="Number" />
         </div>
 
-        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <div class="form-group">
             <label>Value</label>
             <input type="text" name="system.value" value="{{data.value}}" data-dtype="Number" disabled/>
         </div>

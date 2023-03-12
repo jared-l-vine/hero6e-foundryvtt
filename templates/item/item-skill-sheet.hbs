@@ -1,11 +1,11 @@
 {{ log 'HEROSYS SKILL SHEET' this }}
-<form class="{{cssClass}}" autocomplete="off">
-    <header class="sheet-header" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+<form class="{{cssClass}}" autocomplete="off" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+    <header class="sheet-header" >
         <img class="profile-img" name="img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/>
         <div class="header-fields">
             <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Name"/></h1>
             <div class="flexrow flex-center">
-              <div class="resource flexrow flex-center" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+              <div class="resource flexrow flex-center" >
                   <label class="resource-label">Levels</label>
                   <input type="text" name="system.levels" value="{{item.system.levels}}" data-dtype="Number"/>
               </div>
@@ -14,7 +14,7 @@
     </header>
 
     {{!-- Sheet Body --}}
-    <section class="sheet-body" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+    <section class="sheet-body" >
         <div>{{system.characteristic}}</div>
         <div class="form-group">
             <label>Characteristic</label>

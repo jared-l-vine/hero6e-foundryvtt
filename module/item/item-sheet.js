@@ -147,8 +147,12 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     HEROSYS.log(expandedData)
 
     const clickedElement = $(event.currentTarget);
-    const id = clickedElement.parents('[data-id]')?.data().id
-    const realId = clickedElement.parents('[data-realId]')?.data().realid
+    const form = clickedElement.closest('form[data-id][data-realId]')
+    const id = form.data().id
+    const realId = form.data().realid
+
+    HEROSYS.log(realId)
+    HEROSYS.log(id)
 
     if (realId) {
       subItemUpdate(realId, formData)

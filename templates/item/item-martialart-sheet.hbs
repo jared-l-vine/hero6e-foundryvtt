@@ -1,15 +1,15 @@
-<form class="hero {{cssClass}} flexcol actor-sheet" autocomplete="off">
-    <header class="sheet-header flexrow" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+<form class="hero {{cssClass}} flexcol actor-sheet" autocomplete="off" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+    <header class="sheet-header flexrow">
         <img class="profile" name="img" src="{{item.img}}" title="{{item.name}}" data-edit="img" />
 
-        <div class="header-details flexrow" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <div class="header-details flexrow">
             <h1 class="charname">
                 <input name="name" type="text" value="{{item.name}}" placeholder="Martial Art Name" />
             </h1>
         </div>
     </header>
 
-    <section class="sheet-body" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+    <section class="sheet-body">
         <textarea
             placeholder="Power Description"
             class="power-card-power-description textarea input"

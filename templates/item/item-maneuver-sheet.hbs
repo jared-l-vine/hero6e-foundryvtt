@@ -1,26 +1,26 @@
-<form class="{{cssClass}}" autocomplete="off">
-    <header class="sheet-header" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+<form class="{{cssClass}}" autocomplete="off" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+    <header class="sheet-header">
         <img class="profile-img" name="img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/>
-        <div class="header-fields" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <div class="header-fields">
             <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Name"/></h1>
         </div>
     </header>
 
     {{!-- Sheet Body --}}
     <section class="sheet-body">
-        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <div class="form-group">
             <label>Phase</label>
             <input type="text" name="system.phase" value="{{data.phase}}" data-dtype="Number" />
         </div>
-        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <div class="form-group">
             <label>OCV Modifier</label>
             <input type="text" name="system.ocv" value="{{data.ocv}}" data-dtype="Number" />
         </div>
-        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <div class="form-group">
             <label>DCV Modifier</label>
             <input type="text" name="system.dcv" value="{{data.dcv}}" data-dtype="Number" />
         </div>
-        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <div class="form-group">
             <label>Effects</label>
             <input type="text" name="system.effects" value="{{data.effects}}" data-dtype="Number" />
         </div>
