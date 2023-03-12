@@ -1,3 +1,4 @@
+import { HEROSYS } from "../herosystem6e.js";
 import { modifyRollEquation } from "../utility/util.js"
 
 async function _renderSkillForm(item, actor, stateData) {
@@ -6,7 +7,7 @@ async function _renderSkillForm(item, actor, stateData) {
 	const templateData = {
 		actor: actor.data,
 		tokenId: token?.uuid || null,
-		item: item.data,
+		item: item,
 		state: stateData,
 	};
 

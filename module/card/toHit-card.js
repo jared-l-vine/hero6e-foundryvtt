@@ -3,6 +3,7 @@ import { HeroSystem6eActorSheet } from "../actor/actor-sheet.js";
 import { HeroSystem6eCard } from "./card.js";
 import { modifyRollEquation, getTokenChar } from "../utility/util.js"
 import { HeroSystem6eDamageCard } from "./damage-card.js";
+import { HEROSYS } from "../herosystem6e.js";
 
 export class HeroSystem6eToHitCard extends HeroSystem6eCard {
     static chatListeners(html) {
@@ -78,11 +79,11 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         const templateData = {
             actor: actor.data,
             tokenId: token?.uuid || null,
-            item: item.data,
+            item: item,
             state: stateData,
         };
 
-        var path = "systems/hero6efoundryvttv2/templates/chat/item-toHit-card.html";
+        var path = "systems/hero6efoundryvttv2/templates/chat/item-toHit-card.hbs";
 
         return await renderTemplate(path, templateData);
     }
@@ -110,7 +111,10 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
     }
 
     static async createFromAttackCard(item, data, actor, itemId) {
-        let itemData = item.data.data;
+        HEROSYS.log(item)
+        HEROSYS.log(data)
+
+        let itemData = item.system;
         let hitCharacteristic = actor.system.characteristics[itemData.uses].value;
         let toHitChar = CONFIG.HERO.defendsWith[itemData.targets];
 
@@ -120,7 +124,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         // attack roll
         // -------------------------------------------------
         let rollEquation = "11 + " + hitCharacteristic;
-        rollEquation = modifyRollEquation(rollEquation, item.data.data.toHitMod);
+        rollEquation = modifyRollEquation(rollEquation, item.system.toHitMod);
         rollEquation = modifyRollEquation(rollEquation, data.toHitModTemp);
         let noHitLocationsPower = false;
         if (game.settings.get("hero6efoundryvttv2", "hit locations") && data.aim !== "none" && !noHitLocationsPower) {
@@ -141,7 +145,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         if (game.settings.get("hero6efoundryvttv2", "use endurance")) {
             useEnd = true;
             let valueEnd = actor.system.characteristics.end.value
-            let itemEnd = item.data.data.end;
+            let itemEnd = item.system.end;
             let newEnd = valueEnd - itemEnd;
             let spentEnd = itemEnd;
 

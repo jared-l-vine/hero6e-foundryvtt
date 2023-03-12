@@ -1,3 +1,4 @@
+import { HEROSYS } from "../herosystem6e.js";
 import { HeroSystem6eCard } from "./card.js";
 import { HeroSystem6eDamageCard } from "./damage-card.js";
 import { HeroSystem6eHitLocCard } from "./hitLoc-card.js";
@@ -98,7 +99,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         const templateData = {
             actor: actor.data,
             tokenId: token?.uuid || null,
-            item: item.data,
+            item: item,
             state: stateData,
         };
 
@@ -120,6 +121,8 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
       */
     static async createAttackPopOutFromItem(item, actor, itemId) {
         const content = await this._renderInternal(item, actor, {}, itemId);
+
+        HEROSYS.log(item)
 
         // Attack Card as a Pop Out
         let options = {

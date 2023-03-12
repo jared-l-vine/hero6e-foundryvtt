@@ -2,7 +2,7 @@ import { HEROSYS } from '../herosystem6e.js'
 import { HeroSystem6eItem } from '../item/item.js'
 import { HeroSystem6eAttackCard } from '../card/attack-card.js'
 import { createSkillPopOutFromItem } from '../item/skill.js'
-import { editSubItem, deleteSubItem, getItemCategory, isPowerSubItem, splitPowerId } from '../powers/powers.js'
+import { editSubItem, deleteSubItem, getItemCategory, isPowerSubItem, splitPowerId, subItemUpdate } from '../powers/powers.js'
 import { enforceManeuverLimits } from '../item/manuever.js'
 import { presenceAttackPopOut } from '../utility/presence-attack.js'
 import { HERO } from '../config.js'
@@ -192,10 +192,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
   static _prepareSkillItem(item, actor) {
     item.characteristic = CONFIG.HERO.skillCharacteristics[item.system.characteristic]
 
-    HEROSYS.log(item._id)
-    HEROSYS.log(item)
-    HEROSYS.log(item.system.state)
-
     // determine Skill Roll
     let roll;
     if (item.system.state === 'untrained') {
@@ -216,10 +212,10 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       roll = "n/a"
     }
 
-    if (!isPowerSubItem(item._id)) { 
+    if (!isPowerSubItem(item._id)) {
       actor.items.get(item._id).update({ [`system.roll`]: roll })
     } else {
-      const category = getItemCategory(item._id)
+      const category = getItemCategory(item._id, actor)
       const [powerItemId, subItemId] = splitPowerId(item._id)
 
       actor.items.get(powerItemId).update({ [`system.subItems.${category}.${subItemId}.system.roll`]: roll })
@@ -444,7 +440,14 @@ export class HeroSystem6eActorSheet extends ActorSheet {
   async _onItemAttack (event) {
     event.preventDefault()
     const itemId = event.currentTarget.closest('.item').dataset.itemId
-    let item = this.actor.items.get(itemId)
+
+    let item;
+    if (!isPowerSubItem(itemId)) {
+      item = this.actor.items.get(itemId)
+    } else {
+      const [powerItemId, subItemId] = splitPowerId(itemId)
+      item = this.actor.items.get(powerItemId).system.subItems.attack[subItemId]
+    }
 
     const rollMode = 'core'
     const createChatMessage = true
@@ -457,16 +460,32 @@ export class HeroSystem6eActorSheet extends ActorSheet {
   async _onItemToggle (event) {
     event.preventDefault()
     const itemId = event.currentTarget.closest('.item').dataset.itemId
-    const item = this.actor.items.get(itemId)
-    const attr = 'active'
-    const newValue = !getProperty(item.system, attr)
+
+    let item;
+    if (!isPowerSubItem(itemId)) {
+      item = this.actor.items.get(itemId)
+    } else {
+      const [powerItemId, subItemId] = splitPowerId(itemId)
+      item = this.actor.items.get(powerItemId).system.subItems.defense[subItemId]
+    }
+
+    HEROSYS.log(!item.system.active)
+
+    const attr = 'system.active'
+    const newValue = !getProperty(item, attr)
 
     // only have one combat maneuver selected at a time except for Set or Brace
     if (newValue && item.type === 'maneuver' && newValue) {
       await enforceManeuverLimits(this.actor, itemId, item.name)
     }
 
-    await item.update({ [attr]: newValue })
+    HEROSYS.log({ [attr]: newValue })
+
+    // if (!isPowerSubItem) {
+    //   await item.update({ [attr]: newValue })
+    // } else {
+    //   await subItemUpdate(itemId, { [attr]: newValue })
+    // }
 
     if (item.type === 'maneuver') {
       await updateCombatAutoMod(this.actor, item)
@@ -539,9 +558,22 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     const element = event.currentTarget
     const dataset = element.dataset
 
-    const item = this.actor.items.get(dataset.label)
+    HEROSYS.log(dataset.label)
 
-    createSkillPopOutFromItem(item, this.actor)
+    if (!isPowerSubItem(dataset.label)) {
+      const item = this.actor.items.get(dataset.label)
+      return createSkillPopOutFromItem(item, this.actor)
+    }
+
+    const [powerItemId, subItemId] = splitPowerId(dataset.label)
+    const item = this.actor.items.get(powerItemId)
+    HEROSYS.log(item)
+    const skillItemData = item.system.subItems.skill[subItemId]
+    
+    HEROSYS.log(skillItemData)
+
+    return createSkillPopOutFromItem(skillItemData, this.actor)
+
   }
 
   async _onPowerRollSkill (event) {

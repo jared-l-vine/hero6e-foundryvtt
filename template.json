@@ -173,7 +173,13 @@
                 "effect": 0,
                 "levels": 0,
                 "end": 0,
-                "items": {}
+                "subItems": {
+                    "attack": {},
+                    "defense": {},
+                    "maneuver": {},
+                    "movement": {},
+                    "skill": {}                    
+                }
             }
         },
         "skill": {

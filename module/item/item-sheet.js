@@ -1,4 +1,4 @@
-import { HeroSystem6eItem } from './item.js'
+import { HeroSystem6eItem, getItem } from './item.js'
 import { editSubItem, deleteSubItem, isPowerSubItem, subItemUpdate } from '../powers/powers.js'
 import { HEROSYS } from '../herosystem6e.js'
 
@@ -140,24 +140,21 @@ export class HeroSystem6eItemSheet extends ItemSheet {
   async _updateObject (event, formData) {
     event.preventDefault()
 
-    HEROSYS.log('update object!')
-
     const expandedData = foundry.utils.expandObject(formData);
-
-    HEROSYS.log(expandedData)
 
     const clickedElement = $(event.currentTarget);
     const form = clickedElement.closest('form[data-id][data-realId]')
-    const id = form.data().id
-    const realId = form.data().realid
+    const id = form.data()?.id
+    const realId = form.data()?.realid
 
-    HEROSYS.log(realId)
-    HEROSYS.log(id)
+    if(!id) { return; }
 
     if (realId) {
       subItemUpdate(realId, formData)
     } else {
-      await game.items.get(id).update(expandedData)
+      const item = getItem(id)
+
+      await item.update(expandedData)
     }
 
     // const type = clickedElement.parents('[data-type]')?.data().type
