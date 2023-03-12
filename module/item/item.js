@@ -24,6 +24,8 @@ export class HeroSystem6eItem extends Item {
     }
 
     _prepareSkillData(actorData, itemData) {
+        return
+
         const data = itemData.data;
 
         let roll = 6;

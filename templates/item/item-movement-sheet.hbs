@@ -1,9 +1,9 @@
 <form class="{{cssClass}}" autocomplete="off">
-        <header class="sheet-header flexrow">
+        <header class="sheet-header flexrow" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
             <img class="profile" name="img" src="{{item.img}}" title="{{item.name}}" data-edit="img" />
 
             <div class="header-details flexrow">
-                <h1 class="charname">
+                <h1 class="charname" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
                     <input name="name" type="text" value="{{item.name}}" placeholder="Movement Name" />
                 </h1>
             </div>
@@ -11,26 +11,26 @@
 
     {{!-- Sheet Body --}}
     <section class="sheet-body">
-        <div class="form-group">
+        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
             <label>Type</label>
-            <select name="data.class" data-dtype="text">
+            <select name="system.class" data-dtype="text">
                 {{selectOptions config.movementPowers selected=data.class}}
             </select>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
             <label>Base</label>
-            <input type="text" name="data.base" value="{{data.base}}" data-dtype="Number" />
+            <input type="text" name="system.base" value="{{data.base}}" data-dtype="Number" />
         </div>
 
-        <div class="form-group">
+        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
             <label>Modifier</label>
-            <input type="text" name="data.mod" value="{{data.mod}}" data-dtype="Number" />
+            <input type="text" name="system.mod" value="{{data.mod}}" data-dtype="Number" />
         </div>
 
-        <div class="form-group">
+        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
             <label>Value</label>
-            <input type="text" name="data.value" value="{{data.value}}" data-dtype="Number" disabled/>
+            <input type="text" name="system.value" value="{{data.value}}" data-dtype="Number" disabled/>
         </div>
     </section>
 </form>

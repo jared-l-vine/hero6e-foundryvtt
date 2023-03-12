@@ -1,5 +1,5 @@
 import { HeroSystem6eItem } from './item.js'
-import { editSubItem, deleteSubItem } from '../powers/powers.js'
+import { editSubItem, deleteSubItem, isPowerSubItem, subItemUpdate } from '../powers/powers.js'
 import { HEROSYS } from '../herosystem6e.js'
 
 /**
@@ -137,8 +137,28 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     }
   }
 
-  async _updateObject (event) {
+  async _updateObject (event, formData) {
     event.preventDefault()
+
+    HEROSYS.log('update object!')
+
+    const expandedData = foundry.utils.expandObject(formData);
+
+    HEROSYS.log(expandedData)
+
+    const clickedElement = $(event.currentTarget);
+    const id = clickedElement.parents('[data-id]')?.data().id
+    const realId = clickedElement.parents('[data-realId]')?.data().realid
+
+    if (realId) {
+      subItemUpdate(realId, formData)
+    } else {
+      await game.items.get(id).update(expandedData)
+    }
+
+    // const type = clickedElement.parents('[data-type]')?.data().type
+
+    return
 
     if (event.currentTarget === null) {
       return
@@ -146,6 +166,12 @@ export class HeroSystem6eItemSheet extends ItemSheet {
 
     let valueName = event.currentTarget.name
     let value = event.currentTarget.value
+
+    HEROSYS.log(event.currentTarget)
+    HEROSYS.log(event.currentTarget.parent)
+    const target = $(event.currentTarget).parents('.sheet-body').attr('data-item-id')
+    HEROSYS.log(target)
+    HEROSYS.log($(event.currentTarget).parents('.form-group').parents('.sheet-body').attr('data-item-id'))
 
     // this is necessary for item images
     if (valueName === 'img') {
@@ -157,7 +183,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
       value = event.currentTarget.checked
     }
 
-    if (!'linkId' in this.item.system || this.item.system.linkId === undefined) {
+    if (! isPowerSubItem(this.item._id)) {
       // normal items
       let changes = {}
       changes[`${valueName}`] = value
@@ -181,6 +207,8 @@ export class HeroSystem6eItemSheet extends ItemSheet {
       const linkId = this.item.system.linkId
       const subLinkId = this.item.system.subLinkId
 
+      HEROSYS.log('edit sub item')
+
       let item = game.items.get(linkId)
 
       if (item === undefined) {
@@ -202,24 +230,24 @@ export class HeroSystem6eItemSheet extends ItemSheet {
       }
 
       let changes = {}
-      changes[`system.subItems.${type}.${subLinkId}.${valueName}`] = value
+      changes[`system.subItems.${type}.${subLinkId}.system.${valueName}`] = value
       await item.update(changes)
 
       if (type === 'movement') {
         const subItem = item.system.items[`${type}`][`${subLinkId}`]
 
         changes = {}
-        changes[`system.subItems.${type}.${subLinkId}.value`] = parseInt(subItem.base) + parseInt(subItem.mod)
+        changes[`system.subItems.${type}.${subLinkId}.system.value`] = parseInt(subItem.base) + parseInt(subItem.mod)
 
         await item.update(changes)
 
         // update item-sheet data
         changes = {}
         changes.name = subItem.name
-        changes['data.base'] = parseInt(subItem.base)
-        changes['data.mod'] = parseInt(subItem.mod)
-        changes['data.value'] = parseInt(subItem.base) + parseInt(subItem.mod)
-        await this.item.data.update(changes)
+        changes[`system.subItems.${type}.${subLinkId}.system.base`] = parseInt(subItem.base)
+        changes[`system.subItems.${type}.${subLinkId}.system.mod`] = parseInt(subItem.mod)
+        changes[`system.subItems.${type}.${subLinkId}.system.value`] = parseInt(subItem.base) + parseInt(subItem.mod)
+        await this.item.update(changes)
 
         this._render()
       }
@@ -249,7 +277,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     changes[`system.subItems.${type}.${id}.system`] = newItem.system
     changes[`system.subItems.${type}.${id}.img`] = this.item.img
     changes[`system.subItems.${type}.${id}.name`] = name
-    changes[`system.subItems.${type}.${id}.visible`] = true
+    changes[`system.subItems.${type}.${id}._id`] = this.item._id + '-' + id
 
     return await this.item.update(changes)
   }

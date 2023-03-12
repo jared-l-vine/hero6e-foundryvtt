@@ -1,13 +1,13 @@
 <form class="{{cssClass}}" autocomplete="off">
-    <header class="sheet-header">
+    <header class="sheet-header" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
         <img class="profile-img" name="img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/>
-        <div class="header-fields">
+        <div class="header-fields" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
             <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Name"/></h1>
         </div>
     </header>
 
     {{!-- Sheet Tab Navigation --}}
-    <nav class="sheet-tabs tabs" data-group="primary">
+    <nav class="sheet-tabs tabs" data-group="primary" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
         <a class="item" data-tab="description">Description</a>
         <a class="item" data-tab="attributes">Attributes</a>
     </nav>
@@ -16,8 +16,8 @@
     <section class="sheet-body">
 
         {{!-- Description Tab --}}
-        <div class="tab" data-group="primary" data-tab="description">
-            {{editor content=data.description target="data.description" button=true owner=owner editable=editable}}
+        <div class="tab" data-group="primary" data-tab="description" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+            {{editor content=data.description target="system.description" button=true owner=owner editable=editable}}
         </div>
 
         {{!-- Attributes Tab --}}

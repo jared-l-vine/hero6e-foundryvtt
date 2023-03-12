@@ -192,6 +192,10 @@ export class HeroSystem6eActorSheet extends ActorSheet {
   static _prepareSkillItem(item, actor) {
     item.characteristic = CONFIG.HERO.skillCharacteristics[item.system.characteristic]
 
+    HEROSYS.log(item._id)
+    HEROSYS.log(item)
+    HEROSYS.log(item.system.state)
+
     // determine Skill Roll
     let roll;
     if (item.system.state === 'untrained') {
@@ -212,10 +216,10 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       roll = "n/a"
     }
 
-    if (!isPowerSubItem(actor, item._id)) { 
+    if (!isPowerSubItem(item._id)) { 
       actor.items.get(item._id).update({ [`system.roll`]: roll })
     } else {
-      const category = getItemCategory(actor, item._id)
+      const category = getItemCategory(item._id)
       const [powerItemId, subItemId] = splitPowerId(item._id)
 
       actor.items.get(powerItemId).update({ [`system.subItems.${category}.${subItemId}.system.roll`]: roll })

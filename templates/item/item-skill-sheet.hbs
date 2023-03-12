@@ -1,33 +1,35 @@
+{{ log 'HEROSYS SKILL SHEET' this }}
 <form class="{{cssClass}}" autocomplete="off">
-    <header class="sheet-header">
+    <header class="sheet-header" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
         <img class="profile-img" name="img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/>
         <div class="header-fields">
             <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Name"/></h1>
             <div class="flexrow flex-center">
-              <div class="resource flexrow flex-center">
+              <div class="resource flexrow flex-center" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
                   <label class="resource-label">Levels</label>
-                  <input type="text" name="data.levels" value="{{data.levels}}" data-dtype="Number"/>
+                  <input type="text" name="system.levels" value="{{item.system.levels}}" data-dtype="Number"/>
               </div>
             </div>
         </div>
     </header>
 
     {{!-- Sheet Body --}}
-    <section class="sheet-body">
+    <section class="sheet-body" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+        <div>{{system.characteristic}}</div>
         <div class="form-group">
             <label>Characteristic</label>
-            <select name="data.characteristic" data-dtype="text">
-                {{selectOptions config.skillCharacteristics selected=data.characteristic}}
+            <select name="system.characteristic" data-dtype="text">
+                {{selectOptions config.skillCharacteristics selected=item.system.characteristic}}
             </select>
         </div>
 
         <div class="form-group">
             <label>Training</label>
-            <select name="data.state" data-dtype="text">
-                {{selectOptions config.skillTraining selected=data.state}}
+            <select name="system.state" data-dtype="text">
+                {{selectOptions config.skillTraining selected=item.system.state}}
             </select>
         </div>
 
-        {{editor content=data.description target="data.description" button=true owner=owner editable=editable}}
+        {{editor content=system.description target="data.description" button=true owner=owner editable=editable}}
     </section>
 </form>

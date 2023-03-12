@@ -1,28 +1,28 @@
 <form class="{{cssClass}}" autocomplete="off">
-    <header class="sheet-header">
+    <header class="sheet-header" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
         <img class="profile-img" name="img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/>
-        <div class="header-fields">
+        <div class="header-fields" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
             <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Name"/></h1>
         </div>
     </header>
 
     {{!-- Sheet Body --}}
     <section class="sheet-body">
-        <div class="form-group">
+        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
             <label>Phase</label>
-            <input type="text" name="data.phase" value="{{data.phase}}" data-dtype="Number" />
+            <input type="text" name="system.phase" value="{{data.phase}}" data-dtype="Number" />
         </div>
-        <div class="form-group">
+        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
             <label>OCV Modifier</label>
-            <input type="text" name="data.ocv" value="{{data.ocv}}" data-dtype="Number" />
+            <input type="text" name="system.ocv" value="{{data.ocv}}" data-dtype="Number" />
         </div>
-        <div class="form-group">
+        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
             <label>DCV Modifier</label>
-            <input type="text" name="data.dcv" value="{{data.dcv}}" data-dtype="Number" />
+            <input type="text" name="system.dcv" value="{{data.dcv}}" data-dtype="Number" />
         </div>
-        <div class="form-group">
+        <div class="form-group" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
             <label>Effects</label>
-            <input type="text" name="data.effects" value="{{data.effects}}" data-dtype="Number" />
+            <input type="text" name="system.effects" value="{{data.effects}}" data-dtype="Number" />
         </div>
     </section>
 </form>
