@@ -1,35 +1,66 @@
+import { HERO } from "../config.js";
+import { HEROSYS } from "../herosystem6e.js";
 import { HeroSystem6eItem } from "../item/item.js";
 
 async function editSubItem(event, item) {
     event.preventDefault();
 
-    let id = event.currentTarget.id.split(" ")[0];
-    let type = event.currentTarget.type;
+    const id = event.currentTarget.id.split(" ")[0];
+    const type = event.currentTarget.type;
 
-    let data = item.data.data.items[`${type}`][`${id}`];
+    const data = item.system.subItems[`${type}`][`${id}`];
     data["linkId"] = item.id;
     data["subLinkId"] = id;
 
     const itemData = {
         name: data.name,
-        type: data.type,
+        type: type,
         data: data
     };
 
-    let tempItem = new HeroSystem6eItem(itemData);
+    const tempItem = new HeroSystem6eItem(itemData);
     return await tempItem.sheet.render(true);
 }
 
 async function deleteSubItem(event, item) {
     event.preventDefault();
 
-    let id = event.currentTarget.id;
-    let type = event.currentTarget.type;
+    const id = event.currentTarget.id;
+    const type = event.currentTarget.type;
 
-    let changes = {};
-    changes[`data.items.${type}.${id}.visible`] = false;
+    const keyDeletion = {
+        [`system.subItems.${type}.-=${id}`]: null
+    }
 
-    return await item.update(changes);   
+    return await item.update(keyDeletion);   
 }
 
-export { editSubItem, deleteSubItem };
+function getItemCategory(actor, id) {
+    const [powerItemId, subItemId] = splitPowerId(id)
+
+    const powerItem = actor.items.get(powerItemId)
+
+    for (const category in powerItem.system.subItems) {
+        const categoryItems = powerItem.system.subItems[category]
+
+        for (const categoryItemId in categoryItems) {
+            if (categoryItemId === subItemId) {
+                return category
+            }
+        }
+    }
+}
+
+function isPowerSubItem(actor, id) {
+    if (!id.includes('-')) { return false; }
+
+    return true
+}
+
+function splitPowerId(id) {
+    const [powerItemId, subItemId] = id.split('-')
+
+    return [powerItemId, subItemId]
+}
+
+export { editSubItem, deleteSubItem, getItemCategory, isPowerSubItem, splitPowerId };

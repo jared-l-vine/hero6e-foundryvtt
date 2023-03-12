@@ -1,3 +1,4 @@
+{{log 'HEROSYS-POWER-ITEM' this}}
 <form class="hero {{cssClass}} flexcol actor-sheet" autocomplete="off">
     <header class="sheet-header flexrow">
         <img class="profile" name="img" src="{{item.img}}" title="{{item.name}}" data-edit="img" />
@@ -41,7 +42,7 @@
 
         <section class="skills-group">
             <ol class="items-list">
-                {{#each data.items.skill as |item id|}}
+                {{#each system.subItems.skill as |item id|}}
                     {{#if item.visible}}
                     <li class="item" data-item-id="{{item._id}}" {{#if item.children}} style="height:auto;" {{/if}}>
                         <div class="flexrow">
@@ -64,7 +65,7 @@
 
         <section class="maneuver-group">
             <ol class="items-list">
-                {{#each data.items.maneuver as |item id|}}
+                {{#each system.subItems.maneuver as |item id|}}
                     {{#if item.visible}}
                     <li class="item flexrow" data-item-id="{{item._id}}">
                         <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
@@ -85,7 +86,7 @@
 
         <section class="attacks-group">
             <ol class="items-list">
-                {{#each data.items.attack as |item id|}}
+                {{#each system.subItems.attack as |item id|}}
                     {{#if item.visible}}
                     <li class="item flexrow" data-item-id="{{item._id}}">
                         <div class="item-image item-attack"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
@@ -109,7 +110,7 @@
 
         <section class="defenses-group">
             <ol class="items-list">
-                {{#each data.items.defense as |item id|}}
+                {{#each system.subItems.defense as |item id|}}
                     {{#if item.visible}}
                     <li class="item flexrow" data-item-id="{{item._id}}">
                         <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
@@ -131,7 +132,7 @@
 
         <section class="movement-group">
             <ol class="items-list">
-                {{#each data.items.movement as |item id|}}
+                {{#each system.subItems.movement as |item id|}}
                     {{#if item.visible}}
                     <li class="item flexrow" data-item-id="{{item._id}}">
                         <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>

@@ -61,8 +61,8 @@ function determineDefense(targetActor, attackType) {
                         break;
                 }
             }
-            if ((i.type === "power" || i.type === "equipment") && "items" in i.data && "defense" in i.data.items) {
-                for (const [key, value] of Object.entries(i.data.items.defense)) {
+            if ((i.type === "power" || i.type === "equipment") && "items" in i.data && "defense" in i.system.subItems) {
+                for (const [key, value] of Object.entries(i.system.subItems.defense)) {
                     if (value.visible && value.active) {
                         switch (value.defenseType) {
                             case "pd":

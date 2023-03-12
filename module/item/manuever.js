@@ -10,7 +10,7 @@ export async function enforceManeuverLimits(actor, itemId, itemName) {
         if ((i.type === "power" || i.type === "equipment") && ("maneuver" in i.system.items)) {
             for (const [key, value] of Object.entries(i.system.items.maneuver)) {
                 if (value.type && value.visible && value.active && key !== itemId) {
-                    await i.update({ [`data.items.maneuver.${key}.active`]: false });
+                    await i.update({ [`system.subItems.maneuver.${key}.active`]: false });
                 }
             }
         }

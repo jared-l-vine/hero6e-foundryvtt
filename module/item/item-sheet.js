@@ -1,5 +1,6 @@
 import { HeroSystem6eItem } from './item.js'
 import { editSubItem, deleteSubItem } from '../powers/powers.js'
+import { HEROSYS } from '../herosystem6e.js'
 
 /**
  * Extend the basic ItemSheet with some very simple modifications
@@ -23,8 +24,8 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     // return `${path}/item-sheet.html`;
 
     // Alternatively, you could use the following return statement to do a
-    // unique item sheet by type, like `weapon-sheet.html`.
-    return `${path}/item-${this.item.data.type}-sheet.html`
+    // unique item sheet by type, like `weapon-sheet.hbs`.
+    return `${path}/item-${this.item.data.type}-sheet.hbs`
   }
 
   /* -------------------------------------------- */
@@ -68,7 +69,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     html.find('.rollable').click(this._onSheetAction.bind(this))
 
     // Add sub 'Item'
-    html.find('.item-create').click(this._onItemCreate.bind(this))
+    html.find('.item-create').click(this._onSubItemCreate.bind(this))
 
     // Update Inventory Item
     html.find('.item-edit').click(this._onEditItem.bind(this))
@@ -104,7 +105,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
             }
 
             const changes = {}
-            changes[`data.items.${type}.${subLinkId}.${e.target.name.split(".")[1]}`] = e.target.value
+            changes[`system.subItems.${type}.${subLinkId}.${e.target.name.split(".")[1]}`] = e.target.value
             await item.update(changes)
           }
         }
@@ -201,14 +202,14 @@ export class HeroSystem6eItemSheet extends ItemSheet {
       }
 
       let changes = {}
-      changes[`data.items.${type}.${subLinkId}.${valueName}`] = value
+      changes[`system.subItems.${type}.${subLinkId}.${valueName}`] = value
       await item.update(changes)
 
       if (type === 'movement') {
         const subItem = item.system.items[`${type}`][`${subLinkId}`]
 
         changes = {}
-        changes[`data.items.${type}.${subLinkId}.value`] = parseInt(subItem.base) + parseInt(subItem.mod)
+        changes[`system.subItems.${type}.${subLinkId}.value`] = parseInt(subItem.base) + parseInt(subItem.mod)
 
         await item.update(changes)
 
@@ -225,7 +226,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     }
   }
 
-  async _onItemCreate (event) {
+  async _onSubItemCreate (event) {
     event.preventDefault()
     const header = event.currentTarget
     // Get the type of item to create.
@@ -245,10 +246,10 @@ export class HeroSystem6eItemSheet extends ItemSheet {
 
     const id = Date.now().toString(32) + Math.random().toString(16).substring(2)
     const changes = {}
-    changes[`data.items.${type}.${id}`] = newItem.system
-    changes[`data.items.${type}.${id}.img`] = this.item.img
-    changes[`data.items.${type}.${id}.name`] = name
-    changes[`data.items.${type}.${id}.visible`] = true
+    changes[`system.subItems.${type}.${id}.system`] = newItem.system
+    changes[`system.subItems.${type}.${id}.img`] = this.item.img
+    changes[`system.subItems.${type}.${id}.name`] = name
+    changes[`system.subItems.${type}.${id}.visible`] = true
 
     return await this.item.update(changes)
   }

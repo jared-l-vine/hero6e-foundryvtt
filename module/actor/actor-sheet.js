@@ -2,7 +2,7 @@ import { HEROSYS } from '../herosystem6e.js'
 import { HeroSystem6eItem } from '../item/item.js'
 import { HeroSystem6eAttackCard } from '../card/attack-card.js'
 import { createSkillPopOutFromItem } from '../item/skill.js'
-import { editSubItem, deleteSubItem } from '../powers/powers.js'
+import { editSubItem, deleteSubItem, getItemCategory, isPowerSubItem, splitPowerId } from '../powers/powers.js'
 import { enforceManeuverLimits } from '../item/manuever.js'
 import { presenceAttackPopOut } from '../utility/presence-attack.js'
 import { HERO } from '../config.js'
@@ -125,92 +125,44 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
     // Iterate through items, allocating to containers
     // let totalWeight = 0;
-    for (const i of sheetData.items) {
-      const item = i.system
-      i.img = i.img || DEFAULT_TOKEN
+    for (const item of sheetData.items) {
+      // const item = i.system
+
+      item.img = item.img || DEFAULT_TOKEN
       // Append to skills.
-      if (i.type === 'skill') {
-        i.characteristic = CONFIG.HERO.skillCharacteristics[item.characteristic]
+      if (item.type === 'skill') {
+        HeroSystem6eActorSheet._prepareSkillItem(item, this.actor)
+        skills.push(item)
+      } else if (item.type === 'defense') {
+        HeroSystem6eActorSheet._prepareDefenseItem(item)
+        defenses.push(item)
+      } else if (item.type === 'attack') {
+        HeroSystem6eActorSheet._prepareAttackItem(item)
+        attacks.push(item)
+      } else if (item.type === 'power') {
+        const subItems = HeroSystem6eActorSheet._preparePowerItem(item, this.actor)
 
-        // determine Skill Roll
-        let roll;
-        if (i.system.state === 'untrained') {
-          roll = '6-'
-        } if (i.system.state === 'everyman') {
-          roll = '8-'
-        } else if (i.system.state === 'familiar') {
-          roll = '8-'
-        } else if (i.system.state === 'proficient') {
-          roll = '10-'
-        } else if (i.system.state === 'trained') {
-          const charValue = ((i.system.characteristic.toLowerCase() !== 'general') && (i.system.characteristic.toLowerCase() != '')) ?
-            this.actor.system.characteristics[`${i.system.characteristic.toLowerCase()}`].value : 0
+        skills.push(...subItems.skills)
+        attacks.push(...subItems.attacks)
+        defenses.push(...subItems.defenses)
+        maneuvers.push(...subItems.maneuvers)
+        movement.push(...subItems.movement)
 
-          const rollVal = 9 + Math.round(charValue / 5) + parseInt(i.system.levels)
-          roll = rollVal.toString() + '-'
-        } else if (i.system.state === 'noroll') {
-          roll = "n/a"
-        }
-
-        actorData.items.get(i._id).update({ [`system.roll`]: roll })
-
-        i.roll = roll
-        i.rollable = item.rollable
-
-        skills.push(i)
-      } else if (i.type === 'defense') {
-        HeroSystem6eActorSheet._prepareDefenseItem(i, item)
-        defenses.push(i)
-      } else if (i.type === 'attack') {
-        i.system = item
-        i.defense = CONFIG.HERO.defenseTypes[item.defense]
-        i.piercing = item.piercing
-        i.penetrating = item.penetrating
-        i.advantages = item.advantages
-        i.uses = CONFIG.HERO.attacksWith[item.uses]
-        i.targets = CONFIG.HERO.defendsWith[item.targets]
-        i.end = item.end
-        i.toHitMod = item.toHitMod
-        i.knockback = item.knockback
-        i.usesStrength = item.usesStrength
-
-        i.damage = item.dice
-
-        switch (item.extraDice) {
-          case 'zero':
-            i.damage += 'D6'
-            break
-          case 'pip':
-            i.damage += 'D6+1'
-            break
-          case 'half':
-            i.damage += '.5D6'
-            break
-        }
-
-        if (item.killing) {
-          i.damage += 'K'
-        } else {
-          i.damage += 'N'
-        }
-
-        attacks.push(i)
-      } else if (i.type === 'power') {
-        powers.push(i)
-      } else if (i.type === 'equipment') {
-        equipment.push(i)
-      } else if (i.type === 'maneuver') {
-        maneuvers.push(i)
-      } else if (i.type === 'movement') {
-        movement.push(i)
-      } else if (i.type === 'perk') {
-        perk.push(i)
-      } else if (i.type === 'talent') {
-        talent.push(i)
-      } else if (i.type === 'complication') {
-        complication.push(i)
-      } else if (i.type === 'martialart') {
-        martialart.push(i)
+        powers.push(item)
+      } else if (item.type === 'equipment') {
+        equipment.push(item)
+      } else if (item.type === 'maneuver') {
+        maneuvers.push(item)
+      } else if (item.type === 'movement') {
+        movement.push(item)
+      } else if (item.type === 'perk') {
+        perk.push(item)
+      } else if (item.type === 'talent') {
+        talent.push(item)
+      } else if (item.type === 'complication') {
+        complication.push(item)
+      } else if (item.type === 'martialart') {
+        martialart.push(item)
       }
     }
 
@@ -237,13 +189,130 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     sheetData.edit = false
   }
 
-  static _prepareDefenseItem (i, item) {
-    i.defenseType = CONFIG.HERO.defenseTypes[item.defenseType]
-    i.active = item.active
-    i.resistant = CONFIG.HERO.bool[item.resistant]
-    i.hardened = item.hardened
-    i.impenetrable = item.impenetrable
-    i.value = item.value
+  static _prepareSkillItem(item, actor) {
+    item.characteristic = CONFIG.HERO.skillCharacteristics[item.system.characteristic]
+
+    // determine Skill Roll
+    let roll;
+    if (item.system.state === 'untrained') {
+      roll = '6-'
+    } if (item.system.state === 'everyman') {
+      roll = '8-'
+    } else if (item.system.state === 'familiar') {
+      roll = '8-'
+    } else if (item.system.state === 'proficient') {
+      roll = '10-'
+    } else if (item.system.state === 'trained') {
+      const charValue = ((item.system.characteristic.toLowerCase() !== 'general') && (item.system.characteristic.toLowerCase() != '')) ?
+        actor.system.characteristics[`${item.system.characteristic.toLowerCase()}`].value : 0
+
+      const rollVal = 9 + Math.round(charValue / 5) + parseInt(item.system.levels)
+      roll = rollVal.toString() + '-'
+    } else if (item.system.state === 'noroll') {
+      roll = "n/a"
+    }
+
+    if (!isPowerSubItem(actor, item._id)) { 
+      actor.items.get(item._id).update({ [`system.roll`]: roll })
+    } else {
+      const category = getItemCategory(actor, item._id)
+      const [powerItemId, subItemId] = splitPowerId(item._id)
+
+      actor.items.get(powerItemId).update({ [`system.subItems.${category}.${subItemId}.system.roll`]: roll })
+    }
+
+    item.roll = roll
+    item.rollable = item.system.rollable
+  }
+
+  static _prepareDefenseItem (item) {
+    item.defenseType = CONFIG.HERO.defenseTypes[item.system.defenseType]
+    item.active = item.system.active
+    item.resistant = CONFIG.HERO.bool[item.system.resistant]
+    item.hardened = item.system.hardened
+    item.impenetrable = item.system.impenetrable
+    item.value = item.system.value
+  }
+
+  static _prepareAttackItem (item) {
+    item.system = item.system
+    item.defense = CONFIG.HERO.defenseTypes[item.system.defense]
+    item.piercing = item.system.piercing
+    item.penetrating = item.system.penetrating
+    item.advantages = item.system.advantages
+    item.uses = CONFIG.HERO.attacksWith[item.system.uses]
+    item.targets = CONFIG.HERO.defendsWith[item.system.targets]
+    item.end = item.system.end
+    item.toHitMod = item.system.toHitMod
+    item.knockback = item.system.knockback
+    item.usesStrength = item.system.usesStrength
+
+    item.damage = item.system.dice
+
+    switch (item.system.extraDice) {
+      case 'zero':
+        item.damage += 'D6'
+        break
+      case 'pip':
+        item.damage += 'D6+1'
+        break
+      case 'half':
+        item.damage += '.5D6'
+        break
+    }
+
+    if (item.system.killing) {
+      item.damage += 'K'
+    } else {
+      item.damage += 'N'
+    }
+  }
+
+  static _preparePowerItem (item, actor) {
+    const skills = []
+    const attacks = []
+    const defenses = []
+    const maneuvers = []
+    const movement = []
+
+    function getSubItemKey(powerItem, subItemId) {
+      return powerItem._id + '-' + subItemId
+    }
+
+    for (const [key, value] of Object.entries(item.system.subItems.skill)) {
+      const skillItem = value
+      skillItem._id = getSubItemKey(item, key)
+      HeroSystem6eActorSheet._prepareSkillItem(skillItem, actor)
+      skills.push(skillItem)
+    }
+
+    for (const [key, value] of Object.entries(item.system.subItems.attack)) {
+      const attackItem = value
+      attackItem._id = getSubItemKey(item, key)
+      HeroSystem6eActorSheet._prepareAttackItem(attackItem)
+      attacks.push(attackItem)
+    }
+
+    for (const [key, value] of Object.entries(item.system.subItems.defense)) {
+      const defenseItem = value
+      defenseItem._id = getSubItemKey(item, key)
+      HeroSystem6eActorSheet._prepareDefenseItem(defenseItem)
+      defenses.push(defenseItem)
+    }
+
+    for (const [key, value] of Object.entries(item.system.subItems.maneuver)) {
+      const maneuverItem = value
+      maneuverItem._id = getSubItemKey(item, key)
+      maneuvers.push(maneuverItem)
+    }
+
+    for (const [key, value] of Object.entries(item.system.subItems.movement)) {
+      const movementItem = value
+      movementItem._id = getSubItemKey(item, key)
+      movement.push(movementItem)
+    }
+
+    return { skills, attacks, defenses, maneuvers, movement }
   }
 
   /* -------------------------------------------- */
@@ -407,7 +476,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     const item = powerItem.system.items.maneuver[subItemId]
     const newValue = !item.active
 
-    await powerItem.update({ [`data.items.maneuver.${subItemId}.active`]: newValue })
+    await powerItem.update({ [`system.subItems.maneuver.${subItemId}.active`]: newValue })
 
     const itemData = {
       name: item.name,
@@ -429,7 +498,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     const item = powerItem.system.items.defense[subItemId]
     const newValue = !item.active
 
-    await powerItem.update({ [`data.items.defense.${subItemId}.active`]: newValue })
+    await powerItem.update({ [`system.subItems.defense.${subItemId}.active`]: newValue })
   }
 
   /**
