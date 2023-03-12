@@ -54,3 +54,11 @@
 - fixed an issue with the Upload .HDC button that caused it to fail
 - Upload .HDC now reads in perks, talents, complications, and martial arts
 - additional V10 migration
+
+# Version 2.1.0-alpha
+- power item rework
+- Known Issues:
+    - Manuevers items are applying OCV/DCV modifications
+    - Defense items toggles are not working
+    - Can't edit/delete Power sub items directly from actor sheet
+    - Updating and item on an unlinked actor sheet updates the base actor and not the actor in the scene
