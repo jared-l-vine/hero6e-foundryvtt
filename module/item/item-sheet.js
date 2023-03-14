@@ -152,9 +152,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     if (realId) {
       subItemUpdate(realId, formData)
     } else {
-      const item = getItem(id)
-
-      await item.update(expandedData)
+      await this.item.update(expandedData)
     }
 
     // const type = clickedElement.parents('[data-type]')?.data().type

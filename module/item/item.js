@@ -86,8 +86,6 @@ export class HeroSystem6eItem extends Item {
 }
 
 export function getItem(id) {
-    HEROSYS.log(id)
-
     const gameItem = game.items.get(id)
     if (gameItem) { return gameItem; }
 
