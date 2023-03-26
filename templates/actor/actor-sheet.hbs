@@ -295,9 +295,10 @@
             {{!-- Powers Tab --}}
             <div class="tab tab-body powers" data-group="primary" data-tab="powers">
                 <header class="tab-header flexrow">
+                    <span class="item-image"></span>
                     <span class="item-name flex2">Name</span>
-                    <span class="item-name flex2">End</span>
-                    <span class="item-name flex2">Description</span>
+                    <span class="item-name flex1">End</span>
+                    <span class="item-name flex4">Description</span>
                     <span></span>
                     {{!--
                     <span class="item-controls">
@@ -311,8 +312,8 @@
                             {{#each powers as |powerItem key|}}
                             <li class="item flexrow" data-item-id="{{powerItem._id}}">
                                 <div class="item-image"><img src="{{powerItem.img}}" width="24" height="24" /></div>
-                                <span>{{powerItem.name}}</span>
-                                <span>{{powerItem.system.end}}</span>
+                                <span class="item-name flex2">{{powerItem.name}}</span>
+                                <span class="item-name flex1">{{powerItem.system.end}}</span>
                                 <span class="item-name flex4">{{powerItem.system.rules}}</span>
                                 <div class="item-controls" data-group="mode">
                                     {{!--
