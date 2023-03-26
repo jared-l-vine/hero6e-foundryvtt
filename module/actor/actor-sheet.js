@@ -665,6 +665,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     const martialarts = sheet.getElementsByTagName('MARTIALARTS')[0]
     const complications = sheet.getElementsByTagName('DISADVANTAGES')[0]
 
+
     // let elementsToLoad = ["POWERS", "PERKS", "TALENTS", "MARTIALARTS", "DISADVANTAGES"]
 
     const changes = []
@@ -673,6 +674,19 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       changes.name = characterInfo.getAttribute('CHARACTER_NAME')
     }
 
+    // Biography
+    let Biography = ""
+    for(let child of characterInfo.children)
+    {
+      let text = child.textContent.trim();
+      if (text)
+      {
+        Biography += "<p><b>" + child.nodeName + "</b>: " + text + "</p>"
+      }
+    }
+    changes[`system.biography`] = Biography;
+
+    // Remove all items from actor
     for (const item of this.actor.items) {
       await item.delete()
     }
