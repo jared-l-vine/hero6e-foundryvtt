@@ -133,8 +133,22 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         rollEquation = rollEquation + " - 3D6";
 
         let attackRoll = new Roll(rollEquation, actor.getRollData());
-        let result = await attackRoll.roll({async: true});
+        let result = await attackRoll.evaluate({async: true});
         let renderedResult = await result.render();
+
+        // Dice do not roll with Dice so Nice #52
+        // REF: https://github.com/dmdorman/hero6e-foundryvtt/issues/52
+        // You can change the above to result.toMessage() to get DiceSoNice to work, but
+        // it creates an extra private roll chatcard.  Looks like renderedResult part of
+        // a return result to card.js.
+        // Not prepared to chase all that down at the moment.
+        // A temporary kluge is to call Dice So Dice directly.
+        if (game.dice3d?.showForRoll)
+        {
+            game.dice3d.showForRoll(attackRoll)
+        }
+        
+
 
         let hitRollData = result.total;
         let hitRollText = "Hits a " + toHitChar + " of " + hitRollData;
@@ -214,7 +228,8 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             content: cardHtml,
             speaker: speaker
         }
-
+        console.log("AEA");
         return ChatMessage.create(chatData);
+        
     }
 }
