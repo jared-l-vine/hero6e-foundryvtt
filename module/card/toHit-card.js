@@ -77,7 +77,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         const token = actor.token;
 
         const templateData = {
-            actor: actor.data,
+            actor: actor.system,
             tokenId: token?.uuid || null,
             item: item,
             state: stateData,
@@ -133,7 +133,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         rollEquation = rollEquation + " - 3D6";
 
         let attackRoll = new Roll(rollEquation, actor.getRollData());
-        let result = await attackRoll.roll();
+        let result = await attackRoll.roll({async: true});
         let renderedResult = await result.render();
 
         let hitRollData = result.total;
@@ -210,7 +210,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         speaker["alias"] = actor.name;
 
         const chatData = {
-            user:  game.user.data._id,
+            user:  game.user._id,
             content: cardHtml,
             speaker: speaker
         }
