@@ -2,7 +2,7 @@ async function _renderForm(actor, stateData) {
     const token = actor.token;
 
     const templateData = {
-        actor: actor.data,
+        actor: actor.system,
         tokenId: token?.uuid || null,
         state: stateData,
     };
@@ -19,7 +19,7 @@ async function presenceAttackRoll(actor, html) {
 
     let roll = new Roll(rollEquation, actor.getRollData());
 
-    roll.evaluate().then(function(result) {          
+    roll.evaluate({async: true}).then(function(result) {          
         result.toMessage({
             speaker: ChatMessage.getSpeaker({ actor: actor }),
             flavor: "Presence Attack",
