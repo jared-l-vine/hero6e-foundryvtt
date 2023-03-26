@@ -5,7 +5,7 @@ async function _renderSkillForm(item, actor, stateData) {
 	const token = actor.token;
 
 	const templateData = {
-		actor: actor.data,
+		actor: actor.system,
 		tokenId: token?.uuid || null,
 		item: item,
 		state: stateData,
@@ -50,7 +50,7 @@ async function skillRoll(item, actor, html) {
 
 	let roll = new Roll(rollEquation, actor.getRollData());
 
-	roll.evaluate().then(function(result) {
+	roll.evaluate({async: true}).then(function(result) {
 		let margin = parseInt(item.system.roll) - result.total;
 		
 		result.toMessage({
