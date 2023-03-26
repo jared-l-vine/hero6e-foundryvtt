@@ -540,7 +540,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       const actor = this.actor
 
       const roll = new Roll(dataset.roll, this.actor.getRollData())
-      roll.evaluate().then(function (result) {
+      roll.evaluate({async: true}).then(function (result) {
         // let margin = actor.system.characteristics[dataset.label].roll - result.total;
         const margin = charRoll - result.total
 
