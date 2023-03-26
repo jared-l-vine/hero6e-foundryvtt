@@ -686,7 +686,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     }
     changes[`system.biography`] = Biography;
 
-    // Remove all items from actor
+    // Remove all items from
     for (const item of this.actor.items) {
       await item.delete()
     }
@@ -969,11 +969,4 @@ async function updateCombatAutoMod (actor, item) {
   }
 
   await actor.update(changes)
-}
-
-async function _enableHTMLEnrichment() {
-  console.log("_enableHTMLEnrichment")
-  let enrichment = {};
-  enrichment["system.biography"] = await TextEditor.enrichHTML(this.actor.system.biography, { async: true });
-  return expandObject(enrichment);
 }
