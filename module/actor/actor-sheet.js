@@ -687,9 +687,12 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     changes[`system.biography`] = Biography;
 
     // Remove all items from
-    for (const item of this.actor.items) {
-      await item.delete()
-    }
+    // for (const item of this.actor.items) {
+    //   await item.delete()
+    // }
+    // This is a faster (bulk) operation to delete all the items
+    await this.actor.deleteEmbeddedDocuments("Item", Array.from(this.actor.items.keys()) )
+
 
     // determine spd upfront for velocity calculations
     let spd
@@ -737,7 +740,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     await this.actor.update(changes)
 
     for (const skill of skills.children) {
-      uploadSkill.call(this, skill)
+      await uploadSkill.call(this, skill)
     }
 
     const relevantFields = ['BASECOST', 'LEVELS', 'ALIAS', 'MULTIPLIER', 'NAME', 'OPTION_ALIAS']
@@ -747,6 +750,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       const alias = power.getAttribute('ALIAS')
       const levels = power.getAttribute('LEVELS')
       const input = power.getAttribute('INPUT')
+      let activeCost = levels * 5;
 
       if (xmlid === 'GENERIC_OBJECT') { continue; }
 
@@ -791,12 +795,16 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       // If in sheets code it may handle drains/suppresses nicely.
       switch (alias)
       {
-        case "PRE": powerData.description = "+" + levels + " PRE";
+        case "PRE": 
+            powerData.description = "+" + levels + " PRE";
+            activeCost = 0;
           break;
         case "Mind Scan": powerData.description = levels + "d6 Mind Scan (" +
           input + " class of minds)";
           break;
-        default: powerData.description = alias;
+        default: 
+          powerData.description = alias;
+
       }
 
       for(let modifier of powerData.modifiers)
@@ -834,6 +842,10 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
         itemName = (itemName === '') ? 'unnamed' : itemName
 
+        // TODO: END estimate is too simple for publishing.  
+        // Want to minimize incorrect info.  Needs improvment.
+        //powerData.end = math.round(activeCost/10);
+
         itemData = {
           name: itemName,
           type,
@@ -846,19 +858,19 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     }
 
     for (const perk of perks.children) {
-      uploadBasic.call(this, perk, 'perk')
+      await uploadBasic.call(this, perk, 'perk')
     }
 
     for (const talent of talents.children) {
-      uploadTalent.call(this, talent, 'talent')
+      await uploadTalent.call(this, talent, 'talent')
     }
 
     for (const complication of complications.children) {
-      uploadBasic.call(this, complication, 'complication')
+      await uploadBasic.call(this, complication, 'complication')
     }
 
     for (const martialart of martialarts.children) {
-      uploadBasic.call(this, martialart, 'martialart')
+      await uploadBasic.call(this, martialart, 'martialart')
     }
 
     // combat maneuvers
