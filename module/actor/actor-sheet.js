@@ -746,6 +746,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       const name = power.getAttribute('NAME')
       const alias = power.getAttribute('ALIAS')
       const levels = power.getAttribute('LEVELS')
+      const input = power.getAttribute('INPUT')
 
       if (xmlid === 'GENERIC_OBJECT') { continue; }
 
@@ -771,12 +772,41 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         const xmlidModifier = modifier.getAttribute('XMLID')
 
         if (xmlidModifier !== null) {
-          modifiers.push(xmlidModifier)
+          modifiers.push({
+            xmlid: xmlidModifier, 
+            alias: modifier.getAttribute('ALIAS'),
+            comments: modifier.getAttribute('ALIAS'),
+            option: modifier.getAttribute('OPTION'),
+            optionId: modifier.getAttribute('OPTIONID'),
+            optionAlias: modifier.getAttribute('OPTION_ALIAS'),
+          })
         }
       }
       powerData.modifiers = modifiers
 
-      powerData.description = alias
+      // Description (eventual goal is to largely match Hero Designer)
+      // TODO: This should probably be moved to the sheets code
+      // so when the power is modified in foundry, the power
+      // description updates as well.
+      // If in sheets code it may handle drains/suppresses nicely.
+      switch (alias)
+      {
+        case "PRE": powerData.description = "+" + levels + " PRE";
+          break;
+        case "Mind Scan": powerData.description = levels + "d6 Mind Scan (" +
+          input + " class of minds)";
+          break;
+        default: powerData.description = alias;
+      }
+
+      for(let modifier of powerData.modifiers)
+      {
+        if (modifier.alias) powerData.description += "; " + modifier.alias
+        if (modifier.comments) powerData.description += "; " + modifier.comments
+        if (modifier.option) powerData.description += "; " + modifier.option
+        if (modifier.optionId) powerData.description += "; " + modifier.optionId
+        if (modifier.optionAlias) powerData.description += "; " + modifier.optionAlias
+      }
 
       powerData.rules = xmlid
 
@@ -796,7 +826,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
           name: itemName,
           type,
           powerData,
-          levels
+          levels,
+          input
         }
       } else {
         type = 'power'
