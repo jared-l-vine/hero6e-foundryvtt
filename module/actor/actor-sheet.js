@@ -40,6 +40,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       this._prepareCharacterItems(data)
     }
 
+
+
     return data
   }
 
@@ -179,6 +181,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     sheetData.complication = complication
     sheetData.martialart = martialart
     sheetData.characteristicSet = characteristicSet
+    sheetData.system = actorData.system
 
     if (game.settings.get('hero6efoundryvttv2', 'hitLocTracking') === 'all') {
       sheetData.hitLocTracking = true
@@ -952,4 +955,11 @@ async function updateCombatAutoMod (actor, item) {
   }
 
   await actor.update(changes)
+}
+
+async function _enableHTMLEnrichment() {
+  console.log("_enableHTMLEnrichment")
+  let enrichment = {};
+  enrichment["system.biography"] = await TextEditor.enrichHTML(this.actor.system.biography, { async: true });
+  return expandObject(enrichment);
 }
