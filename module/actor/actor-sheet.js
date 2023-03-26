@@ -754,7 +754,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         itemName = alias
       }
 
-      const powerData = []
+      const powerData = {}
 
       for (const attribute of power.attributes) {
         const attName = attribute.name
