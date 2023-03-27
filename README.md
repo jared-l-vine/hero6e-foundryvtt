@@ -1,4 +1,4 @@
-# Hero System 6e (Unofficial) v2 - aea
+# Hero System 6e (Unofficial) v2
 
 Forked from Hero System 6e (Unofficial)
 

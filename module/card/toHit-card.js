@@ -228,7 +228,6 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             content: cardHtml,
             speaker: speaker
         }
-        console.log("AEA");
         return ChatMessage.create(chatData);
         
     }
