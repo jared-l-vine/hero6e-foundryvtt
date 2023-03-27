@@ -473,7 +473,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
         // render card
         let cardHtml = await HeroSystem6eDamageCard._renderInternal(actor, item, targetActor, stateData);
         
-        let speaker = ChatMessage.getSpeaker({ actor: actor, token })
+        let speaker = ChatMessage.getSpeaker({ actor: actor, token: token.document })
         speaker["alias"] = actor.name;
 
         const chatData = {
