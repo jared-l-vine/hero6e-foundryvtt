@@ -73,11 +73,11 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
         const targetToken = target.token;
 
         const templateData = {
-            actor: actor.data,
-            item: item.data,
+            actor: actor.system,
+            item: item.system,
             tokenId: token?.uuid || null,
             state: stateData,
-            target: target.data,
+            target: target.system,
             targetTokenId: targetToken?.uuid || null,
         };
 
@@ -174,7 +174,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
             hitLocation = toHitData.aim;
             if (toHitData.aim === 'none') {
                 let locationRoll = new Roll("3D6")
-                let locationResult = await locationRoll.roll();
+                let locationResult = await locationRoll.roll({async: true});
                 hitLocation = CONFIG.HERO.hitLocationsToHit[locationResult.total];
             }
 
@@ -255,7 +255,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
         damageRoll = modifyRollEquation(damageRoll, toHitData.damageMod);
 
         let roll = new Roll(damageRoll, actor.getRollData());
-        let damageResult = await roll.roll();
+        let damageResult = await roll.roll({async: true});
         let damageRenderedResult = await damageResult.render();
         let body = 0;
         let stun = 0;
@@ -477,7 +477,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
         speaker["alias"] = actor.name;
 
         const chatData = {
-            user:  game.user.data._id,
+            user:  game.user._id,
             content: cardHtml,
             speaker: speaker,
         }

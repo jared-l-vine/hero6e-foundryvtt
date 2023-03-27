@@ -16,7 +16,8 @@ export class HeroSystem6eCard {
         if (!this.actor) return;
 
         // Get the Item from stored flag data or by the item ID on the Actor
-        const storedData = this.message.data["flags.hero.itemData"];
+        //const storedData = this.message.data["flags.hero.itemData"];
+        const storedData = this.message.flags?.hero?.itemData;
 
         this.item = storedData ? new HeroSystem6eItem(storedData, { parent: actor }) : this.actor.items.get(this.cardData.dataset.itemId);
         if (!this.item) {

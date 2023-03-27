@@ -47,7 +47,8 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         const cardObject = new HeroSystem6eToHitCard();
         await cardObject.init(card);
 
-        cardObject.message.data.flags["state"] = {};
+        //cardObject.message.data.flags["state"] = {};
+        cardObject.message.flags.state = {};
 
         let toHitData = {
             aim: event.currentTarget.attributes["data-aim"].value,
@@ -89,7 +90,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
     }
 
     async render() {
-        return await HeroSystem6eToHitCard._renderInternal(this.item, this.actor, this.message.data.flags["state"]);
+        return await HeroSystem6eToHitCard._renderInternal(this.item, this.actor, this.message.flags.state);
     }
 
     async init(card) {
