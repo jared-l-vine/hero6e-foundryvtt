@@ -183,6 +183,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     sheetData.characteristicSet = characteristicSet
     sheetData.system = actorData.system
 
+
+
     if (game.settings.get('hero6efoundryvttv2', 'hitLocTracking') === 'all') {
       sheetData.hitLocTracking = true
     } else {
@@ -717,16 +719,16 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         name = (name === '') ? characteristic.getAttribute('ALIAS') : name
 
         const itemData = {
-          // name: key,
           name: name,
           type: 'movement',
-          data: {
+          system: {
             type: key,
             editable: false,
             base: value,
             value,
             velBase: velocity,
-            velValue: velocity
+            velValue: velocity,
+            class: key,
           }
         }
 
@@ -829,14 +831,17 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         powerData.value = levels
         powerData.velBase = velocity
         powerData.velValue = velocity
+        powerData.class = xmlid
 
         itemData = {
           name: itemName,
           type,
-          powerData,
-          levels,
-          input
+          system: powerData,
+          levels
         }
+
+
+
       } else {
         type = 'power'
 
@@ -850,11 +855,13 @@ export class HeroSystem6eActorSheet extends ActorSheet {
           name: itemName,
           type,
           system: powerData,
-          levels
+          levels,
+          input
         }
       }
 
       await HeroSystem6eItem.create(itemData, { parent: this.actor })
+      
     }
 
     for (const perk of perks.children) {

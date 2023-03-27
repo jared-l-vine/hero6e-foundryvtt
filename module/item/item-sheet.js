@@ -25,7 +25,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
 
     // Alternatively, you could use the following return statement to do a
     // unique item sheet by type, like `weapon-sheet.hbs`.
-    return `${path}/item-${this.item.data.type}-sheet.hbs`
+    return `${path}/item-${this.item.type}-sheet.hbs`
   }
 
   /* -------------------------------------------- */
@@ -34,14 +34,24 @@ export class HeroSystem6eItemSheet extends ItemSheet {
   getData () {
     const data = super.getData()
 
+    //console.log(data)
+
     // Grab the item's data.
-    const itemData = data.data
+    //const itemData = data.data
 
     // Re-define the template data references.
-    data.item = itemData
-    data.data = itemData.data
-    data.config = CONFIG.HERO
+    // data.item = itemData
+    // data.data = itemData.data
+    // data.config = CONFIG.HERO
 
+    // Grab the item
+    const item = data.item;
+
+    // Re-define the template data references.
+    data.item = item
+    data.system = item.system
+    data.config = CONFIG.HERO
+    
     return data
   }
 
