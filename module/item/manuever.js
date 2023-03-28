@@ -3,7 +3,7 @@ export async function enforceManeuverLimits(actor, itemId, itemName) {
 
     for (let i of actor.items) {
         if (i.type === "maneuver" && i.id !== itemId && i.system.active && !exceptions.includes(i.name) || itemName.includes("Move")) {
-            await i.update({ ["data.active"]: false });
+            await i.update({ ["system.active"]: false });
         }
 
         // check manuever sub items for powers

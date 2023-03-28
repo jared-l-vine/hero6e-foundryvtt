@@ -40,6 +40,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       this._prepareCharacterItems(data)
     }
 
+
+
     return data
   }
 
@@ -179,6 +181,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     sheetData.complication = complication
     sheetData.martialart = martialart
     sheetData.characteristicSet = characteristicSet
+    sheetData.system = actorData.system
+
+
 
     if (game.settings.get('hero6efoundryvttv2', 'hitLocTracking') === 'all') {
       sheetData.hitLocTracking = true
@@ -540,7 +545,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       const actor = this.actor
 
       const roll = new Roll(dataset.roll, this.actor.getRollData())
-      roll.evaluate().then(function (result) {
+      roll.evaluate({async: true}).then(function (result) {
         // let margin = actor.system.characteristics[dataset.label].roll - result.total;
         const margin = charRoll - result.total
 
@@ -662,6 +667,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     const martialarts = sheet.getElementsByTagName('MARTIALARTS')[0]
     const complications = sheet.getElementsByTagName('DISADVANTAGES')[0]
 
+
     // let elementsToLoad = ["POWERS", "PERKS", "TALENTS", "MARTIALARTS", "DISADVANTAGES"]
 
     const changes = []
@@ -670,9 +676,25 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       changes.name = characterInfo.getAttribute('CHARACTER_NAME')
     }
 
-    for (const item of this.actor.items) {
-      await item.delete()
+    // Biography
+    let Biography = ""
+    for(let child of characterInfo.children)
+    {
+      let text = child.textContent.trim();
+      if (text)
+      {
+        Biography += "<p><b>" + child.nodeName + "</b>: " + text + "</p>"
+      }
     }
+    changes[`system.biography`] = Biography;
+
+    // Remove all items from
+    // for (const item of this.actor.items) {
+    //   await item.delete()
+    // }
+    // This is a faster (bulk) operation to delete all the items
+    await this.actor.deleteEmbeddedDocuments("Item", Array.from(this.actor.items.keys()) )
+
 
     // determine spd upfront for velocity calculations
     let spd
@@ -697,16 +719,16 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         name = (name === '') ? characteristic.getAttribute('ALIAS') : name
 
         const itemData = {
-          // name: key,
           name: name,
           type: 'movement',
-          data: {
+          system: {
             type: key,
             editable: false,
             base: value,
             value,
             velBase: velocity,
-            velValue: velocity
+            velValue: velocity,
+            class: key,
           }
         }
 
@@ -720,7 +742,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     await this.actor.update(changes)
 
     for (const skill of skills.children) {
-      uploadSkill.call(this, skill)
+      await uploadSkill.call(this, skill)
     }
 
     const relevantFields = ['BASECOST', 'LEVELS', 'ALIAS', 'MULTIPLIER', 'NAME', 'OPTION_ALIAS']
@@ -729,6 +751,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       const name = power.getAttribute('NAME')
       const alias = power.getAttribute('ALIAS')
       const levels = power.getAttribute('LEVELS')
+      const input = power.getAttribute('INPUT')
+      let activeCost = levels * 5;
 
       if (xmlid === 'GENERIC_OBJECT') { continue; }
 
@@ -737,7 +761,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         itemName = alias
       }
 
-      const powerData = []
+      const powerData = {}
 
       for (const attribute of power.attributes) {
         const attName = attribute.name
@@ -754,12 +778,45 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         const xmlidModifier = modifier.getAttribute('XMLID')
 
         if (xmlidModifier !== null) {
-          modifiers.push(xmlidModifier)
+          modifiers.push({
+            xmlid: xmlidModifier, 
+            alias: modifier.getAttribute('ALIAS'),
+            comments: modifier.getAttribute('ALIAS'),
+            option: modifier.getAttribute('OPTION'),
+            optionId: modifier.getAttribute('OPTIONID'),
+            optionAlias: modifier.getAttribute('OPTION_ALIAS'),
+          })
         }
       }
       powerData.modifiers = modifiers
 
-      powerData.description = alias
+      // Description (eventual goal is to largely match Hero Designer)
+      // TODO: This should probably be moved to the sheets code
+      // so when the power is modified in foundry, the power
+      // description updates as well.
+      // If in sheets code it may handle drains/suppresses nicely.
+      switch (alias)
+      {
+        case "PRE": 
+            powerData.description = "+" + levels + " PRE";
+            activeCost = 0;
+          break;
+        case "Mind Scan": powerData.description = levels + "d6 Mind Scan (" +
+          input + " class of minds)";
+          break;
+        default: 
+          powerData.description = alias;
+
+      }
+
+      for(let modifier of powerData.modifiers)
+      {
+        if (modifier.alias) powerData.description += "; " + modifier.alias
+        if (modifier.comments) powerData.description += "; " + modifier.comments
+        if (modifier.option) powerData.description += "; " + modifier.option
+        if (modifier.optionId) powerData.description += "; " + modifier.optionId
+        if (modifier.optionAlias) powerData.description += "; " + modifier.optionAlias
+      }
 
       powerData.rules = xmlid
 
@@ -774,17 +831,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         powerData.value = levels
         powerData.velBase = velocity
         powerData.velValue = velocity
-
-        itemData = {
-          name: itemName,
-          type,
-          powerData,
-          levels
-        }
-      } else {
-        type = 'power'
-
-        itemName = (itemName === '') ? 'unnamed' : itemName
+        powerData.class = xmlid
 
         itemData = {
           name: itemName,
@@ -792,25 +839,45 @@ export class HeroSystem6eActorSheet extends ActorSheet {
           system: powerData,
           levels
         }
+
+
+
+      } else {
+        type = 'power'
+
+        itemName = (itemName === '') ? 'unnamed' : itemName
+
+        // TODO: END estimate is too simple for publishing.  
+        // Want to minimize incorrect info.  Needs improvment.
+        //powerData.end = math.round(activeCost/10);
+
+        itemData = {
+          name: itemName,
+          type,
+          system: powerData,
+          levels,
+          input
+        }
       }
 
       await HeroSystem6eItem.create(itemData, { parent: this.actor })
+      
     }
 
     for (const perk of perks.children) {
-      uploadBasic.call(this, perk, 'perk')
+      await uploadBasic.call(this, perk, 'perk')
     }
 
     for (const talent of talents.children) {
-      uploadTalent.call(this, talent, 'talent')
+      await uploadTalent.call(this, talent, 'talent')
     }
 
     for (const complication of complications.children) {
-      uploadBasic.call(this, complication, 'complication')
+      await uploadBasic.call(this, complication, 'complication')
     }
 
     for (const martialart of martialarts.children) {
-      uploadBasic.call(this, martialart, 'martialart')
+      await uploadBasic.call(this, martialart, 'martialart')
     }
 
     // combat maneuvers

@@ -97,7 +97,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         stateData["itemId"] = itemId;
 
         const templateData = {
-            actor: actor.data,
+            actor: actor.system,
             tokenId: token?.uuid || null,
             item: item,
             state: stateData,

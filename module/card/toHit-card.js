@@ -47,7 +47,8 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         const cardObject = new HeroSystem6eToHitCard();
         await cardObject.init(card);
 
-        cardObject.message.data.flags["state"] = {};
+        //cardObject.message.data.flags["state"] = {};
+        cardObject.message.flags.state = {};
 
         let toHitData = {
             aim: event.currentTarget.attributes["data-aim"].value,
@@ -77,7 +78,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         const token = actor.token;
 
         const templateData = {
-            actor: actor.data,
+            actor: actor.system,
             tokenId: token?.uuid || null,
             item: item,
             state: stateData,
@@ -89,7 +90,7 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
     }
 
     async render() {
-        return await HeroSystem6eToHitCard._renderInternal(this.item, this.actor, this.message.data.flags["state"]);
+        return await HeroSystem6eToHitCard._renderInternal(this.item, this.actor, this.message.flags.state);
     }
 
     async init(card) {
@@ -133,8 +134,22 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         rollEquation = rollEquation + " - 3D6";
 
         let attackRoll = new Roll(rollEquation, actor.getRollData());
-        let result = await attackRoll.roll();
+        let result = await attackRoll.evaluate({async: true});
         let renderedResult = await result.render();
+
+        // Dice do not roll with Dice so Nice #52
+        // REF: https://github.com/dmdorman/hero6e-foundryvtt/issues/52
+        // You can change the above to result.toMessage() to get DiceSoNice to work, but
+        // it creates an extra private roll chatcard.  Looks like renderedResult part of
+        // a return result to card.js.
+        // Not prepared to chase all that down at the moment.
+        // A temporary kluge is to call Dice So Dice directly.
+        if (game.dice3d?.showForRoll)
+        {
+            game.dice3d.showForRoll(attackRoll)
+        }
+        
+
 
         let hitRollData = result.total;
         let hitRollText = "Hits a " + toHitChar + " of " + hitRollData;
@@ -210,11 +225,11 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         speaker["alias"] = actor.name;
 
         const chatData = {
-            user:  game.user.data._id,
+            user:  game.user._id,
             content: cardHtml,
             speaker: speaker
         }
-
         return ChatMessage.create(chatData);
+        
     }
 }
