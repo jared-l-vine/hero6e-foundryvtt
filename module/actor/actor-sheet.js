@@ -666,7 +666,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     const talents = sheet.getElementsByTagName('TALENTS')[0]
     const martialarts = sheet.getElementsByTagName('MARTIALARTS')[0]
     const complications = sheet.getElementsByTagName('DISADVANTAGES')[0]
-
+    const equipment = sheet.getElementsByTagName('EQUIPMENT')[0]
+    const image = sheet.getElementsByTagName('IMAGE')[0]
+  
 
     // let elementsToLoad = ["POWERS", "PERKS", "TALENTS", "MARTIALARTS", "DISADVANTAGES"]
 
@@ -905,6 +907,21 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     if (game.settings.get('hero6efoundryvttv2', 'optionalManeuvers')) {
       await loadCombatManeuvers(CONFIG.HERO.combatManeuversOptional, this.actor)
     }
+
+    // Actor Image
+    if (image && this.actor.img == "icons/svg/mystery-man.svg")
+    {
+      let filename = image.getAttribute("FileName")
+      let extension = filename.split('.').pop()
+      let base64 = "data:image/" + extension + ";base64," + image.textContent
+      let path = "worlds/" + game.world.id
+      await ImageHelper.uploadBase64(base64, filename, path)
+      await this.actor.update({[`img`]: path + '/' + filename })
+    } else
+    {
+      await this.actor.update({[`img`]: "icons/svg/mystery-man.svg" })
+    }
+
   }
 
   async _updateName (name) {

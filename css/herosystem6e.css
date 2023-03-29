@@ -216,6 +216,7 @@
   -ms-flex: 0 0 100px;
   flex: 0 0 100px;
   height: 100px;
+  object-fit: contain;
   margin-right: 10px;
 }
 

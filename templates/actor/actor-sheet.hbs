@@ -12,7 +12,7 @@
     <section class="sheet-mode">
         <section class="tab play" data-group="mode" data-tab="play">
             <header class="sheet-header">
-                <img class="profile-img borderless" src="{{actor.img}}" title="{{actor.name}}" height="100" width="100" />
+                <img class="profile-img borderless" src="{{actor.img}}" title="{{actor.name}}" max-height="100" max-width="100" />
                 <div class="header-fields">
                     <h1 class="charname">
                         <input type="text" value="{{actor.name}}" placeholder="Name" disabled/>
@@ -23,7 +23,7 @@
 
         <section class="tab edit" data-group="mode" data-tab="edit">
             <header class="sheet-header">
-                <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" height="100" width="100" />
+                <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" max-height="100" max-width="100" />
                 <div class="header-fields">
                     <h1 class="charname">
                         <input type="text" name="name" value="{{actor.name}}" placeholder="Name"/>
