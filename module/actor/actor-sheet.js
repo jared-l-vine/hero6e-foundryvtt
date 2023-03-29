@@ -474,7 +474,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       item = this.actor.items.get(powerItemId).system.subItems.defense[subItemId]
     }
 
-    HEROSYS.log(!item.system.active)
+    HEROSYS.log(item.name + ": " + item.system.active)
 
     const attr = 'system.active'
     const newValue = !getProperty(item, attr)
@@ -484,13 +484,13 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       await enforceManeuverLimits(this.actor, itemId, item.name)
     }
 
-    HEROSYS.log({ [attr]: newValue })
+    HEROSYS.log(item.name + ": " + JSON.stringify({ [attr]: newValue }) )
 
-    // if (!isPowerSubItem) {
-    //   await item.update({ [attr]: newValue })
-    // } else {
-    //   await subItemUpdate(itemId, { [attr]: newValue })
-    // }
+    if (!isPowerSubItem(itemId)) {
+      await item.update({ [attr]: newValue })
+    } else {
+      await subItemUpdate(itemId, { [attr]: newValue })
+    }
 
     if (item.type === 'maneuver') {
       await updateCombatAutoMod(this.actor, item)
@@ -983,7 +983,7 @@ async function updateCombatAutoMod (actor, item) {
       dcvEq = dcvEquation(dcvEq, i.system.dcv)
     }
 
-    if ((i.type === 'power' || i.type === 'equipment') && ('maneuver' in i.system.items)) {
+    if ((i.type === 'power' || i.type === 'equipment') && ("items" in i.system) && ('maneuver' in i.system.items)) {
       for (const [key, value] of Object.entries(i.system.items.maneuver)) {
         if (value.type && value.visible && value.active) {
           ocvEq = ocvEq + parseInt(value.ocv)

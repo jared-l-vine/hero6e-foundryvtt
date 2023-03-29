@@ -263,13 +263,12 @@
             {{!-- Maneuvers Tab --}}
             <div class="tab tab-body attacks" data-group="primary" data-tab="maneuvers">
                 <header class="tab-header flexrow">
-                    <span class="item-value">Active</span>
+                    <div class="item-image"></div>
                     <span class="item-name flex2">Name</span>
-                    <span class="item-name flex2">Phase</span>
-                    <span class="item-name flex1">OCV</span>
+                    <span class="item-value flex1">Phase</span>
+                    <span class="item-value flex1">OCV</span>
                     <span class="item-value flex1">DCV</span>
-                    <span class="item-name flex1">Effects</span>
-                    <span></span>
+                    <span class="item-value flex1">Active</span>
                     <span class="item-controls">
                         <a class="item-control item-create" title="Create maneuver" data-type="maneuver"><i class="fas fa-plus"></i> Add maneuver</a>
                     </span>
@@ -279,11 +278,11 @@
                         {{#each maneuvers as |item id|}}
                         <li class="item flexrow" data-item-id="{{item._id}}">
                             <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
-                            <h4 class="item-name flex3">{{item.name}}</h4>
+                            <h4 class="item-name flex2">{{item.name}}</h4>
                             <h4 class="item-value flex1">{{item.system.phase}}</h4>
                             <h4 class="item-value flex1">{{item.system.ocv}}</h4>
                             <h4 class="item-value flex1">{{item.system.dcv}}</h4>
-                            <h4 class="item-toggle"><input type="checkbox" name="system.active" {{checked system.active}} data-dtype="Boolean" /></h4>
+                            <h4 class="item-value item-toggle flex1"><input type="checkbox" name="system.active" {{checked system.active}} data-dtype="Boolean" /></h4>
                             <div class="item-controls" data-group="mode">
                                 <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
                                 <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
