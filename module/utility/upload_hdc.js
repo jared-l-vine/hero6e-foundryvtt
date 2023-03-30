@@ -139,7 +139,7 @@ export async function uploadSkill(skill) {
       // Skill Enahncers provide a discount to the purchase of asssociated skills.
       // They no not change the roll.
       // Skip for now.
-      HEROSYS.log(false, skillData.name + ' was not included in skills.  Likely Skill Enhancer')
+      HEROSYS.log(false, xmlid + ' was not included in skills.  Likely Skill Enhancer')
       return
     }
 
