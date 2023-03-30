@@ -115,6 +115,11 @@ export async function uploadSkill(skill) {
       skillData.hdcid = skill.getAttribute('ID')
     }
 
+    if (skill.hasAttribute("OPTION_ALIAS"))
+    {
+      skillData.optionAlias = skill.getAttribute('OPTION_ALIAS')
+    }
+
     // determine Skill Roll
     if (skillData.state === 'everyman') {
       skillData.roll = '8-'
