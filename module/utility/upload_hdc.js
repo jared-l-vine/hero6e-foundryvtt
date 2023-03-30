@@ -133,6 +133,14 @@ export async function uploadSkill(skill) {
 
       const rollVal = 9 + Math.round(charValue / 5) + parseInt(skillData.levels)
       skillData.roll = rollVal.toString() + '-'
+    } else
+    {
+      // This is likely a Skill Enhancer.
+      // Skill Enahncers provide a discount to the purchase of asssociated skills.
+      // They no not change the roll.
+      // Skip for now.
+      HEROSYS.log(false, skillData.name + ' was not included in skills.  Likely Skill Enhancer')
+      return
     }
 
     const itemData = {
