@@ -11,7 +11,8 @@
     },
     "authors": [
         { "name": "Jared Levine" },
-        { "name" : "BoDiddleyBeat" }
+        { "name" : "BoDiddleyBeat" },
+        { "name" : "Aaron Auseth" }
     ],
     "esmodules": [ "module/herosystem6e.js" ],
     "styles": [ "css/herosystem6e.css" ],
