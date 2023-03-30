@@ -4,18 +4,17 @@
         <img class="profile-img" name="img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/>
         <div class="header-fields">
             <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Name"/></h1>
-            <div class="flexrow flex-center">
-              <div class="resource flexrow flex-center" >
-                  <label class="resource-label">Levels</label>
-                  <input type="text" name="system.levels" value="{{system.levels}}" data-dtype="Number"/>
-              </div>
-            </div>
         </div>
     </header>
 
     {{!-- Sheet Body --}}
     <section class="sheet-body" >
-        <div>{{system.characteristic}}</div>
+
+        <div class="form-group">
+            <label>Levels</label>
+            <input type="text" name="system.levels" value="{{system.levels}}" data-dtype="Number"/>
+        </div>
+
         <div class="form-group">
             <label>Characteristic</label>
             <select name="system.characteristic" data-dtype="text">

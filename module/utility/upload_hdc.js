@@ -84,7 +84,7 @@ export async function uploadSkill(skill) {
     skillData.description = description
 
     if (skill.attributes.getNamedItem('CHARACTERISTIC')) {
-      skillData.characteristic = skill.getAttribute('CHARACTERISTIC')
+      skillData.characteristic = skill.getAttribute('CHARACTERISTIC').toLowerCase()
     } else {
       skillData.characteristic = ''
     }
