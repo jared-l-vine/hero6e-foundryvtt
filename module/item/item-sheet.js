@@ -56,7 +56,10 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     // Not needed for new uploads, but previous uploads may incorectely have upperCase version
     // and thus the item-skill-sheet.hbs selectOptions won't match, thus defaulting to general.
     // Can probably remove at some point.
-    data.system.characteristic = data.system.characteristic.toLowerCase()
+    if (data.system.characteristic)
+    {
+      data.system.characteristic = data.system.characteristic.toLowerCase()
+    }
   
     return data
   }
@@ -271,6 +274,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
 
   async _onSubItemCreate (event) {
     event.preventDefault()
+    console.log(event, this)
     const header = event.currentTarget
     // Get the type of item to create.
     const type = header.dataset.type

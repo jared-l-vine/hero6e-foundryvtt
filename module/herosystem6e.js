@@ -55,7 +55,7 @@ Hooks.once('init', async function() {
 
     // Define custom Entity classes
     CONFIG.Actor.entityClass = HeroSystem6eActor;
-    CONFIG.Item.entityClass = HeroSystem6eItem;
+    CONFIG.Item.documentClass = HeroSystem6eItem;
     CONFIG.Token.documentClass = HeroSystem6eTokenDocument;
     CONFIG.Token.objectClass = HeroSystem6eToken;
     CONFIG.statusEffects = HeroSystem6eActorActiveEffects.getEffects();

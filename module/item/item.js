@@ -21,6 +21,7 @@ export class HeroSystem6eItem extends Item {
         const data = itemData.data;
 
         if (itemData.type === 'skill') this._prepareSkillData(actorData, itemData);
+        
     }
 
     _prepareSkillData(actorData, itemData) {
@@ -67,6 +68,12 @@ export class HeroSystem6eItem extends Item {
         data.roll = Math.round(roll);
     }
 
+    
+    async roll()
+    {
+        console.log("roll", this)
+    }
+
     /**
    * Display the chat card for an Item as a Chat Message
    * @param {object} options          Options which configure the display of the item chat card
@@ -83,6 +90,7 @@ export class HeroSystem6eItem extends Item {
     //             return createMessage ? ChatMessage.create(attackCard) : attackCard;
     //     }
     // }
+
 }
 
 export function getItem(id) {
