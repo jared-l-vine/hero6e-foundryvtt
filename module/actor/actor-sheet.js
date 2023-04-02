@@ -374,7 +374,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     html.find('.rollable-characteristic').click(this._onRollCharacteristic.bind(this))
     html.find('.rollable-skill').click(this._onRollSkill.bind(this))
     html.find('.item-attack').click(this._onItemAttack.bind(this))
-    html.find('.item-attack2').click(this._onItemAttack2.bind(this))
     html.find('.item-toggle').click(this._onItemToggle.bind(this))
     html.find('.recovery-button').click(this._onRecovery.bind(this))
     html.find('.presence-button').click(this._onPresenseAttack.bind(this))
@@ -398,7 +397,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 	 */
   async _onItemCreate (event) {
     event.preventDefault()
-    console.log(event, this)
     const header = event.currentTarget
     // Get the type of item to create.
     const type = header.dataset.type
@@ -417,8 +415,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     delete itemData.system.type
 
     // Finally, create the item!
-    const item = await HeroSystem6eItem.create(itemData, { parent: this.actor })
-    return item
+    return await HeroSystem6eItem.create(itemData, { parent: this.actor })
   }
 
   async _onPowerItemAttack(event) {
@@ -447,6 +444,15 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
   async _onItemAttack (event) {
     event.preventDefault()
+    
+    // Hold SHIFT when clicking attack roll dice
+    // to test out new code
+    if (event.shiftKey)
+    {
+      await this._onItemAttackShift (event)
+      return
+    }
+
     const itemId = event.currentTarget.closest('.item').dataset.itemId
 
     let item;
@@ -465,12 +471,10 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     return item.displayCard({ rollMode, createChatMessage }, this.actor, item.id)
   }
 
-  async _onItemAttack2 (event) {
+  async _onItemAttackShift (event) {
     event.preventDefault()
     const itemId = event.currentTarget.closest('.item').dataset.itemId
     const item = this.actor.items.get(itemId)
-    
-    console.log("_onItemAttack2", item);
     item.roll()
   }
 

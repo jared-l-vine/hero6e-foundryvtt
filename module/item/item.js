@@ -8,6 +8,12 @@ import { HEROSYS } from "../herosystem6e.js";
  * @extends {Item}
  */
 export class HeroSystem6eItem extends Item {
+
+    chatTemplate = {
+        "x": "systems/hero6efoundryvttv2/templates/attack/item-attack-card.hbs"
+    }
+
+
     /**
      * Augment the basic Item data model with additional dynamic data.
      */
@@ -16,11 +22,11 @@ export class HeroSystem6eItem extends Item {
         super.prepareData();
 
         // Get the Item's data
-        const itemData = this.data;
-        const actorData = this.actor ? this.actor.data : {};
-        const data = itemData.data;
+        // const itemData = this.data;
+        // const actorData = this.actor ? this.actor.data : {};
+        // const data = itemData.data;
 
-        if (itemData.type === 'skill') this._prepareSkillData(actorData, itemData);
+        // if (itemData.type === 'skill') this._prepareSkillData(actorData, itemData);
         
     }
 
@@ -71,7 +77,21 @@ export class HeroSystem6eItem extends Item {
     
     async roll()
     {
-        console.log("roll", this)
+        let chatData = {
+            user: game.user._id,
+            speaker: this.actor._id
+        }
+
+        let cardData = {
+            ...this.system,
+            owner: this.actor.id,
+            item: this,
+            actor: this.actor
+        }
+
+        const defaultChatCard = "systems/hero6efoundryvttv2/templates/chat/default-card.hbs"
+        chatData.content = await renderTemplate(this.chatTemplate[this.type] || defaultChatCard, cardData)
+        return ChatMessage.create(chatData)
     }
 
     /**

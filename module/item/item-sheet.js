@@ -274,7 +274,6 @@ export class HeroSystem6eItemSheet extends ItemSheet {
 
   async _onSubItemCreate (event) {
     event.preventDefault()
-    console.log(event, this)
     const header = event.currentTarget
     // Get the type of item to create.
     const type = header.dataset.type
