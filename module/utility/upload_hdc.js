@@ -84,7 +84,7 @@ export async function uploadSkill(skill) {
     skillData.description = description
 
     if (skill.attributes.getNamedItem('CHARACTERISTIC')) {
-      skillData.characteristic = skill.getAttribute('CHARACTERISTIC')
+      skillData.characteristic = skill.getAttribute('CHARACTERISTIC').toLowerCase()
     } else {
       skillData.characteristic = ''
     }
@@ -115,6 +115,11 @@ export async function uploadSkill(skill) {
       skillData.hdcid = skill.getAttribute('ID')
     }
 
+    if (skill.hasAttribute("OPTION_ALIAS"))
+    {
+      skillData.optionAlias = skill.getAttribute('OPTION_ALIAS')
+    }
+
     // determine Skill Roll
     if (skillData.state === 'everyman') {
       skillData.roll = '8-'
@@ -128,6 +133,14 @@ export async function uploadSkill(skill) {
 
       const rollVal = 9 + Math.round(charValue / 5) + parseInt(skillData.levels)
       skillData.roll = rollVal.toString() + '-'
+    } else
+    {
+      // This is likely a Skill Enhancer.
+      // Skill Enahncers provide a discount to the purchase of asssociated skills.
+      // They no not change the roll.
+      // Skip for now.
+      HEROSYS.log(false, xmlid + ' was not included in skills.  Likely Skill Enhancer')
+      return
     }
 
     const itemData = {

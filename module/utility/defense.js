@@ -1,3 +1,5 @@
+import { HEROSYS } from "../herosystem6e.js";
+
 function determineDefense(targetActor, attackType) {
     let PD = parseInt(targetActor.system.characteristics.pd.value);
     let ED = parseInt(targetActor.system.characteristics.ed.value);
@@ -13,55 +15,55 @@ function determineDefense(targetActor, attackType) {
     let DNM = 0; // damage negation mental
     let knockbackResistance = 0;
 
-    if (targetActor.items.length > 0) {
+    if (targetActor.items.size > 0) {
         for (let i of targetActor.items) {
-            if (i.type === "defense" && i.data.active) {
-                switch (i.data.defenseType) {
+            if (i.type === "defense" && i.system.active) {
+                switch (i.system.defenseType) {
                     case "pd":
-                        PD += parseInt(i.data.value);
+                        PD += parseInt(i.system.value);
                         break;
                     case "ed":
-                        ED += parseInt(i.data.value);
+                        ED += parseInt(i.system.value);
                         break;
                     case "md":
-                        MD += parseInt(i.data.value);
+                        MD += parseInt(i.system.value);
                         break;
                     case "rpd":
-                        rPD += parseInt(i.data.value);
+                        rPD += parseInt(i.system.value);
                         break;
                     case "red":
-                        rED += parseInt(i.data.value);
+                        rED += parseInt(i.system.value);
                         break;
                     case "rmd":
-                        rMD += parseInt(i.data.value);
+                        rMD += parseInt(i.system.value);
                         break;
                     case "drp":
-                        DRP = Math.max(DRP, parseInt(i.data.value));
+                        DRP = Math.max(DRP, parseInt(i.system.value));
                         break;
                     case "dre":
-                        DRE = Math.max(DRE, parseInt(i.data.value));
+                        DRE = Math.max(DRE, parseInt(i.system.value));
                         break;
                     case "drm":
-                        DRM = Math.max(DRM, parseInt(i.data.value));
+                        DRM = Math.max(DRM, parseInt(i.system.value));
                         break;
                     case "dnp":
-                        DNP += parseInt(i.data.value);
+                        DNP += parseInt(i.system.value);
                         break;
                     case "dne":
-                        DNE += parseInt(i.data.value);
+                        DNE += parseInt(i.system.value);
                         break;
                     case "dnm":
-                        DNM += parseInt(i.data.value);
+                        DNM += parseInt(i.system.value);
                         break;
                     case "kbr":
-                        knockbackResistance += parseInt(i.data.value);
+                        knockbackResistance += parseInt(i.system.value);
                         break;
                     default:
-                        console.log(i.data.defenseType + " not yet supported!");
+                        console.log(i.system.defenseType + " not yet supported!");
                         break;
                 }
             }
-            if ((i.type === "power" || i.type === "equipment") && "items" in i.data && "defense" in i.system.subItems) {
+            if ((i.type === "power" || i.type === "equipment") && "items" in i.system && "defense" in i.system.subItems) {
                 for (const [key, value] of Object.entries(i.system.subItems.defense)) {
                     if (value.visible && value.active) {
                         switch (value.defenseType) {

@@ -444,6 +444,15 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
   async _onItemAttack (event) {
     event.preventDefault()
+    
+    // Hold SHIFT when clicking attack roll dice
+    // to test out new code
+    if (event.shiftKey)
+    {
+      await this._onItemAttackShift (event)
+      return
+    }
+
     const itemId = event.currentTarget.closest('.item').dataset.itemId
 
     let item;
@@ -462,6 +471,13 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     return item.displayCard({ rollMode, createChatMessage }, this.actor, item.id)
   }
 
+  async _onItemAttackShift (event) {
+    event.preventDefault()
+    const itemId = event.currentTarget.closest('.item').dataset.itemId
+    const item = this.actor.items.get(itemId)
+    item.roll()
+  }
+
   async _onItemToggle (event) {
     event.preventDefault()
     const itemId = event.currentTarget.closest('.item').dataset.itemId
@@ -474,7 +490,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       item = this.actor.items.get(powerItemId).system.subItems.defense[subItemId]
     }
 
-    HEROSYS.log(!item.system.active)
+    HEROSYS.log(item.name + ": " + item.system.active)
 
     const attr = 'system.active'
     const newValue = !getProperty(item, attr)
@@ -484,13 +500,13 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       await enforceManeuverLimits(this.actor, itemId, item.name)
     }
 
-    HEROSYS.log({ [attr]: newValue })
+    HEROSYS.log(item.name + ": " + JSON.stringify({ [attr]: newValue }) )
 
-    // if (!isPowerSubItem) {
-    //   await item.update({ [attr]: newValue })
-    // } else {
-    //   await subItemUpdate(itemId, { [attr]: newValue })
-    // }
+    if (!isPowerSubItem(itemId)) {
+      await item.update({ [attr]: newValue })
+    } else {
+      await subItemUpdate(itemId, { [attr]: newValue })
+    }
 
     if (item.type === 'maneuver') {
       await updateCombatAutoMod(this.actor, item)
@@ -666,7 +682,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     const talents = sheet.getElementsByTagName('TALENTS')[0]
     const martialarts = sheet.getElementsByTagName('MARTIALARTS')[0]
     const complications = sheet.getElementsByTagName('DISADVANTAGES')[0]
-
+    const equipment = sheet.getElementsByTagName('EQUIPMENT')[0]
+    const image = sheet.getElementsByTagName('IMAGE')[0]
+  
 
     // let elementsToLoad = ["POWERS", "PERKS", "TALENTS", "MARTIALARTS", "DISADVANTAGES"]
 
@@ -905,6 +923,21 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     if (game.settings.get('hero6efoundryvttv2', 'optionalManeuvers')) {
       await loadCombatManeuvers(CONFIG.HERO.combatManeuversOptional, this.actor)
     }
+
+    // Actor Image
+    if (image && this.actor.img == "icons/svg/mystery-man.svg")
+    {
+      let filename = image.getAttribute("FileName")
+      let extension = filename.split('.').pop()
+      let base64 = "data:image/" + extension + ";base64," + image.textContent
+      let path = "worlds/" + game.world.id
+      await ImageHelper.uploadBase64(base64, filename, path)
+      await this.actor.update({[`img`]: path + '/' + filename })
+    } else
+    {
+      await this.actor.update({[`img`]: "icons/svg/mystery-man.svg" })
+    }
+
   }
 
   async _updateName (name) {
@@ -983,7 +1016,7 @@ async function updateCombatAutoMod (actor, item) {
       dcvEq = dcvEquation(dcvEq, i.system.dcv)
     }
 
-    if ((i.type === 'power' || i.type === 'equipment') && ('maneuver' in i.system.items)) {
+    if ((i.type === 'power' || i.type === 'equipment') && ("items" in i.system) && ('maneuver' in i.system.items)) {
       for (const [key, value] of Object.entries(i.system.items.maneuver)) {
         if (value.type && value.visible && value.active) {
           ocvEq = ocvEq + parseInt(value.ocv)
