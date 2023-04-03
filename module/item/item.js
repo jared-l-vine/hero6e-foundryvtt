@@ -77,11 +77,70 @@ export class HeroSystem6eItem extends Item {
     
     async roll()
     {
+
+        // Currently we assume an attack roll, but could be exapanded to be any item roll (skill, power, etc).
+        // Checking just to make sure.
+
+        if (this.type != 'attack')
+        {
+            console.log("item.roll not supported for '" + this.type + "' items")
+            return
+        }
+
+        // Attacks will be done in 4 parts
+        // 1. Prompt for modifiers
+        // 2. Roll To-Hit vs target(s)
+        // 3. Roll Damage
+        // 4. Apply Damage
+
+        // Prompt for modifiers
+        await HeroSystem6eAttackCard.createAttackPopOutFromItem(this, this.actor, this._id, 2)
+        // const dialogData = {
+		// 	title: "Roll to Hit",
+		// 	buttons: {
+		// 		rollToHit: {
+		// 			label: "Roll to Hit",
+		// 			callback: () => console.log("rollToHit")
+		// 		},
+		// 	},
+		// 	default: "rollToHit",
+		// 	close: () => resolve({})
+		// }
+
+        //const template = "systems/hero6efoundryvttv2/templates/chat/item-toHit-card.hbs"
+        //dialogData.content = await renderTemplate(template, {})
+
+        //new Dialog(dialogData).render(true)
+
+        // let d = new Dialog({
+        //     title: "Test Dialog",
+        //     content: "<p>You must choose either Option 1, or Option 2</p>",
+        //     buttons: {
+        //      one: {
+        //       icon: '<i class="fas fa-check"></i>',
+        //       label: "Option One",
+        //       callback: () => console.log("Chose One")
+        //      },
+        //      two: {
+        //       icon: '<i class="fas fa-times"></i>',
+        //       label: "Option Two",
+        //       callback: () => console.log("Chose Two")
+        //      }
+        //     },
+        //     default: "two",
+        //     render: html => console.log("Register interactivity in the rendered dialog"),
+        //     close: html => console.log("This always is logged no matter which option is chosen")
+        //    });
+        //    d.render(true);
+
+        return
+
         let r = await new Roll("3d6").roll({async:true})
 
         let chatData = {
+
+            // Dice so Nice requires type=roll and rolls.
             type: CONST.CHAT_MESSAGE_TYPES.ROLL,
-            rollMode: CONST.DICE_ROLL_MODES.PUBLIC,
             rolls: [r],
             user: game.user._id,
             speaker: ChatMessage.getSpeaker(),
@@ -95,10 +154,14 @@ export class HeroSystem6eItem extends Item {
             actor: this.actor
         }
 
-        ChatMessage.applyRollMode(chatData, CONST.DICE_ROLL_MODES.PUBLIC)
 
         const defaultChatCard = "systems/hero6efoundryvttv2/templates/chat/default-card.hbs"
         chatData.content = await renderTemplate(this.chatTemplate[this.type] || defaultChatCard, cardData)
+
+        // Set RollMode to PUBLIC instead of default (whatever is selected on chat dropdown).
+        // ApplyRollMode isn't working, no apparent way to override, not really important at the moment.
+        // ChatMessage.applyRollMode(chatData, "publicroll") //CONST.DICE_ROLL_MODES.PUBLIC)
+
         return ChatMessage.create(chatData)
     }
 

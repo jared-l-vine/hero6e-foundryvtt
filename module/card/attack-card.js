@@ -42,7 +42,12 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         // not being used anymore, leaving in here for now just in case
     }
 
-    static async _RollToHit(item, html, actor, itemId) {
+    static async _RollToHit(item, html, actor, itemId, version) {
+        if (version === 2)
+        {
+            return HeroSystem6eAttackCard._RollToHit2(item, html, actor, itemId)
+        }
+
         // get attack card input
         let form = html[0].querySelector("form");
 
@@ -70,6 +75,42 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
         const targets = HeroSystem6eCard._getChatCardTargets();
         
         await HeroSystem6eToHitCard.createFromAttackCard(item, data, actor, itemId);
+    }
+
+    // _RollToHit2 is slightly different from _RollToHit.
+    // It uses targeted tokens instead of selected tokens.
+    // "t" to target.  Shift-t to target multiple tokens.
+    static async _RollToHit2(item, html, actor, itemId) {
+
+        // get attack card input
+        let form = html[0].querySelector("form");
+
+        let effectiveStr = 0;
+        if ("effectiveStr" in form) {
+            effectiveStr = form.effectiveStr.value;
+        }
+
+        let aim = "";
+        if ("aim" in form) {
+            aim = form.aim.value;
+        }
+
+        let data = {
+            'toHitModTemp': form.toHitMod.value,
+            'aim': aim,
+            'effectiveStr': effectiveStr,
+            'damageMod': form.damageMod.value
+        };
+
+        if (game.settings.get("hero6efoundryvttv2", "knockback")) {
+            data['knockbackMod'] = form.knockbackMod.value;
+        }
+
+        for(const targetToken of game.user.targets)
+        {
+            await HeroSystem6eToHitCard.createFromAttackCard(item, data, actor, itemId);
+        }
+
     }
 
     static async _renderInternal(item, actor, stateData, itemId) {
@@ -119,10 +160,10 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
       * @param {boolean} createMessage   Whether to automatically create a ChatMessage entity (if true), or only return
       *                                  the prepared message data (if false)
       */
-    static async createAttackPopOutFromItem(item, actor, itemId) {
+    static async createAttackPopOutFromItem(item, actor, itemId, version) {
         const content = await this._renderInternal(item, actor, {}, itemId);
 
-        HEROSYS.log(item)
+        //HEROSYS.log(item)
 
         // Attack Card as a Pop Out
         let options = {
@@ -136,7 +177,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
                 buttons: {
                     rollToHit: {
                         label: "Roll to Hit",
-                        callback: html => resolve(this._RollToHit(item, html, actor, itemId))
+                        callback: html => resolve(this._RollToHit(item, html, actor, itemId, version))
                     },
                 },
                 default: "rollToHit",
