@@ -61,7 +61,7 @@ Hooks.once('init', async function() {
     CONFIG.statusEffects = HeroSystem6eActorActiveEffects.getEffects();
     CONFIG.MeasuredTemplate.objectClass = HeroSystem6eTemplate;
     CONFIG.ui.combat = HeroSystem6eCombatTracker;
-
+   
     SettingsHelpers.initLevelSettings();
 
     // Register sheet application classes
@@ -125,6 +125,8 @@ Hooks.on("updateActor", (app, html, data) => {
 Hooks.once('devModeReady', ({ registerPackageDebugFlag }) => {
     registerPackageDebugFlag(HEROSYS.ID);
 });
+
+
 export class HEROSYS {
     static ID = "HEROSYS";
 
@@ -187,3 +189,5 @@ function rollItemMacro(itemName) {
   // Trigger the item roll
   return item.roll();
 }
+
+

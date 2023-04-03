@@ -77,9 +77,15 @@ export class HeroSystem6eItem extends Item {
     
     async roll()
     {
+        let r = await new Roll("3d6").roll({async:true})
+
         let chatData = {
+            type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+            rollMode: CONST.DICE_ROLL_MODES.PUBLIC,
+            rolls: [r],
             user: game.user._id,
-            speaker: this.actor._id
+            speaker: ChatMessage.getSpeaker(),
+            //speaker: ChatMessage.getSpeaker({ alias: this.actor.name }), // Default alias is Attack Name, we want Actor Name
         }
 
         let cardData = {
@@ -88,6 +94,8 @@ export class HeroSystem6eItem extends Item {
             item: this,
             actor: this.actor
         }
+
+        ChatMessage.applyRollMode(chatData, CONST.DICE_ROLL_MODES.PUBLIC)
 
         const defaultChatCard = "systems/hero6efoundryvttv2/templates/chat/default-card.hbs"
         chatData.content = await renderTemplate(this.chatTemplate[this.type] || defaultChatCard, cardData)
