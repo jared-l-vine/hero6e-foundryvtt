@@ -265,6 +265,19 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
         let renderedStunMultiplierRoll = null;
         let stunMultiplier = 1;
 
+        // Dice do not roll with Dice so Nice #52
+        // REF: https://github.com/dmdorman/hero6e-foundryvtt/issues/52
+        // You can change the above to result.toMessage() to get DiceSoNice to work, but
+        // it creates an extra private roll chatcard.  Looks like renderedResult part of
+        // a return result to card.js.
+        // Not prepared to chase all that down at the moment.
+        // A temporary kluge is to call Dice So Dice directly.
+        if (game.dice3d?.showForRoll)
+        {
+            game.dice3d.showForRoll(damageResult)
+        }
+        
+
         if (itemData.killing) {
             hasStunMultiplierRoll = true;
             body = damageResult.total;
@@ -359,7 +372,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
             knockBackEquation = modifyRollEquation(knockBackEquation, " -" + knockbackResistance);
 
             let knockbackRoll = new Roll(knockBackEquation);
-            let knockbackResult = await knockbackRoll.roll();
+            let knockbackResult = await knockbackRoll.roll({async:true});
             knockbackRenderedResult = await knockbackResult.render();
             let knockbackResultTotal = Math.round(knockbackResult.total);
 

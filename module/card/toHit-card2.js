@@ -35,7 +35,6 @@ export class HeroSystem6eToHitCard2 extends HeroSystem6eCard {
    * @private
    */
     static async _onChatCardAction(event) {
-        console.log("_onChatCardAction")
         //event.preventDefault();
         
 
@@ -56,26 +55,28 @@ export class HeroSystem6eToHitCard2 extends HeroSystem6eCard {
         //cardObject.message.data.flags["state"] = {};
         cardObject.message.flags.state = {};
 
-        let toHitData = {
-            aim: event.currentTarget.attributes["data-aim"].value,
-            knockbackMod: event.currentTarget.attributes["data-knockbackmod"].value,
-            damageMod: event.currentTarget.attributes["data-damagemod"].value,
-            hitRollData: event.currentTarget.attributes["data-hitrolldata"].value,
-            effectiveStr: event.currentTarget.attributes["data-effectiveStr"].value
-        };
+        // let toHitData = {
+        //     aim: event.currentTarget.attributes["data-aim"].value,
+        //     knockbackMod: event.currentTarget.attributes["data-knockbackmod"].value,
+        //     damageMod: event.currentTarget.attributes["data-damagemod"].value,
+        //     hitRollData: event.currentTarget.attributes["data-hitrolldata"].value,
+        //     effectiveStr: event.currentTarget.attributes["data-effectiveStr"].value
+        // };
+        const toHitData = {...button.dataset}
 
-        console.log(toHitData)
         // Validate permission to proceed with the roll
         //const isValid = action === "apply-defenses";
         //if (!(isValid || game.user.isGM || cardObject.message.isAuthor)) return;
 
-        const targets = HeroSystem6eCard._getChatCardTargets();
+        // const targets = HeroSystem6eCard._getChatCardTargets();
 
-        if (targets.length === 0) return;
+        // if (targets.length === 0) return;
 
-        for (let token of targets) {
-            await HeroSystem6eDamageCard2.createFromToHitCard(cardObject, token, toHitData, itemId);
-        }
+        // for (let token of targets) {
+        //     await HeroSystem6eDamageCard2.createFromToHitCard(cardObject, token, toHitData, itemId);
+        // }
+
+        await HeroSystem6eDamageCard2.createFromToHitCard(cardObject, null, toHitData, itemId);
 
         // Re-enable the button
         //button.disabled = false;
@@ -202,6 +203,12 @@ export class HeroSystem6eToHitCard2 extends HeroSystem6eCard {
             }
         }
 
+        let targetIds = []
+        for (let target of Array.from(targets))
+        {
+            targetIds.push(target.id)
+        }
+
         let stateData = {
             // dice rolls
             //rolls: [attackRoll],
@@ -217,6 +224,7 @@ export class HeroSystem6eToHitCard2 extends HeroSystem6eCard {
             hitRollData: hitRollData,
             effectiveStr: data.effectiveStr,
             targets: Array.from(targets),
+            targetIds: targetIds,
 
             // endurance
             useEnd: useEnd,

@@ -9,7 +9,8 @@ import { HEROSYS } from "../herosystem6e.js";
 export class HeroSystem6eDamageCard2 extends HeroSystem6eCard {
 
     static chatListeners(html) {
-        html.on('click', '.damage-card .card-buttons button', this._onChatCardAction.bind(this));
+        // NOTE: Make sure we are listed in card-helpers.js
+        html.on('click', '.apply-damage', this._onChatCardAction.bind(this));
     }
 
     static onMessageRendered(html) {
@@ -42,6 +43,7 @@ export class HeroSystem6eDamageCard2 extends HeroSystem6eCard {
    * @private
    */
     static async _onChatCardAction(event) {
+        console.log("_onChatCardAction")
         event.preventDefault();
 
         // Extract card data
@@ -49,19 +51,15 @@ export class HeroSystem6eDamageCard2 extends HeroSystem6eCard {
 
         const action = button.dataset.action;
         button.disabled = true;
-
         const card = button.closest(".chat-card");
-        const cardObject = new HeroSystem6eDamageCard();
+        const cardObject = new HeroSystem6eDamageCard2();
         await cardObject.init(card);
 
         // Validate permission to proceed with the roll
-        if (!(game.user.isGM || cardObject.message.isAuthor)) return;
+        //if (!(game.user.isGM || cardObject.message.isAuthor)) return;
 
-        // Handle different actions
-        switch (action) {
-            case "damage-apply":
-                await cardObject.applyDamage(); break;
-        }
+
+        await cardObject.applyDamage()
 
         // Re-enable the button
         button.disabled = false;
@@ -70,15 +68,15 @@ export class HeroSystem6eDamageCard2 extends HeroSystem6eCard {
     static async _renderInternal(actor, item, target, stateData) {
         // Render the chat card template
         const token = actor.token;
-        const targetToken = target.token;
+        //const targetToken = target.token;
 
         const templateData = {
+            ...stateData,
             actor: actor.system,
-            item: item.system,
+            item: item,
             tokenId: token?.uuid || null,
-            state: stateData,
-            target: target.system,
-            targetTokenId: targetToken?.uuid || null,
+            //target: target.system,
+            //targetTokenId: targetToken?.uuid || null,
         };
 
         var path = "systems/hero6efoundryvttv2/templates/chat/item-damage-card2.hbs";
@@ -109,8 +107,9 @@ export class HeroSystem6eDamageCard2 extends HeroSystem6eCard {
     }
 
     static async createFromToHitCard(cardObject, token, toHitData, itemId) {
-        let targetActor = token.document._actor
-        let targetActorChars = targetActor.system.characteristics;
+        console.log("createFromToHitCard")
+        //let targetActor = token.document._actor
+        //let targetActorChars = targetActor.system.characteristics;
 
         const actor = cardObject.actor
 
@@ -144,56 +143,56 @@ export class HeroSystem6eDamageCard2 extends HeroSystem6eCard {
         // -------------------------------------------------
         // determine active defenses
         // -------------------------------------------------
-        let defense = "";
-        let [defenseValue, resistantValue, damageReductionValue, damageNegationValue, knockbackResistance] = determineDefense(targetActor, item.system.class)
+        // let defense = "";
+        // let [defenseValue, resistantValue, damageReductionValue, damageNegationValue, knockbackResistance] = determineDefense(targetActor, item.system.class)
 
-        if (damageNegationValue > 0) {
-            defense += "Damage Negation " + damageNegationValue + "DC(s); "
-        }
+        // if (damageNegationValue > 0) {
+        //     defense += "Damage Negation " + damageNegationValue + "DC(s); "
+        // }
 
-        defense = defense + defenseValue + " normal; " + resistantValue + " resistant";
+        // defense = defense + defenseValue + " normal; " + resistantValue + " resistant";
 
         // -------------------------------------------------
         // damage roll
         // -------------------------------------------------
 
-        let noHitLocationsPower = false;
-        for (let i of targetActor.items) {
-            if (i.system.rules === "NOHITLOCATIONS") {
-                noHitLocationsPower = true;
-            }
-        }
+        // let noHitLocationsPower = false;
+        // for (let i of targetActor.items) {
+        //     if (i.system.rules === "NOHITLOCATIONS") {
+        //         noHitLocationsPower = true;
+        //     }
+        // }
 
-        // get hit location
-        let hitLocationModifiers = [1, 1, 1, 0];
-        let hitLocation = "None";
-        let useHitLoc = false;
-        if (game.settings.get("hero6efoundryvttv2", "hit locations") && !noHitLocationsPower) {
-            useHitLoc = true;
+        // // get hit location
+        // let hitLocationModifiers = [1, 1, 1, 0];
+        // let hitLocation = "None";
+        // let useHitLoc = false;
+        // if (game.settings.get("hero6efoundryvttv2", "hit locations") && !noHitLocationsPower) {
+        //     useHitLoc = true;
 
-            hitLocation = toHitData.aim;
-            if (toHitData.aim === 'none') {
-                let locationRoll = new Roll("3D6")
-                let locationResult = await locationRoll.roll({async: true});
-                hitLocation = CONFIG.HERO.hitLocationsToHit[locationResult.total];
-            }
+        //     hitLocation = toHitData.aim;
+        //     if (toHitData.aim === 'none') {
+        //         let locationRoll = new Roll("3D6")
+        //         let locationResult = await locationRoll.roll({async: true});
+        //         hitLocation = CONFIG.HERO.hitLocationsToHit[locationResult.total];
+        //     }
 
-            hitLocationModifiers = CONFIG.HERO.hitLocations[hitLocation];
+        //     hitLocationModifiers = CONFIG.HERO.hitLocations[hitLocation];
 
-            if (game.settings.get("hero6efoundryvttv2", "hitLocTracking") === "all") {
-                let sidedLocations = ["Hand", "Shoulder", "Arm", "Thigh", "Leg", "Foot"]
-                if (sidedLocations.includes(hitLocation)) {
-                    let sideRoll = new Roll("1D2", actor.getRollData());
-                    let sideResult = await sideRoll.roll();
+        //     if (game.settings.get("hero6efoundryvttv2", "hitLocTracking") === "all") {
+        //         let sidedLocations = ["Hand", "Shoulder", "Arm", "Thigh", "Leg", "Foot"]
+        //         if (sidedLocations.includes(hitLocation)) {
+        //             let sideRoll = new Roll("1D2", actor.getRollData());
+        //             let sideResult = await sideRoll.roll();
 
-                    if (sideResult.result === 1) {
-                        hitLocation = "Left " + hitLocation;
-                    } else {
-                        hitLocation = "Right " + hitLocation;
-                    }
-                }   
-            }
-        }
+        //             if (sideResult.result === 1) {
+        //                 hitLocation = "Left " + hitLocation;
+        //             } else {
+        //                 hitLocation = "Right " + hitLocation;
+        //             }
+        //         }   
+        //     }
+        // }
 
         if(itemData.usesStrength) {
             let strDamage = Math.floor((actor.system.characteristics.str.value - 10)/5)
@@ -209,17 +208,17 @@ export class HeroSystem6eDamageCard2 extends HeroSystem6eCard {
         let pip = 0;
 
         // handle damage negation defense
-        if (damageNegationValue > 0) {
-            if (itemData.killing) {
-                pip = (parseInt(damageRoll) * 3) - parseInt(damageNegationValue);
+        // if (damageNegationValue > 0) {
+        //     if (itemData.killing) {
+        //         pip = (parseInt(damageRoll) * 3) - parseInt(damageNegationValue);
 
-                damageRoll = Math.floor(pip / 3);
+        //         damageRoll = Math.floor(pip / 3);
 
-                pip = pip % 3
-            } else {
-                damageRoll = damageRoll - damageNegationValue;
-            }
-        }
+        //         pip = pip % 3
+        //     } else {
+        //         damageRoll = damageRoll - damageNegationValue;
+        //     }
+        // }
 
         damageRoll = damageRoll < 0 ? 0 : damageRoll;
 
@@ -252,7 +251,7 @@ export class HeroSystem6eDamageCard2 extends HeroSystem6eCard {
             }
         }
 
-        damageRoll = modifyRollEquation(damageRoll, toHitData.damageMod);
+        damageRoll = modifyRollEquation(damageRoll, toHitData.damagemod);
 
         let roll = new Roll(damageRoll, actor.getRollData());
         let damageResult = await roll.roll({async: true});
@@ -327,16 +326,16 @@ export class HeroSystem6eDamageCard2 extends HeroSystem6eCard {
         // determine effective damage
         // -------------------------------------------------
 
-        if(itemData.killing) {
-            stun = stun - defenseValue - resistantValue;
-            body = body - resistantValue;
-        } else {
-            stun = stun - defenseValue - resistantValue;
-            body = body - defenseValue - resistantValue;
-        }
+        // if(itemData.killing) {
+        //     stun = stun - defenseValue - resistantValue;
+        //     body = body - resistantValue;
+        // } else {
+        //     stun = stun - defenseValue - resistantValue;
+        //     body = body - defenseValue - resistantValue;
+        // }
 
-        stun = stun < 0 ? 0 : stun;
-        body = body < 0 ? 0 : body;
+        // stun = stun < 0 ? 0 : stun;
+        // body = body < 0 ? 0 : body;
 
         let hitLocText = "";
         if (game.settings.get("hero6efoundryvttv2", "hit locations") && !noHitLocationsPower) {
@@ -356,41 +355,7 @@ export class HeroSystem6eDamageCard2 extends HeroSystem6eCard {
             hasStunMultiplierRoll = false;
         }
 
-        // determine knockback
-        let useKnockBack = false;
-        let knockback = "";
-        let knockbackRenderedResult = null;
-        if (game.settings.get("hero6efoundryvttv2", "knockback") && itemData.knockback) {
-            useKnockBack = true;
-            // body - 2d6 m
-            let knockBackEquation = body + " - 2D6"
-            // knockback modifier added on an attack by attack basis
-            if (toHitData.knockbackMod != 0 ) {
-                knockBackEquation = modifyRollEquation(knockBackEquation, data.knockbackMod + "D6");
-            }
-            // knockback resistance effect
-            knockBackEquation = modifyRollEquation(knockBackEquation, " -" + knockbackResistance);
-
-            let knockbackRoll = new Roll(knockBackEquation);
-            let knockbackResult = await knockbackRoll.roll();
-            knockbackRenderedResult = await knockbackResult.render();
-            let knockbackResultTotal = Math.round(knockbackResult.total);
-
-            if (knockbackResultTotal < 0) {
-                knockback = "No knockback";
-            } else if (knockbackResultTotal == 0) {
-                knockback = "inflicts Knockdown";
-            } else {
-                knockback= "Knocked back " + knockbackResultTotal + "m";
-            }
-        }
-
-        // apply damage reduction
-        if (damageReductionValue > 0) {
-            defense += "; damage reduction " + damageReductionValue + "%";
-            stun = Math.round(stun * (1 - (damageReductionValue/100)));
-            body = Math.round(body * (1 - (damageReductionValue/100)));
-        }
+        
 
         // minimum damage rule
         if (stun < body) {
@@ -402,58 +367,23 @@ export class HeroSystem6eDamageCard2 extends HeroSystem6eCard {
         body = Math.round(body)
 
         // check if target is stunned
-        if (game.settings.get("hero6efoundryvttv2", "stunned")) {
-            // determine if target was Stunned
-            if (stun > targetActorChars.con.value) {
-                effects = effects + "inflicts Stunned; "
-            }
-        }
+        // if (game.settings.get("hero6efoundryvttv2", "stunned")) {
+        //     // determine if target was Stunned
+        //     if (stun > targetActorChars.con.value) {
+        //         effects = effects + "inflicts Stunned; "
+        //     }
+        // }
 
-        let hitRollText = ""
-        let hitSuccess = true
-        if ((automation === "all") || (automation === "npcOnly" && !targetActor.hasPlayerOwner) || (automation === "pcEndOnly" && !targetActor.hasPlayerOwner)) {
-            let toHitVal = getTokenChar(token, toHitChar.toLowerCase(), "value")
 
-            if (toHitVal <= toHitData.hitRollData) {
-                // attack success
-                hitRollText = "HIT!"
-
-                let newStun = getTokenChar(token, "stun", "value") - stun;
-                let newBody = getTokenChar(token, "body", "value") - body;
-    
-                let changes = {
-                    "data.characteristics.stun.value": newStun,
-                    "data.characteristics.body.value": newBody,
-                }
-
-                if (game.settings.get("hero6efoundryvttv2", "hitLocTracking") === "all") {
-                    let bodyPartHP = targetActorChars.body.loc[hitLocation] + body
-                    changes["data.characteristics.body.loc." + hitLocation] = bodyPartHP;
-
-                    if (bodyPartHP > targetActorChars.body.value) {
-                        effects = effects + "inflicts Impaired " + hitLocation + "; ";
-                    }
-                }
-                
-                await targetActor.update(changes);
-            } else {
-                // attack failure
-                hitRollText = "MISSED"
-                hitSuccess = false
-            }
-        }
         // -------------------------------------------------
-
         let stateData = {
             // dice rolls
-            hitRollText: hitRollText,
-            hitSuccess: hitSuccess,
             renderedDamageRoll: damageRenderedResult,
             renderedStunMultiplierRoll: renderedStunMultiplierRoll,
 
             // hit locations
-            useHitLoc: useHitLoc,
-            hitLocText: hitLocText,
+            // useHitLoc: useHitLoc,
+            // hitLocText: hitLocText,
 
             // body
             bodyDamage: bodyDamage,
@@ -467,27 +397,15 @@ export class HeroSystem6eDamageCard2 extends HeroSystem6eCard {
             stunMultiplier: stunMultiplier,
             hasStunMultiplierRoll: hasStunMultiplierRoll,
 
-            // effects
-            effects: effects,
-
-            // defense
-            defense: defense.toUpperCase(),
-            defenseValue: defenseValue,
-
-            // knockback
-            knockback: knockback,
-            useKnockBack: useKnockBack,
-            knockbackRenderedResult: knockbackRenderedResult,
-
             // misc
-            targetCharacter: targetActor.name,
+            targets: toHitData.targetids,
         };
 
         // render card
-        let cardHtml = await HeroSystem6eDamageCard2._renderInternal(actor, item, targetActor, stateData);
+        let cardHtml = await HeroSystem6eDamageCard2._renderInternal(actor, item, null, stateData);
         
-        let speaker = ChatMessage.getSpeaker({ actor: actor, token: token.document })
-        speaker["alias"] = actor.name;
+        let speaker = ChatMessage.getSpeaker()
+        //speaker["alias"] = actor.name;
 
         const chatData = {
             user:  game.user._id,
