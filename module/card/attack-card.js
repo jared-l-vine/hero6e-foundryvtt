@@ -3,6 +3,7 @@ import { HeroSystem6eCard } from "./card.js";
 import { HeroSystem6eDamageCard } from "./damage-card.js";
 import { HeroSystem6eHitLocCard } from "./hitLoc-card.js";
 import { HeroSystem6eToHitCard } from "./toHit-card.js";
+import { HeroSystem6eToHitCard2 } from "./toHit-card2.js";
 
 export class HeroSystem6eAttackCard extends HeroSystem6eCard {
     static chatListeners(html) {
@@ -38,6 +39,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
    */
     static async _onChatCardAction(event) {
         event.preventDefault();
+        console.log("_onChatCardAction")
 
         // not being used anymore, leaving in here for now just in case
     }
@@ -106,10 +108,18 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
             data['knockbackMod'] = form.knockbackMod.value;
         }
 
-        for(const targetToken of game.user.targets)
-        {
-            await HeroSystem6eToHitCard.createFromAttackCard(item, data, actor, itemId);
-        }
+        await HeroSystem6eToHitCard2.createFromAttackCard(item, data, actor, game.user.targets)
+        // One for each target
+        // for(const targetToken of game.user.targets)
+        // {
+        //     await HeroSystem6eToHitCard2.createFromAttackCard(item, data, actor, targetToken)
+        // }
+
+        // Or a single attack when no target is selected
+        //if (game.user.targets.size == 0)
+        //{
+        //    await HeroSystem6eToHitCard2.createFromAttackCard(item, data, actor, game.user.targets)
+        //}
 
     }
 
