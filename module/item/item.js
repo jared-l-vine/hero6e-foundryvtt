@@ -10,7 +10,8 @@ import { HEROSYS } from "../herosystem6e.js";
 export class HeroSystem6eItem extends Item {
 
     chatTemplate = {
-        "x": "systems/hero6efoundryvttv2/templates/attack/item-attack-card.hbs"
+        "attack": "systems/hero6efoundryvttv2/templates/attack/item-attack-card.hbs",
+        "default": "systems/hero6efoundryvttv2/templates/chat/default-card.hbs"
     }
 
 
@@ -74,18 +75,20 @@ export class HeroSystem6eItem extends Item {
         data.roll = Math.round(roll);
     }
 
-    
+    // Largely used to determine if we can drag to hotbar
+    isRollable()
+    {
+        switch (this.type) {
+            case 'attack': return true
+        }
+        return false
+    }
+
     async roll()
     {
-
-        // Currently we assume an attack roll, but could be exapanded to be any item roll (skill, power, etc).
-        // Checking just to make sure.
-
-        if (this.type != 'attack')
-        {
-            console.log("item.roll not supported for '" + this.type + "' items")
-            return
-        }
+        // TODO: Move all item roll code to here (Skills, Characteristics, etc).
+        if (!this.isRollable()) return;
+        console.log("roll", this)
 
         // Attacks will be done in 4 parts
         // 1. Prompt for modifiers
@@ -94,7 +97,9 @@ export class HeroSystem6eItem extends Item {
         // 4. Apply Damage
 
         // Prompt for modifiers
-        await HeroSystem6eAttackCard.createAttackPopOutFromItem(this, this.actor, this._id, 2)
+        //await HeroSystem6eAttackCard.createAttackPopOutFromItem(this, this.actor, this._id, 2)
+
+
         // const dialogData = {
 		// 	title: "Roll to Hit",
 		// 	buttons: {
@@ -154,9 +159,7 @@ export class HeroSystem6eItem extends Item {
             actor: this.actor
         }
 
-
-        const defaultChatCard = "systems/hero6efoundryvttv2/templates/chat/default-card.hbs"
-        chatData.content = await renderTemplate(this.chatTemplate[this.type] || defaultChatCard, cardData)
+        chatData.content = await renderTemplate(this.chatTemplate[this.type] || this.chatTemplate["default"], cardData)
 
         // Set RollMode to PUBLIC instead of default (whatever is selected on chat dropdown).
         // ApplyRollMode isn't working, no apparent way to override, not really important at the moment.

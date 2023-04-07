@@ -7,6 +7,7 @@ import { enforceManeuverLimits } from '../item/manuever.js'
 import { presenceAttackPopOut } from '../utility/presence-attack.js'
 import { HERO } from '../config.js'
 import { uploadBasic, uploadTalent, uploadSkill } from '../utility/upload_hdc.js'
+import * as Dice from '../dice.js'
 
 /**
  * Extend the basic ActorSheet with some very simple modifications
@@ -449,7 +450,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     // to test out new code
     if (event.shiftKey && game.modules.get('_dev-mode')?.api)
     {
-      await this._onItemAttackShift (event)
+      //await this._onItemAttackShift (event)
+      await Dice.AttackCheck()
       return
     }
 
