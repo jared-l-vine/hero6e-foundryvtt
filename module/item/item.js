@@ -2,6 +2,8 @@ import { HeroSystem6eActorSheet } from "../actor/actor-sheet.js";
 import { HeroSystem6eAttackCard } from "../card/attack-card.js";
 import { HeroSystem6eCard } from "../card/card.js";
 import { HEROSYS } from "../herosystem6e.js";
+import * as Dice from "../dice.js"
+import * as Attack from "../item/item-attack.js"
 
 /**
  * Extend the basic Item with some very simple modifications.
@@ -9,9 +11,8 @@ import { HEROSYS } from "../herosystem6e.js";
  */
 export class HeroSystem6eItem extends Item {
 
-    chatTemplate = {
-        "attack": "systems/hero6efoundryvttv2/templates/attack/item-attack-card.hbs",
-        "default": "systems/hero6efoundryvttv2/templates/chat/default-card.hbs"
+    static async chatListeners(html) {
+        html.on('click', '.roll-damage', this.__onChatCardAction.bind(this));
     }
 
 
@@ -90,6 +91,14 @@ export class HeroSystem6eItem extends Item {
         if (!this.isRollable()) return;
         console.log("roll", this)
 
+        switch(this.type)
+        {
+            case "attack": 
+                await Attack.AttackOptions(this)
+
+        }
+        
+
         // Attacks will be done in 4 parts
         // 1. Prompt for modifiers
         // 2. Roll To-Hit vs target(s)
@@ -167,6 +176,8 @@ export class HeroSystem6eItem extends Item {
 
         return ChatMessage.create(chatData)
     }
+
+    
 
     /**
    * Display the chat card for an Item as a Chat Message

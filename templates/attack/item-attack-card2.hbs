@@ -1,0 +1,48 @@
+{{ log 'HEROSYS ITEM ATTACK CARD2' this }}
+<form>
+    <div class="hero chat-card item-card attack-card" data-actor-id="{{actor._id}}" data-item-id="{{item._id}}"
+        {{#if tokenId}}data-token-id="{{tokenId}}"{{/if}}>
+        <header class="card-header flexrow">
+            <img src="{{item.img}}" title="{{item.name}}" width="36" height="36"/>
+            <h3 class="item-name">{{item.name}}</h3>
+        </header>
+    </div>
+
+    {{#if useHitLoc}}
+    <div class="card-buttons card-content">
+        <label>Aim:</label>
+        <select name="aim" id="aim">
+            <option value="none">None</option>
+            {{#each hitLoc as |hitLoc key|}}
+                <option value={{key}}>{{key}}</option>
+            {{/each}}
+        </select>
+    </div>
+    {{/if}}
+
+    <div class="form-group">
+        <label>To Hit Modifier</label>
+        <input type="text" name="toHitMod" value="0"/>
+    </div>
+
+    {{#if item.system.knockback}}
+    <div class="form-group flexrow">
+        <label>Knockback Modifier</label>
+        <input type="text" name="knockbackMod" value="0"/>
+        <label>d6</label>
+    </div>
+    {{/if}}
+
+    {{#if item.system.usesStrength}}
+    <div class="form-group">
+        <label>Effective Strength</label>
+        <input type="text" name="effectiveStr" value="{{str}}"/>
+        <label>/ {{str}}</label>
+    </div>
+    {{/if}}
+
+    <div class="form-group">
+        <label>Damage Mod</label>
+        <input type="text" name="damageMod" value="0"/>
+    </div>
+</form>
