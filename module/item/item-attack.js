@@ -135,11 +135,11 @@ export async function AttackToHit(item, options)
     }
   }
 
-  // let targets = []
-  // for (let target of Array.from(game.user.targets))
-  // {
-  //   targets.push({name: target.actor.name, id: target.id })
-  // }
+  let targetIds = []
+  for (let target of Array.from(game.user.targets))
+  {
+    targetIds.push(target.id )
+  }
 
   let cardData = {
     // dice rolls
@@ -154,6 +154,7 @@ export async function AttackToHit(item, options)
     hitRollData: hitRollData,
     effectiveStr: options.effectiveStr,
     targets: Array.from(game.user.targets),
+    targetIds: targetIds,
 
     // endurance
     useEnd: useEnd,
@@ -169,9 +170,11 @@ export async function AttackToHit(item, options)
   speaker["alias"] = actor.name;
 
   const chatData = {
-      user:  game.user._id,
-      content: cardHtml,
-      speaker: speaker
+    type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+    roll: result,
+    user:  game.user._id,
+    content: cardHtml,
+    speaker: speaker,
   }
 
   
@@ -184,4 +187,195 @@ export async function AttackToHit(item, options)
 export async function _onRollDamage(event)
 {
   console.log(event);
+  const button = event.currentTarget;
+  const damageData = {...button.dataset}
+  const item = fromUuidSync(damageData.itemid);
+  const template = "systems/hero6efoundryvttv2/templates/chat/item-damage-card2.hbs"
+  const actor = item.actor
+  const itemId = item._id
+  const itemData = item.system;
+
+  console.log("_onRollDamage", item, damageData);
+
+  let damageRoll = itemData.dice;
+
+  let toHitChar = CONFIG.HERO.defendsWith[itemData.targets];
+
+  let automation = game.settings.get("hero6efoundryvttv2", "automation");
+
+ 
+
+  if(itemData.usesStrength) {
+    let strDamage = Math.floor((actor.system.characteristics.str.value - 10)/5)
+    if (damageData.effectiveStr <= actor.system.characteristics.str.value) {
+        strDamage = Math.floor((damageData.effectiveStr)/5);
+    }
+
+    if (strDamage > 0) {
+        damageRoll = parseInt(damageRoll) + parseInt(strDamage)
+    }
+  }
+
+  let pip = 0;
+
+  damageRoll = damageRoll < 0 ? 0 : damageRoll;
+
+  // needed to split this into two parts for damage negation
+  switch (itemData.extraDice) {
+    case 'zero':
+      pip += 0;
+      break;
+    case 'pip':
+      pip += 1;
+      break;
+    case 'half':
+      pip += 2;
+      break;
+  }
+
+  if (pip < 0) {
+    damageRoll = "0D6";
+  } else {
+    switch (pip) {
+      case 0:
+        damageRoll += "D6";
+        break;
+      case 1:
+        damageRoll += "D6+1";
+        break;
+      case 2:
+        damageRoll += "D6+1D3"
+        break;
+    }
+  }
+
+  damageRoll = modifyRollEquation(damageRoll, damageData.damagemod);
+
+  let roll = new Roll(damageRoll, actor.getRollData());
+  let damageResult = await roll.roll({async: true});
+  let damageRenderedResult = await damageResult.render();
+  let body = 0;
+  let stun = 0;
+  let countedBody = 0;
+
+  let hasStunMultiplierRoll = false;
+  let renderedStunMultiplierRoll = null;
+  let stunMultiplier = 1;
+
+  if (itemData.killing) {
+    hasStunMultiplierRoll = true;
+    body = damageResult.total;
+
+    let stunRoll = new Roll("1D3", actor.getRollData());
+    let stunResult = await stunRoll.roll();
+    let renderedStunResult = await stunResult.render();
+    renderedStunMultiplierRoll = renderedStunResult;
+
+    if (game.settings.get("hero6efoundryvttv2", "hit locations") && !noHitLocationsPower) {
+        stunMultiplier =  hitLocationModifiers[0];
+    } else {
+        stunMultiplier = stunResult.total;
+    }
+
+    stun = body * stunMultiplier;
+  }
+  else {
+      // counts body damage for non-killing attack
+      for (let die of damageResult.terms[0].results) {
+          switch (die.result) {
+              case 1:
+                  countedBody += 0;
+                  break;
+              case 6:
+                  countedBody += 2;
+                  break;
+              default:
+                  countedBody += 1;
+                  break;
+          }
+      }
+
+      stun = damageResult.total;
+      body = countedBody;
+  }
+
+  let bodyDamage = body;
+  let stunDamage = stun;
+
+  let effects = "";
+  if (item.system.effects !== "") {
+      effects = item.system.effects + ";"
+  }
+
+  let hitLocText = "";
+  if (game.settings.get("hero6efoundryvttv2", "hit locations") && !noHitLocationsPower) {
+      if(itemData.killing) {
+          // killing attacks apply hit location multiplier after resistant damage protection has been subtracted
+          body = body * hitLocationModifiers[2];
+
+          hitLocText = "Hit " + hitLocation + " (x" + hitLocationModifiers[0] + " STUN x" + hitLocationModifiers[2] + " BODY)";
+      } else {
+          // stun attacks apply N STUN hit location multiplier after defenses
+          stun = stun * hitLocationModifiers[1];
+          body = body * hitLocationModifiers[2];
+
+          hitLocText = "Hit " + hitLocation + " (x" + hitLocationModifiers[1] + " STUN x" + hitLocationModifiers[2] + " BODY)";
+      }
+
+      hasStunMultiplierRoll = false;
+  }
+
+  
+
+  // minimum damage rule
+  if (stun < body) {
+      stun = body;
+      effects += "minimum damage invoked; "
+  }
+
+  stun = Math.round(stun)
+  body = Math.round(body)
+
+  let cardData = {
+    item: item,
+    // dice rolls
+    renderedDamageRoll: damageRenderedResult,
+    renderedStunMultiplierRoll: renderedStunMultiplierRoll,
+
+    // hit locations
+    // useHitLoc: useHitLoc,
+    // hitLocText: hitLocText,
+
+    // body
+    bodyDamage: bodyDamage,
+    bodyDamageEffective: body,
+    countedBody: countedBody,
+
+    // stun
+    stunDamage: stunDamage,
+    stunDamageEffective: stun,
+    hasRenderedDamageRoll: true,
+    stunMultiplier: stunMultiplier,
+    hasStunMultiplierRoll: hasStunMultiplierRoll,
+
+    // misc
+    targetIds: damageData.targetids,
+  };
+
+  // render card
+  let cardHtml = await renderTemplate(template, cardData) //await HeroSystem6eDamageCard2._renderInternal(actor, item, null, cardData);
+
+  let speaker = ChatMessage.getSpeaker()
+
+  const chatData = {
+    type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+    roll: damageResult,
+    user:  game.user._id,
+    content: cardHtml,
+    speaker: speaker,
+  }
+
+  return ChatMessage.create(chatData);
+
+
 }
