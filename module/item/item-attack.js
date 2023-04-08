@@ -1,6 +1,11 @@
 // import { HeroSystem6eCard } from "./card.js";
 import { modifyRollEquation, getTokenChar } from "../utility/util.js"
 
+export async function chatListeners(html) {
+  // Called by carrd-helpers.js
+  html.on('click', 'button.roll-damage', this._onRollDamage.bind(this));
+}
+
 
 
 /// Dialog box for AttackOptions
@@ -171,4 +176,12 @@ export async function AttackToHit(item, options)
 
   
   return ChatMessage.create(chatData)
+}
+
+// Event handler for when the Roll Damage button is 
+// clicked on item-attack-card2.hbs
+// Notice the chatListeners function in this file.
+export async function _onRollDamage(event)
+{
+  console.log(event);
 }

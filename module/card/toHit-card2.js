@@ -2,14 +2,14 @@ import { HeroSystem6eActorActiveEffects } from "../actor/actor-active-effects.js
 import { HeroSystem6eActorSheet } from "../actor/actor-sheet.js";
 import { HeroSystem6eCard } from "./card.js";
 import { modifyRollEquation, getTokenChar } from "../utility/util.js"
-import { HeroSystem6eDamageCard2 } from "./damage-card2.js";
+//import { HeroSystem6eDamageCard2 } from "./damage-card2.js";
 import { HEROSYS } from "../herosystem6e.js";
 
 export class HeroSystem6eToHitCard2 extends HeroSystem6eCard {
     static async chatListeners(html) {
         // NOTE: Make sure we are listed in card-helpers.js
         // Click roll damage button click
-        html.on('click', '.roll-damage', this._onChatCardAction.bind(this));
+        //html.on('click', '.roll-damage', this._onChatCardAction.bind(this));
     }
 
     static onMessageRendered(html) {
@@ -76,7 +76,7 @@ export class HeroSystem6eToHitCard2 extends HeroSystem6eCard {
         //     await HeroSystem6eDamageCard2.createFromToHitCard(cardObject, token, toHitData, itemId);
         // }
 
-        await HeroSystem6eDamageCard2.createFromToHitCard(cardObject, null, toHitData, itemId);
+        //await HeroSystem6eDamageCard2.createFromToHitCard(cardObject, null, toHitData, itemId);
 
         // Re-enable the button
         //button.disabled = false;

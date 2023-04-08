@@ -6,7 +6,7 @@ import { determineDefense } from "../utility/defense.js";
 import { modifyRollEquation, getTokenChar } from "../utility/util.js"
 import { HEROSYS } from "../herosystem6e.js";
 
-export class HeroSystem6eDamageCard2 extends HeroSystem6eCard {
+export class _HeroSystem6eDamageCard2 extends HeroSystem6eCard {
 
     static chatListeners(html) {
         // NOTE: Make sure we are listed in card-helpers.js
