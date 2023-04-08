@@ -9,6 +9,12 @@
     <div class="tags">
         <span class="tag">{{item.system.class}}</span>
     </div>
+    <hr>
+    <div class="tags">
+        {{#each tags as |tag id|}}
+        <span class="tag tag_transparent">{{tag.name}} +{{tag.value}}</span>
+        {{/each}}
+    </div>
 
     <div class="hit-roll">
 
@@ -29,9 +35,12 @@
 
         <button class="apply-damage" 
             title="Apply damage to selected tokens."
-            data-itemId="{{item._id}}"
+            data-itemId="{{item.uuid}}"
             data-targetIds="{{targetIds}}"
-            data-test="test"
+            data-bodyDamage="{{bodyDamage}}"
+            data-stunDamage="{{stunDamage}}"
+            data-dice="{{dice}}"
+            data-stunMultiplier="{{stunMultiplier}}"
             >Apply Damage</button>
 
         <div>
