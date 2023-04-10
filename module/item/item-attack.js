@@ -441,7 +441,16 @@ export async function _onApplyDamageToSpecificToken(event, tokenId)
 
   // We need to recalcuate damage to account for possible Damage Negation
   const damageDetail = await _calcDamage(newRoll, item, damageData)
-  console.log(damageDetail)
+  
+
+  // check if target is stunned
+  if (game.settings.get("hero6efoundryvttv2", "stunned")) {
+    // determine if target was Stunned
+    if (damageDetail.stun > token.actor.system.characteristics.con.value) {
+      damageDetail.effects = damageDetail.effects + "inflicts Stunned; "
+    }
+  }
+
 
   let damageRenderedResult =  await newRoll.render()
 
@@ -703,6 +712,9 @@ async function _calcDamage(damageResult, item, options)
 
   stun = Math.round(stun)
   body = Math.round(body)
+
+
+
 
   
   damageDetail.body = body
