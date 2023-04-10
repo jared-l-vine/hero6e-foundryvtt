@@ -92,7 +92,6 @@ export class HeroSystem6eItem extends Item {
     {
         // TODO: Move all item roll code to here (Skills, Characteristics, etc).
         if (!this.isRollable()) return;
-        console.log("roll", this)
 
         switch(this.type)
         {
