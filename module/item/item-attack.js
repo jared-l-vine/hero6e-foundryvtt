@@ -325,8 +325,8 @@ export async function _onRollDamage(event)
     renderedStunMultiplierRoll: damageDetail.renderedStunMultiplierRoll,
 
     // hit locations
-    // useHitLoc: useHitLoc,
-    // hitLocText: hitLocText,
+    useHitLoc: damageDetail.useHitLoc,
+    hitLocText: damageDetail.hitLocText,
 
     // body
     bodyDamage: damageDetail.bodyDamage,
@@ -494,6 +494,11 @@ export async function _onApplyDamageToSpecificToken(event, tokenId)
     defense: defense,
     damageNegationValue: damageNegationValue,
 
+    // knockback
+    knockback: damageDetail.knockback,
+    useKnockBack: damageDetail.useKnockBack,
+    knockbackRenderedResult: damageDetail.knockbackRenderedResult,
+
     // misc
     tags: tags,
     targetToken: token
@@ -622,11 +627,12 @@ async function _calcDamage(damageResult, item, options)
   let hasStunMultiplierRoll = false;
   let renderedStunMultiplierRoll = null;
   let stunMultiplier = 1;
+  let noHitLocationsPower = false
 
   if (itemData.killing) {
     hasStunMultiplierRoll = true;
     body = damageResult.total;
-
+    let hitLocationModifiers = [1, 1, 1, 0];
     let stunRoll = new Roll("1D3", item.actor.getRollData());
     let stunResult = await stunRoll.roll({async:true});
     let renderedStunResult = await stunResult.render();
@@ -680,11 +686,11 @@ async function _calcDamage(damageResult, item, options)
   // -------------------------------------------------
 
   if(itemData.killing) {
-    stun = stun - options.defenseValue - options.resistantValue;
-    body = body - options.resistantValue;
+    stun = stun - (options.defenseValue || 0) - (options.resistantValue || 0);
+    body = body - (options.resistantValue || 0);
   } else {
-    stun = stun - options.defenseValue - options.resistantValue;
-    body = body - options.defenseValue - options.resistantValue;
+    stun = stun - (options.defenseValue || 0) - (options.resistantValue || 0);
+    body = body - (options.defenseValue || 0) - (options.resistantValue || 0);
   }
 
   stun = stun < 0 ? 0 : stun;
@@ -694,11 +700,12 @@ async function _calcDamage(damageResult, item, options)
   let hitLocationModifiers = [1, 1, 1, 0];
   let hitLocation = "None";
   let useHitLoc = false;
+  //let noHitLocationsPower = false;
   if (game.settings.get("hero6efoundryvttv2", "hit locations") && !noHitLocationsPower) {
       useHitLoc = true;
 
-      hitLocation = toHitData.aim;
-      if (toHitData.aim === 'none') {
+      hitLocation = options.aim;
+      if (options.aim === 'none' || !options.aim) {
           let locationRoll = new Roll("3D6")
           let locationResult = await locationRoll.roll({async: true});
           hitLocation = CONFIG.HERO.hitLocationsToHit[locationResult.total];
@@ -739,6 +746,35 @@ async function _calcDamage(damageResult, item, options)
       hasStunMultiplierRoll = false;
   }
 
+  // determine knockback
+  let useKnockBack = false;
+  let knockback = "";
+  let knockbackRenderedResult = null;
+  if (game.settings.get("hero6efoundryvttv2", "knockback") && itemData.knockback) {
+      useKnockBack = true;
+      // body - 2d6 m
+      let knockBackEquation = body + " - 2D6"
+      // knockback modifier added on an attack by attack basis
+      if (options.knockbackMod != 0 ) {
+          knockBackEquation = modifyRollEquation(knockBackEquation, (options.knockbackMod || 0) + "D6");
+      }
+      // knockback resistance effect
+      knockBackEquation = modifyRollEquation(knockBackEquation, " -" + (options.knockbackResistanc || 0));
+
+      let knockbackRoll = new Roll(knockBackEquation);
+      let knockbackResult = await knockbackRoll.roll({async:true});
+      knockbackRenderedResult = await knockbackResult.render();
+      let knockbackResultTotal = Math.round(knockbackResult.total);
+
+      if (knockbackResultTotal < 0) {
+          knockback = "No knockback";
+      } else if (knockbackResultTotal == 0) {
+          knockback = "inflicts Knockdown";
+      } else {
+          knockback= "Knocked back " + knockbackResultTotal + "m";
+      }
+  }
+
 
   // apply damage reduction
   if (options.damageReductionValue > 0) {
@@ -768,6 +804,13 @@ async function _calcDamage(damageResult, item, options)
   damageDetail.bodyDamage = bodyDamage
   damageDetail.stunMultiplier = stunMultiplier
   damageDetail.hasStunMultiplierRoll = hasStunMultiplierRoll
-  
+  damageDetail.useHitLoc = useHitLoc
+  damageDetail.hitLocText = hitLocText
+
+  damageDetail.knockback = knockback
+  damageDetail.useKnockBack = useKnockBack
+  damageDetail.knockbackRenderedResult = knockbackRenderedResult
+
+
   return damageDetail
 }

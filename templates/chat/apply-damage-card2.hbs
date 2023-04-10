@@ -43,10 +43,12 @@
     <div class="description-tiny">Effect</div>
     <div class="description-medium">{{ bodyDamageEffective }} BODY; {{ stunDamageEffective }} STUN</div>
     <div class="description-tiny">{{ effects }}</div>
-    {{#if knockback}}
+    {{#if useKnockBack}}
         <div class="hit-roll">{{{ knockbackRenderedResult }}}</div>
-        <div class="description-tiny">{{ knockbackEffective }}</div>
+        <div class="description-tiny">{{ knockback }}</div>
     {{/if}}
+
+    
   </div>
 
 </div>
