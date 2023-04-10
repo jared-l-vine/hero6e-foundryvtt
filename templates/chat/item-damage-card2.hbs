@@ -8,6 +8,9 @@
 
     <div class="tags">
         <span class="tag">{{item.system.class}}</span>
+        {{#if item.system.killing}}
+            <span class="tag">killing</span>
+        {{/if}}
     </div>
     <hr>
     <div class="tags">
@@ -39,7 +42,7 @@
             data-targetIds="{{targetIds}}"
             data-bodyDamage="{{bodyDamage}}"
             data-stunDamage="{{stunDamage}}"
-            data-dice="{{dice}}"
+            data-terms="{{terms}}"
             data-stunMultiplier="{{stunMultiplier}}"
             >Apply Damage</button>
 

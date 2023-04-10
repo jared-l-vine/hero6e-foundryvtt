@@ -197,8 +197,8 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
 
         if(itemData.usesStrength) {
             let strDamage = Math.floor((actor.system.characteristics.str.value - 10)/5)
-            if (toHitData.effectiveStr <= actor.system.characteristics.str.value) {
-                strDamage = Math.floor((toHitData.effectiveStr)/5);
+            if (toHitData.effectivestr <= actor.system.characteristics.str.value) {
+                strDamage = Math.floor((toHitData.effectivestr)/5);
             }
 
             if (strDamage > 0) {
@@ -283,7 +283,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
             body = damageResult.total;
 
             let stunRoll = new Roll("1D3", actor.getRollData());
-            let stunResult = await stunRoll.roll();
+            let stunResult = await stunRoll.roll({async:true});
             let renderedStunResult = await stunResult.render();
             renderedStunMultiplierRoll = renderedStunResult;
 

@@ -1,5 +1,6 @@
 // import { HeroSystem6eCard } from "./card.js";
 import { modifyRollEquation, getTokenChar } from "../utility/util.js"
+import { determineDefense } from "../utility/defense.js";
 
 export async function chatListeners(html) {
   // Called by carrd-helpers.js
@@ -204,7 +205,9 @@ export async function _onRollDamage(event)
   // let automation = game.settings.get("hero6efoundryvttv2", "automation");
 
   let tags = []
-  tags.push({value: itemData.dice, name: "base" })
+  tags.push({value: itemData.dice + "d6", name: "base" })
+ 
+  let pip = 0;
 
   if(itemData.usesStrength) {
     // let strDamage = Math.floor((actor.system.characteristics.str.value - 10)/5)
@@ -212,14 +215,39 @@ export async function _onRollDamage(event)
     //     strDamage = Math.floor((toHitData.effectivestr)/5);
     // }
     let strDamage = Math.floor(Math.max(toHitData.effectivestr, actor.system.characteristics.str.value)/5)
-
     if (strDamage > 0) {
-        damageRoll = parseInt(damageRoll) + parseInt(strDamage)
-        tags.push({value: strDamage, name: "strength" })
+      if(itemData.killing)
+      {
+        let strDice = Math.floor(strDamage/3)
+        pip = strDamage % 3
+        damageRoll = parseInt(damageRoll) + parseInt(strDice)
+        let strTag = "";
+        if (strDice>0)
+        {
+          strTag = strDice + "d6"
+        }
+        
+        switch(pip) {
+          case 1: 
+            strTag += "+1"
+            break
+          case 2: 
+            strTag += "+½"
+            break
+        }
+        if (strTag != "")
+        {
+          tags.push({value: strTag.replace(/^\+/,""), name: "strength" })
+        }
+
+      } else {
+        damageRoll = parseInt(damageRoll) + parseInt(strDamage )
+        tags.push({value: strDamage + "d6", name: "strength" })
+      }
+        
     }
   }
 
-  let pip = 0;
 
   damageRoll = damageRoll < 0 ? 0 : damageRoll;
 
@@ -230,10 +258,19 @@ export async function _onRollDamage(event)
       break;
     case 'pip':
       pip += 1;
+      tags.push({value: "1", name: "extraDice" })
       break;
     case 'half':
       pip += 2;
+      tags.push({value: "1d6", name: "extraDice" })
       break;
+  }
+
+  // There is a killing attack edge case where Strengh pips + extraDice pips can
+  // sum up to be a full dice.
+  if (pip > 2) {
+    damageRoll ++
+    pip -=3
   }
 
   if (pip < 0) {
@@ -247,29 +284,22 @@ export async function _onRollDamage(event)
         damageRoll += "D6+1";
         break;
       case 2:
-        damageRoll += "D6+1D3"
+       damageRoll += "D6+1D3"
         break;
     }
   }
 
-  damageRoll = modifyRollEquation(damageRoll, toHitData.damagemod);
-  if (parseInt(toHitData.damagemod) !=0)
-  {
-    tags.push({value: toHitData.damagemod, name: "misc" })
-  }
+  // damageRoll = modifyRollEquation(damageRoll, toHitData.damagemod);
+  // if (parseInt(toHitData.damagemod) !=0)
+  // {
+  //   tags.push({value: toHitData.damagemod, name: "misc" })
+  // }
 
   let roll = new Roll(damageRoll, actor.getRollData());
   let damageResult = await roll.roll({async: true});
   let damageRenderedResult = await damageResult.render();
 
-  // Need actual dice rolls for Damage Negation
-  let dice = []
-  for (let d of damageResult.terms[0].results)
-  {
-    dice.push(d.result)
-  }
-
-  const damageDetail = await _calcDamage(dice, item, toHitData)
+  const damageDetail = await _calcDamage(damageResult, item, toHitData)
 
 
 
@@ -295,7 +325,7 @@ export async function _onRollDamage(event)
     hasRenderedDamageRoll: true,
     stunMultiplier: damageDetail.stunMultiplier,
     hasStunMultiplierRoll: damageDetail.hasStunMultiplierRoll,
-    dice: dice,
+    terms: JSON.stringify(damageResult.terms),
 
     // misc
     targetIds: toHitData.targetids,
@@ -307,7 +337,7 @@ export async function _onRollDamage(event)
   // render card
   let cardHtml = await renderTemplate(template, cardData) //await HeroSystem6eDamageCard2._renderInternal(actor, item, null, cardData);
 
-  let speaker = ChatMessage.getSpeaker()
+  let speaker = ChatMessage.getSpeaker({actor: item.actor})
 
 
   const chatData = {
@@ -353,124 +383,323 @@ export async function _onApplyDamageToSpecificToken(event, tokenId)
   const button = event.currentTarget;
   const damageData = {...button.dataset}
   const item = fromUuidSync(damageData.itemid)
-  const template = "systems/hero6efoundryvttv2/templates/chat/item-damage-card2.hbs"
+  const template = "systems/hero6efoundryvttv2/templates/chat/apply-damage-card2.hbs"
   const actor = item.actor
   const itemId = item._id
   const itemData = item.system;
 
   const token = canvas.tokens.get(tokenId)
+  
 
-  console.log("_onApplyDamageToSpecificToken", token.name, damageData)
+  let tags = []
+  //let dice = damageData.dice.split(",")
+
+  // Spoof previous roll (foundry won't process a generic term, needs to be a proper Die instance)
+  let newTerms = JSON.parse(damageData.terms);
+  for(let idx in newTerms)
+  {
+    let term = newTerms[idx]
+    switch (term.class)
+    {
+     case "Die": 
+      newTerms[idx] = Object.assign(new Die(), term)
+      break
+    case "OperatorTerm": 
+      newTerms[idx] = Object.assign(new OperatorTerm(), term)
+      break
+    case "NumericTerm": 
+      newTerms[idx] = Object.assign(new NumericTerm(), term)
+      break
+    }
+  }
+  const newRoll = Roll.fromTerms(newTerms)
+  
+
+
+  // -------------------------------------------------
+  // determine active defenses
+  // -------------------------------------------------
+  let defense = "";
+  let [defenseValue, resistantValue, damageReductionValue, damageNegationValue, knockbackResistance] = determineDefense(token.actor, item.system.class)
+
+  if (damageNegationValue > 0) {
+      defense += "Damage Negation " + damageNegationValue + "DC(s); "
+  }
+
+  defense = defense + defenseValue + " normal; " + resistantValue + " resistant";
+
+  damageData.defenseValue = defenseValue
+  damageData.resistantValue = resistantValue
+  damageData.damageReductionValue = damageReductionValue
+  damageData.damageNegationValue = damageNegationValue
+  damageData.knockbackResistance = knockbackResistance
+
 
   // We need to recalcuate damage to account for possible Damage Negation
-  const damageDetail = await _calcDamage(damageData.dice, item, damageData)
+  const damageDetail = await _calcDamage(newRoll, item, damageData)
   console.log(damageDetail)
+
+  let damageRenderedResult =  await newRoll.render()
+
+
+  let cardData = {
+    item: item,
+    // dice rolls
+    renderedDamageRoll: damageRenderedResult,
+    renderedStunMultiplierRoll: damageDetail.renderedStunMultiplierRoll,
+
+    // body
+    bodyDamage: damageDetail.bodyDamage,
+    bodyDamageEffective: damageDetail.body,
+    countedBody: damageDetail.countedBody,
+
+    // stun
+    stunDamage: damageDetail.stunDamage,
+    stunDamageEffective: damageDetail.stun,
+    hasRenderedDamageRoll: true,
+    stunMultiplier: damageDetail.stunMultiplier,
+    hasStunMultiplierRoll: damageDetail.hasStunMultiplierRoll,
+
+    // effects
+    effects: damageDetail.effects,
+
+    // defense
+    defense: defense,
+    damageNegationValue: damageNegationValue,
+
+    // misc
+    tags: tags,
+  };
+
+
+  // render card
+  let cardHtml = await renderTemplate(template, cardData)
+  let speaker = ChatMessage.getSpeaker()
+ 
+  const chatData = {
+    user:  game.user._id,
+    content: cardHtml,
+    speaker: speaker,
+  }
+ 
+  return ChatMessage.create(chatData);
+
+
 
 }
 
 
-async function _calcDamage(dice, item, options)
+async function _calcDamage(damageResult, item, options)
 {
-  
   let damageDetail = {}
   const itemData = item.system
-  damageDetail.body = 0;
-  damageDetail.stun = 0;
-  damageDetail.countedBody = 0;
-  damageDetail.damageResult = {}
-  damageDetail.damageResult.total = 0
+  let body = 0;
+  let stun = 0;
+  let countedBody = 0;
 
-  // Recreate roll
-  //let terms = []
-  for (let d of dice)
-  {
-    damageDetail.damageResult.total += d
-    // if (terms.length > 0)
-    // {
-    //   terms.push(new OperatorTerm({operator: "+"}))
-    // }
-    // terms.push(new Die({number: d, faces: 6}))
+  let pip = 0
+
+  // Damage Negation
+  if (options?.damageNegationValue > 0) {
+    let fullDiceDr = options.damageNegationValue
+    let pipDr = 0
+    if (itemData.killing) {
+      fullDiceDr = Math.floor(options.damageNegationValue / 3)
+      pipDr = options.damageNegationValue  % 3
+    }
+
+    // Remove full dice
+    for(let i = 0; i < fullDiceDr; i++)
+    {
+      // terms[0] are the full d6 dice
+      if (damageResult.terms[0].results.length > 0)
+      {
+        // remove 1st dice
+        damageResult.terms[0].results = damageResult.terms[0].results.slice(1)
+      }
+      else {
+        pipDr += 3
+      }
+    }
+
+    // Remove pipDr
+    for(let i = 0; i < pipDr; i++)
+    {
+      // full dice are at terms[0]
+      // plus operator is terms[1]
+      // pips are at terms [2]
+      
+      // Convert full dice to a pip
+      if (damageResult.terms[0].results.length > 0 && damageResult.terms.length == 1)
+      {
+        let _fullDice = damageResult.terms[0].results[0]
+        _fullDice.results = Math.ceil(_fullDice.result /2) // convert to half dice (2 pips)
+        damageResult.terms[0].results = damageResult.terms[0].results.slice(1)
+        damageResult.terms.push(new OperatorTerm({operator: "+"}));
+        let _halfDie = new Die({number: _fullDice.results, faces: 3})
+        damageResult.terms.push(_halfDie)
+        continue
+      }
+
+      // Convert half dice to +1
+      if (damageResult.terms.length == 3 && damageResult.terms[2] instanceof Die)
+      {
+        damageResult.terms[2] = new NumericTerm({number: 1});
+        continue
+      }
+
+      console.log("DR")
+    }
   }
 
-  damageDetail.dice = dice;
+  // We may have spoofed a roll, so total is missing.
+  if (!damageResult.total){
+    damageResult._total = 0
+    
+    for(let term of damageResult.terms) {
+      if (term instanceof OperatorTerm) continue;
+      if (term instanceof Die)
+      {
+        for(let result of term.results)
+        {
+          damageResult._total += result.result
+        }
+        continue
+      }
+      if (term instanceof NumericTerm)
+      {
+        damageResult._total += term.number
+      }
+    }
 
-  damageDetail.hasStunMultiplierRoll = false;
-  damageDetail.renderedStunMultiplierRoll = null;
-  damageDetail.stunMultiplier = 1;
+    damageResult._formula = damageResult.terms[0].results.length + "d6"
+    if (damageResult.terms[1]) {
+      damageResult._formula += " + "
+
+      if (damageResult.terms[2] instanceof Die) {
+        damageResult._formula += damageResult.terms[2].results[0].rersults += "1d3"
+      }
+
+      if (damageResult.terms[2] instanceof NumericTerm) {
+        damageResult._formula += damageResult.terms[2].number
+      }
+
+
+    }
+
+    
+    damageResult._evaluated = true
+  }
+
+  let hasStunMultiplierRoll = false;
+  let renderedStunMultiplierRoll = null;
+  let stunMultiplier = 1;
 
   if (itemData.killing) {
-    damageDetail.hasStunMultiplierRoll = true;
-    damageDetail.body = damageResult.total;
+    hasStunMultiplierRoll = true;
+    body = damageResult.total;
 
-    let stunRoll = new Roll("1D3", actor.getRollData());
-    let stunResult = await stunRoll.roll();
+    let stunRoll = new Roll("1D3", item.actor.getRollData());
+    let stunResult = await stunRoll.roll({async:true});
     let renderedStunResult = await stunResult.render();
     damageDetail.renderedStunMultiplierRoll = renderedStunResult;
 
     if (game.settings.get("hero6efoundryvttv2", "hit locations") && !noHitLocationsPower) {
-      damageDetail.stunMultiplier =  hitLocationModifiers[0];
+      stunMultiplier =  hitLocationModifiers[0];
     } else {
-      damageDetail.stunMultiplier = stunResult.total;
+      stunMultiplier = stunResult.total;
     }
 
-    damageDetail.stun = damageDetail.body * stunMultiplier;
+    if (options.stunmultiplier)
+    {
+      stunMultiplier = options.stunmultiplier
+    }
+
+    stun = body * stunMultiplier;
+
+    damageDetail.renderedStunResult = renderedStunResult
   }
   else {
       // counts body damage for non-killing attack
-      for (let die of dice) {
+      for (let die of damageResult.terms[0].results) {
           switch (die.result) {
               case 1:
-                damageDetail.countedBody += 0;
+                countedBody += 0;
                   break;
               case 6:
-                damageDetail.countedBody += 2;
+                countedBody += 2;
                   break;
               default:
-                damageDetail.countedBody += 1;
+                countedBody += 1;
                   break;
           }
       }
 
-      damageDetail.stun = damageDetail.damageResult.total;
-      damageDetail.body = damageDetail.countedBody;
+      stun = damageResult.total;
+      body = countedBody;
   }
 
-  damageDetail.bodyDamage = damageDetail.body;
-  damageDetail.stunDamage = damageDetail.stun;
+  let bodyDamage = body;
+  let stunDamage = stun;
 
-  damageDetail.effects = "";
+  let effects = "";
   if (item.system.effects !== "") {
-    damageDetail.effects = item.system.effects + ";"
+    effects = item.system.effects + ";"
   }
 
-  damageDetail.hitLocText = "";
+  // -------------------------------------------------
+  // determine effective damage
+  // -------------------------------------------------
+
+  if(itemData.killing) {
+    stun = stun - options.defenseValue - options.resistantValue;
+    body = body - options.resistantValue;
+  } else {
+    stun = stun - options.defenseValue - options.resistantValue;
+    body = body - options.defenseValue - options.resistantValue;
+  }
+
+  stun = stun < 0 ? 0 : stun;
+  body = body < 0 ? 0 : body;
+
+
+  let hitLocText = "";
   if (game.settings.get("hero6efoundryvttv2", "hit locations") && !noHitLocationsPower) {
       if(itemData.killing) {
           // killing attacks apply hit location multiplier after resistant damage protection has been subtracted
-          damageDetail.body = damageDetail.body * hitLocationModifiers[2];
+          body = body * hitLocationModifiers[2];
 
-          damageDetail.hitLocText = "Hit " + hitLocation + " (x" + hitLocationModifiers[0] + " STUN x" + hitLocationModifiers[2] + " BODY)";
+          hitLocText = "Hit " + hitLocation + " (x" + hitLocationModifiers[0] + " STUN x" + hitLocationModifiers[2] + " BODY)";
       } else {
           // stun attacks apply N STUN hit location multiplier after defenses
-          damageDetail.stun = damageDetail.stun * hitLocationModifiers[1];
-          damageDetail.body = damageDetail.body * hitLocationModifiers[2];
+          stun = stun * hitLocationModifiers[1];
+          body = body * hitLocationModifiers[2];
 
-          damageDetail.hitLocText = "Hit " + hitLocation + " (x" + hitLocationModifiers[1] + " STUN x" + hitLocationModifiers[2] + " BODY)";
+          hitLocText = "Hit " + hitLocation + " (x" + hitLocationModifiers[1] + " STUN x" + hitLocationModifiers[2] + " BODY)";
       }
 
-      damageDetail.hasStunMultiplierRoll = false;
+      hasStunMultiplierRoll = false;
   }
 
   
 
   // minimum damage rule
-  if (damageDetail.stun < damageDetail.body) {
-    damageDetail.stun = damageDetail.body;
-    damageDetail.effects += "minimum damage invoked; "
+  if (stun < body) {
+    stun = body;
+    effects += "minimum damage invoked; "
   }
 
-  damageDetail.stun = Math.round(damageDetail.stun)
-  damageDetail.body = Math.round(damageDetail.body)
+  stun = Math.round(stun)
+  body = Math.round(body)
 
+  
+  damageDetail.body = body
+  damageDetail.stun = stun
+  damageDetail.effects = effects
+  damageDetail.stunDamage = stunDamage
+  damageDetail.bodyDamage = bodyDamage
+  damageDetail.stunMultiplier = stunMultiplier
+  damageDetail.hasStunMultiplierRoll = hasStunMultiplierRoll
+  
   return damageDetail
 }

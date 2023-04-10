@@ -22,16 +22,9 @@
 
     <div class="form-group">
         <label>To Hit Modifier</label>
-        <input type="text" name="toHitMod" value="0"/>
+        <input type="text" name="toHitMod" value="{{item.system.toHitMod}}"/>
     </div>
 
-    {{#if item.system.knockback}}
-    <div class="form-group flexrow">
-        <label>Knockback Modifier</label>
-        <input type="text" name="knockbackMod" value="0"/>
-        <label>d6</label>
-    </div>
-    {{/if}}
 
     {{#if item.system.usesStrength}}
     <div class="form-group">
@@ -41,8 +34,5 @@
     </div>
     {{/if}}
 
-    <div class="form-group">
-        <label>Damage Mod</label>
-        <input type="text" name="damageMod" value="0"/>
-    </div>
+
 </form>

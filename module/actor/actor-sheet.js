@@ -450,8 +450,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     // to test out new code
     if (event.shiftKey && game.modules.get('_dev-mode')?.api)
     {
-      //await this._onItemAttackShift (event)
-      await Dice.AttackCheck()
+      await this._onItemAttackShift (event)
       return
     }
 
