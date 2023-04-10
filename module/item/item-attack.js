@@ -428,6 +428,10 @@ export async function _onApplyDamageToSpecificToken(event, tokenId)
 
   defense = defense + defenseValue + " normal; " + resistantValue + " resistant";
 
+  if (damageReductionValue > 0) {
+    defense += "; damage reduction " + damageReductionValue + "%";
+  }
+
   damageData.defenseValue = defenseValue
   damageData.resistantValue = resistantValue
   damageData.damageReductionValue = damageReductionValue
@@ -469,6 +473,7 @@ export async function _onApplyDamageToSpecificToken(event, tokenId)
 
     // misc
     tags: tags,
+    targetToken: token
   };
 
 
@@ -681,6 +686,13 @@ async function _calcDamage(damageResult, item, options)
       hasStunMultiplierRoll = false;
   }
 
+
+  // apply damage reduction
+  if (options.damageReductionValue > 0) {
+    //defense += "; damage reduction " + options.damageReductionValue + "%";
+    stun = Math.round(stun * (1 - (options.damageReductionValue/100)));
+    body = Math.round(body * (1 - (options.damageReductionValue/100)));
+  }
   
 
   // minimum damage rule

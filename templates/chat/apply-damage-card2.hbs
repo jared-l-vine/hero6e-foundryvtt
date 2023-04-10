@@ -2,6 +2,11 @@
 <div class="hero chat-card item-card toHit-card" data-actor-id="{{actor._id}}" data-item-id="{{item._id}}"
   {{#if tokenId}}data-token-id="{{tokenId}}"{{/if}}>
 
+  <header class="card-header flexrow">
+    <img src="{{item.img}}" title="{{item.name}}" width="36" height="36"/>
+    <h3>vs {{targetToken.name}}</h3>
+  </header>
+
   <div>
       Apply damage from: <span class="item-name">{{item.name}}</span>
   </div>
