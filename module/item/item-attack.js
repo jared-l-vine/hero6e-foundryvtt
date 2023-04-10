@@ -64,7 +64,6 @@ async function _processAttackOptions(item, form)
 /// ChatMessage showing Attack To Hit
 export async function AttackToHit(item, options)
 {
-  console.log("Attack", item, options)
   const template = "systems/hero6efoundryvttv2/templates/chat/item-toHit-card2.hbs"
 
   const actor = item.actor
@@ -209,8 +208,6 @@ export async function _onRollDamage(event)
   const actor = item.actor
   const itemId = item._id
   const itemData = item.system;
-
-  console.log("_onRollDamage", item, toHitData);
 
   let damageRoll = itemData.dice;
 
@@ -375,10 +372,6 @@ export async function _onRollDamage(event)
 export async function _onApplyDamage(event)
 {
   
-  console.log(event)
-
-
-
   // Check to make sure we have a selected token
   if (canvas.tokens.controlled.length == 0)
   {
@@ -581,7 +574,7 @@ async function _calcDamage(damageResult, item, options)
         continue
       }
 
-      console.log("DR")
+      console.warn("Uhandled Damage Negation")
     }
   }
 
