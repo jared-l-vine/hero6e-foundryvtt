@@ -79,6 +79,9 @@ export class HeroSystem6eItem extends Item {
     // Largely used to determine if we can drag to hotbar
     isRollable()
     {
+        // Only allow rollables (the new stuff) when in dev mode
+        if (!game.modules.get('_dev-mode')?.api) return false;
+
         switch (this.type) {
             case 'attack': return true
         }
