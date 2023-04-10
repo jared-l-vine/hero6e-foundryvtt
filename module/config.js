@@ -215,3 +215,19 @@ HERO.movementPowers = {
     "extradimensionalmovement": "Extra Dimensional Movement",
     "ftl": "Faster Than Light"
 }
+
+// Powers can include Skills.
+// Valid XMLID's for skills, with empty object for future use.
+// HERO.skills = {
+//     "ACROBATICS": {},
+//     "ACTING": {},
+//     "ANALYZE": {},
+//     "ANIMAL HANDLER": {},
+//     "AUTOFIRE SKILLS": {},
+//     "BREAKFALL": {},
+//     "BRIBERY": {},
+//     "BUGGING": {},
+//     "BUREAUCRATICS": {},
+//     "CHARM": {},
+//     "CLIMBING": {},
+// }

@@ -223,3 +223,8 @@ function rollItemMacro(itemName, itemType) {
 }
 
 
+// The default Foundry cone angle is 53.13 degrees.
+// This will set the default angle to 60 degrees.
+// REF: https://github.com/dmdorman/hero6e-foundryvtt/issues/40
+Hooks.on("setup", () => CONFIG.MeasuredTemplate.defaults.angle = 60);
+
