@@ -500,7 +500,7 @@ export async function _onApplyDamageToSpecificToken(event, tokenId)
 
   // render card
   let cardHtml = await renderTemplate(template, cardData)
-  let speaker = ChatMessage.getSpeaker()
+  let speaker = ChatMessage.getSpeaker({actor: item.actor})
  
   const chatData = {
     user:  game.user._id,
