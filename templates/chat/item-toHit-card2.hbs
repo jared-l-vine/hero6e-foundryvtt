@@ -44,8 +44,7 @@
         <div class="tags">
             {{#each tags as |tag id|}}
             <span class="tag tag_transparent">{{tag.name}} 
-                {{#unless tag.hidePlus}}+{{/unless}}
-                {{tag.value}}
+                {{#unless tag.hidePlus}}+{{/unless}}{{tag.value}}
             </span>
             {{/each}}
         </div>
