@@ -70,9 +70,12 @@ export async function AttackToHit(item, options)
   const actor = item.actor
   const itemId = item._id
   const itemData = item.system;
+  let tags = []
 
   const hitCharacteristic = actor.system.characteristics[itemData.uses].value;
+  
   let toHitChar = CONFIG.HERO.defendsWith[itemData.targets];
+  
 
   let automation = game.settings.get("hero6efoundryvttv2", "automation");
 
@@ -80,11 +83,18 @@ export async function AttackToHit(item, options)
   // attack roll
   // -------------------------------------------------
   let rollEquation = "11 + " + hitCharacteristic;
+  tags.push({value: hitCharacteristic, name: itemData.uses})
+
   rollEquation = modifyRollEquation(rollEquation, item.system.toHitMod);
+  tags.push({value: item.system.toHitMod, name: item.name})
+
   rollEquation = modifyRollEquation(rollEquation, options.toHitMod);
+  tags.push({value: options.toHitMod, name: "toHitMod"})
+
   let noHitLocationsPower = false;
   if (game.settings.get("hero6efoundryvttv2", "hit locations") && options.aim !== "none" && !noHitLocationsPower) {
       rollEquation = modifyRollEquation(rollEquation, CONFIG.HERO.hitLocations[options.aim][3]);
+      tags.push({value: CONFIG.HERO.hitLocations[options.aim][3], name: options.aim, hidePlus: CONFIG.HERO.hitLocations[options.aim][3] < 0})
   }
   rollEquation = rollEquation + " - 3D6";
 
@@ -161,6 +171,10 @@ export async function AttackToHit(item, options)
     // endurance
     useEnd: useEnd,
     enduranceText: enduranceText,
+
+    // misc
+    tags: tags,
+
   };
 
   // render card
@@ -203,7 +217,7 @@ export async function _onRollDamage(event)
   // let toHitChar = CONFIG.HERO.defendsWith[itemData.targets];
 
   // let automation = game.settings.get("hero6efoundryvttv2", "automation");
-
+ 
   let tags = []
   tags.push({value: itemData.dice + "d6", name: "base" })
  
@@ -676,6 +690,36 @@ async function _calcDamage(damageResult, item, options)
   stun = stun < 0 ? 0 : stun;
   body = body < 0 ? 0 : body;
 
+  // get hit location
+  let hitLocationModifiers = [1, 1, 1, 0];
+  let hitLocation = "None";
+  let useHitLoc = false;
+  if (game.settings.get("hero6efoundryvttv2", "hit locations") && !noHitLocationsPower) {
+      useHitLoc = true;
+
+      hitLocation = toHitData.aim;
+      if (toHitData.aim === 'none') {
+          let locationRoll = new Roll("3D6")
+          let locationResult = await locationRoll.roll({async: true});
+          hitLocation = CONFIG.HERO.hitLocationsToHit[locationResult.total];
+      }
+
+      hitLocationModifiers = CONFIG.HERO.hitLocations[hitLocation];
+
+      if (game.settings.get("hero6efoundryvttv2", "hitLocTracking") === "all") {
+          let sidedLocations = ["Hand", "Shoulder", "Arm", "Thigh", "Leg", "Foot"]
+          if (sidedLocations.includes(hitLocation)) {
+              let sideRoll = new Roll("1D2", actor.getRollData());
+              let sideResult = await sideRoll.roll();
+
+              if (sideResult.result === 1) {
+                  hitLocation = "Left " + hitLocation;
+              } else {
+                  hitLocation = "Right " + hitLocation;
+              }
+          }   
+      }
+  }
 
   let hitLocText = "";
   if (game.settings.get("hero6efoundryvttv2", "hit locations") && !noHitLocationsPower) {

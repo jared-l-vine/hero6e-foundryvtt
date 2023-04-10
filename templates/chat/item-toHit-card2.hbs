@@ -40,6 +40,16 @@
                 <span class="tag">killing</span>
             {{/if}}
         </div>
+        <hr>
+        <div class="tags">
+            {{#each tags as |tag id|}}
+            <span class="tag tag_transparent">{{tag.name}} 
+                {{#unless tag.hidePlus}}+{{/unless}}
+                {{tag.value}}
+            </span>
+            {{/each}}
+        </div>
+
 
         <hr>
         {{!-- TODO: list to-hit modifiers --}}
