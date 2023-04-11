@@ -415,6 +415,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     // Remove the type from the dataset since it's in the itemData.type prop.
     delete itemData.system.type
 
+
+    
+
     // Finally, create the item!
     return await HeroSystem6eItem.create(itemData, { parent: this.actor })
   }

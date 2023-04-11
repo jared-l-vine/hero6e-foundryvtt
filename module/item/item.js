@@ -15,6 +15,31 @@ export class HeroSystem6eItem extends Item {
         html.on('click', '.roll-damage', this.__onChatCardAction.bind(this));
     }
 
+    // Perform preliminary operations before a Document of this type is created. Pre-creation operations only 
+    // occur for the client which requested the operation. Modifications to the pending document before it is 
+    // persisted should be performed with this.updateSource().
+    async _preCreate(data, options, userId) {
+
+        await super._preCreate(data, options, userId);
+
+        const icons = { 
+            "attack": "icons/svg/sword.svg",
+            "movement": "icons/svg/pawprint.svg",
+            "skill": "icons/svg/hanging-sign.svg",
+            "defense": "icons/svg/shield.svg",
+            "power": "icons/svg/aura.svg",
+            "maneuver": "icons/svg/upgrade.svg",
+        }
+
+        // assign a default image
+        if (!data.img) {
+            if (icons[this.type])
+            {
+                this.updateSource({ img:  icons[this.type]});
+            }
+        }
+    }
+
 
     /**
      * Augment the basic Item data model with additional dynamic data.
@@ -22,6 +47,8 @@ export class HeroSystem6eItem extends Item {
 
     prepareData() {
         super.prepareData();
+
+        
 
         // Get the Item's data
         // const itemData = this.data;
