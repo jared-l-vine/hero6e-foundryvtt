@@ -448,9 +448,12 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     
     // Hold SHIFT when clicking attack roll dice
     // to test out new code
-    if (event.shiftKey && game.modules.get('_dev-mode')?.api)
+    if (event.shiftKey )
     {
-      await this._onItemAttackShift (event)
+      if (game.settings.get(game.system.id, 'betaAttack'))
+      {
+        await this._onItemAttackShift (event)
+      }
       return
     }
 
