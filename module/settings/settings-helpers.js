@@ -76,9 +76,9 @@ export default class SettingsHelpers {
         onChange: value=> console.log(value)
       });
 
-      game.settings.register(module, "betaTesting", {
-        name: "Beta Testing",
-        hint: "Enable beta features and changes.  Intended for system developer only.",
+      game.settings.register(module, "alphaTesting", {
+        name: "Alpha Testing",
+        hint: "Enable testing of alpha features and changes.  Intended for system developer only.",
         scope: "client",
         config: true,
         type: Boolean,
