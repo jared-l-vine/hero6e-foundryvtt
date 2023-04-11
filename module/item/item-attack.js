@@ -225,7 +225,7 @@ export async function _onRollDamage(event)
     // if (toHitData.effectivestr <= actor.system.characteristics.str.value) {
     //     strDamage = Math.floor((toHitData.effectivestr)/5);
     // }
-    let strDamage = Math.floor(Math.max(toHitData.effectivestr, actor.system.characteristics.str.value)/5)
+    let strDamage = Math.floor(parseInt(toHitData.effectivestr)/5) //Math.floor(Math.max(toHitData.effectivestr, actor.system.characteristics.str.value)/5)
     if (strDamage > 0) {
       if(itemData.killing)
       {
