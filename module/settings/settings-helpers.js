@@ -76,9 +76,9 @@ export default class SettingsHelpers {
         onChange: value=> console.log(value)
       });
 
-      game.settings.register(module, "betaAttack", {
-        name: "BETA: Improved Attacks",
-        hint: "Improved attack code when SHIFT is held.  Improved support for dragging attacks to hotbar.",
+      game.settings.register(module, "betaTesting", {
+        name: "Beta Testing",
+        hint: "Enable beta features and changes.  Intended for system developer only.",
         scope: "client",
         config: true,
         type: Boolean,

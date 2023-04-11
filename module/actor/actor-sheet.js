@@ -446,39 +446,39 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     return item.displayCard({ rollMode, createChatMessage }, this.actor, powerId + "-" + subId)
   }
 
-  async _onItemAttack (event) {
-    event.preventDefault()
+  // async _onItemAttack (event) {
+  //   event.preventDefault()
     
-    // Hold SHIFT when clicking attack roll dice
-    // to test out new code
-    if (event.shiftKey )
-    {
-      if (game.settings.get(game.system.id, 'betaAttack'))
-      {
-        await this._onItemAttackShift (event)
-      }
-      return
-    }
+  //   // Hold SHIFT when clicking attack roll dice
+  //   // to test out new code
+  //   if (event.shiftKey )
+  //   {
+  //     if (game.settings.get(game.system.id, 'betaAttack'))
+  //     {
+  //       await this._onItemAttackShift (event)
+  //     }
+  //     return
+  //   }
 
-    const itemId = event.currentTarget.closest('.item').dataset.itemId
+  //   const itemId = event.currentTarget.closest('.item').dataset.itemId
 
-    let item;
-    if (!isPowerSubItem(itemId)) {
-      item = this.actor.items.get(itemId)
-    } else {
-      const [powerItemId, subItemId] = splitPowerId(itemId)
-      item = this.actor.items.get(powerItemId).system.subItems.attack[subItemId]
-    }
+  //   let item;
+  //   if (!isPowerSubItem(itemId)) {
+  //     item = this.actor.items.get(itemId)
+  //   } else {
+  //     const [powerItemId, subItemId] = splitPowerId(itemId)
+  //     item = this.actor.items.get(powerItemId).system.subItems.attack[subItemId]
+  //   }
 
-    const rollMode = 'core'
-    const createChatMessage = true
+  //   const rollMode = 'core'
+  //   const createChatMessage = true
 
-    item.displayCard = displayCard
+  //   item.displayCard = displayCard
 
-    return item.displayCard({ rollMode, createChatMessage }, this.actor, item.id)
-  }
+  //   return item.displayCard({ rollMode, createChatMessage }, this.actor, item.id)
+  // }
 
-  async _onItemAttackShift (event) {
+  async _onItemAttack (event) {
     event.preventDefault()
     const itemId = event.currentTarget.closest('.item').dataset.itemId
     const item = this.actor.items.get(itemId)
@@ -782,11 +782,32 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
       if (xmlid === 'GENERIC_OBJECT') { continue; }
 
-      // Check if skill was bought as a power.
-      // If so add the skill (and keep the power, so yes two items are created).
-      // TODO: Allow powers to be rolled/activated in place
-      if (CONFIG.HERO.skills[xmlid]) {
-        await uploadSkill.call(this, power)
+      // Check if we have CONFIG info about this power
+      let configPowerInfo = CONFIG.HERO.powers[xmlid]
+      if (configPowerInfo) {
+        // switch (configPowerInfo.powerType)
+        // {
+        //   case "attack": break // TODO: unimplemented
+        //   case "characteristic": break // TODO: unimplemented
+        //   case "defense": break // TODO: unimplemented
+        //   case "mental": break // TODO: unimplemented
+        //   case "movement": break // handled elsewhere?
+        //   case "sense": break // handled elsewhere?
+        //   case "skill": await uploadSkill.call(this, power); break
+        //   default : ui.notifications.warn(`${xmlid} not handle during HDC upload of ${this.actor.name}`)
+        // }
+        if (configPowerInfo.powerType.includes("skill")){
+          await uploadSkill.call(this, power);
+        }
+        
+      } 
+      else
+      {
+        if (game.settings.get(game.system.id, 'betaTesting'))
+        {
+          ui.notifications.warn(`${xmlid} not handled during HDC upload of ${this.actor.name}`)
+        }
+        
       }
 
       let itemName = name
@@ -944,17 +965,17 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     }
 
     // Actor Image
-    if (image && this.actor.img == "icons/svg/mystery-man.svg")
+    if (image )
     {
       let filename = image.getAttribute("FileName")
       let extension = filename.split('.').pop()
       let base64 = "data:image/" + extension + ";base64," + image.textContent
       let path = "worlds/" + game.world.id
-      await ImageHelper.uploadBase64(base64, filename, path)
-      await this.actor.update({[`img`]: path + '/' + filename })
-    } else
-    {
-      await this.actor.update({[`img`]: "icons/svg/mystery-man.svg" })
+      if (this.actor.img.indexOf(filename) == -1)
+      {
+        await ImageHelper.uploadBase64(base64, filename, path)
+        await this.actor.update({[`img`]: path + '/' + filename })
+      }
     }
 
   }

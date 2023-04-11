@@ -106,11 +106,6 @@ export class HeroSystem6eItem extends Item {
     // Largely used to determine if we can drag to hotbar
     isRollable()
     {
-        // Only allow rollables (the new stuff) when in beta
-        if (!game.settings.get(game.system.id, 'betaAttack')) {
-            return ui.notifications.warn(`BETA: Improved Attacks are not enabled`);
-        }
-
         switch (this.type) {
             case 'attack': return true
         }
