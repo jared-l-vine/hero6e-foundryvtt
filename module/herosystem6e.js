@@ -31,7 +31,7 @@ Hooks.once('init', async function() {
             HeroSystem6eTemplate
         },
         macros: macros,
-        rollItemMacro: macros.rollItemMacro,
+        rollItemMacro: rollItemMacro,
         config : HERO
     };
 
@@ -61,7 +61,7 @@ Hooks.once('init', async function() {
     CONFIG.statusEffects = HeroSystem6eActorActiveEffects.getEffects();
     CONFIG.MeasuredTemplate.objectClass = HeroSystem6eTemplate;
     CONFIG.ui.combat = HeroSystem6eCombatTracker;
-
+   
     SettingsHelpers.initLevelSettings();
 
     // Register sheet application classes
@@ -104,7 +104,7 @@ Hooks.once("init", () => {
 
 Hooks.once("ready", async function() {
     // Wait to register hotbar drop hook on ready so that modules could register earlier if they want to
-    Hooks.on("hotbarDrop", (bar, data, slot) => createHeroSystem6eMacro(data, slot));
+    Hooks.on("hotbarDrop", (bar, data, slot) => createHeroSystem6eMacro(bar, data, slot));
 });
 
 Hooks.on("renderChatMessage", (app, html, data) => {
@@ -125,6 +125,8 @@ Hooks.on("updateActor", (app, html, data) => {
 Hooks.once('devModeReady', ({ registerPackageDebugFlag }) => {
     registerPackageDebugFlag(HEROSYS.ID);
 });
+
+
 export class HEROSYS {
     static ID = "HEROSYS";
 
@@ -149,14 +151,28 @@ export class HEROSYS {
  * @param {number} slot     The hotbar slot to use
  * @returns {Promise}
  */
-async function createHeroSystem6eMacro(data, slot) {
-  if (data.type !== "Item") return;
-  if (!("data" in data)) return ui.notifications.warn("You can only create macro buttons for owned Items");
-  const item = data.data;
+function createHeroSystem6eMacro(bar, data, slot) {
+
+  // Check if we want to override the default macro (open sheet)
+  if (data.type === "Item" && typeof data.uuid === "string")
+  {
+    const item = fromUuidSync(data.uuid);
+    if (item.isRollable())
+    {
+      handleMacroCreation(bar, data,slot, item)
+      return false
+    }
+  }
+}
+
+async function handleMacroCreation(bar, data, slot, item) {
+  console.log("createHeroSystem6eMacro", item)
+  if (!item) return;
+  if (!item.roll) return;
 
   // Create the macro command
-  const command = `game.herosystem6e.rollItemMacro("${item.name}");`;
-  let macro = game.macros.entities.find(m => (m.name === item.name) && (m.command === command));
+  const command = `game.herosystem6e.rollItemMacro("${item.name}", "${item.type}");`;
+  let macro = game.macros.find(m => m.command === command);
   if (!macro) {
     macro = await Macro.create({
       name: item.name,
@@ -167,8 +183,8 @@ async function createHeroSystem6eMacro(data, slot) {
     });
   }
   game.user.assignHotbarMacro(macro, slot);
-  return false;
 }
+
 
 /**
  * Create a Macro from an Item drop.
@@ -176,14 +192,39 @@ async function createHeroSystem6eMacro(data, slot) {
  * @param {string} itemName
  * @return {Promise}
  */
-function rollItemMacro(itemName) {
+function rollItemMacro(itemName, itemType) {
   const speaker = ChatMessage.getSpeaker();
   let actor;
   if (speaker.token) actor = game.actors.tokens[speaker.token];
   if (!actor) actor = game.actors.get(speaker.actor);
-  const item = actor ? actor.items.find(i => i.name === itemName) : null;
-  if (!item) return ui.notifications.warn(`Your controlled Actor does not have an item named ${itemName}`);
+  let item = actor ? actor.items.find(i => i.name === itemName && (!itemType || i.type == itemType)) : null;
+  console.log("rollItemMacro", item)
+
+  // The selected actor does not have an item with this name.
+  if (!item) 
+  {
+    item = null
+    // Search all owned tokens for this item
+    for (let token of canvas.tokens.ownedTokens)
+    {
+      actor = token.actor
+      item = actor.items.find(i => i.name === itemName && (!itemType || i.type == itemType))
+      if (item) {
+        break;
+      }
+    }
+
+    if (!item) return ui.notifications.warn(`Your controlled Actor does not have an ${itemType || 'item'} named ${itemName}`);
+  }
+  
 
   // Trigger the item roll
   return item.roll();
 }
+
+
+// The default Foundry cone angle is 53.13 degrees.
+// This will set the default angle to 60 degrees.
+// REF: https://github.com/dmdorman/hero6e-foundryvtt/issues/40
+Hooks.on("setup", () => CONFIG.MeasuredTemplate.defaults.angle = 60);
+

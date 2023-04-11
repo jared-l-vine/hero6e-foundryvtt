@@ -2,12 +2,14 @@ import { HeroSystem6eActorActiveEffects } from "../actor/actor-active-effects.js
 import { HeroSystem6eActorSheet } from "../actor/actor-sheet.js";
 import { HeroSystem6eCard } from "./card.js";
 import { modifyRollEquation, getTokenChar } from "../utility/util.js"
-import { HeroSystem6eDamageCard } from "./damage-card.js";
+//import { HeroSystem6eDamageCard2 } from "./damage-card2.js";
 import { HEROSYS } from "../herosystem6e.js";
 
-export class HeroSystem6eToHitCard extends HeroSystem6eCard {
+export class HeroSystem6eToHitCard2 extends HeroSystem6eCard {
     static async chatListeners(html) {
-        html.on('click', '.apply-defenses', this._onChatCardAction.bind(this));
+        // NOTE: Make sure we are listed in card-helpers.js
+        // Click roll damage button click
+        //html.on('click', '.roll-damage', this._onChatCardAction.bind(this));
     }
 
     static onMessageRendered(html) {
@@ -33,42 +35,48 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
    * @private
    */
     static async _onChatCardAction(event) {
-        event.preventDefault();
+        //event.preventDefault();
+        
 
         // Extract card data
         const button = event.currentTarget;
 
-        const action = button.dataset.action;
+        //const action = button.dataset.action;
         //button.disabled = true;
+
+        
 
         let itemId = event.currentTarget.attributes["data-itemid"].value;
 
         const card = button.closest(".chat-card");
-        const cardObject = new HeroSystem6eToHitCard();
+        const cardObject = new HeroSystem6eToHitCard2();
         await cardObject.init(card);
 
         //cardObject.message.data.flags["state"] = {};
         cardObject.message.flags.state = {};
 
-        let toHitData = {
-            aim: event.currentTarget.attributes["data-aim"].value,
-            knockbackMod: event.currentTarget.attributes["data-knockbackmod"].value,
-            damageMod: event.currentTarget.attributes["data-damagemod"].value,
-            hitRollData: event.currentTarget.attributes["data-hitrolldata"].value,
-            effectiveStr: event.currentTarget.attributes["data-effectiveStr"].value
-        };
+        // let toHitData = {
+        //     aim: event.currentTarget.attributes["data-aim"].value,
+        //     knockbackMod: event.currentTarget.attributes["data-knockbackmod"].value,
+        //     damageMod: event.currentTarget.attributes["data-damagemod"].value,
+        //     hitRollData: event.currentTarget.attributes["data-hitrolldata"].value,
+        //     effectiveStr: event.currentTarget.attributes["data-effectiveStr"].value
+        // };
+        const toHitData = {...button.dataset}
 
         // Validate permission to proceed with the roll
-        const isValid = action === "apply-defenses";
-        if (!(isValid || game.user.isGM || cardObject.message.isAuthor)) return;
+        //const isValid = action === "apply-defenses";
+        //if (!(isValid || game.user.isGM || cardObject.message.isAuthor)) return;
 
-        const targets = HeroSystem6eCard._getChatCardTargets();
+        // const targets = HeroSystem6eCard._getChatCardTargets();
 
-        if (targets.length === 0) return;
+        // if (targets.length === 0) return;
 
-        for (let token of targets) {
-            await HeroSystem6eDamageCard.createFromToHitCard(cardObject, token, toHitData, itemId);
-        }
+        // for (let token of targets) {
+        //     await HeroSystem6eDamageCard2.createFromToHitCard(cardObject, token, toHitData, itemId);
+        // }
+
+        //await HeroSystem6eDamageCard2.createFromToHitCard(cardObject, null, toHitData, itemId);
 
         // Re-enable the button
         //button.disabled = false;
@@ -78,24 +86,24 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         const token = actor.token;
 
         const templateData = {
-            actor: actor.system,
+            ...stateData,
+            actor: actor,
             tokenId: token?.uuid || null,
-            item: item,
-            state: stateData,
-        };
+            item: item
+        }
 
-        var path = "systems/hero6efoundryvttv2/templates/chat/item-toHit-card.hbs";
+        var path = "systems/hero6efoundryvttv2/templates/chat/item-toHit-card2.hbs";
 
         return await renderTemplate(path, templateData);
     }
 
     async render() {
-        return await HeroSystem6eToHitCard._renderInternal(this.item, this.actor, this.message.flags.state);
+        return await HeroSystem6eToHitCard2._renderInternal(this.item, this.actor, this.message.flags.state);
     }
 
     async init(card) {
         super.init(card);
-        this.target = await HeroSystem6eToHitCard._getChatCardTarget(card);
+        this.target = await HeroSystem6eToHitCard2._getChatCardTarget(card);
     }
 
     static async _getChatCardTarget(card) {
@@ -111,10 +119,9 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
         return game.actors.get(targetId) || null;
     }
 
-    static async createFromAttackCard(item, data, actor, itemId) {
-        HEROSYS.log(item)
-        HEROSYS.log(data)
+    static async createFromAttackCard(item, data, actor, targets) {
 
+        let itemId = item._id
         let itemData = item.system;
         let hitCharacteristic = actor.system.characteristics[itemData.uses].value;
         let toHitChar = CONFIG.HERO.defendsWith[itemData.targets];
@@ -196,8 +203,15 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             }
         }
 
+        let targetIds = []
+        for (let target of Array.from(targets))
+        {
+            targetIds.push(target.id)
+        }
+
         let stateData = {
             // dice rolls
+            //rolls: [attackRoll],
             renderedHitRoll: renderedResult,
             hitRollText: hitRollText,
             hitRollValue: result.total,
@@ -209,15 +223,18 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
             damageMod: data.damageMod,
             hitRollData: hitRollData,
             effectiveStr: data.effectiveStr,
-            itemId: itemId,
+            targets: Array.from(targets),
+            targetIds: targetIds,
 
             // endurance
             useEnd: useEnd,
             enduranceText: enduranceText,
         };
 
+        console.log(stateData)
+
         // render card
-        let cardHtml = await HeroSystem6eToHitCard._renderInternal(item, actor, stateData);
+        let cardHtml = await HeroSystem6eToHitCard2._renderInternal(item, actor, stateData);
         
         let token = actor.token;
 

@@ -7,6 +7,7 @@ import { enforceManeuverLimits } from '../item/manuever.js'
 import { presenceAttackPopOut } from '../utility/presence-attack.js'
 import { HERO } from '../config.js'
 import { uploadBasic, uploadTalent, uploadSkill } from '../utility/upload_hdc.js'
+import * as Dice from '../dice.js'
 
 /**
  * Extend the basic ActorSheet with some very simple modifications
@@ -414,6 +415,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     // Remove the type from the dataset since it's in the itemData.type prop.
     delete itemData.system.type
 
+
+    
+
     // Finally, create the item!
     return await HeroSystem6eItem.create(itemData, { parent: this.actor })
   }
@@ -447,9 +451,12 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     
     // Hold SHIFT when clicking attack roll dice
     // to test out new code
-    if (event.shiftKey)
+    if (event.shiftKey )
     {
-      await this._onItemAttackShift (event)
+      if (game.settings.get(game.system.id, 'betaAttack'))
+      {
+        await this._onItemAttackShift (event)
+      }
       return
     }
 
@@ -475,6 +482,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     event.preventDefault()
     const itemId = event.currentTarget.closest('.item').dataset.itemId
     const item = this.actor.items.get(itemId)
+
     item.roll()
   }
 
@@ -774,6 +782,13 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
       if (xmlid === 'GENERIC_OBJECT') { continue; }
 
+      // Check if skill was bought as a power.
+      // If so add the skill (and keep the power, so yes two items are created).
+      // TODO: Allow powers to be rolled/activated in place
+      if (CONFIG.HERO.skills[xmlid]) {
+        await uploadSkill.call(this, power)
+      }
+
       let itemName = name
       if (name === undefined || name === '') {
         itemName = alias
@@ -892,6 +907,10 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
     for (const complication of complications.children) {
       await uploadBasic.call(this, complication, 'complication')
+    }
+
+    for (const equip of equipment.children) {
+      await uploadBasic.call(this, equip, 'equipment')
     }
 
     for (const martialart of martialarts.children) {

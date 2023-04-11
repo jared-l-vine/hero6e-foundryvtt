@@ -2,6 +2,8 @@ import { HeroSystem6eActorSheet } from "../actor/actor-sheet.js";
 import { HeroSystem6eAttackCard } from "../card/attack-card.js";
 import { HeroSystem6eCard } from "../card/card.js";
 import { HEROSYS } from "../herosystem6e.js";
+import * as Dice from "../dice.js"
+import * as Attack from "../item/item-attack.js"
 
 /**
  * Extend the basic Item with some very simple modifications.
@@ -9,8 +11,33 @@ import { HEROSYS } from "../herosystem6e.js";
  */
 export class HeroSystem6eItem extends Item {
 
-    chatTemplate = {
-        "x": "systems/hero6efoundryvttv2/templates/attack/item-attack-card.hbs"
+    static async chatListeners(html) {
+        html.on('click', '.roll-damage', this.__onChatCardAction.bind(this));
+    }
+
+    // Perform preliminary operations before a Document of this type is created. Pre-creation operations only 
+    // occur for the client which requested the operation. Modifications to the pending document before it is 
+    // persisted should be performed with this.updateSource().
+    async _preCreate(data, options, userId) {
+
+        await super._preCreate(data, options, userId);
+
+        const icons = { 
+            "attack": "icons/svg/sword.svg",
+            "movement": "icons/svg/pawprint.svg",
+            "skill": "icons/svg/hanging-sign.svg",
+            "defense": "icons/svg/shield.svg",
+            "power": "icons/svg/aura.svg",
+            "maneuver": "icons/svg/upgrade.svg",
+        }
+
+        // assign a default image
+        if (!data.img) {
+            if (icons[this.type])
+            {
+                this.updateSource({ img:  icons[this.type]});
+            }
+        }
     }
 
 
@@ -20,6 +47,8 @@ export class HeroSystem6eItem extends Item {
 
     prepareData() {
         super.prepareData();
+
+        
 
         // Get the Item's data
         // const itemData = this.data;
@@ -74,12 +103,93 @@ export class HeroSystem6eItem extends Item {
         data.roll = Math.round(roll);
     }
 
-    
+    // Largely used to determine if we can drag to hotbar
+    isRollable()
+    {
+        // Only allow rollables (the new stuff) when in beta
+        if (!game.settings.get(game.system.id, 'betaAttack')) {
+            return ui.notifications.warn(`BETA: Improved Attacks are not enabled`);
+        }
+
+        switch (this.type) {
+            case 'attack': return true
+        }
+        return false
+    }
+
     async roll()
     {
+        // TODO: Move all item roll code to here (Skills, Characteristics, etc).
+        if (!this.isRollable()) return;
+
+        switch(this.type)
+        {
+            case "attack": 
+                await Attack.AttackOptions(this)
+
+        }
+        
+
+        // Attacks will be done in 4 parts
+        // 1. Prompt for modifiers
+        // 2. Roll To-Hit vs target(s)
+        // 3. Roll Damage
+        // 4. Apply Damage
+
+        // Prompt for modifiers
+        //await HeroSystem6eAttackCard.createAttackPopOutFromItem(this, this.actor, this._id, 2)
+
+
+        // const dialogData = {
+		// 	title: "Roll to Hit",
+		// 	buttons: {
+		// 		rollToHit: {
+		// 			label: "Roll to Hit",
+		// 			callback: () => console.log("rollToHit")
+		// 		},
+		// 	},
+		// 	default: "rollToHit",
+		// 	close: () => resolve({})
+		// }
+
+        //const template = "systems/hero6efoundryvttv2/templates/chat/item-toHit-card.hbs"
+        //dialogData.content = await renderTemplate(template, {})
+
+        //new Dialog(dialogData).render(true)
+
+        // let d = new Dialog({
+        //     title: "Test Dialog",
+        //     content: "<p>You must choose either Option 1, or Option 2</p>",
+        //     buttons: {
+        //      one: {
+        //       icon: '<i class="fas fa-check"></i>',
+        //       label: "Option One",
+        //       callback: () => console.log("Chose One")
+        //      },
+        //      two: {
+        //       icon: '<i class="fas fa-times"></i>',
+        //       label: "Option Two",
+        //       callback: () => console.log("Chose Two")
+        //      }
+        //     },
+        //     default: "two",
+        //     render: html => console.log("Register interactivity in the rendered dialog"),
+        //     close: html => console.log("This always is logged no matter which option is chosen")
+        //    });
+        //    d.render(true);
+
+        return
+
+        let r = await new Roll("3d6").roll({async:true})
+
         let chatData = {
+
+            // Dice so Nice requires type=roll and rolls.
+            type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+            rolls: [r],
             user: game.user._id,
-            speaker: this.actor._id
+            speaker: ChatMessage.getSpeaker(),
+            //speaker: ChatMessage.getSpeaker({ alias: this.actor.name }), // Default alias is Attack Name, we want Actor Name
         }
 
         let cardData = {
@@ -89,10 +199,16 @@ export class HeroSystem6eItem extends Item {
             actor: this.actor
         }
 
-        const defaultChatCard = "systems/hero6efoundryvttv2/templates/chat/default-card.hbs"
-        chatData.content = await renderTemplate(this.chatTemplate[this.type] || defaultChatCard, cardData)
+        chatData.content = await renderTemplate(this.chatTemplate[this.type] || this.chatTemplate["default"], cardData)
+
+        // Set RollMode to PUBLIC instead of default (whatever is selected on chat dropdown).
+        // ApplyRollMode isn't working, no apparent way to override, not really important at the moment.
+        // ChatMessage.applyRollMode(chatData, "publicroll") //CONST.DICE_ROLL_MODES.PUBLIC)
+
         return ChatMessage.create(chatData)
     }
+
+    
 
     /**
    * Display the chat card for an Item as a Chat Message
