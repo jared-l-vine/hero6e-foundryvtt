@@ -779,6 +779,13 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
       if (xmlid === 'GENERIC_OBJECT') { continue; }
 
+      // Check if skill was bought as a power.
+      // If so add the skill (and keep the power, so yes two items are created).
+      // TODO: Allow powers to be rolled/activated in place
+      if (CONFIG.HERO.skills[xmlid]) {
+        await uploadSkill.call(this, power)
+      }
+
       let itemName = name
       if (name === undefined || name === '') {
         itemName = alias
