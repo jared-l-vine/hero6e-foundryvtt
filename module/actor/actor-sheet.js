@@ -906,6 +906,10 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       await uploadBasic.call(this, complication, 'complication')
     }
 
+    for (const equip of equipment.children) {
+      await uploadBasic.call(this, equip, 'equipment')
+    }
+
     for (const martialart of martialarts.children) {
       await uploadBasic.call(this, martialart, 'martialart')
     }
