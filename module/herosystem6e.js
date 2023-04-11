@@ -181,6 +181,9 @@ async function handleMacroCreation(bar, data, slot, item) {
       command: command,
       flags: { "herosystem6e.itemMacro": true }
     });
+  } else
+  {
+    macro.img = item.img
   }
   game.user.assignHotbarMacro(macro, slot);
 }
