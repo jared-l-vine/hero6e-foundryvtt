@@ -1,8 +1,21 @@
-{{!--log 'HEROSYS SHEET' this--}}
+{{log 'HEROSYS SHEET' this}}
 <form class="hero {{cssClass}} flexcol actor-sheet" autocomplete="off">
     <nav class="sheet-edit-tabs sheet-tabs tabs" data-group="mode">
         <a class="item edit-settings" data-tab="play" data-edit="disabled">Play</a>
         <a class="item edit-settings" data-tab="edit" data-edit="enabled">Edit</a>
+
+        {{#if isGM}}
+        <select name="type" data-dtype="text">
+            {{selectOptions actorTypeChoices selected=actor.type localize=true}}
+        </select>
+        {{else}}
+            <select name="type" data-dtype="text" disabled title="Only a Game Master can change the Actor type.">
+                {{selectOptions actorTypeChoices selected=actor.type localize=true }}
+            </select>
+        {{/if}}
+
+        {{token}}
+
         <label class="upload-button">
             <span>Upload .HDC</span>
             <input type="file" />
@@ -31,6 +44,8 @@
                 </div>
             </header>
         </section>
+
+
         
         <section>
             <div class="grid grid-3col">
@@ -184,6 +199,7 @@
                             <div class="item-controls flex3" data-group="mode">
                                 <a class="item-control item-edit" title="Edit Item" id="{{id}}"><i class="fas fa-edit"></i></a>
                                 <a class="item-control item-delete" title="Delete Item" id="{{id}}"><i class="fas fa-trash"></i></a>
+                            
                             </div>
                         </li>
                         {{/each}}

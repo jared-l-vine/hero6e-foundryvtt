@@ -1,154 +1,165 @@
 {
     "Actor": {
-        "types": [ "character" ],
+        "types": [ "pc", "npc", "character", "generic" ],
         "templates": {
-            "base": {}
-        },
-        "character": {
-            "templates": [ "base" ],
-            "biography": "",
-            "attributes": {
-                "points": {
-                    "value": 175
-                }
-            },
-            "characteristics": {
-                "str": {
-                    "value": 10,
-                    "max": 10,
-                    "type": "rollable"
-                },
-                "dex": {
-                    "value": 10,
-                    "max": 10,
-                    "type": "rollable"
-                },
-                "con": {
-                    "value": 10,
-                    "max": 10,
-                    "type": "rollable"
-                },
-                "int": {
-                    "value": 10,
-                    "max": 10,
-                    "type": "rollable"
-                },
-                "ego": {
-                    "value": 10,
-                    "max": 10,
-                    "type": "rollable"
-                },
-                "pre": {
-                    "value": 10,
-                    "max": 10,
-                    "type": "rollable"
-                },
-                "ocv": {
-                    "max": 3,
-                    "autoMod": "0",
-                    "userMod": "0",
-                    "value": 3,
-                    "modifier": 1,
-                    "type": "combat"
-                },
-                "dcv": {
-                    "max": 3,
-                    "autoMod": "0",
-                    "userMod": "0",
-                    "value": 3,
-                    "modifier": 1,
-                    "type": "combat"
-                },
-                "omcv": {
-                    "max": 3,
-                    "autoMod": "0",
-                    "userMod": "0",
-                    "value": 3,
-                    "modifier": 1,
-                    "type": "combat"
-                },
-                "dmcv": {
-                    "max": 3,
-                    "autoMod": "0",
-                    "userMod": "0",
-                    "value": 3,
-                    "modifier": 1,
-                    "type": "combat"
-                },
-                "spd": {
-                    "value": 2,
-                    "max": 2,
-                    "type": "other"
-                },
-                "pd": {
-                    "value": 2,
-                    "max": 2,
-                    "type": "defense"
-                },
-                "ed": {
-                    "value": 2,
-                    "max": 2,
-                    "type": "defense"
-                },
-                "rec": {
-                    "value": 4,
-                    "max": 4,
-                    "type": "other"
-                },
-                "body": {
-                    "value": 10,
-                    "max": 10,
-                    "type": "resource",
-                    "loc": {
-                        "Head": 0,
-                        "Left Hand": 0,
-                        "Right Hand": 0,
-                        "Left Shoulder": 0,
-                        "Right Shoulder": 0,
-                        "Left Arm": 0,
-                        "Right Arm": 0,
-                        "Chest": 0,
-                        "Stomach": 0,
-                        "Vitals": 0,
-                        "Left Thigh": 0,
-                        "Right Thigh": 0,
-                        "Left Leg": 0,
-                        "Right Leg": 0,
-                        "Left Foot": 0,
-                        "Right Foot": 0
+            "base": {},
+            "characterTemplate": {
+                "templates": [ "base" ],
+                "biography": "",
+                "attributes": {
+                    "points": {
+                        "value": 175
                     }
                 },
-                "stun": {
-                    "value": 20,
-                    "max": 20,
-                    "type": "resource"
-                },
-                "end": {
-                    "value": 20,
-                    "max": 20,
-                    "type": "resource"
-                },
-                "running": {
-                    "value": 12,
-                    "max": 12,
-                    "type": "movement"
-                },
-                "swimming": {
-                    "value": 4,
-                    "max": 4,
-                    "type": "movement"
-                },
-                "leaping": {
-                    "value": 4,
-                    "max": 4,
-                    "type": "movement"
-                },
-                "flying": {
-                    "value": 0,
-                    "max": 0,
-                    "type": "movement"
+                "characteristics": {
+                    "str": {
+                        "value": 10,
+                        "max": 10,
+                        "type": "rollable"
+                    },
+                    "dex": {
+                        "value": 10,
+                        "max": 10,
+                        "type": "rollable"
+                    },
+                    "con": {
+                        "value": 10,
+                        "max": 10,
+                        "type": "rollable"
+                    },
+                    "int": {
+                        "value": 10,
+                        "max": 10,
+                        "type": "rollable"
+                    },
+                    "ego": {
+                        "value": 10,
+                        "max": 10,
+                        "type": "rollable"
+                    },
+                    "pre": {
+                        "value": 10,
+                        "max": 10,
+                        "type": "rollable"
+                    },
+                    "ocv": {
+                        "max": 3,
+                        "autoMod": "0",
+                        "userMod": "0",
+                        "value": 3,
+                        "modifier": 1,
+                        "type": "combat"
+                    },
+                    "dcv": {
+                        "max": 3,
+                        "autoMod": "0",
+                        "userMod": "0",
+                        "value": 3,
+                        "modifier": 1,
+                        "type": "combat"
+                    },
+                    "omcv": {
+                        "max": 3,
+                        "autoMod": "0",
+                        "userMod": "0",
+                        "value": 3,
+                        "modifier": 1,
+                        "type": "combat"
+                    },
+                    "dmcv": {
+                        "max": 3,
+                        "autoMod": "0",
+                        "userMod": "0",
+                        "value": 3,
+                        "modifier": 1,
+                        "type": "combat"
+                    },
+                    "spd": {
+                        "value": 2,
+                        "max": 2,
+                        "type": "other"
+                    },
+                    "pd": {
+                        "value": 2,
+                        "max": 2,
+                        "type": "defense"
+                    },
+                    "ed": {
+                        "value": 2,
+                        "max": 2,
+                        "type": "defense"
+                    },
+                    "rec": {
+                        "value": 4,
+                        "max": 4,
+                        "type": "other"
+                    },
+                    "body": {
+                        "value": 10,
+                        "max": 10,
+                        "type": "resource",
+                        "loc": {
+                            "Head": 0,
+                            "Left Hand": 0,
+                            "Right Hand": 0,
+                            "Left Shoulder": 0,
+                            "Right Shoulder": 0,
+                            "Left Arm": 0,
+                            "Right Arm": 0,
+                            "Chest": 0,
+                            "Stomach": 0,
+                            "Vitals": 0,
+                            "Left Thigh": 0,
+                            "Right Thigh": 0,
+                            "Left Leg": 0,
+                            "Right Leg": 0,
+                            "Left Foot": 0,
+                            "Right Foot": 0
+                        }
+                    },
+                    "stun": {
+                        "value": 20,
+                        "max": 20,
+                        "type": "resource"
+                    },
+                    "end": {
+                        "value": 20,
+                        "max": 20,
+                        "type": "resource"
+                    },
+                    "running": {
+                        "value": 12,
+                        "max": 12,
+                        "type": "movement"
+                    },
+                    "swimming": {
+                        "value": 4,
+                        "max": 4,
+                        "type": "movement"
+                    },
+                    "leaping": {
+                        "value": 4,
+                        "max": 4,
+                        "type": "movement"
+                    },
+                    "flying": {
+                        "value": 0,
+                        "max": 0,
+                        "type": "movement"
+                    }
                 }
             }
+        },
+        "pc":
+        {
+            "templates": [ "characterTemplate" ]
+        },
+        "npc":
+        {
+            "templates": [ "characterTemplate" ]
+        },
+        "character": {
+            "templates": [ "characterTemplate" ]
         }
     },
     "Item": {

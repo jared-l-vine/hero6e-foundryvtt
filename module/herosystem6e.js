@@ -39,6 +39,8 @@ Hooks.once('init', async function() {
 
     CONFIG.POWERS = POWERS;
 
+      // Define custom Document classes
+    CONFIG.Actor.documentClass = HeroSystem6eActor;
     CONFIG.Combat.documentClass = HeroSystem6eCombat;
 
     /**
@@ -228,3 +230,61 @@ function rollItemMacro(itemName, itemType) {
 // REF: https://github.com/dmdorman/hero6e-foundryvtt/issues/40
 Hooks.on("setup", () => CONFIG.MeasuredTemplate.defaults.angle = 60);
 
+
+// Migration Script
+// For now we will migrate EVERY time
+// TODO: add version setting check
+// REF: https://www.youtube.com/watch?v=Hl23n3MvtaI
+Hooks.once("ready", function () {
+  if (!game.user.isGM) {
+    return;
+  }
+
+  console.log("migrateWorld")
+  migrateActorTypes()
+  //migrateWorld();
+
+});
+
+// async function migrateWorld()
+// {
+//   for (let actor of game.actors.contents) {
+//     const updateData = migrateActorData(actor.system);
+//     if (!foundry.utils.isEmpty(updateData)) {
+//       console.log(`Migrating Actor entity ${actor.name}.`);
+//       await actor.update(updateData);
+//     }
+//   }
+// }
+
+// function migrateActorData(actor)
+// {
+//   let updateData = {};
+//   //updateData["system.type"] = 'complication';
+//   return updateData;
+// }
+
+// Change Actor type from "character" to "pc"
+async function migrateActorTypes() {
+  const updates = [];
+  for ( let actor of game.actors ) {
+    if ( actor.type !== "character" ) continue;
+
+    if (actor.prototypeToken.disposition == CONST.TOKEN_DISPOSITIONS.FRIENDLY)
+    {
+      updates.push({_id: actor.id, type: "pc"});
+    }
+    else
+    {
+      updates.push({_id: actor.id, type: "npc"});
+    }
+
+  }
+  if (updates.length > 0)
+  {
+    ui.notifications.info(`${updates.length} actors migrated.`)
+    await Actor.updateDocuments(updates);
+  }
+ 
+  
+}

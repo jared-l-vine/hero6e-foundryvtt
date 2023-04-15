@@ -36,10 +36,12 @@ export class HeroSystem6eActorSheet extends ActorSheet {
   getData () {
     const data = super.getData()
 
-    // Prepare items
-    if (this.actor.type === 'character') {
-      this._prepareCharacterItems(data)
-    }
+    // Prepare items (for all actor types)
+    // May need exception for vehicles/robots when/if implemented
+
+    // if (this.actor.type === 'character') {
+    this._prepareCharacterItems(data)
+    // }
 
 
 
@@ -169,6 +171,18 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       }
     }
 
+    // Disposition
+    let disposition = 'neutral'
+    if ( (sheetData.options?.token?.disposition || sheetData.actor.prototypeToken.disposition) == CONST.TOKEN_DISPOSITIONS.FRIENDLY) disposition = 'friendly'
+    if ( (sheetData.options?.token?.disposition || sheetData.actor.prototypeToken.disposition) == CONST.TOKEN_DISPOSITIONS.HOSTILE) disposition = 'hostile'
+
+    // ActorLink (typically for unique tokens)
+    let actorLink = "unlinked"
+    if ( (sheetData.options?.token?.actorLink || sheetData.actor.prototypeToken.actorLink)) actorLink = "linked"
+    
+    // actorTypeChoices extra info
+    const choicesExtraInfo = " (" + disposition + "/" + actorLink + ")"
+        
     // Assign and return
     sheetData.skills = skills
     sheetData.defenses = defenses
@@ -183,6 +197,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     sheetData.martialart = martialart
     sheetData.characteristicSet = characteristicSet
     sheetData.system = actorData.system
+    sheetData.actorTypeChoices = {pc: "PC" + choicesExtraInfo, npc: "NPC"+ choicesExtraInfo, character:"CHARACTER"+ choicesExtraInfo}
+    sheetData.isGM = game.user.isGM
 
 
 
