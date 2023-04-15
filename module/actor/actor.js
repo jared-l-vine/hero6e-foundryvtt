@@ -7,16 +7,35 @@ export class HeroSystem6eActor extends Actor {
     /** @inheritdoc */
     async _preCreate(data, options, user) {
         await super._preCreate(data, options, user);
+
+        //TODO: Add user configuration for initial prototype settings
+
+        let prototypeToken = {
+            // Leaving sight disabled.
+            // TODO: Implement various Enhanced Visions
+            // sight: { enabled: true }, 
+            bar1: {attribute: "characteristics.body"},
+            bar2: {attribute: "characteristics.stun"},
+            displayBars: CONST.TOKEN_DISPLAY_MODES.HOVER,
+            displayName: CONST.TOKEN_DISPLAY_MODES.HOVER,
+        };
+
+
         if ( this.type === "pc" ) 
         {
-            console.log("pc")
-            let prototypeToken = {
-                sight: { enabled: true }, 
+            prototypeToken = {
+                ... prototypeToken,
                 actorLink: true,
                 disposition: CONST.TOKEN_DISPOSITIONS.FRIENDLY,
+                displayBars: CONST.TOKEN_DISPLAY_MODES.ALWAYS,
+                displayName: CONST.TOKEN_DISPLAY_MODES.HOVER,
+                
             };
-            this.updateSource({prototypeToken});
-        };
+            
+        } 
+
+        this.updateSource({prototypeToken});
+
     }
 
     

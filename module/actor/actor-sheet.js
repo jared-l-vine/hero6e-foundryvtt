@@ -716,6 +716,13 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
     if (characterInfo.getAttribute('CHARACTER_NAME') !== '') {
       changes.name = characterInfo.getAttribute('CHARACTER_NAME')
+
+      // Override name of prototype token if HDC upload was from library
+      if (this.actor.prototypeToken)
+      {
+        changes.prototypeToken = {}
+        changes.prototypeToken.name = changes.name
+      }
     }
 
     // Biography
