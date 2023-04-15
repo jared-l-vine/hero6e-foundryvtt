@@ -288,3 +288,11 @@ async function migrateActorTypes() {
  
   
 }
+
+
+// Remove Character from selectable actor types
+Hooks.on("renderDialog", (dialog, html, data) => {
+  if (html[0].querySelector(".window-title").textContent != "Create New Actor") return
+  let option = html[0].querySelector("option[value*='character']")
+  if (option) option.remove()
+})

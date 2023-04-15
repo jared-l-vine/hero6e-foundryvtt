@@ -1,6 +1,7 @@
 // import { HeroSystem6eCard } from "./card.js";
 import { modifyRollEquation, getTokenChar } from "../utility/util.js"
 import { determineDefense } from "../utility/defense.js";
+import { HeroSystem6eActorActiveEffects } from "../actor/actor-active-effects.js"
 
 export async function chatListeners(html) {
   // Called by carrd-helpers.js
@@ -130,7 +131,12 @@ export async function AttackToHit(item, options)
         enduranceText = 'Spent ' + spentEnd + ' END';
     }
 
-    if ((automation === "all") || (automation === "npcOnly" && !actor.hasPlayerOwner) || (automation === "pcEndOnly")) {
+
+    // none: "No Automation",
+    // npcOnly: "NPCs Only (end, stun, body)",
+    // pcEndOnly: "PCs (end) and NPCs (end, stun, body)",
+    // all: "PCs and NPCs (end, stun, body)"
+    if ((automation === "all") || (automation === "npcOnly" && actor.type == 'npc') || (automation === "pcEndOnly" && actor.type === 'pc' )) {
       let changes = {};
       if (newEnd < 0) {
           changes = {
@@ -397,6 +403,12 @@ export async function _onApplyDamageToSpecificToken(event, tokenId)
   const itemData = item.system;
 
   const token = canvas.tokens.get(tokenId)
+
+  if (!token)
+  {
+    return ui.notifications.warn(`You must select at least one token before applying damage.`);
+  }
+  
   
 
   let tags = []
@@ -422,7 +434,7 @@ export async function _onApplyDamageToSpecificToken(event, tokenId)
   }
   const newRoll = Roll.fromTerms(newTerms)
   
-
+  let automation = game.settings.get("hero6efoundryvttv2", "automation");
 
   // -------------------------------------------------
   // determine active defenses
@@ -455,7 +467,25 @@ export async function _onApplyDamageToSpecificToken(event, tokenId)
   if (game.settings.get("hero6efoundryvttv2", "stunned")) {
     // determine if target was Stunned
     if (damageDetail.stun > token.actor.system.characteristics.con.value) {
+        
       damageDetail.effects = damageDetail.effects + "inflicts Stunned; "
+
+      // none: "No Automation",
+      // npcOnly: "NPCs Only (end, stun, body)",
+      // pcEndOnly: "PCs (end) and NPCs (end, stun, body)",
+      // all: "PCs and NPCs (end, stun, body)"
+      if ((automation === "all") || (automation === "npcOnly" && token.actor.type === 'npc')) {
+        let stunnedEffect = token.actor.effects.find(o => o.id == "stunned");
+        if (!stunnedEffect)
+        {
+          // stunnedEffect = HeroSystem6eActorActiveEffects.getEffects().find(o=> o.id == 'stunned')
+          // stunnedEffect.label = `${game.i18n.localize(stunnedEffect.label )}`
+          // //await ActiveEffect.apply(token.actor, stunnedEffect)
+          // await token.actor.createEmbeddedDocuments("ActiveEffect", [stunnedEffect], { localize: true })
+        }
+        
+        // console.log("automation: applyDamage", token.actor.system.characteristics.stun.value - damageDetail.stun, token.actor.system.characteristics.body.value - damageDetail.body)
+      }
     }
   }
 
@@ -508,10 +538,21 @@ export async function _onApplyDamageToSpecificToken(event, tokenId)
     content: cardHtml,
     speaker: speaker,
   }
- 
+
+  // none: "No Automation",
+  // npcOnly: "NPCs Only (end, stun, body)",
+  // pcEndOnly: "PCs (end) and NPCs (end, stun, body)",
+  // all: "PCs and NPCs (end, stun, body)"
+  if ((automation === "all") || (automation === "npcOnly" && token.actor.type === 'npc')) {
+    let changes = {
+        "system.characteristics.stun.value": token.actor.system.characteristics.stun.value - damageDetail.stun,
+        "system.characteristics.body.value": token.actor.system.characteristics.body.value - damageDetail.body,
+    }
+    await token.actor.update(changes);
+    console.log("automation: applyDamage", token.actor.system.characteristics.stun.value - damageDetail.stun, token.actor.system.characteristics.body.value - damageDetail.body)
+  }
+
   return ChatMessage.create(chatData);
-
-
 
 }
 
