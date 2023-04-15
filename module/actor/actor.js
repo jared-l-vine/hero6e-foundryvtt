@@ -105,9 +105,8 @@ export class HeroSystem6eActor extends Actor {
     //     super._onUpdate(data, options, userId);
     // }
 
-     static async migrateData(data)
+    static migrateData(data)
     {
-        let updates = []
         if (data.type === 'character')
         {
             let token = data.prototypeToken || data.token
@@ -123,7 +122,6 @@ export class HeroSystem6eActor extends Actor {
                 }
             }
         }
-       
         return super.migrateData(data);
     }
 }
