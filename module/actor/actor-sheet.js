@@ -197,7 +197,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     sheetData.martialart = martialart
     sheetData.characteristicSet = characteristicSet
     sheetData.system = actorData.system
-    sheetData.actorTypeChoices = {pc: "PC" + choicesExtraInfo, npc: "NPC"+ choicesExtraInfo, character:"CHARACTER"+ choicesExtraInfo}
+    sheetData.actorTypeChoices = {pc: "PC" + choicesExtraInfo, npc: "NPC"+ choicesExtraInfo}
     sheetData.isGM = game.user.isGM
 
 

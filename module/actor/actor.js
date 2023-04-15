@@ -104,4 +104,26 @@ export class HeroSystem6eActor extends Actor {
     // _onUpdate(data, options, userId) {
     //     super._onUpdate(data, options, userId);
     // }
+
+     static async migrateData(data)
+    {
+        let updates = []
+        if (data.type === 'character')
+        {
+            let token = data.prototypeToken || data.token
+            if (token)
+            {
+                if (token.disposition == CONST.TOKEN_DISPOSITIONS.FRIENDLY)
+                {
+                    data.type= "pc"
+                }
+                else
+                {
+                    data.type= "npc"
+                }
+            }
+        }
+       
+        return super.migrateData(data);
+    }
 }
