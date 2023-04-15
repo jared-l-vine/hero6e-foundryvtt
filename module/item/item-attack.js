@@ -134,15 +134,16 @@ export async function AttackToHit(item, options)
       let changes = {};
       if (newEnd < 0) {
           changes = {
-              "data.characteristics.end.value": 0,
-              "data.characteristics.stun.value": parseInt(actor.system.characteristics.stun.value) + parseInt(newEnd),
+              "system.characteristics.end.value": 0,
+              "system.characteristics.stun.value": parseInt(actor.system.characteristics.stun.value) + parseInt(newEnd),
           }
       } else {
           changes = {
-              "data.characteristics.end.value": newEnd,
+              "system.characteristics.end.value": newEnd,
           }
       }
       await actor.update(changes);
+      console.log("automation: newEnd", newEnd)
     }
   }
 
