@@ -15,7 +15,7 @@ import * as Dice from '../dice.js'
  */
 export class HeroSystem6eActorSheet extends ActorSheet {
   /** @override */
-  static get defaultOptions () {
+  static get defaultOptions() {
     const path = 'systems/hero6efoundryvttv2/templates/actor/actor-sheet.hbs'
 
     return mergeObject(super.defaultOptions, {
@@ -33,7 +33,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
   }
 
   /** @override */
-  getData () {
+  getData() {
     const data = super.getData()
 
     // Prepare items (for all actor types)
@@ -63,7 +63,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
   *
   * @return {undefined}
   */
-  _prepareCharacterItems (sheetData) {
+  _prepareCharacterItems(sheetData) {
     const actorData = sheetData.actor
 
     const characteristicSet = []
@@ -173,16 +173,16 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
     // Disposition
     let disposition = 'neutral'
-    if ( (sheetData.options?.token?.disposition || sheetData.actor.prototypeToken.disposition) == CONST.TOKEN_DISPOSITIONS.FRIENDLY) disposition = 'friendly'
-    if ( (sheetData.options?.token?.disposition || sheetData.actor.prototypeToken.disposition) == CONST.TOKEN_DISPOSITIONS.HOSTILE) disposition = 'hostile'
+    if ((sheetData.options?.token?.disposition || sheetData.actor.prototypeToken.disposition) == CONST.TOKEN_DISPOSITIONS.FRIENDLY) disposition = 'friendly'
+    if ((sheetData.options?.token?.disposition || sheetData.actor.prototypeToken.disposition) == CONST.TOKEN_DISPOSITIONS.HOSTILE) disposition = 'hostile'
 
     // ActorLink (typically for unique tokens)
     let actorLink = "unlinked"
-    if ( (sheetData.options?.token?.actorLink || sheetData.actor.prototypeToken.actorLink)) actorLink = "linked"
-    
+    if ((sheetData.options?.token?.actorLink || sheetData.actor.prototypeToken.actorLink)) actorLink = "linked"
+
     // actorTypeChoices extra info
     const choicesExtraInfo = " (" + disposition + "/" + actorLink + ")"
-        
+
     // Assign and return
     sheetData.skills = skills
     sheetData.defenses = defenses
@@ -197,7 +197,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     sheetData.martialart = martialart
     sheetData.characteristicSet = characteristicSet
     sheetData.system = actorData.system
-    sheetData.actorTypeChoices = {pc: "PC" + choicesExtraInfo, npc: "NPC"+ choicesExtraInfo}
+    sheetData.actorTypeChoices = { pc: "PC" + choicesExtraInfo, npc: "NPC" + choicesExtraInfo }
     sheetData.isGM = game.user.isGM
 
 
@@ -247,7 +247,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     item.rollable = item.system.rollable
   }
 
-  static _prepareDefenseItem (item) {
+  static _prepareDefenseItem(item) {
     item.defenseType = CONFIG.HERO.defenseTypes[item.system.defenseType]
     item.active = item.system.active
     item.resistant = CONFIG.HERO.bool[item.system.resistant]
@@ -256,7 +256,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     item.value = item.system.value
   }
 
-  static _prepareAttackItem (item) {
+  static _prepareAttackItem(item) {
     item.system = item.system
     item.defense = CONFIG.HERO.defenseTypes[item.system.defense]
     item.piercing = item.system.piercing
@@ -290,7 +290,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     }
   }
 
-  static _preparePowerItem (item, actor) {
+  static _preparePowerItem(item, actor) {
     const skills = []
     const attacks = []
     const defenses = []
@@ -340,7 +340,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
   /* -------------------------------------------- */
 
   /** @override */
-  activateListeners (html) {
+  activateListeners(html) {
     super.activateListeners(html)
 
     // Everything below here is only needed if the sheet is editable
@@ -380,6 +380,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     // Delete Inventory Items
     html.find('.item-delete').click(this._onDeleteItem.bind(this))
     html.find('.power-item-delete').click(this._onDeletePowerItem.bind(this))
+    html.find('.effect-delete').click(this._onDeleteActiveEffect.bind(this))
 
     // Power Sub Items
     html.find('.power-maneuver-item-toggle').click(this._onPowerManeuverItemToggle.bind(this))
@@ -408,11 +409,11 @@ export class HeroSystem6eActorSheet extends ActorSheet {
   }
 
   /**
-	 * Handle creating a new Owned Item for the actor using initial data defined in the HTML dataset
-	 * @param {Event} event   The originating click event
-	 * @private
-	 */
-  async _onItemCreate (event) {
+   * Handle creating a new Owned Item for the actor using initial data defined in the HTML dataset
+   * @param {Event} event   The originating click event
+   * @private
+   */
+  async _onItemCreate(event) {
     event.preventDefault()
     const header = event.currentTarget
     // Get the type of item to create.
@@ -432,7 +433,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     delete itemData.system.type
 
 
-    
+
 
     // Finally, create the item!
     return await HeroSystem6eItem.create(itemData, { parent: this.actor })
@@ -464,7 +465,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
   // async _onItemAttack (event) {
   //   event.preventDefault()
-    
+
   //   // Hold SHIFT when clicking attack roll dice
   //   // to test out new code
   //   if (event.shiftKey )
@@ -494,7 +495,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
   //   return item.displayCard({ rollMode, createChatMessage }, this.actor, item.id)
   // }
 
-  async _onItemAttack (event) {
+  async _onItemAttack(event) {
     event.preventDefault()
     const itemId = event.currentTarget.closest('.item').dataset.itemId
     const item = this.actor.items.get(itemId)
@@ -502,7 +503,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     item.roll()
   }
 
-  async _onItemToggle (event) {
+  async _onItemToggle(event) {
     event.preventDefault()
     const itemId = event.currentTarget.closest('.item').dataset.itemId
 
@@ -524,7 +525,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       await enforceManeuverLimits(this.actor, itemId, item.name)
     }
 
-    HEROSYS.log(item.name + ": " + JSON.stringify({ [attr]: newValue }) )
+    HEROSYS.log(item.name + ": " + JSON.stringify({ [attr]: newValue }))
 
     if (!isPowerSubItem(itemId)) {
       await item.update({ [attr]: newValue })
@@ -537,7 +538,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     }
   }
 
-  async _onPowerManeuverItemToggle (event) {
+  async _onPowerManeuverItemToggle(event) {
     const itemId = event.currentTarget.closest('.item').dataset.itemId
     const subItemId = event.currentTarget.closest('.item').dataset.subitemId
     const powerItem = this.actor.items.get(itemId)
@@ -559,7 +560,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     await updateCombatAutoMod(this.actor, newItem)
   }
 
-  async _onPowerDefenseItemToggle (event) {
+  async _onPowerDefenseItemToggle(event) {
     const itemId = event.currentTarget.closest('.item').dataset.itemId
     const subItemId = event.currentTarget.closest('.item').dataset.subitemId
     const powerItem = this.actor.items.get(itemId)
@@ -574,7 +575,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
   * @param {Event} event   The originating click event
   * @private
   */
-  _onRollCharacteristic (event) {
+  _onRollCharacteristic(event) {
     event.preventDefault()
     const element = event.currentTarget
     const dataset = element.dataset
@@ -585,7 +586,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       const actor = this.actor
 
       const roll = new Roll(dataset.roll, this.actor.getRollData())
-      roll.evaluate({async: true}).then(function (result) {
+      roll.evaluate({ async: true }).then(function (result) {
         // let margin = actor.system.characteristics[dataset.label].roll - result.total;
         const margin = charRoll - result.total
 
@@ -598,7 +599,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     }
   }
 
-  async _onRollSkill (event) {
+  async _onRollSkill(event) {
     event.preventDefault()
     const element = event.currentTarget
     const dataset = element.dataset
@@ -614,14 +615,14 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     const item = this.actor.items.get(powerItemId)
     HEROSYS.log(item)
     const skillItemData = item.system.subItems.skill[subItemId]
-    
+
     HEROSYS.log(skillItemData)
 
     return createSkillPopOutFromItem(skillItemData, this.actor)
 
   }
 
-  async _onPowerRollSkill (event) {
+  async _onPowerRollSkill(event) {
     event.preventDefault()
 
     const itemId = event.currentTarget.closest('.item').dataset.itemId
@@ -640,7 +641,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     createSkillPopOutFromItem(newItem, this.actor)
   }
 
-  async _onRecovery (event) {
+  async _onRecovery(event) {
     const chars = this.actor.system.characteristics
 
     let newStun = parseInt(chars.stun.value) + parseInt(chars.rec.value)
@@ -673,11 +674,11 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     return ChatMessage.create(chatData)
   }
 
-  _onPresenseAttack (event) {
+  _onPresenseAttack(event) {
     presenceAttackPopOut(this.actor)
   }
 
-  async _uploadCharacterSheet (event) {
+  async _uploadCharacterSheet(event) {
     const file = event.target.files[0]
     if (!file) {
       return
@@ -693,11 +694,11 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     reader.readAsText(file)
   }
 
-  _applyCharacterSheet (sheet) {
+  _applyCharacterSheet(sheet) {
     this._applyCharacterSheetAsync(sheet)
   }
 
-  async _applyCharacterSheetAsync (sheet) {
+  async _applyCharacterSheetAsync(sheet) {
     const characterInfo = sheet.getElementsByTagName('CHARACTER_INFO')[0]
     const characteristics = sheet.getElementsByTagName('CHARACTERISTICS')[0]
     const skills = sheet.getElementsByTagName('SKILLS')[0]
@@ -708,7 +709,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     const complications = sheet.getElementsByTagName('DISADVANTAGES')[0]
     const equipment = sheet.getElementsByTagName('EQUIPMENT')[0]
     const image = sheet.getElementsByTagName('IMAGE')[0]
-  
+
 
     // let elementsToLoad = ["POWERS", "PERKS", "TALENTS", "MARTIALARTS", "DISADVANTAGES"]
 
@@ -718,8 +719,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       changes.name = characterInfo.getAttribute('CHARACTER_NAME')
 
       // Override name of prototype token if HDC upload was from library
-      if (this.actor.prototypeToken)
-      {
+      if (this.actor.prototypeToken) {
         changes.prototypeToken = {}
         changes.prototypeToken.name = changes.name
       }
@@ -727,11 +727,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
     // Biography
     let Biography = ""
-    for(let child of characterInfo.children)
-    {
+    for (let child of characterInfo.children) {
       let text = child.textContent.trim();
-      if (text)
-      {
+      if (text) {
         Biography += "<p><b>" + child.nodeName + "</b>: " + text + "</p>"
       }
     }
@@ -742,7 +740,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     //   await item.delete()
     // }
     // This is a faster (bulk) operation to delete all the items
-    await this.actor.deleteEmbeddedDocuments("Item", Array.from(this.actor.items.keys()) )
+    await this.actor.deleteEmbeddedDocuments("Item", Array.from(this.actor.items.keys()))
 
 
     // determine spd upfront for velocity calculations
@@ -819,18 +817,16 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         //   case "skill": await uploadSkill.call(this, power); break
         //   default : ui.notifications.warn(`${xmlid} not handle during HDC upload of ${this.actor.name}`)
         // }
-        if (configPowerInfo.powerType.includes("skill")){
+        if (configPowerInfo.powerType.includes("skill")) {
           await uploadSkill.call(this, power);
         }
-        
-      } 
-      else
-      {
-        if (game.settings.get(game.system.id, 'alphaTesting'))
-        {
+
+      }
+      else {
+        if (game.settings.get(game.system.id, 'alphaTesting')) {
           ui.notifications.warn(`${xmlid} not handled during HDC upload of ${this.actor.name}`)
         }
-        
+
       }
 
       let itemName = name
@@ -856,7 +852,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
         if (xmlidModifier !== null) {
           modifiers.push({
-            xmlid: xmlidModifier, 
+            xmlid: xmlidModifier,
             alias: modifier.getAttribute('ALIAS'),
             comments: modifier.getAttribute('ALIAS'),
             option: modifier.getAttribute('OPTION'),
@@ -872,22 +868,20 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       // so when the power is modified in foundry, the power
       // description updates as well.
       // If in sheets code it may handle drains/suppresses nicely.
-      switch (alias)
-      {
-        case "PRE": 
-            powerData.description = "+" + levels + " PRE";
-            activeCost = 0;
+      switch (alias) {
+        case "PRE":
+          powerData.description = "+" + levels + " PRE";
+          activeCost = 0;
           break;
         case "Mind Scan": powerData.description = levels + "d6 Mind Scan (" +
           input + " class of minds)";
           break;
-        default: 
+        default:
           powerData.description = alias;
 
       }
 
-      for(let modifier of powerData.modifiers)
-      {
+      for (let modifier of powerData.modifiers) {
         if (modifier.alias) powerData.description += "; " + modifier.alias
         if (modifier.comments) powerData.description += "; " + modifier.comments
         if (modifier.option) powerData.description += "; " + modifier.option
@@ -938,7 +932,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       }
 
       await HeroSystem6eItem.create(itemData, { parent: this.actor })
-      
+
     }
 
     for (const perk of perks.children) {
@@ -962,7 +956,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     }
 
     // combat maneuvers
-    async function loadCombatManeuvers (dict, actor) {
+    async function loadCombatManeuvers(dict, actor) {
       for (const entry of Object.entries(dict)) {
         const v = entry[1]
         const itemData = {
@@ -988,52 +982,50 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     }
 
     // Actor Image
-    if (image )
-    {
+    if (image) {
       let filename = image.getAttribute("FileName")
       let extension = filename.split('.').pop()
       let base64 = "data:image/" + extension + ";base64," + image.textContent
       let path = "worlds/" + game.world.id
-      if (this.actor.img.indexOf(filename) == -1)
-      {
+      if (this.actor.img.indexOf(filename) == -1) {
         await ImageHelper.uploadBase64(base64, filename, path)
-        await this.actor.update({[`img`]: path + '/' + filename })
+        await this.actor.update({ [`img`]: path + '/' + filename })
       }
     }
 
   }
 
-  async _updateName (name) {
+  async _updateName(name) {
     // this needed to be pulled out of the listener for some reason
     const changes = []
     changes.name = name
     await this.actor.update(changes)
   }
 
-  async _onEditPowerItem (event) {
+  async _onEditPowerItem(event) {
     const id = event.currentTarget.id.split(' ')[0]
     const item = this.object.system.items.get(id)
 
     await editSubItem(event, item)
   }
 
-  async _onDeleteItem (event) {
+  async _onDeleteItem(event) {
     const li = $(event.currentTarget).parents('.item')
     const item = this.actor.items.get(li.data('itemId'))
 
     const confirmed = await Dialog.confirm({
-        title: game.i18n.localize("HERO6EFOUNDRYVTTV2.confirms.deleteConfirm.Title"),
-        content: game.i18n.localize("HERO6EFOUNDRYVTTV2.confirms.deleteConfirm.Content")
+      title: game.i18n.localize("HERO6EFOUNDRYVTTV2.confirms.deleteConfirm.Title"),
+      content: game.i18n.localize("HERO6EFOUNDRYVTTV2.confirms.deleteConfirm.Content")
     });
 
     if (confirmed) {
-        item.delete()
-        li.slideUp(200, () => this.render(false))
-        this.render();
+      item.delete()
+      li.slideUp(200, () => this.render(false))
+      this.render();
     }
   }
 
-  async _onDeletePowerItem (event) {
+  async _onDeletePowerItem(event) {
     const id = event.currentTarget.key
     const item = this.object.system.items.get(id)
 
@@ -1046,19 +1038,35 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       await deleteSubItem(event, item)
     }
   }
+
+  async _onDeleteActiveEffect(event) {
+    const li = $(event.currentTarget).parents('.item')
+    const actor = game.actors.get(li[0].dataset.actorId)
+    const id = li[0].dataset.eventId
+    const effect = actor.effects.find(o => o.id == id)
+
+    const confirmed = await Dialog.confirm({
+      title: game.i18n.localize("HERO6EFOUNDRYVTTV2.confirms.deleteConfirm.Title") + " (" + effect.label + ")",
+      content: game.i18n.localize("HERO6EFOUNDRYVTTV2.confirms.deleteConfirm.Content")
+    });
+
+    if (confirmed) {
+      await actor.deleteEmbeddedDocuments("ActiveEffect", [id])
+    }
+  }
 }
 
-async function displayCard ({ rollMode, createMessage = true } = {}, actor, itemId) {
+async function displayCard({ rollMode, createMessage = true } = {}, actor, itemId) {
   await HeroSystem6eAttackCard.createAttackPopOutFromItem(this, actor, itemId)
 }
 
-async function updateCombatAutoMod (actor, item) {
+async function updateCombatAutoMod(actor, item) {
   const changes = []
 
   let ocvEq = 0
   let dcvEq = '+0'
 
-  function dcvEquation (dcvEq, newDcv) {
+  function dcvEquation(dcvEq, newDcv) {
     if (dcvEq.includes('/') && !newDcv.includes('/')) {
       // don't modify dcvEq
     } else if (!dcvEq.includes('/') && newDcv.includes('/')) {

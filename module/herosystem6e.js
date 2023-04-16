@@ -14,132 +14,132 @@ import HeroSystem6eTemplate from "./template.js";
 import { HeroSystem6eCombat, HeroSystem6eCombatTracker } from "./combat.js";
 import SettingsHelpers from "./settings/settings-helpers.js";
 
-Hooks.once('init', async function() {
+Hooks.once('init', async function () {
 
-    game.herosystem6e = {
-        applications: {
-            HeroSystem6eActorSheet,
-            HeroSystem6eItemSheet,
-        },
-        entities: {
-            HeroSystem6eActor,
-            HeroSystem6eItem,
-            HeroSystem6eTokenDocument,
-            HeroSystem6eToken
-        },
-        canvas: {
-            HeroSystem6eTemplate
-        },
-        macros: macros,
-        rollItemMacro: rollItemMacro,
-        config : HERO
-    };
+  game.herosystem6e = {
+    applications: {
+      HeroSystem6eActorSheet,
+      HeroSystem6eItemSheet,
+    },
+    entities: {
+      HeroSystem6eActor,
+      HeroSystem6eItem,
+      HeroSystem6eTokenDocument,
+      HeroSystem6eToken
+    },
+    canvas: {
+      HeroSystem6eTemplate
+    },
+    macros: macros,
+    rollItemMacro: rollItemMacro,
+    config: HERO
+  };
 
-    CONFIG.HERO = HERO;
+  CONFIG.HERO = HERO;
 
-    CONFIG.POWERS = POWERS;
+  CONFIG.POWERS = POWERS;
 
-      // Define custom Document classes
-    CONFIG.Actor.documentClass = HeroSystem6eActor;
-    CONFIG.Combat.documentClass = HeroSystem6eCombat;
+  // Define custom Document classes
+  CONFIG.Actor.documentClass = HeroSystem6eActor;
+  CONFIG.Combat.documentClass = HeroSystem6eCombat;
 
-    /**
-    * Set an initiative formula for the system
-    * @type {String}
-    */
-    CONFIG.Combat.initiative = {
-        formula: "@characteristics.dex.value + (@characteristics.int.value / 100)",
-        decimals: 2
-    };
+  /**
+  * Set an initiative formula for the system
+  * @type {String}
+  */
+  CONFIG.Combat.initiative = {
+    formula: "@characteristics.dex.value + (@characteristics.int.value / 100)",
+    decimals: 2
+  };
 
-    // debug
-    // CONFIG.debug.hooks = true;
+  // debug
+  // CONFIG.debug.hooks = true;
 
-    // Define custom Entity classes
-    CONFIG.Actor.entityClass = HeroSystem6eActor;
-    CONFIG.Item.documentClass = HeroSystem6eItem;
-    CONFIG.Token.documentClass = HeroSystem6eTokenDocument;
-    CONFIG.Token.objectClass = HeroSystem6eToken;
-    CONFIG.statusEffects = HeroSystem6eActorActiveEffects.getEffects();
-    CONFIG.MeasuredTemplate.objectClass = HeroSystem6eTemplate;
-    CONFIG.ui.combat = HeroSystem6eCombatTracker;
-   
-    SettingsHelpers.initLevelSettings();
+  // Define custom Entity classes
+  CONFIG.Actor.entityClass = HeroSystem6eActor;
+  CONFIG.Item.documentClass = HeroSystem6eItem;
+  CONFIG.Token.documentClass = HeroSystem6eTokenDocument;
+  CONFIG.Token.objectClass = HeroSystem6eToken;
+  CONFIG.statusEffects = HeroSystem6eActorActiveEffects.getEffects();
+  CONFIG.MeasuredTemplate.objectClass = HeroSystem6eTemplate;
+  CONFIG.ui.combat = HeroSystem6eCombatTracker;
 
-    // Register sheet application classes
-    Actors.unregisterSheet("core", ActorSheet);
-    Actors.registerSheet("herosystem6e", HeroSystem6eActorSheet, { makeDefault: true });
-    Items.unregisterSheet("core", ItemSheet);
-    Items.registerSheet("herosystem6e", HeroSystem6eItemSheet, { makeDefault: true });
+  SettingsHelpers.initLevelSettings();
 
-    // If you need to add Handlebars helpers, here are a few useful examples:
-    Handlebars.registerHelper('concat', function() {
+  // Register sheet application classes
+  Actors.unregisterSheet("core", ActorSheet);
+  Actors.registerSheet("herosystem6e", HeroSystem6eActorSheet, { makeDefault: true });
+  Items.unregisterSheet("core", ItemSheet);
+  Items.registerSheet("herosystem6e", HeroSystem6eItemSheet, { makeDefault: true });
+
+  // If you need to add Handlebars helpers, here are a few useful examples:
+  Handlebars.registerHelper('concat', function () {
     var outStr = '';
     for (var arg in arguments) {
-        if (typeof arguments[arg] != 'object') {
+      if (typeof arguments[arg] != 'object') {
         outStr += arguments[arg];
-        }
+      }
     }
     return outStr;
-    });
+  });
 
-    Handlebars.registerHelper('toLowerCase', function(str) {
+  Handlebars.registerHelper('toLowerCase', function (str) {
     return str.toLowerCase();
-    });
+  });
 
-    Handlebars.registerHelper('is_active_segment', function (actives, index) {
-        return actives[index];
-    });
+  Handlebars.registerHelper('is_active_segment', function (actives, index) {
+    return actives[index];
+  });
 });
 
 Hooks.once("init", () => {
-    Ruler.prototype._getSegmentLabel = function _getSegmentLabel(segmentDistance, totalDistance, isTotal) {
-        let rangeMod = Math.ceil(Math.log2(totalDistance / 8)) * 2;
+  Ruler.prototype._getSegmentLabel = function _getSegmentLabel(segmentDistance, totalDistance, isTotal) {
+    let rangeMod = Math.ceil(Math.log2(totalDistance / 8)) * 2;
 
-        rangeMod = rangeMod < 0 ? 0: rangeMod;
+    rangeMod = rangeMod < 0 ? 0 : rangeMod;
 
-        let label = "[" + Math.round(segmentDistance.distance) + " m]" +  "\n-" + rangeMod + " Range Modifier"
+    let label = "[" + Math.round(segmentDistance.distance) + " m]" + "\n-" + rangeMod + " Range Modifier"
 
-        return label
-    };
+    return label
+  };
 })
 
-Hooks.once("ready", async function() {
-    // Wait to register hotbar drop hook on ready so that modules could register earlier if they want to
-    Hooks.on("hotbarDrop", (bar, data, slot) => createHeroSystem6eMacro(bar, data, slot));
+Hooks.once("ready", async function () {
+  // Wait to register hotbar drop hook on ready so that modules could register earlier if they want to
+  Hooks.on("hotbarDrop", (bar, data, slot) => createHeroSystem6eMacro(bar, data, slot));
 });
 
 Hooks.on("renderChatMessage", (app, html, data) => {
-    // Display action buttons
-    chat.displayChatActionButtons(app, html, data);
-    HeroSystem6eCardHelpers.onMessageRendered(html);
+  // Display action buttons
+  chat.displayChatActionButtons(app, html, data);
+  HeroSystem6eCardHelpers.onMessageRendered(html);
 });
 Hooks.on("renderChatLog", (app, html, data) => HeroSystem6eCardHelpers.chatListeners(html));
 Hooks.on("renderChatPopout", (app, html, data) => HeroSystem6eCardHelpers.chatListeners(html));
 Hooks.on("updateActor", (app, html, data) => {
-    app.sheet._render()
+  app.sheet._render()
 
-    for (let combat of game.combats) {
-        combat._onActorDataUpdate();
-    }
+  for (let combat of game.combats) {
+    combat._onActorDataUpdate();
+  }
 });
 
 Hooks.once('devModeReady', ({ registerPackageDebugFlag }) => {
-    registerPackageDebugFlag(HEROSYS.ID);
+  registerPackageDebugFlag(HEROSYS.ID);
 });
 
 
 export class HEROSYS {
-    static ID = "HEROSYS";
+  static ID = "HEROSYS";
 
-    // static log(force, ...args) {
-    static log(...args) {
-        // const shouldLog = force || game.modules.get('_dev-mode')?.api?.getPackageDebugValue(this.ID);
+  // static log(force, ...args) {
+  static log(...args) {
+    // const shouldLog = force || game.modules.get('_dev-mode')?.api?.getPackageDebugValue(this.ID);
 
-        //if (shouldLog) {
-            console.log(this.ID, '|', ...args);
-        //}
-    }
+    //if (shouldLog) {
+    console.log(this.ID, '|', ...args);
+    //}
+  }
 }
 
 /* -------------------------------------------- */
@@ -156,12 +156,10 @@ export class HEROSYS {
 function createHeroSystem6eMacro(bar, data, slot) {
 
   // Check if we want to override the default macro (open sheet)
-  if (data.type === "Item" && typeof data.uuid === "string")
-  {
+  if (data.type === "Item" && typeof data.uuid === "string") {
     const item = fromUuidSync(data.uuid);
-    if (item.isRollable())
-    {
-      handleMacroCreation(bar, data,slot, item)
+    if (item.isRollable()) {
+      handleMacroCreation(bar, data, slot, item)
       return false
     }
   }
@@ -203,12 +201,10 @@ function rollItemMacro(itemName, itemType) {
   console.log("rollItemMacro", item)
 
   // The selected actor does not have an item with this name.
-  if (!item) 
-  {
+  if (!item) {
     item = null
     // Search all owned tokens for this item
-    for (let token of canvas.tokens.ownedTokens)
-    {
+    for (let token of canvas.tokens.ownedTokens) {
       actor = token.actor
       item = actor.items.find(i => i.name === itemName && (!itemType || i.type == itemType))
       if (item) {
@@ -218,7 +214,7 @@ function rollItemMacro(itemName, itemType) {
 
     if (!item) return ui.notifications.warn(`Your controlled Actor does not have an ${itemType || 'item'} named ${itemName}`);
   }
-  
+
 
   // Trigger the item roll
   return item.roll();
@@ -267,26 +263,23 @@ Hooks.once("ready", function () {
 // Change Actor type from "character" to "pc"
 async function migrateActorTypes() {
   const updates = [];
-  for ( let actor of game.actors ) {
-    if ( actor.type !== "character" ) continue;
+  for (let actor of game.actors) {
+    if (actor.type !== "character") continue;
 
-    if (actor.prototypeToken.disposition == CONST.TOKEN_DISPOSITIONS.FRIENDLY)
-    {
-      updates.push({_id: actor.id, type: "pc"});
+    if (actor.prototypeToken.disposition == CONST.TOKEN_DISPOSITIONS.FRIENDLY) {
+      updates.push({ _id: actor.id, type: "pc" });
     }
-    else
-    {
-      updates.push({_id: actor.id, type: "npc"});
+    else {
+      updates.push({ _id: actor.id, type: "npc" });
     }
 
   }
-  if (updates.length > 0)
-  {
+  if (updates.length > 0) {
     ui.notifications.info(`${updates.length} actors migrated.`)
     await Actor.updateDocuments(updates);
   }
- 
-  
+
+
 }
 
 
