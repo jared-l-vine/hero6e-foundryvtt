@@ -1,3 +1,4 @@
+import { HeroSystem6eActorActiveEffects } from "./actor-active-effects.js"
 /**
  * Extend the base Actor entity by defining a custom roll data structure which is ideal for the Simple system.
  * @extends {Actor}
@@ -14,31 +15,52 @@ export class HeroSystem6eActor extends Actor {
             // Leaving sight disabled.
             // TODO: Implement various Enhanced Visions
             // sight: { enabled: true }, 
-            bar1: {attribute: "characteristics.body"},
-            bar2: {attribute: "characteristics.stun"},
+            bar1: { attribute: "characteristics.body" },
+            bar2: { attribute: "characteristics.stun" },
             displayBars: CONST.TOKEN_DISPLAY_MODES.HOVER,
             displayName: CONST.TOKEN_DISPLAY_MODES.HOVER,
         };
 
 
-        if ( this.type === "pc" ) 
-        {
+        if (this.type === "pc") {
             prototypeToken = {
-                ... prototypeToken,
+                ...prototypeToken,
                 actorLink: true,
                 disposition: CONST.TOKEN_DISPOSITIONS.FRIENDLY,
                 displayBars: CONST.TOKEN_DISPLAY_MODES.ALWAYS,
                 displayName: CONST.TOKEN_DISPLAY_MODES.HOVER,
-                
-            };
-            
-        } 
 
-        this.updateSource({prototypeToken});
+            };
+
+        }
+
+        this.updateSource({ prototypeToken });
 
     }
 
-    
+    // Adding ActiveEffects seems complicated.
+    // Make sure only one of the same ActiveEffect is added
+    // Assumes ActiveEffect is a statusEffects.
+    // TODO: Allow for a non-statusEffects ActiveEffect (like from a power)
+    async addActiveEffect(activeEffect) {
+
+        const newEffect = deepClone(activeEffect)
+        newEffect.label = `${game.i18n.localize(newEffect.label)}`
+        newEffect.flags = { core: { statusId: activeEffect.id } }
+
+        // Check if this ActiveEffect already exists
+        const existingEffect = this.effects.find(o => o.flags?.core?.statusId === activeEffect.id);
+        if (existingEffect) {
+            //console.log(activeEffect.id + " already exists")
+            return
+        }
+
+
+        await this.createEmbeddedDocuments("ActiveEffect", [newEffect])
+
+    }
+
+
     /**
      * Augment the basic actor data with additional dynamic data.
      */
@@ -57,7 +79,7 @@ export class HeroSystem6eActor extends Actor {
     //     // Might change when/if vehicles/robots are significantly different
     //     this._prepareCharacterData(actorData);
 
-        
+
     // }
 
     /**
@@ -105,23 +127,19 @@ export class HeroSystem6eActor extends Actor {
     //     super._onUpdate(data, options, userId);
     // }
 
-    static migrateData(data)
-    {
-        if (data.type === 'character')
-        {
+    static migrateData(data) {
+        if (data.type === 'character') {
             let token = data.prototypeToken || data.token
-            if (token)
-            {
-                if (token.disposition == CONST.TOKEN_DISPOSITIONS.FRIENDLY)
-                {
-                    data.type= "pc"
+            if (token) {
+                if (token.disposition == CONST.TOKEN_DISPOSITIONS.FRIENDLY) {
+                    data.type = "pc"
                 }
-                else
-                {
-                    data.type= "npc"
+                else {
+                    data.type = "npc"
                 }
             }
         }
         return super.migrateData(data);
     }
+
 }
