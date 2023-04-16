@@ -46,17 +46,71 @@ export class HeroSystem6eActor extends Actor {
 
         const newEffect = deepClone(activeEffect)
         newEffect.label = `${game.i18n.localize(newEffect.label)}`
-        newEffect.flags = { core: { statusId: activeEffect.id } }
 
-        // Check if this ActiveEffect already exists
-        const existingEffect = this.effects.find(o => o.flags?.core?.statusId === activeEffect.id);
-        if (existingEffect) {
-            //console.log(activeEffect.id + " already exists")
-            return
+        // Check for standard StatusEffects
+        // flags.core.statusId appears to be necessary to associate with StatusEffects
+        if (activeEffect.id) {
+            newEffect.flags = { core: { statusId: activeEffect.id } }
+
+            // Check if this ActiveEffect already exists
+            const existingEffect = this.effects.find(o => o.flags?.core?.statusId === activeEffect.id);
+            if (existingEffect) {
+                //console.log(activeEffect.id + " already exists")
+                return
+            }
         }
 
-
         await this.createEmbeddedDocuments("ActiveEffect", [newEffect])
+
+    }
+
+    // Create & Apply ActiveEffects based on item pwoers
+    async applyPowerEffects() {
+
+        // Remove existing effects
+        const ids = this.effects.map(o => o.id)
+        await this.deleteEmbeddedDocuments("ActiveEffect", ids)
+
+        for (const power of this.items.filter(o => o.type === 'power')) {
+            let configPowerInfo = CONFIG.HERO.powers[power.system.rules]
+
+            // ActiveEffect for Characteristics
+            if (configPowerInfo && configPowerInfo.powerType.includes("characteristic")) {
+
+                const key = power.system.rules.toLowerCase()
+
+                // Add LEVELS to MAX
+                let activeEffect =
+                {
+                    label: power.name + " (" + power.system.LEVELS + ")",
+                    //id: newPower.system.rules,
+                    icon: 'icons/svg/upgrade.svg',
+                    changes: [
+                        {
+                            key: "system.characteristics." + key + ".max",
+                            value: parseInt(power.system.LEVELS),
+                            mode: CONST.ACTIVE_EFFECT_MODES.ADD
+                        }
+                    ]
+                }
+
+                // Add Active Effect to Actor (not ideal)
+                await this.addActiveEffect(activeEffect)
+
+                // TODO: Add ActiveEffect to item.
+                // The probme is v10 doesn't allow you to createEmbeddedDocuments on items.
+                // Not sure if you can directly manipulate item.effects or
+                // if you have to create a copy with the new effets, then swap.
+                // await power.createEmbeddedDocuments("ActiveEffect", [activeEffect])
+
+                // Set VALUE to new MAX
+                const max = this.system.characteristics[key].max
+                let changes = []
+                changes["system.characteristics." + key + '.value'] = max
+                await this.update(changes)
+
+            }
+        }
 
     }
 

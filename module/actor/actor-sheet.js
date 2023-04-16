@@ -902,7 +902,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         powerData.value = levels
         powerData.velBase = velocity
         powerData.velValue = velocity
-        powerData.class = xmlid
+
 
         itemData = {
           name: itemName,
@@ -931,8 +931,30 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         }
       }
 
-      await HeroSystem6eItem.create(itemData, { parent: this.actor })
+      let newPower = await HeroSystem6eItem.create(itemData, { parent: this.actor })
 
+      console.log(newPower)
+
+      // // ActiveEffect for Characteristics
+      // if (configPowerInfo && configPowerInfo.powerType.includes("characteristic")) {
+      //   console.log(newPower.system.rules)
+
+      //   let activeEffect =
+      //   {
+      //     label: newPower.name + " (" + levels + ")",
+      //     //id: newPower.system.rules,
+      //     //icon: 'icons/svg/daze.svg',
+      //     changes: [
+      //       {
+      //         key: "data.characteristics." + newPower.system.rules.toLowerCase() + ".value",
+      //         value: parseInt(levels),
+      //         mode: CONST.ACTIVE_EFFECT_MODES.OVERRIDE
+      //       }
+      //     ]
+      //   }
+      //   await this.actor.addActiveEffect(activeEffect)
+
+      //}
     }
 
     for (const perk of perks.children) {
@@ -980,6 +1002,11 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     if (game.settings.get('hero6efoundryvttv2', 'optionalManeuvers')) {
       await loadCombatManeuvers(CONFIG.HERO.combatManeuversOptional, this.actor)
     }
+
+    // ActiveEffects
+    // TODO: Creating ActiveEffects initially on the Item should
+    // allow easier implementation of power toggles and associated ActiveEffects.
+    await this.actor.applyPowerEffects()
 
     // Actor Image
     if (image) {
@@ -1123,4 +1150,6 @@ async function updateCombatAutoMod(actor, item) {
   }
 
   await actor.update(changes)
+
+
 }
