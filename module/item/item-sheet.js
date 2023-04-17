@@ -12,7 +12,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     return mergeObject(super.defaultOptions, {
       classes: ['herosystem6e', 'sheet', 'item'],
       width: 520,
-      height: 480,
+      height: 520,
       tabs: [{ navSelector: '.sheet-tabs', contentSelector: '.sheet-body', initial: 'description' }]
     })
   }

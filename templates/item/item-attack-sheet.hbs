@@ -19,24 +19,24 @@
         >{{system.rules}}</textarea>
 
         <div class="form-group" >
-            <label>END Cost</label>
+            <label>{{localize "Items.Attack.EndCost"}}</label>
             <input type="text" name="system.end" value="{{system.end}}" data-dtype="Number" />
         </div>
 
         <div class="form-group" >
-            <label>Class</label>
+            <label>{{localize "Items.Attack.Class"}}</label>
             <select name="system.class" data-dtype="text">
                 {{selectOptions config.attackClasses selected=system.class}}
             </select>
         </div>
 
         <div class="form-group" >
-            <label>To Hit Modifier</label>
+            <label>{{localize "Items.Attack.ToHitModifier"}}</label>
             <input type="text" name="system.toHitMod" value="{{system.toHitMod}}" data-dtype="Number" />
         </div>
 
         <div class="form-group" >
-            <label>Value</label>
+            <label>{{localize "Items.Attack.Value"}}</label>
             <input type="text" name="system.dice" value="{{system.dice}}" data-dtype="Number" />
             D6
             <select name="system.extraDice" data-dtype="text">
@@ -45,7 +45,7 @@
         </div>
 
         <div class="form-group" >
-            <label>Killing Attack</label>
+            <label>{{localize "Items.Attack.KillingAttack"}}</label>
             <input type="checkbox" name="system.killing" {{checked system.killing}} data-dtype="Boolean" />
         </div>
 
@@ -67,36 +67,46 @@
         --}}
 
         <div class="form-group" >
-            <label>Targets Using</label>
+            <label>{{localize "Items.Attack.TargetsUsing"}}</label>
             <select name="system.uses" data-dtype="text">
                 {{selectOptions config.attacksWith selected=system.uses}}
             </select>
         </div>
 
         <div class="form-group" >
-            <label>Avoided By</label>
+            <label>{{localize "Items.Attack.AvoidedBy"}}</label>
             <select name="system.targets" data-dtype="text">
                 {{selectOptions config.defendsWith selected=system.targets}}
             </select>
         </div>
 
         <div class="form-group" >
-            <label>Does Knockback</label>
+            <label>{{localize "Items.Attack.DoesKnockback"}}</label>
             <input type="checkbox" name="system.knockback" {{checked system.knockback}} data-dtype="Boolean" />
         </div>
 
         <div class="form-group" >
-            <label>Uses Strength</label>
+            <label>{{localize "Items.Attack.UsesStrength"}}</label>
             <input type="checkbox" name="system.usesStrength" {{checked system.usesStrength}} data-dtype="Boolean" />
         </div>
 
+        <div class="form-group">
+            <label>{{localize "Items.Attack.AreaOfEffect"}}</label>
+            <select name="system.areaOfEffect.type" data-dtype="text">
+                {{selectOptions config.areaOfEffect.types selected=system.areaOfEffect.type}}
+            </select>
+            <label style="margin-left: 10px;">{{localize "Items.Attack.Value"}}</label>
+            <input type="text" name="system.areaOfEffect.value" value="{{system.areaOfEffect.value}}" data-dtype="Number" />
+        </div>
+
         <div class="form-group" >
-            <label>Custom Effects</label>
+            <label>{{localize "Items.Attack.CustomEffects"}}</label>
             <textarea
                 placeholder="Attack Description"
                 class="power-card-power-description textarea input"
                 name="system.effects"
             >{{item.system.effects}}</textarea>
+            
         </div>
     </section>
 </form>

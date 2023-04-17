@@ -339,3 +339,14 @@ HERO.powers = {
     "WEAPON_FAMILIARITY": {powerType: ["skill"]},
     "WEAPONSMITH": {powerType: ["skill"]},
 }
+
+HERO.areaOfEffect = {
+    types : {
+        none: "None",
+        radius: "Radius",
+        cone: "Cone",
+        line: "Line",
+        surface: "Surface",
+        any: "Any Area"
+    }
+}

@@ -3,6 +3,7 @@ import { HERO } from "./config.js";
 import { POWERS } from "./powers/powers-rules.js";
 import { HeroSystem6eActor } from "./actor/actor.js";
 import { HeroSystem6eActorSheet } from "./actor/actor-sheet.js";
+import { HeroSystem6eActorSheetMini } from "./actor/actor-sheet-mini.js"
 import { HeroSystem6eToken, HeroSystem6eTokenDocument } from "./actor/actor-token.js";
 import { HeroSystem6eItem } from "./item/item.js";
 import { HeroSystem6eItemSheet } from "./item/item-sheet.js";
@@ -70,6 +71,8 @@ Hooks.once('init', async function() {
     Items.unregisterSheet("core", ItemSheet);
     Items.registerSheet("herosystem6e", HeroSystem6eItemSheet, { makeDefault: true });
 
+    // Actors.registerSheet("herosystem6e", HeroSystem6eActorSheetMini, { makeDefault: false });
+
     // If you need to add Handlebars helpers, here are a few useful examples:
     Handlebars.registerHelper('concat', function() {
     var outStr = '';
@@ -87,6 +90,20 @@ Hooks.once('init', async function() {
 
     Handlebars.registerHelper('is_active_segment', function (actives, index) {
         return actives[index];
+    });
+
+    Handlebars.registerHelper('ifEqual', function(v1, v2, options) {
+      if (v1 === v2) {
+        return options.fn(this);
+      }
+      return options.inverse(this);
+    });
+
+    Handlebars.registerHelper('ifUnequal', function(v1, v2, options) {
+      if (v1 !== v2) {
+        return options.fn(this);
+      }
+      return options.inverse(this);
     });
 });
 

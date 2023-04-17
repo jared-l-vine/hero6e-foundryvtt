@@ -39,6 +39,14 @@
             {{#if item.system.killing}}
                 <span class="tag">killing</span>
             {{/if}}
+            {{#ifUnequal item.system.areaOfEffect.type 'none'}}
+                <span class="tag area-effect-tag" 
+                    data-aoe-type="{{item.system.areaOfEffect.type}}"
+                    data-aoe-value="{{item.system.areaOfEffect.value}}"
+                >
+                    {{item.system.areaOfEffect.type}} ({{item.system.areaOfEffect.value}})
+                </span>
+            {{/ifUnequal}}
         </div>
         <hr>
         <div class="tags">

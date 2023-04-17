@@ -160,6 +160,7 @@ export async function AttackToHit(item, options)
     hitRollValue: result.total,
 
     // data for damage card
+    actor,
     item,
     ...options,
     hitRollData: hitRollData,

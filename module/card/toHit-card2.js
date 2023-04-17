@@ -4,12 +4,15 @@ import { HeroSystem6eCard } from "./card.js";
 import { modifyRollEquation, getTokenChar } from "../utility/util.js"
 //import { HeroSystem6eDamageCard2 } from "./damage-card2.js";
 import { HEROSYS } from "../herosystem6e.js";
+import { getItem } from "../item/item.js";
 
 export class HeroSystem6eToHitCard2 extends HeroSystem6eCard {
     static async chatListeners(html) {
         // NOTE: Make sure we are listed in card-helpers.js
         // Click roll damage button click
         //html.on('click', '.roll-damage', this._onChatCardAction.bind(this));
+
+        html.on('click', '.area-effect-tag', this._spawnAreaOfEffect.bind(this))
     }
 
     static onMessageRendered(html) {
@@ -83,6 +86,8 @@ export class HeroSystem6eToHitCard2 extends HeroSystem6eCard {
     }
 
     static async _renderInternal(item, actor, stateData) {
+        /* I think this functionality got moved to item-attack.js */
+
         const token = actor.token;
 
         const templateData = {
@@ -231,8 +236,6 @@ export class HeroSystem6eToHitCard2 extends HeroSystem6eCard {
             enduranceText: enduranceText,
         };
 
-        console.log(stateData)
-
         // render card
         let cardHtml = await HeroSystem6eToHitCard2._renderInternal(item, actor, stateData);
         
@@ -248,5 +251,79 @@ export class HeroSystem6eToHitCard2 extends HeroSystem6eCard {
         }
         return ChatMessage.create(chatData);
         
+    }
+
+    static async _spawnAreaOfEffect(event) {
+        console.log('spawn area of effect!')
+
+        const clickedElement = $(event.currentTarget);
+
+        const aoeType = clickedElement.data().aoeType;
+        const aoeValue = clickedElement.data().aoeValue;
+
+        const keyConversions = {
+            radius: "circle",
+            cone: "cone",
+            line: "ray",
+            surface: "rect",
+            any: "rect"
+        }
+
+        const templateType = keyConversions[aoeType]
+
+        const templateData = {
+            t: templateType,
+            user: game.user.id,
+            distance: aoeValue,
+            // direction: 0,
+            fillColor: game.user.color
+        };
+
+        switch(templateType) {
+            case ("radius"): {
+                break;
+            }
+            case ("cone"): {
+                break;
+            }
+            case ("ray"): {
+                templateData.width = 1;
+                break;
+            }
+            case ("rect"): {
+                const warningMessage = game.i18n.localize("Warning.AreaOfEffectUnsupported")
+
+                ui.notifications.warn(warningMessage)
+
+                return
+
+                break;
+            }
+            default: {
+                break;
+            }
+        }
+
+        const token = canvas.tokens.controlled[0];
+        if (token) {
+            templateData.x = token.data.x;
+            templateData.y = token.data.y;
+
+
+            canvas.scene.createEmbeddedDocuments("MeasuredTemplate", [ templateData ]);
+
+            canvas.templates.activate()
+            canvas.templates.selectObjects({
+                x: templateData.x,
+                y: templateData.y,
+                releaseOthers: true,
+                control: true,
+                toggle: false
+            })
+        } else {
+            const errorMessage = game.i18n.localize("Errors.TokenSelect")
+
+            ui.notifications.error(errorMessage)
+        }
     }
 }
