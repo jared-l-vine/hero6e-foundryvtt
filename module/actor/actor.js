@@ -67,6 +67,10 @@ export class HeroSystem6eActor extends Actor {
     // Create & Apply ActiveEffects based on item pwoers
     async applyPowerEffects() {
 
+        //TODO: Alll the ActiveEffects will bubble up to UI
+        // showing all deletes and create.
+        // Would be nice if there was a {render:false} option.
+
         // Remove existing effects
         const ids = this.effects.map(o => o.id)
         await this.deleteEmbeddedDocuments("ActiveEffect", ids)
@@ -85,6 +89,7 @@ export class HeroSystem6eActor extends Actor {
                     label: power.name + " (" + power.system.LEVELS + ")",
                     //id: newPower.system.rules,
                     icon: 'icons/svg/upgrade.svg',
+                    origin: power.uuid,
                     changes: [
                         {
                             key: "system.characteristics." + key + ".max",
