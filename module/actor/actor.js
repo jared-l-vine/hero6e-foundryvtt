@@ -99,19 +99,28 @@ export class HeroSystem6eActor extends Actor {
                     ]
                 }
 
-                // Add Active Effect to Actor (not ideal)
+                // Add AE to Item (which is not tranferered to actor)
+                // await power.update({
+                //     effects:
+                //         [
+                //             activeEffect
+                //         ]
+                // })
+
+                // Add Active Effect to Actor (because it wasn't tranferred from item)
                 await this.addActiveEffect(activeEffect)
 
+
+
                 // TODO: Add ActiveEffect to item.
-                // The probme is v10 doesn't allow you to createEmbeddedDocuments on items.
-                // Not sure if you can directly manipulate item.effects or
-                // if you have to create a copy with the new effets, then swap.
-                // await power.createEmbeddedDocuments("ActiveEffect", [activeEffect])
+                // The probme is v10 doesn't allow you to createEmbeddedDocuments on items embedded in actor
+
 
                 // Set VALUE to new MAX
                 const max = this.system.characteristics[key].max
                 let changes = []
                 changes["system.characteristics." + key + '.value'] = max
+                changes["system.active"] = true
                 await this.update(changes)
 
             }
@@ -179,10 +188,12 @@ export class HeroSystem6eActor extends Actor {
     // applyActiveEffects() {
     //     // The Active Effects do not have access to their parent at preparation time so we wait until this stage to
     //     // determine whether they are suppressed or not.
-    //     return super.applyActiveEffects();
+
+    //     return super.applyActiveEffects()
     // }
 
     // _onUpdate(data, options, userId) {
+    //     console.log(data)
     //     super._onUpdate(data, options, userId);
     // }
 

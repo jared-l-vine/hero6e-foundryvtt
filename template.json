@@ -202,7 +202,8 @@
         },
         "power": {
             "templates": [ "power" ],
-            "rules": "Power Description"
+            "rules": "Power Description",
+            "active": "false"
         },
         "equipment": {
             "templates": [ "power" ],

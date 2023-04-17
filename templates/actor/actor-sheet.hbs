@@ -1,4 +1,4 @@
-{{log 'HEROSYS SHEET' this}}
+{{!--log 'HEROSYS SHEET' this--}}
 <form class="hero {{cssClass}} flexcol actor-sheet" autocomplete="off">
     <nav class="sheet-edit-tabs sheet-tabs tabs" data-group="mode">
         <a class="item edit-settings" data-tab="play" data-edit="disabled">Play</a>
@@ -361,6 +361,7 @@
                     <span class="item-name flex2">Name</span>
                     <span class="item-name flex1">End</span>
                     <span class="item-name flex4">Description</span>
+                    <span class="item-name flex1">Active</span>
                     <span></span>
                     {{!--
                     <span class="item-controls">
@@ -378,10 +379,18 @@
                                 <span class="item-name flex2">{{powerItem.name}}</span>
                                 <span class="item-name flex1">{{powerItem.system.end}}</span>
                                 <span class="item-name flex4">{{powerItem.system.description}}</span>
+
+                                <div class="item-value item-toggle flex1">
+                                    {{#if powerItem.showToggle}}<input type="checkbox" name="system.active" {{checked
+                                        system.active}} data-dtype="Boolean" />
+                                    {{/if}}
+                                </div>
+
                                 <div class="item-controls" data-group="mode">
                                     {{!--
                                     <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
                                     --}}
+
                                     <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
                                     <a class="item-control item-delete" title="Delete Item"><i
                                             class="fas fa-trash"></i></a>

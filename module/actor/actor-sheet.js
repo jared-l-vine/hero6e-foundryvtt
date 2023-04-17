@@ -153,7 +153,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         maneuvers.push(...subItems.maneuvers)
         movement.push(...subItems.movement)
 
-        powers.push(item)
+        powers.push({ ...item, showToggle: this.actor.effects.find(o => o.origin === this.actor.items.get(item._id).uuid) })
       } else if (item.type === 'equipment') {
         equipment.push(item)
       } else if (item.type === 'maneuver') {
@@ -527,6 +527,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
     HEROSYS.log(item.name + ": " + JSON.stringify({ [attr]: newValue }))
 
+
+
     if (!isPowerSubItem(itemId)) {
       await item.update({ [attr]: newValue })
     } else {
@@ -535,6 +537,24 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
     if (item.type === 'maneuver') {
       await updateCombatAutoMod(this.actor, item)
+    }
+
+    // Check for associated ActiveEffects
+    for (const activeEffect of item.actor.effects.filter(o => o.origin === item.uuid)) {
+      await activeEffect.update({ disabled: !item.system.active })
+      const max = item.actor.system.characteristics[item.system.rules.toLocaleLowerCase()].max
+      if (item.system.active) {
+        let value = parseInt(item.actor.system.characteristics[item.system.rules.toLocaleLowerCase()].value)
+        const levels = activeEffect.changes.find(o => o.key.indexOf(item.system.rules.toLocaleLowerCase()) > -1)?.value
+        if (levels) {
+          value += parseInt(levels)
+          await item.actor.update({ [`system.characteristics.${item.system.rules.toLocaleLowerCase()}.value`]: value })
+        }
+
+      }
+      if (item.actor.system.characteristics[item.system.rules.toLocaleLowerCase()].value > max) {
+        await item.actor.update({ [`system.characteristics.${item.system.rules.toLocaleLowerCase()}.value`]: max })
+      }
     }
   }
 
