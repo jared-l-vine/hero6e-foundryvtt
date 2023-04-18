@@ -261,8 +261,8 @@ HERO.powers = {
     "TELEKINESIS": {powerType: ["attack"]},
 
     // Defense
-    "FORCEWALL": { powerType: ["defense"], name: "Resistant Protection"}, // AKA BARRIER
-    "FORCEFIELD": { powerType: ["defense"], name: "Barrier"},  // AKA RESISTANT PROTECTION
+    "FORCEWALL": { powerType: ["defense"], name: "Barrier"}, // AKA BARRIER
+    "FORCEFIELD": { powerType: ["defense"], name: "Resistant Protection"},  // AKA RESISTANT PROTECTION
 
     // Movement
     "FLIGHT": { powerType: ["movement"]},

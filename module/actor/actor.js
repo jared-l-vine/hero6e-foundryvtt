@@ -146,9 +146,16 @@ export class HeroSystem6eActor extends Actor {
                         itemData.system.value = levels
                         itemData.system.defenseType = key
 
-                        // Forcewall / barrier are not typically on by default
+                        // FORCEFIELD/Resistant Protection
+                        if (power.system.rules == "FORCEFIELD") {
+                            itemData.system.resistant = true
+                        }
+                        
+
+                        // Forcewall / barrier 
                         if (power.system.rules == "FORCEWALL") {
                             itemData.system.active = false
+                            itemData.system.resistant = true
                         }
                         await HeroSystem6eItem.create(itemData, { parent: this })
                     }
@@ -232,22 +239,23 @@ export class HeroSystem6eActor extends Actor {
 
     // Migrate data before validating.
     // Largely handles actor template changes.
-    static migrateData(data) {
+    // static migrateData(data) {
 
-        // Actor type='character' is no longer in template.json.
-        // change actor type to 'pc' or 'npc' based on disposition.
-        if (data.type === 'character') {
-            let token = data.prototypeToken || data.token
-            if (token) {
-                if (token.disposition == CONST.TOKEN_DISPOSITIONS.FRIENDLY) {
-                    data.type = "pc"
-                }
-                else {
-                    data.type = "npc"
-                }
-            }
-        }
-        return super.migrateData(data);
-    }
+    //     // Actor type='character' is no longer in template.json.
+    //     // change actor type to 'pc' or 'npc' based on disposition.
+    //     if (data.type === 'character') {
+    //         let token = data.prototypeToken || data.token
+    //         if (token) {
+                
+    //             if (token.disposition == CONST.TOKEN_DISPOSITIONS.FRIENDLY) {
+    //                 data.type = "pc"
+    //             }
+    //             else {
+    //                 data.type = "npc"
+    //             }
+    //         }
+    //     }
+    //     return super.migrateData(data);
+    // }
 
 }
