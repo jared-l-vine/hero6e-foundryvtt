@@ -137,6 +137,8 @@ export class HeroSystem6eActor extends Actor {
                   system: { rules: power.system.rules}
                 }
 
+                let addedDefense = false
+
                 for (let key of ['pd', 'ed', 'md'])
                 {
                     let levels = parseInt(power.system[key.toUpperCase() + "LEVELS"])
@@ -158,9 +160,16 @@ export class HeroSystem6eActor extends Actor {
                             itemData.system.resistant = true
                         }
                         await HeroSystem6eItem.create(itemData, { parent: this })
+                        addedDefense = true
                     }
                 }
                 
+                if (!addedDefense)
+                {
+                    if (game.settings.get(game.system.id, 'alphaTesting')) {
+                        ui.notifications.warn(`${power.system.rules} not handled during defense item creation`)
+                    }
+                }
                 
                 
             }
