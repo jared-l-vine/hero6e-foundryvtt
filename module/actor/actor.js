@@ -142,7 +142,7 @@ export class HeroSystem6eActor extends Actor {
                     let levels = parseInt(power.system[key.toUpperCase() + "LEVELS"])
                     if (levels)
                     {
-                        itemData.name = power.name + " ("  + power.system.rules.toLowerCase() + ")"
+                        itemData.name = power.name + " ("  + (configPowerInfo.name || power.system.rules) + ")"
                         itemData.system.value = levels
                         itemData.system.defenseType = key
 
