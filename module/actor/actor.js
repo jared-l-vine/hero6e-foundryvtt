@@ -1,4 +1,6 @@
 import { HeroSystem6eActorActiveEffects } from "./actor-active-effects.js"
+import { HeroSystem6eItem } from '../item/item.js'
+
 /**
  * Extend the base Actor entity by defining a custom roll data structure which is ideal for the Simple system.
  * @extends {Actor}
@@ -64,7 +66,7 @@ export class HeroSystem6eActor extends Actor {
 
     }
 
-    // Create & Apply ActiveEffects based on item pwoers
+    // Create & Apply ActiveEffects based on item powers
     async applyPowerEffects() {
 
         //TODO: Alll the ActiveEffects will bubble up to UI
@@ -78,7 +80,7 @@ export class HeroSystem6eActor extends Actor {
         for (const power of this.items.filter(o => o.type === 'power')) {
             let configPowerInfo = CONFIG.HERO.powers[power.system.rules]
 
-            // ActiveEffect for Characteristics
+            // Characteristics (via ActiveEffects)
             if (configPowerInfo && configPowerInfo.powerType.includes("characteristic")) {
 
                 const key = power.system.rules.toLowerCase()
@@ -123,6 +125,37 @@ export class HeroSystem6eActor extends Actor {
                 changes["system.active"] = true
                 await this.update(changes)
 
+            }
+
+            // Defenses (create new defense item)
+            if (configPowerInfo && configPowerInfo.powerType.includes("defense")) {
+
+                // Prepare the item object.
+                const itemData = {
+                  name: power.name,
+                  type: 'defense',
+                  system: { rules: power.system.rules}
+                }
+
+                for (let key of ['pd', 'ed', 'md'])
+                {
+                    let levels = parseInt(power.system[key.toUpperCase() + "LEVELS"])
+                    if (levels)
+                    {
+                        itemData.name = power.name + " ("  + power.system.rules.toLowerCase() + ")"
+                        itemData.system.value = levels
+                        itemData.system.defenseType = key
+
+                        // Forcewall / barrier are not typically on by default
+                        if (power.system.rules == "FORCEWALL") {
+                            itemData.system.active = false
+                        }
+                        await HeroSystem6eItem.create(itemData, { parent: this })
+                    }
+                }
+                
+                
+                
             }
         }
 
@@ -197,7 +230,12 @@ export class HeroSystem6eActor extends Actor {
     //     super._onUpdate(data, options, userId);
     // }
 
+    // Migrate data before validating.
+    // Largely handles actor template changes.
     static migrateData(data) {
+
+        // Actor type='character' is no longer in template.json.
+        // change actor type to 'pc' or 'npc' based on disposition.
         if (data.type === 'character') {
             let token = data.prototypeToken || data.token
             if (token) {

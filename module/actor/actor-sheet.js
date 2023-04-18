@@ -812,7 +812,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       await uploadSkill.call(this, skill)
     }
 
-    const relevantFields = ['BASECOST', 'LEVELS', 'ALIAS', 'MULTIPLIER', 'NAME', 'OPTION_ALIAS']
+    const relevantFields = ['BASECOST', 'LEVELS', 'ALIAS', 'MULTIPLIER', 'NAME', 'OPTION_ALIAS', 'SFX',
+      'PDLEVELS', 'EDLEVELS', 'MDLEVELS' // FORCEFIELD
+    ]
     for (const power of powers.children) {
       const xmlid = power.getAttribute('XMLID')
       const name = power.getAttribute('NAME')
