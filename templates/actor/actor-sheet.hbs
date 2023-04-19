@@ -197,47 +197,48 @@
 
             {{!-- Attacks Tab --}}
             <div class="tab tab-body powers" data-group="primary" data-tab="attacks">
-                <header class="tab-header flexrow">
-                    <span class="item-image  flex1"></span>
-                    <span class="item-header flex2">Name</span>
-                    <span class="item-header flex1">Hit Mod</span>
-                    <span class="item-header flex1">Off. vs Def.</span>
-                    <span class="item-header flex1">Dmg.</span>
-                    <span class="item-header flex1">Res.</span>
-                    <span class="item-header flex1">END</span>
-                    <span class="item-header flex1">Roll</span>
-                    <span class="item-controls flex2">
-                        <a class="item-control item-create" title="Create attack" data-type="attack"><i
-                                class="fas fa-plus"></i> Add attack</a>
-                    </span>
-                </header>
-                <section class="attacks-group">
-                    <ol class="items-list">
-                        {{#each attacks as |item id|}}
-                        <li class="item flexrow" data-item-id="{{item._id}}">
-                            <div class="item-image flex1"><img src="{{item.img}}" title="{{item.name}}" width="24"
-                                    height="24" /></div>
-                            <h4 class="item-name   flex2">{{item.name}}</h4>
-                            <h4 class="item-value  flex1">{{item.toHitMod}}</h4>
-                            <h4 class="item-value  flex1">{{item.uses}} vs {{item.targets}}</h4>
-                            <h4 class="item-value  flex1">{{item.damage}}</h4>
-                            <h4 class="item-value  flex1">{{item.class}}</h4>
-                            <h4 class="item-value  flex1">{{item.end}}</h4>
-                            {{!-- <div class="item-image flex1 dark item-attack"><img src="icons/svg/dice-target.svg"
-                                    title="{{item.name}}" width="24" height="24" /></div> --}}
-                            <a class="item-image flex1 item-attack"><i class="fas fa-dice" title="{{item.name}}"
-                                    width="24" height="24"></i></a>
-                            <div class="item-controls flex3" data-group="mode">
-                                <a class="item-control item-edit" title="Edit Item" id="{{id}}"><i
-                                        class="fas fa-edit"></i></a>
-                                <a class="item-control item-delete" title="Delete Item" id="{{id}}"><i
-                                        class="fas fa-trash"></i></a>
-
-                            </div>
-                        </li>
-                        {{/each}}
-                    </ol>
-                </section>
+                <table>
+                    <tr>
+                        <th></th>
+                        <th>{{localize "ActorSheet.Name"}}</th>
+                        <th>{{localize "ActorSheet.HitMod"}}</th>
+                        <th>{{localize "ActorSheet.OffVDef"}}</th>
+                        <th>{{localize "ActorSheet.Dmg"}}</th>
+                        <th>{{localize "ActorSheet.Res"}}</th>
+                        <th>{{localize "ActorSheet.End"}}</th>
+                        <th>{{localize "ActorSheet.Aoe"}}</th>
+                        <th>{{localize "ActorSheet.Roll"}}</th>
+                        <th>
+                            <span class="item-controls">
+                                <a class="item-control item-create" title="Create attack" data-type="attack"><i class="fas fa-plus"></i> Add attack</a>
+                            </span>     
+                        </th>
+                    </tr>
+                    {{#each attacks as |item id|}}
+                        <tr data-item-id="{{item._id}}">
+                            <td><div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div></td>
+                            <td>{{item.name}}</td>
+                            <td>{{item.toHitMod}}</td>
+                            <td>{{item.uses}} vs {{item.targets}}</td>
+                            <td>{{item.damage}}</td>
+                            <td>{{item.class}}</td>
+                            <td>{{item.end}}</td>
+                            {{#if (eq item.system.areaOfEffect.type "none")}}
+                                <td>-</td>
+                            {{/if}}
+                            {{#if (ne item.system.areaOfEffect.type "none")}}
+                                <td>{{item.system.areaOfEffect.type}} ({{item.system.areaOfEffect.value}})</td>
+                            {{/if}}
+                            <td><a class="item-image flex1 item-attack"><i class="fas fa-dice" title="{{item.name}}" width="24" height="24" ></i></a></td>
+                            <td>
+                                <div class="item-controls" data-group="mode">
+                                    <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                                    <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                                </div>     
+                            </td>
+                        </tr>
+                    {{/each}}
+                </table>
             </div>
 
             {{!-- Defenses Tab --}}
