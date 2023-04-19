@@ -91,20 +91,6 @@ Hooks.once('init', async function() {
     Handlebars.registerHelper('is_active_segment', function (actives, index) {
         return actives[index];
     });
-
-    Handlebars.registerHelper('ifEqual', function(v1, v2, options) {
-      if (v1 === v2) {
-        return options.fn(this);
-      }
-      return options.inverse(this);
-    });
-
-    Handlebars.registerHelper('ifUnequal', function(v1, v2, options) {
-      if (v1 !== v2) {
-        return options.fn(this);
-      }
-      return options.inverse(this);
-    });
 });
 
 Hooks.once("init", () => {

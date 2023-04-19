@@ -181,12 +181,12 @@
                             <td>{{item.damage}}</td>
                             <td>{{item.class}}</td>
                             <td>{{item.end}}</td>
-                            {{#ifEqual item.system.areaOfEffect.type "none"}}
+                            {{#if (eq item.system.areaOfEffect.type "none")}}
                                 <td>-</td>
-                            {{/ifEqual}}
-                            {{#ifUnequal item.system.areaOfEffect.type "none"}}
+                            {{/if}}
+                            {{#if (ne item.system.areaOfEffect.type "none")}}
                                 <td>{{item.system.areaOfEffect.type}} ({{item.system.areaOfEffect.value}})</td>
-                            {{/ifUnequal}}
+                            {{/if}}
                             <td><a class="item-image flex1 item-attack"><i class="fas fa-dice" title="{{item.name}}" width="24" height="24" ></i></a></td>
                             <td>
                                 <div class="item-controls" data-group="mode">
