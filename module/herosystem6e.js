@@ -62,7 +62,7 @@ Hooks.once('init', async function() {
     CONFIG.statusEffects = HeroSystem6eActorActiveEffects.getEffects();
     CONFIG.MeasuredTemplate.objectClass = HeroSystem6eTemplate;
     CONFIG.ui.combat = HeroSystem6eCombatTracker;
-   
+  
     SettingsHelpers.initLevelSettings();
 
     // Register sheet application classes
@@ -77,70 +77,70 @@ Hooks.once('init', async function() {
     Handlebars.registerHelper('concat', function() {
     var outStr = '';
     for (var arg in arguments) {
-        if (typeof arguments[arg] != 'object') {
+      if (typeof arguments[arg] != 'object') {
         outStr += arguments[arg];
-        }
+      }
     }
     return outStr;
-    });
+  });
 
-    Handlebars.registerHelper('toLowerCase', function(str) {
+  Handlebars.registerHelper('toLowerCase', function (str) {
     return str.toLowerCase();
-    });
+  });
 
-    Handlebars.registerHelper('is_active_segment', function (actives, index) {
-        return actives[index];
-    });
+  Handlebars.registerHelper('is_active_segment', function (actives, index) {
+    return actives[index];
+  });
 });
 
 Hooks.once("init", () => {
-    Ruler.prototype._getSegmentLabel = function _getSegmentLabel(segmentDistance, totalDistance, isTotal) {
-        let rangeMod = Math.ceil(Math.log2(totalDistance / 8)) * 2;
+  Ruler.prototype._getSegmentLabel = function _getSegmentLabel(segmentDistance, totalDistance, isTotal) {
+    let rangeMod = Math.ceil(Math.log2(totalDistance / 8)) * 2;
 
-        rangeMod = rangeMod < 0 ? 0: rangeMod;
+    rangeMod = rangeMod < 0 ? 0 : rangeMod;
 
-        let label = "[" + Math.round(segmentDistance.distance) + " m]" +  "\n-" + rangeMod + " Range Modifier"
+    let label = "[" + Math.round(segmentDistance.distance) + " m]" + "\n-" + rangeMod + " Range Modifier"
 
-        return label
-    };
+    return label
+  };
 })
 
-Hooks.once("ready", async function() {
-    // Wait to register hotbar drop hook on ready so that modules could register earlier if they want to
-    Hooks.on("hotbarDrop", (bar, data, slot) => createHeroSystem6eMacro(bar, data, slot));
+Hooks.once("ready", async function () {
+  // Wait to register hotbar drop hook on ready so that modules could register earlier if they want to
+  Hooks.on("hotbarDrop", (bar, data, slot) => createHeroSystem6eMacro(bar, data, slot));
 });
 
 Hooks.on("renderChatMessage", (app, html, data) => {
-    // Display action buttons
-    chat.displayChatActionButtons(app, html, data);
-    HeroSystem6eCardHelpers.onMessageRendered(html);
+  // Display action buttons
+  chat.displayChatActionButtons(app, html, data);
+  HeroSystem6eCardHelpers.onMessageRendered(html);
 });
 Hooks.on("renderChatLog", (app, html, data) => HeroSystem6eCardHelpers.chatListeners(html));
 Hooks.on("renderChatPopout", (app, html, data) => HeroSystem6eCardHelpers.chatListeners(html));
 Hooks.on("updateActor", (app, html, data) => {
-    app.sheet._render()
+  app.sheet._render()
 
-    for (let combat of game.combats) {
-        combat._onActorDataUpdate();
-    }
+  for (let combat of game.combats) {
+    combat._onActorDataUpdate();
+  }
 });
 
 Hooks.once('devModeReady', ({ registerPackageDebugFlag }) => {
-    registerPackageDebugFlag(HEROSYS.ID);
+  registerPackageDebugFlag(HEROSYS.ID);
 });
 
 
 export class HEROSYS {
-    static ID = "HEROSYS";
+  static ID = "HEROSYS";
 
-    // static log(force, ...args) {
-    static log(...args) {
-        // const shouldLog = force || game.modules.get('_dev-mode')?.api?.getPackageDebugValue(this.ID);
+  // static log(force, ...args) {
+  static log(...args) {
+    // const shouldLog = force || game.modules.get('_dev-mode')?.api?.getPackageDebugValue(this.ID);
 
-        //if (shouldLog) {
-            console.log(this.ID, '|', ...args);
-        //}
-    }
+    //if (shouldLog) {
+    console.log(this.ID, '|', ...args);
+    //}
+  }
 }
 
 /* -------------------------------------------- */
@@ -157,12 +157,10 @@ export class HEROSYS {
 function createHeroSystem6eMacro(bar, data, slot) {
 
   // Check if we want to override the default macro (open sheet)
-  if (data.type === "Item" && typeof data.uuid === "string")
-  {
+  if (data.type === "Item" && typeof data.uuid === "string") {
     const item = fromUuidSync(data.uuid);
-    if (item.isRollable())
-    {
-      handleMacroCreation(bar, data,slot, item)
+    if (item.isRollable()) {
+      handleMacroCreation(bar, data, slot, item)
       return false
     }
   }
@@ -204,12 +202,10 @@ function rollItemMacro(itemName, itemType) {
   console.log("rollItemMacro", item)
 
   // The selected actor does not have an item with this name.
-  if (!item) 
-  {
+  if (!item) {
     item = null
     // Search all owned tokens for this item
-    for (let token of canvas.tokens.ownedTokens)
-    {
+    for (let token of canvas.tokens.ownedTokens) {
       actor = token.actor
       item = actor.items.find(i => i.name === itemName && (!itemType || i.type == itemType))
       if (item) {
@@ -219,7 +215,7 @@ function rollItemMacro(itemName, itemType) {
 
     if (!item) return ui.notifications.warn(`Your controlled Actor does not have an ${itemType || 'item'} named ${itemName}`);
   }
-  
+
 
   // Trigger the item roll
   return item.roll();
@@ -231,3 +227,67 @@ function rollItemMacro(itemName, itemType) {
 // REF: https://github.com/dmdorman/hero6e-foundryvtt/issues/40
 Hooks.on("setup", () => CONFIG.MeasuredTemplate.defaults.angle = 60);
 
+
+// Migration Script
+// For now we will migrate EVERY time
+// TODO: add version setting check
+// REF: https://www.youtube.com/watch?v=Hl23n3MvtaI
+Hooks.once("ready", function () {
+  if (!game.user.isGM) {
+    return;
+  }
+
+  //console.log("migrateWorld")
+  migrateActorTypes()
+  //migrateWorld();
+
+});
+
+// async function migrateWorld()
+// {
+//   for (let actor of game.actors.contents) {
+//     const updateData = migrateActorData(actor.system);
+//     if (!foundry.utils.isEmpty(updateData)) {
+//       console.log(`Migrating Actor entity ${actor.name}.`);
+//       await actor.update(updateData);
+//     }
+//   }
+// }
+
+// function migrateActorData(actor)
+// {
+//   let updateData = {};
+//   //updateData["system.type"] = 'complication';
+//   return updateData;
+// }
+
+// Change Actor type from "character" to "pc"
+async function migrateActorTypes() {
+  const updates = [];
+  for (let actor of game.actors) {
+    if (actor.type !== "character") continue;
+
+    if (actor.prototypeToken.disposition == CONST.TOKEN_DISPOSITIONS.FRIENDLY) {
+      updates.push({ _id: actor.id, type: "pc" });
+    }
+    else {
+      updates.push({ _id: actor.id, type: "npc" });
+    }
+
+  }
+  if (updates.length > 0) {
+    ui.notifications.info(`${updates.length} actors migrated.`)
+    await Actor.updateDocuments(updates);
+  }
+
+
+}
+
+
+// Remove Character from selectable actor types
+// Using Actor.migration instead
+Hooks.on("renderDialog", (dialog, html, data) => {
+  if (html[0].querySelector(".window-title").textContent != "Create New Actor") return
+  let option = html[0].querySelector("option[value*='character']")
+  if (option) option.remove()
+})

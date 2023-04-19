@@ -1,5 +1,6 @@
 {{ log 'HEROSYS POWER SHEET' this }}
-<form class="hero {{cssClass}} flexcol actor-sheet" autocomplete="off" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+<form class="hero {{cssClass}} flexcol actor-sheet" autocomplete="off" data-id="{{item._id}}"
+    data-realId="{{item.system.realId}}">
     <header class="sheet-header flexrow">
         <img class="profile" name="img" src="{{item.img}}" title="{{item.name}}" data-edit="img" />
 
@@ -10,51 +11,89 @@
         </div>
     </header>
 
+    {{!-- Sheet Body --}}
     <section class="sheet-body">
+        <div class="form-group">
+            <label>Power</label>
+            <input type="text" name="system.toHirulestMod" value="{{system.rules}}" data-dtype="Text" disabled />
+        </div>
+
+        <table class="item-list effects-list">
+            <tr>
+                <th>ActiveEffect</th>
+                <th>
+                    {{!-- <a class="item-control item-create" title="Create ActiveEffect" data-type="effect">
+                        <i class="fas fa-plus"></i>Add Effect
+                    </a> --}}
+                </th>
+            </tr>
+            {{#each effects as |effect|}}
+            <tr class="item effect" data-effect-id="{{effect.id}}">
+                <td class="item-name effect-name">
+                    <h4>{{effect.label}}</h4>
+                </td>
+                {{!-- <td class="effect-controls">
+                    <a class="effect-controls" data-action="edit" title="Edit Effect">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a class="effect-controls" data-action="delete" title="Edit Effect">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </td> --}}
+            </tr>
+            {{/each}}
+        </table>
+    </section>
+
+    {{!-- <section class="sheet-body">
         <div class="flexrow">
             <h4 class="item-name">End Cost:</h4>
             <input type="text" name="data.end" value="{{item.system.end}}" data-dtype="Number" />
         </div>
 
-        <textarea
-            placeholder="Power Description"
-            class="power-card-power-description textarea input"
-            name="data.rules"
-        >{{item.system.rules}}</textarea>
+        <textarea placeholder="Power Description" class="power-card-power-description textarea input"
+            name="data.rules">{{item.system.rules}}</textarea>
 
         <header class="iteam-header flexrow">
             <span class="item-controls">
-                <a class="item-control item-create" title="Create skill" data-type="skill"><i class="fas fa-plus"></i> Skill</a>
+                <a class="item-control item-create" title="Create skill" data-type="skill"><i class="fas fa-plus"></i>
+                    Skill</a>
             </span>
             <span class="item-controls">
-                <a class="item-control item-create" title="Create maneuver" data-type="maneuver"><i class="fas fa-plus"></i> Maneuver</a>
+                <a class="item-control item-create" title="Create maneuver" data-type="maneuver"><i
+                        class="fas fa-plus"></i> Maneuver</a>
             </span>
             <span class="item-controls">
-                <a class="item-control item-create" title="Create attack" data-type="attack"><i class="fas fa-plus"></i> Attack</a>
+                <a class="item-control item-create" title="Create attack" data-type="attack"><i class="fas fa-plus"></i>
+                    Attack</a>
             </span>
             <span class="item-controls">
-                <a class="item-control item-create" title="Create defense" data-type="defense"><i class="fas fa-plus"></i> Defense</a>
+                <a class="item-control item-create" title="Create defense" data-type="defense"><i
+                        class="fas fa-plus"></i> Defense</a>
             </span>
             <span class="item-controls">
-                <a class="item-control item-create" title="Create movement" data-type="movement"><i class="fas fa-plus"></i> Movement</a>
+                <a class="item-control item-create" title="Create movement" data-type="movement"><i
+                        class="fas fa-plus"></i> Movement</a>
             </span>
         </header>
 
         <section class="skills-group">
             <ol class="items-list">
                 {{#each data.subItems.skill as |item id|}}
-                    <li class="item flexrow" data-item-id="{{item._id}}" {{#if item.children}} style="height:auto;" {{/if}}>
-                        <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
-                        <h4 class="item-name">{{item.name}}</h4>
-                        <h4 class="item-name">{{item.systemcharacteristic}}</h4>
-                        <div>
-                            <button class="item-roll rollable-skill" data-roll="{{item.systemroll}}" data-label="{{item._id}}">{{numberFormat item.systemroll decimals=0 sign=false}}-</button>
-                        </div>
-                        <div class="item-controls" data-id="{{item._id}}" data-type="skill">
-                            <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
-                            <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
-                        </div>
-                    </li>
+                <li class="item flexrow" data-item-id="{{item._id}}" {{#if item.children}} style="height:auto;" {{/if}}>
+                    <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" />
+                    </div>
+                    <h4 class="item-name">{{item.name}}</h4>
+                    <h4 class="item-name">{{item.systemcharacteristic}}</h4>
+                    <div>
+                        <button class="item-roll rollable-skill" data-roll="{{item.systemroll}}"
+                            data-label="{{item._id}}">{{numberFormat item.systemroll decimals=0 sign=false}}-</button>
+                    </div>
+                    <div class="item-controls" data-id="{{item._id}}" data-type="skill">
+                        <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                        <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                    </div>
+                </li>
                 {{/each}}
             </ol>
         </section>
@@ -62,18 +101,20 @@
         <section class="maneuver-group">
             <ol class="items-list">
                 {{#each data.subItems.maneuver as |item id|}}
-                    <li class="item flexrow" data-item-id="{{item._id}}">
-                        <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
-                        <h4 class="item-name flex2">{{item.name}}</h4>
-                        <h4 class="item-value flex1">{{item.system.phase}}</h4>
-                        <h4 class="item-value flex1">{{item.system.ocv}}</h4>
-                        <h4 class="item-value flex1">{{item.system.dcv}}</h4>
-                        <h4 class="item-toggle"><input type="checkbox" name="data.active" {{checked data.active}} data-dtype="Boolean" /></h4>
-                        <div class="item-controls" data-id="{{item._id}}" data-type="maneuver">
-                            <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
-                            <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
-                        </div>
-                    </li>
+                <li class="item flexrow" data-item-id="{{item._id}}">
+                    <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" />
+                    </div>
+                    <h4 class="item-name flex2">{{item.name}}</h4>
+                    <h4 class="item-value flex1">{{item.system.phase}}</h4>
+                    <h4 class="item-value flex1">{{item.system.ocv}}</h4>
+                    <h4 class="item-value flex1">{{item.system.dcv}}</h4>
+                    <h4 class="item-toggle"><input type="checkbox" name="data.active" {{checked data.active}}
+                            data-dtype="Boolean" /></h4>
+                    <div class="item-controls" data-id="{{item._id}}" data-type="maneuver">
+                        <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                        <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                    </div>
+                </li>
                 {{/each}}
             </ol>
         </section>
@@ -81,21 +122,22 @@
         <section class="attacks-group">
             <ol class="items-list">
                 {{#each data.subItems.attack as |item id|}}
-                    <li class="item flexrow" data-item-id="{{item._id}}">
-                        <div class="item-image item-attack"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
-                        <h4 class="item-name flex3">{{item.name}}</h4>
-                        <h4 class="item-value flex2">{{item.system.toHitMod}}</h4>
-                        <h4 class="item-value flex3">{{item.system.uses}} vs {{item.system.targets}}</h4>
-                        <h4 class="item-name flex2">{{item.system.damage}}</h4>
-                        <h4 class="item-name flex3">{{item.system.class}}</h4>
-                        <h4 class="item-value">{{item.system.end}}</h4>
-                        <h4 class="item-value">{{item.system.piercing}}</h4>
-                        <h4 class="item-value">{{item.system.penetrating}}</h4>
-                        <div class="item-controls" data-id="{{item._id}}" data-type="attack">
-                            <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
-                            <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
-                        </div>
-                    </li>
+                <li class="item flexrow" data-item-id="{{item._id}}">
+                    <div class="item-image item-attack"><img src="{{item.img}}" title="{{item.name}}" width="24"
+                            height="24" /></div>
+                    <h4 class="item-name flex3">{{item.name}}</h4>
+                    <h4 class="item-value flex2">{{item.system.toHitMod}}</h4>
+                    <h4 class="item-value flex3">{{item.system.uses}} vs {{item.system.targets}}</h4>
+                    <h4 class="item-name flex2">{{item.system.damage}}</h4>
+                    <h4 class="item-name flex3">{{item.system.class}}</h4>
+                    <h4 class="item-value">{{item.system.end}}</h4>
+                    <h4 class="item-value">{{item.system.piercing}}</h4>
+                    <h4 class="item-value">{{item.system.penetrating}}</h4>
+                    <div class="item-controls" data-id="{{item._id}}" data-type="attack">
+                        <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                        <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                    </div>
+                </li>
                 {{/each}}
             </ol>
         </section>
@@ -103,19 +145,20 @@
         <section class="defenses-group">
             <ol class="items-list">
                 {{#each data.subItems.defense as |item id|}}
-                    <li class="item flexrow" data-item-id="{{item._id}}">
-                        <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
-                        <h4 class="item-name flex3">{{item.name}}</h4>
-                        <h4 class="item-name flex3">{{item.system.defenseType}}</h4>
-                        <h4 class="item-value">{{item.system.value}}</h4>
-                        <h4 class="item-value">{{item.system.resistant}}</h4>
-                        <h4 class="item-value">{{item.system.hardened}}</h4>
-                        <h4 class="item-value">{{item.system.impenetrable}}</h4>
-                        <div class="item-controls" data-id="{{item._id}}" data-type="defense">
-                            <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
-                            <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
-                        </div>
-                    </li>
+                <li class="item flexrow" data-item-id="{{item._id}}">
+                    <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" />
+                    </div>
+                    <h4 class="item-name flex3">{{item.name}}</h4>
+                    <h4 class="item-name flex3">{{item.system.defenseType}}</h4>
+                    <h4 class="item-value">{{item.system.value}}</h4>
+                    <h4 class="item-value">{{item.system.resistant}}</h4>
+                    <h4 class="item-value">{{item.system.hardened}}</h4>
+                    <h4 class="item-value">{{item.system.impenetrable}}</h4>
+                    <div class="item-controls" data-id="{{item._id}}" data-type="defense">
+                        <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                        <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                    </div>
+                </li>
                 {{/each}}
             </ol>
         </section>
@@ -123,18 +166,19 @@
         <section class="movement-group">
             <ol class="items-list">
                 {{#each data.subItems.movement as |item id|}}
-                    <li class="item flexrow" data-item-id="{{item._id}}">
-                        <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" /></div>
-                        <h4 class="item-name flex3">{{item.name}}</h4>
-                        <h4 class="item-name flex3">{{item.system.class}}</h4>
-                        <h4 class="item-name flex3">{{item.system.base}}</h4>
-                        <div class="item-controls" data-id="{{item._id}}" data-type="movement">
-                            <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
-                            <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
-                        </div>
-                    </li>
+                <li class="item flexrow" data-item-id="{{item._id}}">
+                    <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24" height="24" />
+                    </div>
+                    <h4 class="item-name flex3">{{item.name}}</h4>
+                    <h4 class="item-name flex3">{{item.system.class}}</h4>
+                    <h4 class="item-name flex3">{{item.system.base}}</h4>
+                    <div class="item-controls" data-id="{{item._id}}" data-type="movement">
+                        <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                        <a class="item-control item-delete" title="Delete Item"><i class="fas fa-trash"></i></a>
+                    </div>
+                </li>
                 {{/each}}
             </ol>
         </section>
-    </section>
+    </section> --}}
 </form>
