@@ -16,64 +16,64 @@ import SettingsHelpers from "./settings/settings-helpers.js";
 
 Hooks.once('init', async function() {
 
-  game.herosystem6e = {
-      applications: {
-          HeroSystem6eActorSheet,
-          HeroSystem6eItemSheet,
-      },
-      entities: {
-          HeroSystem6eActor,
-          HeroSystem6eItem,
-          HeroSystem6eTokenDocument,
-          HeroSystem6eToken
-      },
-      canvas: {
-          HeroSystem6eTemplate
-      },
-      macros: macros,
-      rollItemMacro: rollItemMacro,
-      config : HERO
-  };
+    game.herosystem6e = {
+        applications: {
+            HeroSystem6eActorSheet,
+            HeroSystem6eItemSheet,
+        },
+        entities: {
+            HeroSystem6eActor,
+            HeroSystem6eItem,
+            HeroSystem6eTokenDocument,
+            HeroSystem6eToken
+        },
+        canvas: {
+            HeroSystem6eTemplate
+        },
+        macros: macros,
+        rollItemMacro: rollItemMacro,
+        config : HERO
+    };
 
-  CONFIG.HERO = HERO;
+    CONFIG.HERO = HERO;
 
-  CONFIG.POWERS = POWERS;
+    CONFIG.POWERS = POWERS;
 
-  CONFIG.Combat.documentClass = HeroSystem6eCombat;
+    CONFIG.Combat.documentClass = HeroSystem6eCombat;
 
-  /**
-  * Set an initiative formula for the system
-  * @type {String}
-  */
-  CONFIG.Combat.initiative = {
-      formula: "@characteristics.dex.value + (@characteristics.int.value / 100)",
-      decimals: 2
-  };
+    /**
+    * Set an initiative formula for the system
+    * @type {String}
+    */
+    CONFIG.Combat.initiative = {
+        formula: "@characteristics.dex.value + (@characteristics.int.value / 100)",
+        decimals: 2
+    };
 
-  // debug
-  // CONFIG.debug.hooks = true;
+    // debug
+    // CONFIG.debug.hooks = true;
 
-  // Define custom Entity classes
-  CONFIG.Actor.entityClass = HeroSystem6eActor;
-  CONFIG.Item.documentClass = HeroSystem6eItem;
-  CONFIG.Token.documentClass = HeroSystem6eTokenDocument;
-  CONFIG.Token.objectClass = HeroSystem6eToken;
-  CONFIG.statusEffects = HeroSystem6eActorActiveEffects.getEffects();
-  CONFIG.MeasuredTemplate.objectClass = HeroSystem6eTemplate;
-  CONFIG.ui.combat = HeroSystem6eCombatTracker;
- 
-  SettingsHelpers.initLevelSettings();
+    // Define custom Entity classes
+    CONFIG.Actor.entityClass = HeroSystem6eActor;
+    CONFIG.Item.documentClass = HeroSystem6eItem;
+    CONFIG.Token.documentClass = HeroSystem6eTokenDocument;
+    CONFIG.Token.objectClass = HeroSystem6eToken;
+    CONFIG.statusEffects = HeroSystem6eActorActiveEffects.getEffects();
+    CONFIG.MeasuredTemplate.objectClass = HeroSystem6eTemplate;
+    CONFIG.ui.combat = HeroSystem6eCombatTracker;
+  
+    SettingsHelpers.initLevelSettings();
 
-  // Register sheet application classes
-  Actors.unregisterSheet("core", ActorSheet);
-  Actors.registerSheet("herosystem6e", HeroSystem6eActorSheet, { makeDefault: true });
-  Items.unregisterSheet("core", ItemSheet);
-  Items.registerSheet("herosystem6e", HeroSystem6eItemSheet, { makeDefault: true });
+    // Register sheet application classes
+    Actors.unregisterSheet("core", ActorSheet);
+    Actors.registerSheet("herosystem6e", HeroSystem6eActorSheet, { makeDefault: true });
+    Items.unregisterSheet("core", ItemSheet);
+    Items.registerSheet("herosystem6e", HeroSystem6eItemSheet, { makeDefault: true });
 
-  // Actors.registerSheet("herosystem6e", HeroSystem6eActorSheetMini, { makeDefault: false });
+    // Actors.registerSheet("herosystem6e", HeroSystem6eActorSheetMini, { makeDefault: false });
 
-  // If you need to add Handlebars helpers, here are a few useful examples:
-  Handlebars.registerHelper('concat', function() {
+    // If you need to add Handlebars helpers, here are a few useful examples:
+    Handlebars.registerHelper('concat', function() {
     var outStr = '';
     for (var arg in arguments) {
       if (typeof arguments[arg] != 'object') {
