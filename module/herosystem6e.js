@@ -14,33 +14,31 @@ import HeroSystem6eTemplate from "./template.js";
 import { HeroSystem6eCombat, HeroSystem6eCombatTracker } from "./combat.js";
 import SettingsHelpers from "./settings/settings-helpers.js";
 
-Hooks.once('init', async function () {
+Hooks.once('init', async function() {
 
   game.herosystem6e = {
-    applications: {
-      HeroSystem6eActorSheet,
-      HeroSystem6eItemSheet,
-    },
-    entities: {
-      HeroSystem6eActor,
-      HeroSystem6eItem,
-      HeroSystem6eTokenDocument,
-      HeroSystem6eToken
-    },
-    canvas: {
-      HeroSystem6eTemplate
-    },
-    macros: macros,
-    rollItemMacro: rollItemMacro,
-    config: HERO
+      applications: {
+          HeroSystem6eActorSheet,
+          HeroSystem6eItemSheet,
+      },
+      entities: {
+          HeroSystem6eActor,
+          HeroSystem6eItem,
+          HeroSystem6eTokenDocument,
+          HeroSystem6eToken
+      },
+      canvas: {
+          HeroSystem6eTemplate
+      },
+      macros: macros,
+      rollItemMacro: rollItemMacro,
+      config : HERO
   };
 
   CONFIG.HERO = HERO;
 
   CONFIG.POWERS = POWERS;
 
-  // Define custom Document classes
-  CONFIG.Actor.documentClass = HeroSystem6eActor;
   CONFIG.Combat.documentClass = HeroSystem6eCombat;
 
   /**
@@ -48,8 +46,8 @@ Hooks.once('init', async function () {
   * @type {String}
   */
   CONFIG.Combat.initiative = {
-    formula: "@characteristics.dex.value + (@characteristics.int.value / 100)",
-    decimals: 2
+      formula: "@characteristics.dex.value + (@characteristics.int.value / 100)",
+      decimals: 2
   };
 
   // debug
@@ -63,7 +61,7 @@ Hooks.once('init', async function () {
   CONFIG.statusEffects = HeroSystem6eActorActiveEffects.getEffects();
   CONFIG.MeasuredTemplate.objectClass = HeroSystem6eTemplate;
   CONFIG.ui.combat = HeroSystem6eCombatTracker;
-
+ 
   SettingsHelpers.initLevelSettings();
 
   // Register sheet application classes
@@ -72,8 +70,10 @@ Hooks.once('init', async function () {
   Items.unregisterSheet("core", ItemSheet);
   Items.registerSheet("herosystem6e", HeroSystem6eItemSheet, { makeDefault: true });
 
+  // Actors.registerSheet("herosystem6e", HeroSystem6eActorSheetMini, { makeDefault: false });
+
   // If you need to add Handlebars helpers, here are a few useful examples:
-  Handlebars.registerHelper('concat', function () {
+  Handlebars.registerHelper('concat', function() {
     var outStr = '';
     for (var arg in arguments) {
       if (typeof arguments[arg] != 'object') {
