@@ -1068,8 +1068,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     });
 
     if (confirmed) {
-      item.delete()
-      this.render();
+        item.delete()
+        this.render();
     }
   }
 
