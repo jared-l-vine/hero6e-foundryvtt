@@ -213,7 +213,11 @@
             "targets": "dcv",
             "end": 0,
             "stunX": 0,
-            "class": "physical"
+            "class": "physical",
+            "areaOfEffect": {
+                "type": "none",
+                "value": 0
+            }
         },
         "defense": {
             "templates": [ "base" ],

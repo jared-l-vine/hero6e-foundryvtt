@@ -353,8 +353,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
     // Update Inventory Item
     html.find('.item-edit').click(ev => {
-      const li = $(ev.currentTarget).parents('.item')
-      const item = this.actor.items.get(li.data('itemId'))
+      const itemId = $(ev.currentTarget).closest("[data-item-id]").data().itemId
+      const item = this.actor.items.get(itemId)
       item.sheet.render(true)
     })
 
@@ -480,7 +480,11 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
   async _onItemAttack (event) {
     event.preventDefault()
-    const itemId = event.currentTarget.closest('.item').dataset.itemId
+
+    console.log($(event.currentTarget).closest("[data-item-id]").data())
+
+    const itemId = $(event.currentTarget).closest("[data-item-id]").data().itemId
+
     const item = this.actor.items.get(itemId)
 
     item.roll()
@@ -488,7 +492,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
   async _onItemToggle (event) {
     event.preventDefault()
-    const itemId = event.currentTarget.closest('.item').dataset.itemId
+    const itemId = $(event.currentTarget).closest("[data-item-id]").data().itemId
 
     let item;
     if (!isPowerSubItem(itemId)) {
@@ -995,8 +999,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
   }
 
   async _onDeleteItem (event) {
-    const li = $(event.currentTarget).parents('.item')
-    const item = this.actor.items.get(li.data('itemId'))
+    const itemId = $(event.currentTarget).closest("[data-item-id]").data().itemId
+    const item = this.actor.items.get(itemId)
 
     const confirmed = await Dialog.confirm({
         title: game.i18n.localize("HERO6EFOUNDRYVTTV2.confirms.deleteConfirm.Title"),
@@ -1005,7 +1009,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
     if (confirmed) {
         item.delete()
-        li.slideUp(200, () => this.render(false))
         this.render();
     }
   }

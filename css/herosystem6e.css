@@ -669,3 +669,11 @@ form .upload-button {
   letter-spacing: 0.5;
   padding: .1em .25em;
 }
+
+.tags .tag.area-effect-tag {
+  background-color: #d06fa2;
+}
+
+td {
+  text-align: center;
+}
