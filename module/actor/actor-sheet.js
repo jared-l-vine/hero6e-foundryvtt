@@ -1058,9 +1058,9 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     await editSubItem(event, item)
   }
 
-  async _onDeleteItem(event) {
-    const li = $(event.currentTarget).parents('.item')
-    const item = this.actor.items.get(li.data('itemId'))
+  async _onDeleteItem (event) {
+    const itemId = $(event.currentTarget).closest("[data-item-id]").data().itemId
+    const item = this.actor.items.get(itemId)
 
     const confirmed = await Dialog.confirm({
       title: game.i18n.localize("HERO6EFOUNDRYVTTV2.confirms.deleteConfirm.Title"),
@@ -1069,7 +1069,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
     if (confirmed) {
       item.delete()
-      li.slideUp(200, () => this.render(false))
       this.render();
     }
   }
