@@ -8,7 +8,7 @@ import { HEROSYS } from '../herosystem6e.js'
  */
 export class HeroSystem6eItemSheet extends ItemSheet {
   /** @override */
-  static get defaultOptions () {
+  static get defaultOptions() {
     return mergeObject(super.defaultOptions, {
       classes: ['herosystem6e', 'sheet', 'item'],
       width: 520,
@@ -18,7 +18,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
   }
 
   /** @override */
-  get template () {
+  get template() {
     const path = 'systems/hero6efoundryvttv2/templates/item'
     // Return a single sheet for all item types.
     // return `${path}/item-sheet.html`;
@@ -31,7 +31,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
   /* -------------------------------------------- */
 
   /** @override */
-  getData () {
+  getData() {
     const data = super.getData()
 
     //console.log(data)
@@ -52,22 +52,23 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     data.system = item.system
     data.config = CONFIG.HERO
 
+    data.effects = this.actor.effects.filter(o => o.origin === item.uuid)
+
     // skillCharacteristics should be lowercase to match CONFIG.HERO.skillCharacteristics.
     // Not needed for new uploads, but previous uploads may incorectely have upperCase version
     // and thus the item-skill-sheet.hbs selectOptions won't match, thus defaulting to general.
     // Can probably remove at some point.
-    if (data.system.characteristic)
-    {
+    if (data.system.characteristic) {
       data.system.characteristic = data.system.characteristic.toLowerCase()
     }
-  
+
     return data
   }
 
   /* -------------------------------------------- */
 
   /** @override */
-  setPosition (options = {}) {
+  setPosition(options = {}) {
     const position = super.setPosition(options)
     const sheetBody = this.element.find('.sheet-body')
     const bodyHeight = position.height - 192
@@ -78,7 +79,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
   /* -------------------------------------------- */
 
   /** @override */
-  activateListeners (html) {
+  activateListeners(html) {
     super.activateListeners(html)
 
     // Everything below here is only needed if the sheet is editable
@@ -139,7 +140,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
  * @param {MouseEvent} event    The originating click event
  * @private
  */
-  _onSheetAction (event) {
+  _onSheetAction(event) {
     event.preventDefault()
     const button = event.currentTarget
     switch (button.dataset.action) {
@@ -156,7 +157,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     }
   }
 
-  async _updateObject (event, formData) {
+  async _updateObject(event, formData) {
     event.preventDefault()
 
     const expandedData = foundry.utils.expandObject(formData);
@@ -166,7 +167,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     const id = form.data()?.id
     const realId = form.data()?.realid
 
-    if(!id) { return; }
+    if (!id) { return; }
 
     if (realId) {
       subItemUpdate(realId, formData)
@@ -201,7 +202,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
       value = event.currentTarget.checked
     }
 
-    if (! isPowerSubItem(this.item._id)) {
+    if (!isPowerSubItem(this.item._id)) {
       // normal items
       let changes = {}
       changes[`${valueName}`] = value
@@ -272,7 +273,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     }
   }
 
-  async _onSubItemCreate (event) {
+  async _onSubItemCreate(event) {
     event.preventDefault()
     const header = event.currentTarget
     // Get the type of item to create.
@@ -281,13 +282,53 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     const data = duplicate(header.dataset)
     // Initialize a default name.
     const name = `New ${type.capitalize()}`
+
+    if (type === 'effect') {
+
+      if (!this.actor) {
+        return ui.notifications.warn(`Active Effects not handled on items not associated with an actor.`)
+      }
+
+      // Active Effects are quirky.
+      // It apperas in v10 that you cannot createEmbeddedDocuments on an Item already
+      // embedded in an Actor.
+      // If an Item with AEs is added to an actor, all the AEs on that item
+      // are transfered to the actor.
+      // Only AEs on actors are used.
+      // If you modify an AE on an item already embedded to an actor
+      // the actor doesn't recieve the upates.  
+      // The AEs on actor/item are not linked.
+      // There is a work around, by keeping track of the AE origin
+
+      let activeEffect = new ActiveEffect().toObject()
+      activeEffect.label = "New Effect"
+      activeEffect.origin = this.item.uuid
+
+
+
+      await this.actor.createEmbeddedDocuments('ActiveEffect', [activeEffect])
+
+      // This will update the AE effects on an Item that is attached to an actor
+      // but since the updated AEs don't tranfer to the actor automatically, seems pointless.
+      // You could manually updaate the cooresponding actor as well, perhaps a future feature.
+      // await this.item.update({
+      //   effects:
+      //     [
+      //       activeEffect
+      //     ]
+      // })
+
+
+      return
+
+    }
+
     // Prepare the item object.
     const itemData = {
       name,
       type,
       data
     }
-
     const newItem = new HeroSystem6eItem(itemData)
 
     const id = Date.now().toString(32) + Math.random().toString(16).substring(2)
@@ -298,13 +339,17 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     changes[`system.subItems.${type}.${id}._id`] = this.item._id + '-' + id
 
     return await this.item.update(changes)
+
+
+
+
   }
 
-  async _onEditItem (event) {
+  async _onEditItem(event) {
     await editSubItem(event, this.item)
   }
 
-  async _onDeleteItem (event) {
+  async _onDeleteItem(event) {
     await deleteSubItem(event, this.item)
   }
 }
