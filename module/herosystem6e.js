@@ -55,7 +55,7 @@ Hooks.once('init', async function() {
     // CONFIG.debug.hooks = true;
 
     // Define custom Entity classes
-    CONFIG.Actor.entityClass = HeroSystem6eActor;
+    CONFIG.Actor.documentClass = HeroSystem6eActor;
     CONFIG.Item.documentClass = HeroSystem6eItem;
     CONFIG.Token.documentClass = HeroSystem6eTokenDocument;
     CONFIG.Token.objectClass = HeroSystem6eToken;
