@@ -259,6 +259,9 @@ HERO.powers = {
     "HANDTOHANDATTACK": {powerType: ["attack"]},
     "HKA": {powerType: ["attack"]},
     "TELEKINESIS": {powerType: ["attack"]},
+    "RKA": {powerType: ["attack"]},
+    "ENERGYBLAST": {powerType: ["attack"]},
+    "DARKNESS": {powerType: ["sense-affecting", "attack", "standard"]},
 
     // Defense
     "FORCEWALL": { powerType: ["defense"], name: "Barrier"}, // AKA BARRIER
@@ -270,6 +273,8 @@ HERO.powers = {
     "FLIGHT": { powerType: ["movement"]},
     "LEAPING": { powerType: ["movement"]},
     "TELEPORTATION": { powerType: ["movement"]},
+    "SWINGING": { powerType: ["movement"]},
+
 
     // Powers can include Skills.
     "ACROBATICS": {powerType: ["skill"]},

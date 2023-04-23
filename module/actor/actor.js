@@ -163,11 +163,19 @@ export class HeroSystem6eActor extends Actor {
                         addedDefense = true
                     }
                 }
+
+                if (power.system.rules == "FLASHDEFENSE" && !addedDefense) {
+                    itemData.system.defenseType = 'fd'
+                    itemData.name = power.name + " ("  + (configPowerInfo.name || power.system.rules) + ")"
+                    itemData.system.value = parseInt(power.system.LEVELS)
+                    await HeroSystem6eItem.create(itemData, { parent: this })
+                    addedDefense = true
+                }
                 
                 if (!addedDefense)
                 {
                     if (game.settings.get(game.system.id, 'alphaTesting')) {
-                        ui.notifications.warn(`${power.system.rules} not handled during defense item creation`)
+                        ui.notifications.warn(`${power.system.rules} not implemented during defense item creation`)
                     }
                 }
                 
