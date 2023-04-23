@@ -171,6 +171,14 @@ export class HeroSystem6eActor extends Actor {
                     await HeroSystem6eItem.create(itemData, { parent: this })
                     addedDefense = true
                 }
+
+                if (power.system.rules == "MENTALDEFENSE" && !addedDefense) {
+                    itemData.system.defenseType = 'md'
+                    itemData.name = power.name + " ("  + (configPowerInfo.name || power.system.rules) + ")"
+                    itemData.system.value = parseInt(power.system.LEVELS)
+                    await HeroSystem6eItem.create(itemData, { parent: this })
+                    addedDefense = true
+                }
                 
                 if (!addedDefense)
                 {
