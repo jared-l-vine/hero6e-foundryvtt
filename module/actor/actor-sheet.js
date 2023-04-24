@@ -546,19 +546,25 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     // Check for associated ActiveEffects
     for (const activeEffect of item.actor.effects.filter(o => o.origin === item.uuid)) {
       await activeEffect.update({ disabled: !item.system.active })
-      const max = item.actor.system.characteristics[item.system.rules.toLocaleLowerCase()].max
-      if (item.system.active) {
-        let value = parseInt(item.actor.system.characteristics[item.system.rules.toLocaleLowerCase()].value)
-        const levels = activeEffect.changes.find(o => o.key.indexOf(item.system.rules.toLocaleLowerCase()) > -1)?.value
-        if (levels) {
-          value += parseInt(levels)
-          await item.actor.update({ [`system.characteristics.${item.system.rules.toLocaleLowerCase()}.value`]: value })
+      for(let change of activeEffect.changes) {
+        const key = change.key.match(/characteristics\.(.*)\./)[1]
+        const max = item.actor.system.characteristics[key].max
+        if (item.system.active) {
+          let value = parseInt(item.actor.system.characteristics[key].value)
+          const levels = change?.value
+          if (levels) {
+            value += parseInt(levels)
+            await item.actor.update({ [`system.characteristics.${key}.value`]: value })
+          }
+
+        }
+
+        if (item.actor.system.characteristics[key].value > max) {
+          await item.actor.update({ [`system.characteristics.${key}.value`]: max })
         }
 
       }
-      if (item.actor.system.characteristics[item.system.rules.toLocaleLowerCase()].value > max) {
-        await item.actor.update({ [`system.characteristics.${item.system.rules.toLocaleLowerCase()}.value`]: max })
-      }
+      
     }
   }
 
