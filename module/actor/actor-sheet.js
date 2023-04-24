@@ -753,6 +753,15 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         changes.prototypeToken = {}
         changes.prototypeToken.name = changes.name
       }
+
+      // Overwrite token name if PC
+      if (this.actor.token)
+      {
+        if (this.actor.type == 'pc')
+        {
+          await this.token.update({name: changes.name})
+        }
+      }
     }
 
     // Biography
