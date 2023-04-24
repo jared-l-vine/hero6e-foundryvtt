@@ -151,3 +151,111 @@ export async function uploadSkill(skill) {
 
     await HeroSystem6eItem.create(itemData, { parent: this.actor })
 }
+
+export async function uploadAttack(power) {
+  const xmlid = power.getAttribute('XMLID')
+  let configPowerInfo = CONFIG.HERO.powers[xmlid]
+
+  // Verify we have an attack
+  if (!configPowerInfo.powerType.includes("attack")) return
+
+  let description = power.getAttribute('ALIAS')
+  let name = ''
+  if (power.hasAttribute('NAME') && power.getAttribute('NAME') !== '') {
+    name = power.getAttribute('NAME')
+  } else {
+    name = description
+  }
+
+  const levels = parseInt(power.getAttribute('LEVELS'))
+  const input = power.getAttribute('INPUT')
+
+  let itemData = {
+    name,
+    type: "attack",
+    system: {
+      class: input === "ED" ? "energy" : "physical",
+      dice: levels,
+      end: 0,
+      extraDice: "zero",
+      killing: false,
+      knockback: true,
+      targets: "dcv",
+      uses: "ocv",
+      usesStrength: true,
+    }
+  }
+  
+  if (power.querySelector('[XMLID="PLUSONEPIP"]'))
+  {
+    itemData.system.extraDice = "pip"
+  }
+
+  if (power.querySelector('[XMLID="PLUSONEHALFDIE"]'))
+  {
+    itemData.system.extraDice = "half"
+  }
+
+  if (power.querySelector('[XMLID="MINUSONEPIP"]'))
+  {
+    // Typically only allowed for killing attacks.
+    // Appears that +1d6-1 is roughly equal to +1/2 d6
+    itemData.system.extraDice = "half"
+  }
+
+  const aoe = power.querySelector('[XMLID="AOE"]')
+  if (aoe) {
+    itemData.system.areaOfEffect = { 
+      type: aoe.getAttribute('OPTION_ALIAS').toLowerCase(),
+      value: parseInt(aoe.getAttribute('LEVELS'))
+    }
+  }
+  //areaOfEffect.type
+
+
+  if (xmlid === "HANDTOHANDATTACK")
+  {
+    await HeroSystem6eItem.create(itemData, { parent: this.actor })
+    return
+  }
+
+  if (xmlid === "HKA")
+  {
+    itemData.system.killing = true
+    await HeroSystem6eItem.create(itemData, { parent: this.actor })
+    return
+  }
+
+  
+  if (xmlid === "TELEKINESIS")
+  {
+    // levels is the equivalent strength
+    itemData.system.extraDice = "zero"
+    itemData.system.dice = Math.floor(levels / 5)
+    if (levels % 5 >=3) itemData.system.extraDice = "half"
+    itemData.name += " (TK strike)"
+    itemData.system.usesStrength = false
+    await HeroSystem6eItem.create(itemData, { parent: this.actor })
+    return
+  }
+
+  if (xmlid === "ENERGYBLAST")
+  {
+    itemData.system.usesStrength = false
+    await HeroSystem6eItem.create(itemData, { parent: this.actor })
+    return
+  }
+
+  if (xmlid === "RKA")
+  {
+    itemData.system.killing = true
+    itemData.system.usesStrength = false
+    await HeroSystem6eItem.create(itemData, { parent: this.actor })
+    return
+  }
+   
+
+  if (game.settings.get(game.system.id, 'alphaTesting')) {
+    ui.notifications.warn(`${xmlid} not implemented during HDC upload of ${this.actor.name}`)
+  }
+}

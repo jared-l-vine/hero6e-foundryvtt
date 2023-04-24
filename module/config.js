@@ -283,7 +283,9 @@ HERO.powers = {
         range: "self",  
         costEnd: true 
     },
-    "NAKEDMODIFIER": {},
+    "NAKEDMODIFIER": {
+        powerType: []
+    },
     
 
 

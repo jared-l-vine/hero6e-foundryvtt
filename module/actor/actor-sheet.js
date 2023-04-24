@@ -6,7 +6,7 @@ import { editSubItem, deleteSubItem, getItemCategory, isPowerSubItem, splitPower
 import { enforceManeuverLimits } from '../item/manuever.js'
 import { presenceAttackPopOut } from '../utility/presence-attack.js'
 import { HERO } from '../config.js'
-import { uploadBasic, uploadTalent, uploadSkill } from '../utility/upload_hdc.js'
+import { uploadBasic, uploadTalent, uploadSkill, uploadAttack } from '../utility/upload_hdc.js'
 import * as Dice from '../dice.js'
 
 /**
@@ -853,6 +853,12 @@ export class HeroSystem6eActorSheet extends ActorSheet {
           await uploadSkill.call(this, power);
         }
 
+        // Detect attacks
+        //let configPowerInfo = CONFIG.HERO.powers[power.system.rules]
+        if (configPowerInfo.powerType.includes("attack")) {
+          await uploadAttack.call(this, power);
+        }
+
       }
       else {
         if (game.settings.get(game.system.id, 'alphaTesting')) {
@@ -966,8 +972,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
       let newPower = await HeroSystem6eItem.create(itemData, { parent: this.actor })
 
-      console.log(newPower)
-
       // // ActiveEffect for Characteristics
       // if (configPowerInfo && configPowerInfo.powerType.includes("characteristic")) {
       //   console.log(newPower.system.rules)
@@ -988,6 +992,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       //   await this.actor.addActiveEffect(activeEffect)
 
       //}
+
+
     }
 
     for (const perk of perks.children) {
@@ -1040,6 +1046,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     // TODO: Creating ActiveEffects initially on the Item should
     // allow easier implementation of power toggles and associated ActiveEffects.
     await this.actor.applyPowerEffects()
+
+    
 
     // Actor Image
     if (image) {
