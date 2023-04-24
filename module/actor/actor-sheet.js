@@ -843,7 +843,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         //   case "skill": await uploadSkill.call(this, power); break
         //   default : ui.notifications.warn(`${xmlid} not handle during HDC upload of ${this.actor.name}`)
         // }
-        if (configPowerInfo.powerType.includes("skill")) {
+        if ((configPowerInfo?.powerType || "").includes("skill")) {
           await uploadSkill.call(this, power);
         }
 
@@ -884,6 +884,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
             option: modifier.getAttribute('OPTION'),
             optionId: modifier.getAttribute('OPTIONID'),
             optionAlias: modifier.getAttribute('OPTION_ALIAS'),
+            LEVELS: modifier.getAttribute('LEVELS'),
           })
         }
       }

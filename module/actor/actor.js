@@ -81,7 +81,7 @@ export class HeroSystem6eActor extends Actor {
             let configPowerInfo = CONFIG.HERO.powers[power.system.rules]
 
             // Characteristics (via ActiveEffects)
-            if (configPowerInfo && configPowerInfo.powerType.includes("characteristic")) {
+            if (configPowerInfo && (configPowerInfo?.powerType || "").includes("characteristic")) {
 
                 const key = power.system.rules.toLowerCase()
 
@@ -128,7 +128,7 @@ export class HeroSystem6eActor extends Actor {
             }
 
             // Defenses (create new defense item)
-            if (configPowerInfo && configPowerInfo.powerType.includes("defense")) {
+            if (configPowerInfo && (configPowerInfo?.powerType || "").includes("defense")) {
 
                 // Prepare the item object.
                 const itemData = {
@@ -179,6 +179,43 @@ export class HeroSystem6eActor extends Actor {
                     await HeroSystem6eItem.create(itemData, { parent: this })
                     addedDefense = true
                 }
+
+                if (power.system.rules == "POWERDEFENSE" && !addedDefense) {
+                    itemData.system.defenseType = 'powd'
+                    itemData.name = power.name + " ("  + (configPowerInfo.name || power.system.rules) + ")"
+                    itemData.system.value = parseInt(power.system.LEVELS)
+                    await HeroSystem6eItem.create(itemData, { parent: this })
+                    addedDefense = true
+                }
+
+                // Damage negation PD/ED/MD values are strangely in the modifiers
+                if (power.system.rules == "DAMAGENEGATION" && !addedDefense) {
+                    itemData.name = power.name + " ("  + (configPowerInfo.name || power.system.rules) + ")"
+                    itemData.system.defenseType = 'dnp'
+                    itemData.system.value = parseInt(power.system.modifiers.find(o=> o.xmlid === 'PHYSICAL').LEVELS)
+                    if (itemData.system.value > 0)
+                    {
+                        await HeroSystem6eItem.create(itemData, { parent: this })
+                    }
+
+                    itemData.system.defenseType = 'dne'
+                    itemData.system.value = parseInt(power.system.modifiers.find(o=> o.xmlid === 'ENERGY').LEVELS)
+                    if (itemData.system.value > 0)
+                    {
+                        await HeroSystem6eItem.create(itemData, { parent: this })
+                    }
+
+                    itemData.system.defenseType = 'dnm'
+                    itemData.system.value = parseInt(power.system.modifiers.find(o=> o.xmlid === 'MENTAL').LEVELS)
+                    if (itemData.system.value > 0)
+                    {
+                        await HeroSystem6eItem.create(itemData, { parent: this })
+                    }
+                    
+                    addedDefense = true
+                }
+
+                
                 
                 if (!addedDefense)
                 {

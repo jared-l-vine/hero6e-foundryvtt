@@ -243,6 +243,22 @@ HERO.powers = {
     "CLINGING": {powerType: ["standard"]},
     "EXTRALIMBS": {powerType: ["standard"]},
     "SUMMON": {powerType: ["standard"]},
+    "DESOLIDIFICATION": { powerType: ["body-affecting", "standard"], name: "Desolidification"},
+    "REGENERATION": {powerType: ["special"], percievability: "imperceptible", duration: "persistent", target: "self only", range: "self", costEnd: false },
+    "HEALING": {powerType: ["adjustment"], percievability: "obvious", duration: "instant", target: "target's dcv", range: "no range", costEnd: true },
+    "STRETCHING": {powerType: ["body-affecting", "standard"], percievability: "obvious", duration: "constant", target: "self only", range: "self", costEnd: true },
+    "LIFESUPPORT": {
+        name: "Life Support", 
+        powerType: ["standard"], 
+        percievability: "imperceptible", 
+        duration: "persistent", 
+        target: "self only", 
+        range: "self", 
+        costEnd: false 
+    },
+    "NAKEDMODIFIER": {},
+    
+
 
     // Mental
     "MINDSCAN": {powerType: ["mental"]},
@@ -252,7 +268,11 @@ HERO.powers = {
     // Senses
     "CLAIRSENTIENCE": {powerType: ["sense"]},  //UNUSUAL SENSES
     "NIGHTVISION": {powerType: ["sense"]}, 
-    "ENHANCEDPERCEPTION": {powerType: ["sense"]},  
+    "ENHANCEDPERCEPTION": {powerType: ["sense"]},
+    "MENTALAWARENESS": {powerType: ["sense"], senseGroup: "mental", senseType: "passive"},
+    "PENETRATIVE": {powerType: ["sense"]},
+    "DETECT": {powerType: ["sense"]},
+    "TARGETINGSENSE": {powerType: ["sense"]},
     
 
     // Attack
@@ -262,18 +282,53 @@ HERO.powers = {
     "RKA": {powerType: ["attack"]},
     "ENERGYBLAST": {powerType: ["attack"]},
     "DARKNESS": {powerType: ["sense-affecting", "attack", "standard"]},
+    "DISPEL": {powerType: ["attack", "standard"]},
+    "ENTANGLE": {powerType: ["attack", "standard"]},
+    "IMAGES": {
+        name: "Images", 
+        powerType: ["attack", "sense-affecting", "standard"], 
+        percievability: "obvious", 
+        duration: "constant", 
+        target: "area (see text)", 
+        range: "standard", 
+        costEnd: true 
+    },
 
     // Defense
     "FORCEWALL": { powerType: ["defense"], name: "Barrier"}, // AKA BARRIER
     "FORCEFIELD": { powerType: ["defense"], name: "Resistant Protection"},  // AKA RESISTANT PROTECTION
-    "FLASHDEFENSE": { powerType: ["defense", "special"], name: "Flash Defense", percievability: "inobvious", duration: "persistent", target: "self only", range: "self", costEnd: false },
+    "FLASHDEFENSE": { powerType: ["defense", "special"], 
+        name: "Flash Defense", 
+        percievability: "inobvious", 
+        duration: "persistent", 
+        target: "self only", 
+        range: "self", 
+        costEnd: false 
+    },
     "MENTALDEFENSE": { powerType: ["defense", "special"], name: "Mental Defense"},
+    "POWERDEFENSE": { powerType: ["defense", "special"], 
+        name: "Power Defense", 
+        percievability: "inobvious", 
+        duration: "persistent", 
+        target: "self only", 
+        range: "self", 
+        costEnd: false 
+    },
+    "DAMAGENEGATION": { powerType: ["defense", "special"], 
+        name: "Damage Negation", 
+        percievability: "inobvious", 
+        duration: "persistent", 
+        target: "self only", 
+        range: "self", 
+        costEnd: false 
+    },
 
     // Movement
     "FLIGHT": { powerType: ["movement"]},
     "LEAPING": { powerType: ["movement"]},
     "TELEPORTATION": { powerType: ["movement"]},
     "SWINGING": { powerType: ["movement"]},
+    "TUNNELING": { powerType: ["movement"]},
 
 
     // Powers can include Skills.
