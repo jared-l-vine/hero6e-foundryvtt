@@ -134,7 +134,10 @@ export class HeroSystem6eActor extends Actor {
                 const itemData = {
                   name: power.name,
                   type: 'defense',
-                  system: { rules: power.system.rules}
+                  system: { 
+                        rules: power.system.rules,
+                        resistant: false
+                    }
                 }
 
                 let addedDefense = false
@@ -213,6 +216,46 @@ export class HeroSystem6eActor extends Actor {
                     }
                     
                     addedDefense = true
+                }
+
+                //DAMAGEREDUCTION 
+                if (power.system.rules == "DAMAGEREDUCTION" && !addedDefense) {
+                    itemData.name = power.name// + " ("  + (configPowerInfo.name || power.system.rules) + ")"
+                    itemData.system.value = 0
+                    if (power.system.OPTIONID.indexOf("25")>-1)
+                    {
+                        itemData.system.value = 25
+                    }
+                    if (power.system.OPTIONID.indexOf("50")>-1)
+                    {
+                        itemData.system.value = 50
+                    }
+                    if (power.system.OPTIONID.indexOf("75")>-1)
+                    {
+                        itemData.system.value = 75
+                    }
+                    if (power.system.OPTIONID.indexOf("RESISTANT")> -1)
+                    {
+                        itemData.system.resistant = true
+                    }
+                    switch(power.system.INPUT)
+                    {
+                        case "Physical": 
+                            itemData.system.defenseType = 'drp'
+                            await HeroSystem6eItem.create(itemData, { parent: this })
+                            addedDefense = true
+                            break
+                        case "Energy": 
+                            itemData.system.defenseType = 'dre'
+                            await HeroSystem6eItem.create(itemData, { parent: this })
+                            addedDefense = true
+                            break
+                        case "Mental": 
+                            itemData.system.defenseType = 'drm'
+                            await HeroSystem6eItem.create(itemData, { parent: this })
+                            addedDefense = true
+                            break
+                    }
                 }
 
                 

@@ -817,7 +817,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     }
 
     const relevantFields = ['BASECOST', 'LEVELS', 'ALIAS', 'MULTIPLIER', 'NAME', 'OPTION_ALIAS', 'SFX',
-      'PDLEVELS', 'EDLEVELS', 'MDLEVELS' // FORCEFIELD
+      'PDLEVELS', 'EDLEVELS', 'MDLEVELS', 'INPUT', 'OPTIONID' // FORCEFIELD
     ]
     for (const power of powers.children) {
       const xmlid = power.getAttribute('XMLID')

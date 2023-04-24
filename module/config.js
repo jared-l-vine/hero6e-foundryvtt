@@ -256,6 +256,33 @@ HERO.powers = {
         range: "self", 
         costEnd: false 
     },
+    "AID": {
+        name: "Aid", 
+        powerType: ["adjustment"], 
+        percievability: "obvious", 
+        duration: "Instant", 
+        target: "target’s DCV", 
+        range: "no range", 
+        costEnd: true 
+    },
+    "SHAPESHIFT": {
+        name: "Shape Shift", 
+        powerType: ["body-affecting"], 
+        percievability: "obvious", 
+        duration: "constant", 
+        target: "self only", 
+        range: "self",  
+        costEnd: true 
+    },
+    "DENSITYINCREASE": {
+        name: "Density Increase", 
+        powerType: ["body-affecting", "standard"], 
+        percievability: "obvious", 
+        duration: "constant", 
+        target: "self only", 
+        range: "self",  
+        costEnd: true 
+    },
     "NAKEDMODIFIER": {},
     
 
@@ -273,6 +300,7 @@ HERO.powers = {
     "PENETRATIVE": {powerType: ["sense"]},
     "DETECT": {powerType: ["sense"]},
     "TARGETINGSENSE": {powerType: ["sense"]},
+    "TRACKINGSENSE": {powerType: ["sense"]},
     
 
     // Attack
@@ -322,6 +350,14 @@ HERO.powers = {
         range: "self", 
         costEnd: false 
     },
+    "DAMAGEREDUCTION": { powerType: ["defense", "standard"], 
+        name: "Damage Reduction", 
+        percievability: "inobvious", 
+        duration: "persistent", 
+        target: "self only", 
+        range: "self", 
+        costEnd: false 
+    },
 
     // Movement
     "FLIGHT": { powerType: ["movement"]},
@@ -329,6 +365,7 @@ HERO.powers = {
     "TELEPORTATION": { powerType: ["movement"]},
     "SWINGING": { powerType: ["movement"]},
     "TUNNELING": { powerType: ["movement"]},
+    "RUNNING": { powerType: ["movement"]},
 
 
     // Powers can include Skills.
