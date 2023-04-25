@@ -210,8 +210,6 @@ export async function uploadAttack(power) {
       value: parseInt(aoe.getAttribute('LEVELS'))
     }
   }
-  //areaOfEffect.type
-
 
   if (xmlid === "HANDTOHANDATTACK")
   {

@@ -47,6 +47,8 @@ HERO.attackClasses = {
     "mental": "Mental"
 };
 
+
+
 HERO.characteristics = {
     "str": "STR",
     "dex": "DEX",
@@ -450,4 +452,11 @@ HERO.areaOfEffect = {
         surface: "Surface",
         any: "Any Area"
     }
+}
+
+HERO.stunBodyDamages = {
+    "stunbody": "Stun and Body",
+    "stunonly": "Stun only",
+    "bodyonly": "Body only",
+    "effect": "Effect"
 }

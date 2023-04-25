@@ -19,7 +19,8 @@
             "TargetsUsing": "Targets Using",
             "ToHitModifier": "To Hit Modifier",
             "UsesStrength": "Uses Strength",
-            "Value": "Value"
+            "Value": "Value",
+            "StunBodyDamage": "Stun and/or Body Damage"
         }
     },
     "ActorSheet": {
