@@ -32,7 +32,7 @@ export class HeroSystem6eItem extends Item {
         }
 
         // assign a default image
-        if (!data.img) {
+        if (!data.img || data.img === 'icons/svg/item-bag.svg') {
             if (icons[this.type])
             {
                 this.updateSource({ img:  icons[this.type]});

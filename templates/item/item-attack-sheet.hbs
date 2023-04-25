@@ -49,22 +49,29 @@
             <input type="checkbox" name="system.killing" {{checked system.killing}} data-dtype="Boolean" />
         </div>
 
-        {{!--
         <div class="form-group">
             <label>Levels of Armor Piercing</label>
-            <input type="text" name="system.piercing" value="{{data.piercing}}" data-dtype="Number" />
+            <input {{#unless alphaTesting}}disabled{{/unless}} title="This property may not be fully impelmented" type="text" name="system.piercing" value="{{system.piercing}}" data-dtype="Number" />
         </div>
 
         <div class="form-group">
             <label>Levels of Penetrating</label>
-            <input type="text" name="system.penetrating" value="{{data.penetrating}}" data-dtype="Number" />
+            <input {{#unless alphaTesting}}disabled{{/unless}} title="This property may not be fully impelmented" type="text" name="system.penetrating" value="{{system.penetrating}}" data-dtype="Number" />
         </div>
 
-        <div class="form-group">
+        {{!-- <div class="form-group">
             <label>Total Attack Advantages</label>
             <input type="text" name="system.advantages" value="{{data.advantages}}" data-dtype="Number" />
+        </div> --}}
+
+        <div class="form-group" >
+            <label>{{localize "Items.Attack.StunBodyDamage"}}</label>
+            
+            <select {{#unless alphaTesting}}disabled{{/unless}} title="This property may not be fully impelmented" name="system.stunBodyDamage" data-dtype="text">
+                {{selectOptions config.stunBodyDamages selected=system.stunBodyDamage}}
+            </select>
         </div>
-        --}}
+
 
         <div class="form-group" >
             <label>{{localize "Items.Attack.TargetsUsing"}}</label>

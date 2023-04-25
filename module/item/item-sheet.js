@@ -12,7 +12,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     return mergeObject(super.defaultOptions, {
       classes: ['herosystem6e', 'sheet', 'item'],
       width: 520,
-      height: 520,
+      height: 600,
       tabs: [{ navSelector: '.sheet-tabs', contentSelector: '.sheet-body', initial: 'description' }]
     })
   }
@@ -51,6 +51,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     data.item = item
     data.system = item.system
     data.config = CONFIG.HERO
+    data.alphaTesting = game.settings.get(game.system.id, 'alphaTesting')
 
     data.effects = this.actor.effects.filter(o => o.origin === item.uuid)
 

@@ -6,7 +6,7 @@ import { editSubItem, deleteSubItem, getItemCategory, isPowerSubItem, splitPower
 import { enforceManeuverLimits } from '../item/manuever.js'
 import { presenceAttackPopOut } from '../utility/presence-attack.js'
 import { HERO } from '../config.js'
-import { uploadBasic, uploadTalent, uploadSkill } from '../utility/upload_hdc.js'
+import { uploadBasic, uploadTalent, uploadSkill, uploadAttack } from '../utility/upload_hdc.js'
 import * as Dice from '../dice.js'
 
 /**
@@ -405,6 +405,12 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         li.setAttribute('draggable', true)
         li.addEventListener('dragstart', handler, false)
       })
+
+      // Actor Attacks uses a table instead of ol
+      html.find('tr.item').each((i, li) => {
+        li.setAttribute('draggable', true)
+        li.addEventListener('dragstart', handler, false)
+      })
     }
   }
 
@@ -546,19 +552,25 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     // Check for associated ActiveEffects
     for (const activeEffect of item.actor.effects.filter(o => o.origin === item.uuid)) {
       await activeEffect.update({ disabled: !item.system.active })
-      const max = item.actor.system.characteristics[item.system.rules.toLocaleLowerCase()].max
-      if (item.system.active) {
-        let value = parseInt(item.actor.system.characteristics[item.system.rules.toLocaleLowerCase()].value)
-        const levels = activeEffect.changes.find(o => o.key.indexOf(item.system.rules.toLocaleLowerCase()) > -1)?.value
-        if (levels) {
-          value += parseInt(levels)
-          await item.actor.update({ [`system.characteristics.${item.system.rules.toLocaleLowerCase()}.value`]: value })
+      for(let change of activeEffect.changes) {
+        const key = change.key.match(/characteristics\.(.*)\./)[1]
+        const max = item.actor.system.characteristics[key].max
+        if (item.system.active) {
+          let value = parseInt(item.actor.system.characteristics[key].value)
+          const levels = change?.value
+          if (levels) {
+            value += parseInt(levels)
+            await item.actor.update({ [`system.characteristics.${key}.value`]: value })
+          }
+
+        }
+
+        if (item.actor.system.characteristics[key].value > max) {
+          await item.actor.update({ [`system.characteristics.${key}.value`]: max })
         }
 
       }
-      if (item.actor.system.characteristics[item.system.rules.toLocaleLowerCase()].value > max) {
-        await item.actor.update({ [`system.characteristics.${item.system.rules.toLocaleLowerCase()}.value`]: max })
-      }
+      
     }
   }
 
@@ -747,6 +759,15 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         changes.prototypeToken = {}
         changes.prototypeToken.name = changes.name
       }
+
+      // Overwrite token name if PC
+      if (this.actor.token)
+      {
+        if (this.actor.type == 'pc')
+        {
+          await this.token.update({name: changes.name})
+        }
+      }
     }
 
     // Biography
@@ -817,7 +838,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     }
 
     const relevantFields = ['BASECOST', 'LEVELS', 'ALIAS', 'MULTIPLIER', 'NAME', 'OPTION_ALIAS', 'SFX',
-      'PDLEVELS', 'EDLEVELS', 'MDLEVELS' // FORCEFIELD
+      'PDLEVELS', 'EDLEVELS', 'MDLEVELS', 'INPUT', 'OPTIONID' // FORCEFIELD
     ]
     for (const power of powers.children) {
       const xmlid = power.getAttribute('XMLID')
@@ -843,8 +864,14 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         //   case "skill": await uploadSkill.call(this, power); break
         //   default : ui.notifications.warn(`${xmlid} not handle during HDC upload of ${this.actor.name}`)
         // }
-        if (configPowerInfo.powerType.includes("skill")) {
+        if ((configPowerInfo?.powerType || "").includes("skill")) {
           await uploadSkill.call(this, power);
+        }
+
+        // Detect attacks
+        //let configPowerInfo = CONFIG.HERO.powers[power.system.rules]
+        if (configPowerInfo.powerType.includes("attack")) {
+          await uploadAttack.call(this, power);
         }
 
       }
@@ -884,6 +911,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
             option: modifier.getAttribute('OPTION'),
             optionId: modifier.getAttribute('OPTIONID'),
             optionAlias: modifier.getAttribute('OPTION_ALIAS'),
+            LEVELS: modifier.getAttribute('LEVELS'),
           })
         }
       }
@@ -959,8 +987,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
       let newPower = await HeroSystem6eItem.create(itemData, { parent: this.actor })
 
-      console.log(newPower)
-
       // // ActiveEffect for Characteristics
       // if (configPowerInfo && configPowerInfo.powerType.includes("characteristic")) {
       //   console.log(newPower.system.rules)
@@ -981,6 +1007,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       //   await this.actor.addActiveEffect(activeEffect)
 
       //}
+
+
     }
 
     for (const perk of perks.children) {
@@ -1033,6 +1061,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     // TODO: Creating ActiveEffects initially on the Item should
     // allow easier implementation of power toggles and associated ActiveEffects.
     await this.actor.applyPowerEffects()
+
+    
 
     // Actor Image
     if (image) {

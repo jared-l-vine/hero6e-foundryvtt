@@ -229,7 +229,8 @@
             "areaOfEffect": {
                 "type": "none",
                 "value": 0
-            }
+            },
+            "stunBodyDamage": "stunbody"
         },
         "defense": {
             "templates": [ "base" ],
