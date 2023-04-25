@@ -405,6 +405,12 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         li.setAttribute('draggable', true)
         li.addEventListener('dragstart', handler, false)
       })
+
+      // Actor Attacks uses a table instead of ol
+      html.find('tr.item').each((i, li) => {
+        li.setAttribute('draggable', true)
+        li.addEventListener('dragstart', handler, false)
+      })
     }
   }
 
