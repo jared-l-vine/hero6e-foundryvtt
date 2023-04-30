@@ -1,4 +1,4 @@
-{{ log 'HEROSYS item-damage-card2' this }}
+{{ log 'HEROSYS item-damage-card' this }}
 <div class="hero chat-card item-card damage-card2" data-actor-id="{{actor._id}}" data-item-id="{{item._id}}"
      {{#if tokenId}}data-token-id="{{tokenId}}"{{/if}}>
 
@@ -10,6 +10,17 @@
         <span class="tag">{{item.system.class}}</span>
         {{#if item.system.killing}}
             <span class="tag">killing</span>
+        {{/if}}
+        {{#if (ne item.system.stunBodyDamage 'stunbody')}}
+            <span class="tag">{{item.system.stunBodyDamage}}</span>
+        {{/if}}
+        {{#if (ne item.system.areaOfEffect.type 'none')}}
+            <span class="tag area-effect-tag" 
+                data-aoe-type="{{item.system.areaOfEffect.type}}"
+                data-aoe-value="{{item.system.areaOfEffect.value}}"
+            >
+                {{item.system.areaOfEffect.type}} ({{item.system.areaOfEffect.value}})
+            </span>
         {{/if}}
     </div>
     <hr>

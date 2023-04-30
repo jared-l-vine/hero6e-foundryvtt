@@ -458,5 +458,5 @@ HERO.stunBodyDamages = {
     "stunbody": "Stun and Body",
     "stunonly": "Stun only",
     "bodyonly": "Body only",
-    "effect": "Effect"
+    "effectonly": "Effect only"
 }

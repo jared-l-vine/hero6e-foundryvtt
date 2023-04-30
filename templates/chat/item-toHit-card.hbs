@@ -1,32 +1,99 @@
-{{ log 'HEROSYS toHit CARD' this }}
-<div class="hero chat-card item-card toHit-card" data-actor-id="{{actor._id}}" data-item-id="{{item._id}}"
+{{ log 'HEROSYS item-toHit-card' this }}
+<div class="hero chat-card item-card toHit-card2" data-actor-id="{{actor._id}}" data-item-id="{{item._id}}"
      {{#if tokenId}}data-token-id="{{tokenId}}"{{/if}}>
-    <header class="card-header flexrow">
-        <img src="{{item.img}}" title="{{item.name}}" width="36" height="36"/>
-        <h3 class="item-name">{{item.name}}</h3>
-    </header>
+
+    <span class="flavor-text">
+        
+        {{!-- Attack Name --}}
+        <header class="card-header attack flexrow">
+            <img src="{{item.img}}" title="{{item.name}}" width="36" height="36"/>
+            <h3 class="item-name">{{item.name}}</h3>
+        </header>
+
+        {{!-- Show Target, if any --}}
+        <div class="target-dc-result">
+            {{#each targets as |target id|}}
+            <div class="target-dc">
+                
+                <span>Target: {{target.actor.name}}</span>
+                
+                {{!-- TODO: Make dcv/dmcv visibility based on ownership --}}
+                <span>
+                {{#if (eq ../item.system.targets 'dcv')}}
+                    (DCV {{target.actor.system.characteristics.dcv.value}})
+                {{/if}}
+                {{#if (eq ../item.system.targets 'dmcv')}}
+                    (DMCV {{target.actor.system.characteristics.dcv.value}})
+                {{/if}}
+                </span>
+            </div>
+            {{/each}}
+            {{!-- <div class="result degree-of-success" data-visibility="all">
+                Result: <span data-visibility="all" data-whose="self" class="failure">Miss</span>
+                <span data-visibility="gm" data-whose="target">by -4</span>
+            </div> --}}
+        </div>
+        
+        <div class="tags">
+            <span class="tag">{{item.system.class}}</span>
+            {{#if item.system.killing}}
+                <span class="tag">killing</span>
+            {{/if}}
+            {{#if (ne item.system.stunBodyDamage 'stunbody')}}
+                <span class="tag">{{item.system.stunBodyDamage}}</span>
+            {{/if}}
+            {{#if (ne item.system.areaOfEffect.type 'none')}}
+                <span class="tag area-effect-tag" 
+                    data-aoe-type="{{item.system.areaOfEffect.type}}"
+                    data-aoe-value="{{item.system.areaOfEffect.value}}"
+                >
+                    {{item.system.areaOfEffect.type}} ({{item.system.areaOfEffect.value}})
+                </span>
+            {{/if}}
+        </div>
+        <hr>
+        <div class="tags">
+            {{#each tags as |tag id|}}
+            <span class="tag tag_transparent">{{tag.name}} 
+                {{#unless tag.hidePlus}}+{{/unless}}{{tag.value}}
+            </span>
+            {{/each}}
+        </div>
+
+
+        <hr>
+        {{!-- TODO: list to-hit modifiers --}}
+        {{!-- <div class="tags">
+            <span class="tag tag_transparent" data-slug="untrained">Untrained +0</span>
+            <span class="tag tag_transparent" data-slug="str">Strength +0</span>
+        </div> --}}
+    </span>
 
     <div class="hit-roll">
 
-        {{#if state.useEnd}}
+        {{#if useEnd}}
         <div class="card-section">
-            <div class="description-tiny">{{{ state.enduranceText }}}</div>
+            <div class="description-tiny">{{{ enduranceText }}}</div>
         </div>
         {{/if}}
 
         <div class="card-section">
             <div class="description-tiny">Attack Roll</div>
-            <div class="hit-roll">{{{ state.renderedHitRoll }}}</div>
-            <div class="description-medium">{{{ state.hitRollText }}}</div>
+            <div class="hit-roll">{{{ renderedHitRoll }}}</div>
+            <div class="description-medium">{{{ hitRollText }}}</div>
         </div>
 
-        <button class="apply-defenses" data-action="apply-defenses" 
-            data-itemId="{{state.itemId}}"
-            data-aim="{{state.aim}}" 
-            data-knockbackMod="{{state.knockbackMod}}" 
-            data-damageMod="{{state.damageMod}}"
-            data-hitRollData="{{state.hitRollData}}"
-            data-effectiveStr="{{state.effectiveStr}}"
-            >Apply to Target</button>
+        <button class="roll-damage" 
+            data-itemId="{{item.uuid}}"
+            data-aim="{{aim}}" 
+            data-knockbackMod="{{knockbackMod}}" 
+            data-damageMod="{{damageMod}}"
+            data-hitRollData="{{hitRollData}}"
+            data-effectiveStr="{{effectiveStr}}"
+            data-targetIds="{{targetIds}}"
+            >Roll Damage</button>
+
+
     </div>
+
 </div>

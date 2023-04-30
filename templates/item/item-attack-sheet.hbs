@@ -67,7 +67,7 @@
         <div class="form-group" >
             <label>{{localize "Items.Attack.StunBodyDamage"}}</label>
             
-            <select {{#unless alphaTesting}}disabled{{/unless}} title="This property may not be fully impelmented" name="system.stunBodyDamage" data-dtype="text">
+            <select name="system.stunBodyDamage" data-dtype="text">
                 {{selectOptions config.stunBodyDamages selected=system.stunBodyDamage}}
             </select>
         </div>

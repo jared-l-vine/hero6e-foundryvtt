@@ -62,7 +62,7 @@ async function _processAttackOptions(item, form) {
 
 /// ChatMessage showing Attack To Hit
 export async function AttackToHit(item, options) {
-  const template = "systems/hero6efoundryvttv2/templates/chat/item-toHit-card2.hbs"
+  const template = "systems/hero6efoundryvttv2/templates/chat/item-toHit-card.hbs"
 
   const actor = item.actor
   const itemId = item._id
@@ -206,7 +206,7 @@ export async function _onRollDamage(event) {
   const button = event.currentTarget;
   const toHitData = { ...button.dataset }
   const item = fromUuidSync(toHitData.itemid);
-  const template = "systems/hero6efoundryvttv2/templates/chat/item-damage-card2.hbs"
+  const template = "systems/hero6efoundryvttv2/templates/chat/item-damage-card.hbs"
   const actor = item.actor
   const itemId = item._id
   const itemData = item.system;
@@ -366,7 +366,7 @@ export async function _onRollDamage(event) {
 
 
 // Event handler for when the Apply Damage button is 
-// clicked on item-damage-card2.hbs
+// clicked on item-damage-card.hbs
 // Notice the chatListeners function in this file.
 export async function _onApplyDamage(event) {
 
@@ -385,7 +385,7 @@ export async function _onApplyDamageToSpecificToken(event, tokenId) {
   const button = event.currentTarget;
   const damageData = { ...button.dataset }
   const item = fromUuidSync(damageData.itemid)
-  const template = "systems/hero6efoundryvttv2/templates/chat/apply-damage-card2.hbs"
+  const template = "systems/hero6efoundryvttv2/templates/chat/apply-damage-card.hbs"
   const actor = item.actor
   const itemId = item._id
   const itemData = item.system;
@@ -671,6 +671,25 @@ async function _calcDamage(damageResult, item, options) {
 
     stun = damageResult.total;
     body = countedBody;
+  }
+
+  // StunOnly?
+  if (item.system.stunBodyDamage === "stunonly")
+  {
+    body = 0;
+  }
+
+  // BodyOnly?
+  if (item.system.stunBodyDamage === "bodyonly")
+  {
+    stun = 0;
+  }
+
+  // EffectOnly?
+  if (item.system.stunBodyDamage === "effectonly")
+  {
+    stun = 0;
+    body = 0;
   }
 
   let bodyDamage = body;
