@@ -75,14 +75,22 @@ Activating a maneuver from a character sheet will apply OCV and DCV modifiers wi
   - Special powers
 
 
+## Screenshots
 
 ![CrusherMovement](./media/CrusherMovement.png)
+
 ![CrusherManeuvers](./media/CrusherManeuvers.png)
+
 ![CrusherPowers](./media/CrusherPowers.png)
+
 ![CrusherAttacks](./media/CrusherAttacks.png)
+
 ![CrusherDefenses](./media/CrusherDefenses.png)
+
 ![CrusherSkills](./media/CrusherSkills.png)
+
 ![CrusherAttackEdit](./media/CrusherAttackEdit.png)
+
 
 ![CrusherAttackEdit](./media/CrushAttackCard.png)
 
