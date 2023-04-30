@@ -23,16 +23,14 @@ This system is a work in progress. The following features are supported
 
 ### Character Sheet
 
-The character sheet in this system supports automation for characteristic and skill rolls.
+- The character sheet in this system supports automation for characteristic and skill rolls.
+- .HDC files created in the Hero Designer can be uploaded to it, and currently supports automatically populating information for a character's characteristics and skills.
+- Most attack powers are copied from powers to attacks tab.  Most defense powers are copied from powers to defenses tab.
+- Attacks and defense can be manually added by users.
+- Defenses can be toggled on and off.
+- The character sheet can be used to take a Recovery.
+- Character image stored in .HDC file is used for token.
 
-.HDC files created in the Hero Designer can be uploaded to it, and currently supports automatically populating information for a character's characteristics and skills.
-
-Most attack powers are copied from powers to attacks tab.  Most defense powers are copied from powers to defenses tab.
-Attacks and defense can be manually added by users.
-
-Defenses can be toggled on and off.
-
-The character sheet can be used to take a Recovery.
 
 #### Maneuvers
 
@@ -40,17 +38,13 @@ Activating a maneuver from a character sheet will apply OCV and DCV modifiers wi
 
 ### Attack Automation
 
-An attack added by a user can be used by clicking on the attack's image from the Character Sheet 'Attacks' tab. This will add a card to the chat for the attack.
-
-The card will show the attack roll and damage roll as well as any additional effects information below.
-
-Target defense can be applied to damage rolls.  Final damage is applied to token's stun/body.  If Stun damage exceeds CON then a sunnted contidion is applied.
-
-### Power and Equipment
-
-Powers and Equipment is read in from a .HDC file.  Power frameworks are largely ignored, but all the powers within the framework should work as expected.
+- An attack can be used by clicking on the attack's image from the Character Sheet 'Attacks' tab. This will add a card to the chat for the attack.
+- The card will show the attack roll and damage roll as well as any additional effects information below.
+- Target defense can be applied to damage rolls.  Final damage is applied to token's stun/body.  If Stun damage exceeds CON then a sunnted contidion is applied.
+- You can drag attack from character sheet to quick bar.
 
 ## System Options
+
 - Use Stunned : whether or not attacks can inflict stunned
 - Use Endurance : whether or not endurance will be automatically tracked when using automated attack cards
 - Use Knockback : automates knockback rolls and calculations from attack cards
@@ -64,7 +58,11 @@ Powers and Equipment is read in from a .HDC file.  Power frameworks are largely 
     PCs and NPCs: attack card will update stun, body, and end for all tokens/actors
 
 ## Known Limitations
-- The upload of a .HDC file is practically a requirment.  You can't create powers, skills, or equipment from scratch.  Modififying character is limited within the system.
+- The upload of a .HDC file is practically a requirment.  You can't create powers, skills, or equipment from scratch.  Character editing is limited within the system.
+- Power frameworks are largely ignored, but all the powers within the framework should work as expected.
+- Encurance use of non-attacking powers is untracked.
+- Perks, Talens, and Complications are not implemented.
+- Power limitations are largely not implemented
 - The following power are largely not implemneted
   - Adjustment powers (Absorption Aid, Drain, Healing).
   - Attack powers that do not do stun/body damage (Change Environment, Darkness, Dispel, Drain, Entangle, Flash, Images, Mental Illusions, Mind Control, Reflection, Transform).
@@ -75,3 +73,13 @@ Powers and Equipment is read in from a .HDC file.  Power frameworks are largely 
   - Sense-Affecting powers
   - Sensory powers
   - Special powers
+
+
+
+![CrusherMovement](./media/CrusherMovement.png)
+![CrusherManeuvers](./media/CrusherManeuvers.png)
+![CrusherPowers](./media/CrusherPowers.png)
+![CrusherAttacks](./media/CrusherAttacks.png)
+![CrusherDefenses](./media/CrusherDefenses.png)
+![CrusherSkills](./media/CrusherSkills.png)
+![CrusherAttackEdit](./media/CrusherAttackEdit.png)
