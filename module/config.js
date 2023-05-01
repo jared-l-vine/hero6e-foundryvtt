@@ -362,6 +362,14 @@ HERO.powers = {
         range: "self", 
         costEnd: false 
     },
+    "KBRESISTANCE": { powerType: ["defense", "standard"], 
+        name: "Knockback Resistance", 
+        percievability: "imperceptible", 
+        duration: "persistent", 
+        target: "self only", 
+        range: "self", 
+        costEnd: false 
+    },
 
     // Movement
     "FLIGHT": { powerType: ["movement"]},
@@ -458,5 +466,11 @@ HERO.stunBodyDamages = {
     "stunbody": "Stun and Body",
     "stunonly": "Stun only",
     "bodyonly": "Body only",
-    "effect": "Effect"
+    "effectonly": "Effect only"
+}
+
+HERO.knockbackMultiplier = {
+    0: "No Knockback",
+    1: "Knockback",
+    2: "Double Knockback"
 }

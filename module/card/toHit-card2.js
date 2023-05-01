@@ -97,7 +97,7 @@ export class HeroSystem6eToHitCard2 extends HeroSystem6eCard {
             item: item
         }
 
-        var path = "systems/hero6efoundryvttv2/templates/chat/item-toHit-card2.hbs";
+        var path = "systems/hero6efoundryvttv2/templates/chat/item-toHit-card.hbs";
 
         return await renderTemplate(path, templateData);
     }

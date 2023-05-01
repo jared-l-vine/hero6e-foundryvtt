@@ -270,7 +270,7 @@
 .hero .sheet-body,
 .hero .sheet-body .tab,
 .hero .sheet-body .tab .editor {
-  height: 100%;
+  /* height: 100%; */
   /*overflow-y: scroll;*/
 }
 

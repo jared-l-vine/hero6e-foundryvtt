@@ -475,7 +475,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
             defenseValue: defenseValue,
 
             // knockback
-            knockback: knockback,
+            knockbackMultiplier: knockbackMultiplier,
             useKnockBack: useKnockBack,
             knockbackRenderedResult: knockbackRenderedResult,
 

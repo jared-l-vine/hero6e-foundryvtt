@@ -187,6 +187,18 @@ export class HeroSystem6eActor extends Actor {
                     }
                 }
 
+                let hardened = parseInt(power.system.modifiers.find(o=> o.xmlid === 'HARDENED')?.LEVELS)
+                if (hardened)
+                {
+                    itemData.system.hardened = hardened
+                }
+
+                let impenetrable = parseInt(power.system.modifiers.find(o=> o.xmlid === "IMPENETRABLE")?.LEVELS)
+                if (impenetrable)
+                {
+                    itemData.system.impenetrable = impenetrable
+                }
+
                 let addedDefense = false
 
                 for (let key of ['pd', 'ed', 'md'])
@@ -305,12 +317,20 @@ export class HeroSystem6eActor extends Actor {
                     }
                 }
 
+                //KBRESISTANCE  
+                if (power.system.rules == "KBRESISTANCE" && !addedDefense) {
+                    itemData.system.defenseType = 'kbr'
+                    itemData.system.value = parseInt(power.system.LEVELS)
+                    await HeroSystem6eItem.create(itemData, { parent: this })
+                    addedDefense = true
+                }
                 
                 
                 if (!addedDefense)
                 {
                     if (game.settings.get(game.system.id, 'alphaTesting')) {
                         ui.notifications.warn(`${power.system.rules} not implemented during defense item creation`)
+                        console.log(power)
                     }
                 }
                 

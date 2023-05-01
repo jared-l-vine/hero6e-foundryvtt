@@ -4,6 +4,7 @@ import { POWERS } from "./powers/powers-rules.js";
 import { HeroSystem6eActor } from "./actor/actor.js";
 import { HeroSystem6eActorSheet } from "./actor/actor-sheet.js";
 import { HeroSystem6eActorSheetMini } from "./actor/actor-sheet-mini.js"
+import { HeroSystem6eActorSidebarSheet } from "./actor/actor-sidebar-sheet.js";
 import { HeroSystem6eToken, HeroSystem6eTokenDocument } from "./actor/actor-token.js";
 import { HeroSystem6eItem } from "./item/item.js";
 import { HeroSystem6eItemSheet } from "./item/item-sheet.js";
@@ -68,6 +69,7 @@ Hooks.once('init', async function() {
     // Register sheet application classes
     Actors.unregisterSheet("core", ActorSheet);
     Actors.registerSheet("herosystem6e", HeroSystem6eActorSheet, { makeDefault: true });
+    Actors.registerSheet("herosystem6e", HeroSystem6eActorSidebarSheet);
     Items.unregisterSheet("core", ItemSheet);
     Items.registerSheet("herosystem6e", HeroSystem6eItemSheet, { makeDefault: true });
 
@@ -239,6 +241,7 @@ Hooks.once("ready", function () {
 
   //console.log("migrateWorld")
   migrateActorTypes()
+  migrateKnockback()
   //migrateWorld();
 
 });
@@ -276,12 +279,34 @@ async function migrateActorTypes() {
 
   }
   if (updates.length > 0) {
-    ui.notifications.info(`${updates.length} actors migrated.`)
     await Actor.updateDocuments(updates);
+    ui.notifications.info(`${updates.length} actors migrated.`)
   }
-
-
 }
+
+// Change Attack knockback to knockbackMultiplier
+async function migrateKnockback() {
+  let updates = [];
+  for (let actor of game.actors) {
+    for(let item of actor.items)
+    {
+      if (item.type === 'attack')
+      {
+        if (item.system.knockback && parseInt(item.system.knockbackMultiplier) == 0)
+        {
+          updates.push({ _id: item.id, system: {knockbackMultiplier: 1, knockback: null }} );
+        }
+      }
+    }
+    if (updates.length > 0) {
+      await Item.updateDocuments(updates, {parent: actor});
+      ui.notifications.info(`${updates.length} attacks migrated for ${actor.name}.`)
+      updates = []
+    }
+  }
+  
+}
+
 
 
 // Remove Character from selectable actor types

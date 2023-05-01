@@ -18,18 +18,33 @@ export class HeroSystem6eActorSheet extends ActorSheet {
   static get defaultOptions() {
     const path = 'systems/hero6efoundryvttv2/templates/actor/actor-sheet.hbs'
 
-    return mergeObject(super.defaultOptions, {
-      classes: ['herosystem6e', 'sheet', 'actor'],
+    const options = super.defaultOptions;
+
+    const newOptions =  {
+      ...options,
+      //An array of CSS string classes to apply to the rendered HTML
+      classes: [...options.classes, 'herosystem6e', 'sheet', 'actor'],
+      //The default HTML template path to render for this Application
       template: path,
+      //The default pixel width for the rendered HTML
       width: 800,
+      //The default pixel height for the rendered HTML
       height: 700,
+      //Whether the rendered application can be drag-resized (popOut only)
       resizable: false,
+      //An array of tabbed container configurations which should be enabled for the application.
       tabs: [
         { navSelector: '.sheet-item-tabs', contentSelector: '.sheet-body', initial: 'description' },
         { navSelector: '.sheet-edit-tabs', contentSelector: '.sheet-mode', initial: 'play' }
       ],
-      heroEditable: false
-    })
+      //A list of unique CSS selectors which target containers that should have their vertical scroll positions preserved during a re-render.
+      scrollY: [ ...options.scrollY, ".defenses-group" ],
+
+      heroEditable: false,
+
+    }
+    //console.log(newOptions)
+    return newOptions
   }
 
   /** @override */
@@ -266,7 +281,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     item.targets = CONFIG.HERO.defendsWith[item.system.targets]
     item.end = item.system.end
     item.toHitMod = item.system.toHitMod
-    item.knockback = item.system.knockback
+    //item.knockbackMultiplier = item.system.knockbackMultiplier
     item.usesStrength = item.system.usesStrength
 
     item.damage = item.system.dice
@@ -878,6 +893,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       else {
         if (game.settings.get(game.system.id, 'alphaTesting')) {
           ui.notifications.warn(`${xmlid} not handled during HDC upload of ${this.actor.name}`)
+          console.log(power)
         }
 
       }
@@ -1075,6 +1091,23 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         await this.actor.update({ [`img`]: path + '/' + filename })
       }
     }
+
+
+    // Default Strike attack
+    let itemData = {
+      type: "attack",
+      name: "strike",
+      system: {
+        //xmlid: "HANDTOHANDATTACK",
+        knockbackMultiplier: 1,
+        usesStrength: true,
+        rules: "This is the basic attack maneuver"
+      }
+      
+    }
+    await HeroSystem6eItem.create(itemData, { parent: this.actor })
+
+    ui.notifications.info(`${this.actor.name} upload complete`)
 
   }
 

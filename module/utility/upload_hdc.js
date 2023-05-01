@@ -179,13 +179,42 @@ export async function uploadAttack(power) {
       end: 0,
       extraDice: "zero",
       killing: false,
-      knockback: true,
+      knockbackMultiplier: 1,
       targets: "dcv",
       uses: "ocv",
       usesStrength: true,
     }
   }
-  
+
+  // Armor Piercing
+  let ARMORPIERCING = power.querySelector('[XMLID="ARMORPIERCING"]')
+  if (ARMORPIERCING)
+  {
+    itemData.system.piercing = parseInt(ARMORPIERCING.getAttribute("LEVELS"))
+  }
+
+  // Penetrating
+  let PENETRATING = power.querySelector('[XMLID="PENETRATING"]')
+  if (PENETRATING)
+  {
+    itemData.system.penetrating = parseInt(PENETRATING.getAttribute("LEVELS"))
+  }
+
+  // No Knockback
+  let NOKB = power.querySelector('[XMLID="NOKB"]')
+  if (NOKB)
+  {
+    itemData.system.knockbackMultiplier = 0
+  }
+
+  // Double Knockback
+  let DOUBLEKB = power.querySelector('[XMLID="DOUBLEKB"]')
+  if (DOUBLEKB)
+  {
+    itemData.system.knockbackMultiplier = 2
+  }
+
+    
   if (power.querySelector('[XMLID="PLUSONEPIP"]'))
   {
     itemData.system.extraDice = "pip"

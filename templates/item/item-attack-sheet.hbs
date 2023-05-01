@@ -67,7 +67,7 @@
         <div class="form-group" >
             <label>{{localize "Items.Attack.StunBodyDamage"}}</label>
             
-            <select {{#unless alphaTesting}}disabled{{/unless}} title="This property may not be fully impelmented" name="system.stunBodyDamage" data-dtype="text">
+            <select name="system.stunBodyDamage" data-dtype="text">
                 {{selectOptions config.stunBodyDamages selected=system.stunBodyDamage}}
             </select>
         </div>
@@ -89,7 +89,10 @@
 
         <div class="form-group" >
             <label>{{localize "Items.Attack.DoesKnockback"}}</label>
-            <input type="checkbox" name="system.knockback" {{checked system.knockback}} data-dtype="Boolean" />
+             <select name="system.knockbackMultiplier" data-dtype="text">
+                {{selectOptions config.knockbackMultiplier selected=system.knockbackMultiplier}}
+            </select>
+
         </div>
 
         <div class="form-group" >

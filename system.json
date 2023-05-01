@@ -15,7 +15,7 @@
         { "name" : "Aaron Auseth" }
     ],
     "esmodules": [ "module/herosystem6e.js" ],
-    "styles": [ "css/herosystem6e.css" ],
+    "styles": [ "css/herosystem6e.css", "css/actor-sidebar-sheet.css" ],
     "scripts": [],
     "packs": [],
     "languages": [

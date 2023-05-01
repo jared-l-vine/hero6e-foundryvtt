@@ -62,7 +62,7 @@ async function _processAttackOptions(item, form) {
 
 /// ChatMessage showing Attack To Hit
 export async function AttackToHit(item, options) {
-  const template = "systems/hero6efoundryvttv2/templates/chat/item-toHit-card2.hbs"
+  const template = "systems/hero6efoundryvttv2/templates/chat/item-toHit-card.hbs"
 
   const actor = item.actor
   const itemId = item._id
@@ -82,11 +82,17 @@ export async function AttackToHit(item, options) {
   let rollEquation = "11 + " + hitCharacteristic;
   tags.push({ value: hitCharacteristic, name: itemData.uses })
 
-  rollEquation = modifyRollEquation(rollEquation, item.system.toHitMod);
-  tags.push({ value: item.system.toHitMod, name: item.name })
-
-  rollEquation = modifyRollEquation(rollEquation, options.toHitMod);
-  tags.push({ value: options.toHitMod, name: "toHitMod" })
+  if (parseInt(item.system.toHitMod) > 0)
+  {
+    rollEquation = modifyRollEquation(rollEquation, item.system.toHitMod);
+    tags.push({ value: item.system.toHitMod, name: item.name })
+  }
+ 
+  if (parseInt(options.toHitMod) > 0)
+  {
+    rollEquation = modifyRollEquation(rollEquation, options.toHitMod);
+    tags.push({ value: options.toHitMod, name: "toHitMod" })
+  }
 
   let noHitLocationsPower = false;
   if (game.settings.get("hero6efoundryvttv2", "hit locations") && options.aim !== "none" && !noHitLocationsPower) {
@@ -206,7 +212,7 @@ export async function _onRollDamage(event) {
   const button = event.currentTarget;
   const toHitData = { ...button.dataset }
   const item = fromUuidSync(toHitData.itemid);
-  const template = "systems/hero6efoundryvttv2/templates/chat/item-damage-card2.hbs"
+  const template = "systems/hero6efoundryvttv2/templates/chat/item-damage-card.hbs"
   const actor = item.actor
   const itemId = item._id
   const itemData = item.system;
@@ -218,7 +224,10 @@ export async function _onRollDamage(event) {
   // let automation = game.settings.get("hero6efoundryvttv2", "automation");
 
   let tags = []
-  tags.push({ value: itemData.dice + "d6", name: "base" })
+  if (parseInt(itemData.dice) >0)
+  {
+    tags.push({ value: itemData.dice + "d6", name: "base" })
+  }
 
   let pip = 0;
 
@@ -366,7 +375,7 @@ export async function _onRollDamage(event) {
 
 
 // Event handler for when the Apply Damage button is 
-// clicked on item-damage-card2.hbs
+// clicked on item-damage-card.hbs
 // Notice the chatListeners function in this file.
 export async function _onApplyDamage(event) {
 
@@ -385,7 +394,7 @@ export async function _onApplyDamageToSpecificToken(event, tokenId) {
   const button = event.currentTarget;
   const damageData = { ...button.dataset }
   const item = fromUuidSync(damageData.itemid)
-  const template = "systems/hero6efoundryvttv2/templates/chat/apply-damage-card2.hbs"
+  const template = "systems/hero6efoundryvttv2/templates/chat/apply-damage-card.hbs"
   const actor = item.actor
   const itemId = item._id
   const itemData = item.system;
@@ -398,7 +407,7 @@ export async function _onApplyDamageToSpecificToken(event, tokenId) {
 
 
 
-  let tags = []
+  //let tags = []
   //let dice = damageData.dice.split(",")
 
   // Spoof previous roll (foundry won't process a generic term, needs to be a proper Die instance)
@@ -425,8 +434,8 @@ export async function _onApplyDamageToSpecificToken(event, tokenId) {
   // determine active defenses
   // -------------------------------------------------
   let defense = "";
-  let [defenseValue, resistantValue, damageReductionValue, damageNegationValue, knockbackResistance] = determineDefense(token.actor, item.system.class)
-
+  console.log(defense)
+  let [defenseValue, resistantValue, impenetrableValue, damageReductionValue, damageNegationValue, knockbackResistance, defenseTags] = determineDefense(token.actor, item)
   if (damageNegationValue > 0) {
     defense += "Damage Negation " + damageNegationValue + "DC(s); "
   }
@@ -439,6 +448,7 @@ export async function _onApplyDamageToSpecificToken(event, tokenId) {
 
   damageData.defenseValue = defenseValue
   damageData.resistantValue = resistantValue
+  damageData.impenetrableValue = impenetrableValue
   damageData.damageReductionValue = damageReductionValue
   damageData.damageNegationValue = damageNegationValue
   damageData.knockbackResistance = knockbackResistance
@@ -495,12 +505,12 @@ export async function _onApplyDamageToSpecificToken(event, tokenId) {
     damageNegationValue: damageNegationValue,
 
     // knockback
-    knockback: damageDetail.knockback,
+    knockbackMessage: damageDetail.knockbackMessage,
     useKnockBack: damageDetail.useKnockBack,
     knockbackRenderedResult: damageDetail.knockbackRenderedResult,
 
     // misc
-    tags: tags,
+    tags: defenseTags,
     targetToken: token
   };
 
@@ -630,7 +640,30 @@ async function _calcDamage(damageResult, item, options) {
   let stunMultiplier = 1;
   let noHitLocationsPower = false
 
+
+  // Penetrating
+  let penetratingBody = 0
+  if (item.system.penetrating)
+  {
+    for (let die of damageResult.terms[0].results) {
+      switch (die.result) {
+        case 1:
+          penetratingBody += 0;
+          break;
+        case 6:
+          penetratingBody += 2;
+          break;
+        default:
+          penetratingBody += 1;
+          break;
+      }
+    }
+  }
+  penetratingBody = Math.max(0, penetratingBody - options.impenetrableValue)
+
+
   if (itemData.killing) {
+    // Killing Attack
     hasStunMultiplierRoll = true;
     body = damageResult.total;
     let hitLocationModifiers = [1, 1, 1, 0];
@@ -654,6 +687,7 @@ async function _calcDamage(damageResult, item, options) {
     damageDetail.renderedStunResult = renderedStunResult
   }
   else {
+    // Normal Attack
     // counts body damage for non-killing attack
     for (let die of damageResult.terms[0].results) {
       switch (die.result) {
@@ -672,6 +706,9 @@ async function _calcDamage(damageResult, item, options) {
     stun = damageResult.total;
     body = countedBody;
   }
+
+  
+
 
   let bodyDamage = body;
   let stunDamage = stun;
@@ -748,18 +785,20 @@ async function _calcDamage(damageResult, item, options) {
 
   // determine knockback
   let useKnockBack = false;
-  let knockback = "";
+  let knockbackMessage = "";
   let knockbackRenderedResult = null;
-  if (game.settings.get("hero6efoundryvttv2", "knockback") && itemData.knockback) {
+  let knockbackMultiplier = parseInt(itemData.knockbackMultiplier)
+  if (game.settings.get("hero6efoundryvttv2", "knockback") && knockbackMultiplier) {
     useKnockBack = true;
     // body - 2d6 m
-    let knockBackEquation = body + " - 2D6"
+    
+    let knockBackEquation = body + (knockbackMultiplier > 1 ? "*" + knockbackMultiplier : "") + " - 2D6"
     // knockback modifier added on an attack by attack basis
     if (options.knockbackMod != 0) {
       knockBackEquation = modifyRollEquation(knockBackEquation, (options.knockbackMod || 0) + "D6");
     }
     // knockback resistance effect
-    knockBackEquation = modifyRollEquation(knockBackEquation, " -" + (options.knockbackResistanc || 0));
+    knockBackEquation = modifyRollEquation(knockBackEquation, " -" + (options.knockbackResistance || 0));
 
     let knockbackRoll = new Roll(knockBackEquation);
     let knockbackResult = await knockbackRoll.roll({ async: true });
@@ -767,11 +806,12 @@ async function _calcDamage(damageResult, item, options) {
     let knockbackResultTotal = Math.round(knockbackResult.total);
 
     if (knockbackResultTotal < 0) {
-      knockback = "No knockback";
+      knockbackMessage = "No knockback";
     } else if (knockbackResultTotal == 0) {
-      knockback = "inflicts Knockdown";
+      knockbackMessage = "inflicts Knockdown";
     } else {
-      knockback = "Knocked back " + knockbackResultTotal + "m";
+      // If the result is positive, the target is Knocked Back 2m times the result
+      knockbackMessage = "Knocked back " + (knockbackResultTotal * 2) + "m";
     }
   }
 
@@ -783,11 +823,44 @@ async function _calcDamage(damageResult, item, options) {
     body = Math.round(body * (1 - (options.damageReductionValue / 100)));
   }
 
-
   // minimum damage rule
   if (stun < body) {
     stun = body;
     effects += "minimum damage invoked; "
+  }
+  
+  // The body of a penetrating attack is the minimum damage
+  if (penetratingBody > body)
+  {
+    if (itemData.killing)
+    {
+      body = penetratingBody;
+      stun = body * stunMultiplier;
+    }
+    else
+    {
+      stun = penetratingBody;
+    }
+    effects += "penetrating damage; "
+  }
+
+  // StunOnly?
+  if (item.system.stunBodyDamage === "stunonly")
+  {
+    body = 0;
+  }
+
+  // BodyOnly?
+  if (item.system.stunBodyDamage === "bodyonly")
+  {
+    stun = 0;
+  }
+
+  // EffectOnly?
+  if (item.system.stunBodyDamage === "effectonly")
+  {
+    stun = 0;
+    body = 0;
   }
 
   stun = Math.round(stun)
@@ -807,7 +880,7 @@ async function _calcDamage(damageResult, item, options) {
   damageDetail.useHitLoc = useHitLoc
   damageDetail.hitLocText = hitLocText
 
-  damageDetail.knockback = knockback
+  damageDetail.knockbackMessage = knockbackMessage
   damageDetail.useKnockBack = useKnockBack
   damageDetail.knockbackRenderedResult = knockbackRenderedResult
 
