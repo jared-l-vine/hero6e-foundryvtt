@@ -187,6 +187,12 @@ export class HeroSystem6eActor extends Actor {
                     }
                 }
 
+                let hardened = parseInt(power.system.modifiers.find(o=> o.xmlid === 'HARDENED')?.LEVELS)
+                if (hardened)
+                {
+                    itemData.system.hardened = hardened
+                }
+
                 let addedDefense = false
 
                 for (let key of ['pd', 'ed', 'md'])

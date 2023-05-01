@@ -398,7 +398,7 @@ export async function _onApplyDamageToSpecificToken(event, tokenId) {
 
 
 
-  let tags = []
+  //let tags = []
   //let dice = damageData.dice.split(",")
 
   // Spoof previous roll (foundry won't process a generic term, needs to be a proper Die instance)
@@ -425,8 +425,8 @@ export async function _onApplyDamageToSpecificToken(event, tokenId) {
   // determine active defenses
   // -------------------------------------------------
   let defense = "";
-  let [defenseValue, resistantValue, damageReductionValue, damageNegationValue, knockbackResistance] = determineDefense(token.actor, item.system.class)
-
+  console.log(defense)
+  let [defenseValue, resistantValue, damageReductionValue, damageNegationValue, knockbackResistance, defenseTags] = determineDefense(token.actor, item)
   if (damageNegationValue > 0) {
     defense += "Damage Negation " + damageNegationValue + "DC(s); "
   }
@@ -500,7 +500,7 @@ export async function _onApplyDamageToSpecificToken(event, tokenId) {
     knockbackRenderedResult: damageDetail.knockbackRenderedResult,
 
     // misc
-    tags: tags,
+    tags: defenseTags,
     targetToken: token
   };
 

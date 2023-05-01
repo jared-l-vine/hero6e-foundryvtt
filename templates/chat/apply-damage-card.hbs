@@ -22,6 +22,12 @@
     {{#if (ne item.system.stunBodyDamage 'stunbody')}}
         <span class="tag">{{item.system.stunBodyDamage}}</span>
     {{/if}}
+    {{#if item.system.piercing}}
+        <span class="tag" title="Armor Piercing">APx{{item.system.piercing}}</span>
+    {{/if}}
+      {{#if item.system.penetrating}}
+        <span class="tag" title="Penetrating">PENx{{item.system.penetrating}}</span>
+    {{/if}}
     {{#if (ne item.system.areaOfEffect.type 'none')}}
         <span class="tag area-effect-tag" 
             data-aoe-type="{{item.system.areaOfEffect.type}}"
@@ -34,7 +40,7 @@
   <hr>
   <div class="tags">
       {{#each tags as |tag id|}}
-      <span class="tag tag_transparent">{{tag.name}} +{{tag.value}}</span>
+      <span class="tag tag_transparent" title="{{tag.title}}">{{tag.name}} +{{tag.value}}</span>
       {{/each}}
   </div>
 
