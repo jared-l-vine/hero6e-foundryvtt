@@ -878,6 +878,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       else {
         if (game.settings.get(game.system.id, 'alphaTesting')) {
           ui.notifications.warn(`${xmlid} not handled during HDC upload of ${this.actor.name}`)
+          console.log(power)
         }
 
       }

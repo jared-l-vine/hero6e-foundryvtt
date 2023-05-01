@@ -139,6 +139,9 @@ function determineDefense(targetActor, attackItem) {
                         break;
                     case "kbr": // Knockback Resistance
                         knockbackResistance += value;
+                        if (attackType != 'mental' && game.settings.get("hero6efoundryvttv2", "knockback")) {
+                            defenseTags.push({name: 'KB Resistance', value: value, title: i.name})
+                        }
                         break;
                     default:
                         console.log(i.system.defenseType + " not yet supported!");

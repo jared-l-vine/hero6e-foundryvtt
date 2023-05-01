@@ -362,6 +362,14 @@ HERO.powers = {
         range: "self", 
         costEnd: false 
     },
+    "KBRESISTANCE": { powerType: ["defense", "standard"], 
+        name: "Knockback Resistance", 
+        percievability: "imperceptible", 
+        duration: "persistent", 
+        target: "self only", 
+        range: "self", 
+        costEnd: false 
+    },
 
     // Movement
     "FLIGHT": { powerType: ["movement"]},

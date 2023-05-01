@@ -788,7 +788,7 @@ async function _calcDamage(damageResult, item, options) {
   let knockbackMessage = "";
   let knockbackRenderedResult = null;
   let knockbackMultiplier = parseInt(itemData.knockbackMultiplier)
-  if (game.settings.get("hero6efoundryvttv2", "knockback") && itemData.knockback) {
+  if (game.settings.get("hero6efoundryvttv2", "knockback") && knockbackMultiplier) {
     useKnockBack = true;
     // body - 2d6 m
     

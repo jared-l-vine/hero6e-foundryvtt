@@ -317,12 +317,20 @@ export class HeroSystem6eActor extends Actor {
                     }
                 }
 
+                //KBRESISTANCE  
+                if (power.system.rules == "KBRESISTANCE" && !addedDefense) {
+                    itemData.system.defenseType = 'kbr'
+                    itemData.system.value = parseInt(power.system.LEVELS)
+                    await HeroSystem6eItem.create(itemData, { parent: this })
+                    addedDefense = true
+                }
                 
                 
                 if (!addedDefense)
                 {
                     if (game.settings.get(game.system.id, 'alphaTesting')) {
                         ui.notifications.warn(`${power.system.rules} not implemented during defense item creation`)
+                        console.log(power)
                     }
                 }
                 
