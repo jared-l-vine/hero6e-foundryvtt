@@ -59,7 +59,7 @@ Activating a maneuver from a character sheet will apply OCV and DCV modifiers wi
 
 ## Known Limitations
 - The upload of a .HDC file is practically a requirement.  You can't create powers, skills, or equipment from scratch.  Character editing is limited within the system.
-- Power frameworks are largely ignored, but all the powers within the framework should work as expected.
+- Power frameworks are largely ignored, powers within the framework should work.
 - Endurance use of non-attacking powers is untracked.
 - Perks, Talents, and Complications are not implemented.
 - Power limitations are largely not implemented
