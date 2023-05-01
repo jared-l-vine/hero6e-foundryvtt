@@ -34,13 +34,13 @@ This system is a work in progress. The following features are supported
 
 #### Maneuvers
 
-Activating a maneuver from a character sheet will apply OCV and DCV modifiers with the exception of variable modifiers or modifers that take speed into account. Only one maneuver can be selected at a time with the exception of 'Set' and 'Brace'.
+Activating a maneuver from a character sheet will apply OCV and DCV modifiers with the exception of variable modifiers or modifiers that take speed into account. Only one maneuver can be selected at a time with the exception of 'Set' and 'Brace'.
 
 ### Attack Automation
 
 - An attack can be used by clicking on the attack's image from the Character Sheet 'Attacks' tab. This will add a card to the chat for the attack.
 - The card will show the attack roll and damage roll as well as any additional effects information below.
-- Target defense can be applied to damage rolls.  Final damage is applied to token's stun/body.  If Stun damage exceeds CON then a sunnted contidion is applied.
+- Target defense can be applied to damage rolls.  Final damage is applied to token's stun/body.  If Stun damage exceeds CON then a stunned condition is applied.
 - You can drag attack from character sheet to quick bar.
 
 ## System Options
@@ -58,17 +58,17 @@ Activating a maneuver from a character sheet will apply OCV and DCV modifiers wi
     PCs and NPCs: attack card will update stun, body, and end for all tokens/actors
 
 ## Known Limitations
-- The upload of a .HDC file is practically a requirment.  You can't create powers, skills, or equipment from scratch.  Character editing is limited within the system.
+- The upload of a .HDC file is practically a requirement.  You can't create powers, skills, or equipment from scratch.  Character editing is limited within the system.
 - Power frameworks are largely ignored, but all the powers within the framework should work as expected.
-- Encurance use of non-attacking powers is untracked.
-- Perks, Talens, and Complications are not implemented.
+- Endurance use of non-attacking powers is untracked.
+- Perks, Talents, and Complications are not implemented.
 - Power limitations are largely not implemented
-- The following power are largely not implemneted
+- The following power are largely not implemented
   - Adjustment powers (Absorption Aid, Drain, Healing).
   - Attack powers that do not do stun/body damage (Change Environment, Darkness, Dispel, Drain, Entangle, Flash, Images, Mental Illusions, Mind Control, Reflection, Transform).
   - Attack powers with NND
   - Automation powers(Cannot Be Stunned, Does Not Bleed, No Hit Locations, Takes No STUN).
-  - Body-Affecting powers are not fully implmenete (Desolidification, Duplication, Extra Limbs, Growth, Multiform, Shape Shift, Shrinking, Stretching)
+  - Body-Affecting powers are not fully implemented (Desolidification, Duplication, Extra Limbs, Growth, Multiform, Shape Shift, Shrinking, Stretching)
   - Mental Powers (Mental Illusions, Mind Control, Mind Scan, Telepathy)
   - Sense-Affecting powers
   - Sensory powers
