@@ -460,3 +460,9 @@ HERO.stunBodyDamages = {
     "bodyonly": "Body only",
     "effectonly": "Effect only"
 }
+
+HERO.knockbackMultiplier = {
+    0: "No Knockback",
+    1: "Knockback",
+    2: "Double Knockback"
+}

@@ -496,7 +496,7 @@ export async function _onApplyDamageToSpecificToken(event, tokenId) {
     damageNegationValue: damageNegationValue,
 
     // knockback
-    knockback: damageDetail.knockback,
+    knockbackMessage: damageDetail.knockbackMessage,
     useKnockBack: damageDetail.useKnockBack,
     knockbackRenderedResult: damageDetail.knockbackRenderedResult,
 
@@ -776,18 +776,20 @@ async function _calcDamage(damageResult, item, options) {
 
   // determine knockback
   let useKnockBack = false;
-  let knockback = "";
+  let knockbackMessage = "";
   let knockbackRenderedResult = null;
+  let knockbackMultiplier = parseInt(itemData.knockbackMultiplier)
   if (game.settings.get("hero6efoundryvttv2", "knockback") && itemData.knockback) {
     useKnockBack = true;
     // body - 2d6 m
-    let knockBackEquation = body + " - 2D6"
+    
+    let knockBackEquation = body + (knockbackMultiplier > 1 ? "*" + knockbackMultiplier : "") + " - 2D6"
     // knockback modifier added on an attack by attack basis
     if (options.knockbackMod != 0) {
       knockBackEquation = modifyRollEquation(knockBackEquation, (options.knockbackMod || 0) + "D6");
     }
     // knockback resistance effect
-    knockBackEquation = modifyRollEquation(knockBackEquation, " -" + (options.knockbackResistanc || 0));
+    knockBackEquation = modifyRollEquation(knockBackEquation, " -" + (options.knockbackResistance || 0));
 
     let knockbackRoll = new Roll(knockBackEquation);
     let knockbackResult = await knockbackRoll.roll({ async: true });
@@ -795,11 +797,12 @@ async function _calcDamage(damageResult, item, options) {
     let knockbackResultTotal = Math.round(knockbackResult.total);
 
     if (knockbackResultTotal < 0) {
-      knockback = "No knockback";
+      knockbackMessage = "No knockback";
     } else if (knockbackResultTotal == 0) {
-      knockback = "inflicts Knockdown";
+      knockbackMessage = "inflicts Knockdown";
     } else {
-      knockback = "Knocked back " + knockbackResultTotal + "m";
+      // If the result is positive, the target is Knocked Back 2m times the result
+      knockbackMessage = "Knocked back " + (knockbackResultTotal * 2) + "m";
     }
   }
 
@@ -868,7 +871,7 @@ async function _calcDamage(damageResult, item, options) {
   damageDetail.useHitLoc = useHitLoc
   damageDetail.hitLocText = hitLocText
 
-  damageDetail.knockback = knockback
+  damageDetail.knockbackMessage = knockbackMessage
   damageDetail.useKnockBack = useKnockBack
   damageDetail.knockbackRenderedResult = knockbackRenderedResult
 

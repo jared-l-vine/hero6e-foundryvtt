@@ -179,7 +179,7 @@ export async function uploadAttack(power) {
       end: 0,
       extraDice: "zero",
       killing: false,
-      knockback: true,
+      knockbackMultiplier: 1,
       targets: "dcv",
       uses: "ocv",
       usesStrength: true,

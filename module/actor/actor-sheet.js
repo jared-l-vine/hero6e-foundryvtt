@@ -266,7 +266,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     item.targets = CONFIG.HERO.defendsWith[item.system.targets]
     item.end = item.system.end
     item.toHitMod = item.system.toHitMod
-    item.knockback = item.system.knockback
+    //item.knockbackMultiplier = item.system.knockbackMultiplier
     item.usesStrength = item.system.usesStrength
 
     item.damage = item.system.dice

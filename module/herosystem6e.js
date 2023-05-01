@@ -239,6 +239,7 @@ Hooks.once("ready", function () {
 
   //console.log("migrateWorld")
   migrateActorTypes()
+  migrateKnockback()
   //migrateWorld();
 
 });
@@ -276,12 +277,34 @@ async function migrateActorTypes() {
 
   }
   if (updates.length > 0) {
-    ui.notifications.info(`${updates.length} actors migrated.`)
     await Actor.updateDocuments(updates);
+    ui.notifications.info(`${updates.length} actors migrated.`)
   }
-
-
 }
+
+// Change Attack knockback to knockbackMultiplier
+async function migrateKnockback() {
+  let updates = [];
+  for (let actor of game.actors) {
+    for(let item of actor.items)
+    {
+      if (item.type === 'attack')
+      {
+        if (item.system.knockback && parseInt(item.system.knockbackMultiplier) == 0)
+        {
+          updates.push({ _id: item.id, system: {knockbackMultiplier: 1, knockback: null }} );
+        }
+      }
+    }
+    if (updates.length > 0) {
+      await Item.updateDocuments(updates, {parent: actor});
+      ui.notifications.info(`${updates.length} attacks migrated for ${actor.name}.`)
+      updates = []
+    }
+  }
+  
+}
+
 
 
 // Remove Character from selectable actor types

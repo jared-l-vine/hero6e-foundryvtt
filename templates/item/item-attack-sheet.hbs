@@ -89,7 +89,10 @@
 
         <div class="form-group" >
             <label>{{localize "Items.Attack.DoesKnockback"}}</label>
-            <input type="checkbox" name="system.knockback" {{checked system.knockback}} data-dtype="Boolean" />
+             <select name="system.knockbackMultiplier" data-dtype="text">
+                {{selectOptions config.knockbackMultiplier selected=system.knockbackMultiplier}}
+            </select>
+
         </div>
 
         <div class="form-group" >
