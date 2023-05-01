@@ -193,6 +193,12 @@ export class HeroSystem6eActor extends Actor {
                     itemData.system.hardened = hardened
                 }
 
+                let impenetrable = parseInt(power.system.modifiers.find(o=> o.xmlid === "IMPENETRABLE")?.LEVELS)
+                if (impenetrable)
+                {
+                    itemData.system.impenetrable = impenetrable
+                }
+
                 let addedDefense = false
 
                 for (let key of ['pd', 'ed', 'md'])

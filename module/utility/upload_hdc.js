@@ -185,7 +185,21 @@ export async function uploadAttack(power) {
       usesStrength: true,
     }
   }
-  
+
+  // Armor Piercing
+  let ARMORPIERCING = power.querySelector('[XMLID="ARMORPIERCING"]')
+  if (ARMORPIERCING)
+  {
+    itemData.system.piercing = parseInt(ARMORPIERCING.getAttribute("LEVELS"))
+  }
+
+  // Armor Piercing
+  let PENETRATING = power.querySelector('[XMLID="PENETRATING"]')
+  if (PENETRATING)
+  {
+    itemData.system.penetrating = parseInt(PENETRATING.getAttribute("LEVELS"))
+  }
+    
   if (power.querySelector('[XMLID="PLUSONEPIP"]'))
   {
     itemData.system.extraDice = "pip"

@@ -3,6 +3,7 @@ import { HEROSYS } from "../herosystem6e.js";
 function determineDefense(targetActor, attackItem) {
     const attackType = attackItem.system.class
     const piericng = parseInt(attackItem.system.piercing)
+    const penetrating = parseInt(attackItem.system.penetrating)
 
 
 
@@ -27,6 +28,11 @@ function determineDefense(targetActor, attackItem) {
         ED = Math.round(ED/2)
     }
 
+    // Impenetrable (defense vs penetrating)
+    let impenetrableValue = 0;
+
+
+
     // tags (defenses) will be displayed on apply damage card
     let defenseTags = []
 
@@ -41,11 +47,13 @@ function determineDefense(targetActor, attackItem) {
             break;
     }
 
+
     if (targetActor.items.size > 0) {
         for (let i of targetActor.items) {
             if (i.type === "defense" && i.system.active) {
                 let value = parseInt(i.system.value);
                 let valueAp = value
+                let valueImp = 0
 
                 // Hardened
                 const hardened = parseInt(i.system.hardened)
@@ -54,33 +62,62 @@ function determineDefense(targetActor, attackItem) {
                 if (piericng > hardened)
                 {
                     valueAp = Math.round(valueAp/2)
-                    console.log("Amor Piercing", i.name, value, valueAp)
                 }
+
+                // Impenetrable
+                const impenetrable = parseInt(i.system.impenetrable)
+
+                // Penetrating
+                if (penetrating <= impenetrable)
+                {
+                    valueImp = valueAp
+                    //console.log("Amor Piercing", i.name, value, valueAp)
+                }
+
 
                 switch ((i.system.resistant ? "r" : "") + i.system.defenseType) {
                     case "pd": // Physical Defense
                         PD += valueAp;
-                        if (attackType === 'physical') defenseTags.push({name: 'PD', value: valueAp, title: i.name})
+                        if (attackType === 'physical') 
+                        {
+                            defenseTags.push({name: 'PD', value: valueAp, title: i.name})
+                            impenetrableValue += valueImp
+                        }
                         break;
                     case "ed": // Energy Defense
                         ED += valueAp
-                        if (attackType === 'energy') defenseTags.push({name: 'ED', value: valueAp, title: i.name})
+                        if (attackType === 'energy') {
+                            defenseTags.push({name: 'ED', value: valueAp, title: i.name})
+                            impenetrableValue += valueImp
+                        }
                         break;
                     case "md": // Mental Defense
                         MD += valueAp
-                        if (attackType === 'mental') defenseTags.push({name: 'MD', value: valueAp, title: i.name})
+                        if (attackType === 'mental') {
+                            defenseTags.push({name: 'MD', value: valueAp, title: i.name})
+                            impenetrableValue += valueImp
+                        }
                         break;
                     case "rpd": // Resistant PD
                         rPD += valueAp
-                        if (attackType === 'physical') defenseTags.push({name: 'rPD', value: valueAp, title: i.name})
+                        if (attackType === 'physical') {
+                            defenseTags.push({name: 'rPD', value: valueAp, title: i.name})
+                            impenetrableValue += valueImp
+                        }
                         break;
                     case "red": // Resistant ED
                         rED += valueAp
-                        if (attackType === 'energy') defenseTags.push({name: 'rED', value: valueAp, title: i.name})
+                        if (attackType === 'energy') {
+                            defenseTags.push({name: 'rED', value: valueAp, title: i.name})
+                            impenetrableValue += valueImp
+                        }
                         break;
                     case "rmd": // Resistant MD
                         rMD += valueAp
-                        if (attackType === 'mental') defenseTags.push({name: 'rMD', value: valueAp, title: i.name})
+                        if (attackType === 'mental') {
+                            defenseTags.push({name: 'rMD', value: valueAp, title: i.name})
+                            impenetrableValue += valueImp
+                        }
                         break;
                     case "drp": // Damage Reduction Physical
                         DRP = Math.max(DRP, value);
@@ -175,18 +212,20 @@ function determineDefense(targetActor, attackItem) {
         case 'energy':
             defenseValue = ED;
             resistantValue = rED;
+            impenetrableValue = Math.max(ED, rED);
             damageReductionValue = DRE;
             damageNegationValue = DNE;
             break;
         case 'mental':
             defenseValue = MD;
             resistantValue = rMD;
+            impenetrableValue = Math.max(MD, rMD);
             damageReductionValue = DRM;
             damageNegationValue = DNM;
             break;
     }
 
-    return [ defenseValue, resistantValue, damageReductionValue, damageNegationValue, knockbackResistance, defenseTags ];
+    return [ defenseValue, resistantValue, impenetrableValue, damageReductionValue, damageNegationValue, knockbackResistance, defenseTags ];
 }
 
 export { determineDefense };

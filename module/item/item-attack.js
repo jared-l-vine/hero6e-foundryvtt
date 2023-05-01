@@ -426,7 +426,7 @@ export async function _onApplyDamageToSpecificToken(event, tokenId) {
   // -------------------------------------------------
   let defense = "";
   console.log(defense)
-  let [defenseValue, resistantValue, damageReductionValue, damageNegationValue, knockbackResistance, defenseTags] = determineDefense(token.actor, item)
+  let [defenseValue, resistantValue, impenetrableValue, damageReductionValue, damageNegationValue, knockbackResistance, defenseTags] = determineDefense(token.actor, item)
   if (damageNegationValue > 0) {
     defense += "Damage Negation " + damageNegationValue + "DC(s); "
   }
@@ -439,6 +439,7 @@ export async function _onApplyDamageToSpecificToken(event, tokenId) {
 
   damageData.defenseValue = defenseValue
   damageData.resistantValue = resistantValue
+  damageData.impenetrableValue = impenetrableValue
   damageData.damageReductionValue = damageReductionValue
   damageData.damageNegationValue = damageNegationValue
   damageData.knockbackResistance = knockbackResistance
@@ -630,7 +631,30 @@ async function _calcDamage(damageResult, item, options) {
   let stunMultiplier = 1;
   let noHitLocationsPower = false
 
+
+  // Penetrating
+  let penetratingBody = 0
+  if (item.system.penetrating)
+  {
+    for (let die of damageResult.terms[0].results) {
+      switch (die.result) {
+        case 1:
+          penetratingBody += 0;
+          break;
+        case 6:
+          penetratingBody += 2;
+          break;
+        default:
+          penetratingBody += 1;
+          break;
+      }
+    }
+  }
+  penetratingBody = Math.max(0, penetratingBody - options.impenetrableValue)
+
+
   if (itemData.killing) {
+    // Killing Attack
     hasStunMultiplierRoll = true;
     body = damageResult.total;
     let hitLocationModifiers = [1, 1, 1, 0];
@@ -654,6 +678,7 @@ async function _calcDamage(damageResult, item, options) {
     damageDetail.renderedStunResult = renderedStunResult
   }
   else {
+    // Normal Attack
     // counts body damage for non-killing attack
     for (let die of damageResult.terms[0].results) {
       switch (die.result) {
@@ -673,24 +698,8 @@ async function _calcDamage(damageResult, item, options) {
     body = countedBody;
   }
 
-  // StunOnly?
-  if (item.system.stunBodyDamage === "stunonly")
-  {
-    body = 0;
-  }
+  
 
-  // BodyOnly?
-  if (item.system.stunBodyDamage === "bodyonly")
-  {
-    stun = 0;
-  }
-
-  // EffectOnly?
-  if (item.system.stunBodyDamage === "effectonly")
-  {
-    stun = 0;
-    body = 0;
-  }
 
   let bodyDamage = body;
   let stunDamage = stun;
@@ -802,11 +811,44 @@ async function _calcDamage(damageResult, item, options) {
     body = Math.round(body * (1 - (options.damageReductionValue / 100)));
   }
 
-
   // minimum damage rule
   if (stun < body) {
     stun = body;
     effects += "minimum damage invoked; "
+  }
+  
+  // The body of a penetrating attack is the minimum damage
+  if (penetratingBody > body)
+  {
+    if (itemData.killing)
+    {
+      body = penetratingBody;
+      stun = body * stunMultiplier;
+    }
+    else
+    {
+      stun = penetratingBody;
+    }
+    effects += "penetrating damage; "
+  }
+
+  // StunOnly?
+  if (item.system.stunBodyDamage === "stunonly")
+  {
+    body = 0;
+  }
+
+  // BodyOnly?
+  if (item.system.stunBodyDamage === "bodyonly")
+  {
+    stun = 0;
+  }
+
+  // EffectOnly?
+  if (item.system.stunBodyDamage === "effectonly")
+  {
+    stun = 0;
+    body = 0;
   }
 
   stun = Math.round(stun)
