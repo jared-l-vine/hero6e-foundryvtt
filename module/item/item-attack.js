@@ -82,11 +82,17 @@ export async function AttackToHit(item, options) {
   let rollEquation = "11 + " + hitCharacteristic;
   tags.push({ value: hitCharacteristic, name: itemData.uses })
 
-  rollEquation = modifyRollEquation(rollEquation, item.system.toHitMod);
-  tags.push({ value: item.system.toHitMod, name: item.name })
-
-  rollEquation = modifyRollEquation(rollEquation, options.toHitMod);
-  tags.push({ value: options.toHitMod, name: "toHitMod" })
+  if (parseInt(item.system.toHitMod) > 0)
+  {
+    rollEquation = modifyRollEquation(rollEquation, item.system.toHitMod);
+    tags.push({ value: item.system.toHitMod, name: item.name })
+  }
+ 
+  if (parseInt(options.toHitMod) > 0)
+  {
+    rollEquation = modifyRollEquation(rollEquation, options.toHitMod);
+    tags.push({ value: options.toHitMod, name: "toHitMod" })
+  }
 
   let noHitLocationsPower = false;
   if (game.settings.get("hero6efoundryvttv2", "hit locations") && options.aim !== "none" && !noHitLocationsPower) {
@@ -218,7 +224,10 @@ export async function _onRollDamage(event) {
   // let automation = game.settings.get("hero6efoundryvttv2", "automation");
 
   let tags = []
-  tags.push({ value: itemData.dice + "d6", name: "base" })
+  if (parseInt(itemData.dice) >0)
+  {
+    tags.push({ value: itemData.dice + "d6", name: "base" })
+  }
 
   let pip = 0;
 

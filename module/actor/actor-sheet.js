@@ -1076,6 +1076,23 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       }
     }
 
+
+    // Default Strike attack
+    let itemData = {
+      type: "attack",
+      name: "strike",
+      system: {
+        //xmlid: "HANDTOHANDATTACK",
+        knockbackMultiplier: 1,
+        usesStrength: true,
+        rules: "This is the basic attack maneuver"
+      }
+      
+    }
+    await HeroSystem6eItem.create(itemData, { parent: this.actor })
+
+    ui.notifications.info(`${this.actor.name} upload complete`)
+
   }
 
   async _updateName(name) {
