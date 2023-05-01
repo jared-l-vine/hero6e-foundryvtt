@@ -4,6 +4,7 @@ import { POWERS } from "./powers/powers-rules.js";
 import { HeroSystem6eActor } from "./actor/actor.js";
 import { HeroSystem6eActorSheet } from "./actor/actor-sheet.js";
 import { HeroSystem6eActorSheetMini } from "./actor/actor-sheet-mini.js"
+import { HeroSystem6eActorSidebarSheet } from "./actor/actor-sidebar-sheet.js";
 import { HeroSystem6eToken, HeroSystem6eTokenDocument } from "./actor/actor-token.js";
 import { HeroSystem6eItem } from "./item/item.js";
 import { HeroSystem6eItemSheet } from "./item/item-sheet.js";
@@ -68,6 +69,7 @@ Hooks.once('init', async function() {
     // Register sheet application classes
     Actors.unregisterSheet("core", ActorSheet);
     Actors.registerSheet("herosystem6e", HeroSystem6eActorSheet, { makeDefault: true });
+    Actors.registerSheet("herosystem6e", HeroSystem6eActorSidebarSheet);
     Items.unregisterSheet("core", ItemSheet);
     Items.registerSheet("herosystem6e", HeroSystem6eItemSheet, { makeDefault: true });
 

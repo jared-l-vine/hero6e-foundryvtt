@@ -38,12 +38,12 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         { navSelector: '.sheet-edit-tabs', contentSelector: '.sheet-mode', initial: 'play' }
       ],
       //A list of unique CSS selectors which target containers that should have their vertical scroll positions preserved during a re-render.
-      scrollY: [ ...options.scrollY, ".hero.actor-sheet" ],
+      scrollY: [ ...options.scrollY, ".defenses-group" ],
 
       heroEditable: false,
 
     }
-    console.log(newOptions)
+    //console.log(newOptions)
     return newOptions
   }
 

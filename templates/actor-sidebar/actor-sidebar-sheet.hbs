@@ -1,0 +1,114 @@
+{{log 'actor-sidebar-sheet' this}}
+
+<form class="{{cssClass}}" autocomplete="off">
+
+  <aside>
+    <div class="sidebar">
+      <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" height="100" width="100"/>
+      
+      <section class="flexrow">
+        <ul class="attributes flexrow">
+
+          <li class="attribute health" data-ability="end">
+            <h4 class="attribute-name box-title">Endurance</h4>
+            <div class="attribute-value multiple">
+              <input name="system.characteristics.end.value" type="text" value="{{system.characteristics.end.value}}" data-dtype="Number">
+              <span class="sep"> / </span>
+              <span>
+                {{system.characteristics.end.max}}
+              </span>
+            </div>
+          </li>
+
+          <li class="attribute health" data-ability="body">
+            <h4 class="attribute-name box-title">Body</h4>
+            <div class="attribute-value multiple">
+              <input name="system.characteristics.body.value" type="text" value="{{system.characteristics.body.value}}" data-dtype="Number">
+              <span class="sep"> / </span>
+              <span>
+                {{system.characteristics.body.max}}
+              </span>
+            </div>
+          </li>
+
+          <li class="attribute health" data-ability="stun">
+            <h4 class="attribute-name box-title">Stun</h4>
+            <div class="attribute-value multiple">
+              <input name="system.characteristics.stun.value" type="text" value="{{system.characteristics.stun.value}}" data-dtype="Number">
+              <span class="sep"> / </span>
+              <span>
+                {{system.characteristics.stun.max}}
+              </span>
+            </div>
+          </li>
+
+        </ul>
+      </section>
+    </div>
+  </aside>
+    
+  <header class="char-header sheet-header">
+    <div class="header-fields">
+      <h1 class="charname"><input name="name" type="text" value="{{actor.name}}" placeholder="Name"/></h1>
+      
+    </div>
+  </header>
+
+  <nav class="sheet-navigation">
+    <div>nav1</div>
+    <div>nav1</div>
+    <div>nav1</div>
+    <div>nav1</div>
+    <div>nav1</div>
+  </nav>
+
+  <section class="sheet-body">
+    <section class="sheet-content">
+      content
+      <div>item1</div>
+      <div>item2</div>
+      <div>item3</div>
+      <div>item1</div>
+      <div>item2</div>
+      <div>item3</div>
+      <div>item1</div>
+      <div>item2</div>
+      <div>item3</div>
+      <div>item1</div>
+      <div>item2</div>
+      <div>item3</div>
+      <div>item1</div>
+      <div>item2</div>
+      <div>item3</div>
+      <div>item1</div>
+      <div>item2</div>
+      <div>item3</div>
+      <div>item1</div>
+      <div>item2</div>
+      <div>item3</div>
+      <div>item1</div>
+      <div>item2</div>
+      <div>item3</div>
+      <div>item1</div>
+      <div>item2</div>
+      <div>item3</div>
+      <div>item1</div>
+      <div>item2</div>
+      <div>item3</div>
+      <div>item1</div>
+      <div>item2</div>
+      <div>item3</div>
+      <div>item1</div>
+      <div>item2</div>
+      <div>item3</div>
+      <div>item1</div>
+      <div>item2</div>
+      <div>item3</div>
+      <div>item1</div>
+      <div>item2</div>
+      <div>item3</div>
+    </section>
+   
+  </section>
+
+</form>
