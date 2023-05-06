@@ -11,4 +11,23 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
     });
   }
 
+   /** @override */
+   getData() {
+    const data = super.getData()
+
+    // override actor.items (which is a map) to an array with some custom properties
+    let items = []
+    for(let item of data.actor.items)
+    {
+      if (data.actor.effects.find(o => o.origin === this.actor.items.get(item._id).uuid))
+      {
+        item.showToggle = true
+      }
+      items.push(item)
+    }
+    data.items = items;
+
+    return data
+  }
+
 }
