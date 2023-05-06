@@ -1117,11 +1117,14 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     // 5th edition has no edition designator, so assuming if there is no 6E then it is 5E.
     if (characterTemplate.includes("builtIn.") && !characterTemplate.includes("6E."))
     {
+      const figuredChanges = []
+      figuredChanges[`system.is5e`] = true  // used in item-attack.js to modify killing attack stun multiplier
+
       // The major difference between 5E and 6E is figured characteristics.
       // For now we will just add these to the maxValue.
       // TODO: Track figured characteristics seperately.
 
-      const figuredChanges = []
+      
       // Physical Defense (PD) STR/5
       const pdLevels = this.actor.system.characteristics.pd.max - this.actor.system.characteristics.pd.base;
       const pdFigured = Math.round(this.actor.system.characteristics.str.max/5)

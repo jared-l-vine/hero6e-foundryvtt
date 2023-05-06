@@ -667,7 +667,16 @@ async function _calcDamage(damageResult, item, options) {
     hasStunMultiplierRoll = true;
     body = damageResult.total;
     let hitLocationModifiers = [1, 1, 1, 0];
+    
+    // 6E uses 1d3 stun multiplier
     let stunRoll = new Roll("1D3", item.actor.getRollData());
+
+    // 5E uses 1d6-1 for stun multiplier
+    if (item.actor.system.is5e)
+    {
+      stunRoll = new Roll("max(1D6-1,1)", item.actor.getRollData());
+    }
+
     let stunResult = await stunRoll.roll({ async: true });
     let renderedStunResult = await stunResult.render();
     damageDetail.renderedStunMultiplierRoll = renderedStunResult;
