@@ -15,6 +15,9 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
     getData() {
         const data = super.getData()
 
+        // Equipment is uncommon.  If there isn't any equipment, then don't show the navigation tab.
+        data.hasEquipment = false
+
         // override actor.items (which is a map) to an array with some custom properties
         let items = []
         for (let item of data.actor.items) {
@@ -48,6 +51,10 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             // Defense
             if (item.type == 'defense') {
                 item.system.defenseType = CONFIG.HERO.defenseTypes[item.system.defenseType]
+            }
+
+            if (item.type == 'equipment') {
+                data.hasEquipment = true
             }
 
             items.push(item)

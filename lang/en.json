@@ -38,7 +38,10 @@
         "Value": "Value",
         "Hard": "Hard.",
         "Imp": "Imp.",
-        "Characteristic": "Characteristic"
+        "Characteristic": "Characteristic",
+        "Phase": "Phase",
+        "OCV": "OCV",
+        "DCV": "DCV"
 
 
     },
