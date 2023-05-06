@@ -31,7 +31,16 @@
         "Name": "Name",
         "OffVDef": "Off. vs Def.",
         "Res": "Res.",
-        "Roll": "Roll"
+        "Roll": "Roll",
+        "Description": "Description",
+        "Active": "Active",
+        "Type": "Type",
+        "Value": "Value",
+        "Hard": "Hard.",
+        "Imp": "Imp."
+
+
+
     },
     "Errors": {
         "TokenSelect": "Please select a token"
