@@ -191,3 +191,34 @@
 .actor-sidebar-sheet table tr td.left, .actor-sidebar-sheet table tr th.left {
   text-align: left;
 }
+
+.actor-sidebar-sheet .item-image {
+  margin-right: 5px;
+}
+
+.actor-sidebar-sheet .item-image img {
+  display: block;
+}
+
+.actor-sidebar-sheet table tr  {
+  height: auto;
+  line-height: 24px;
+  padding: 3px 0;
+}
+
+.actor-sidebar-sheet table tr td  {
+  padding: 3px 0;
+}
+
+.actor-sidebar-sheet table tr td button {
+  height: 24px;
+  line-height: normal;
+}
+
+.actor-sidebar-sheet table tr td button.item-roll {
+  width: 40px;
+}
+
+.actor-sidebar-sheet table tr td input {
+  vertical-align: middle;
+}
