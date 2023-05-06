@@ -853,6 +853,88 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
     await this.actor.update(changes)
 
+    // Initial 5e support
+    // 5th edition has no edition designator, so assuming if there is no 6E then it is 5E.
+    if (characterTemplate.includes("builtIn.") && !characterTemplate.includes("6E."))
+    {
+      const figuredChanges = []
+      figuredChanges[`system.is5e`] = true  // used in item-attack.js to modify killing attack stun multiplier
+
+      // One major difference between 5E and 6E is figured characteristics.
+      
+      // Physical Defense (PD) STR/5
+      const pdLevels = this.actor.system.characteristics.pd.max - this.actor.system.characteristics.pd.base;
+      const pdFigured = Math.round(this.actor.system.characteristics.str.max/5)
+      figuredChanges[`system.characteristics.pd.max`] = pdLevels + pdFigured
+      figuredChanges[`system.characteristics.pd.value`] = pdLevels + pdFigured
+      figuredChanges[`system.characteristics.pd.base`] = this.actor.system.characteristics.pd.base + pdFigured
+      figuredChanges[`system.characteristics.pd.figured`] = pdFigured
+      
+      // Energy Defense (ED) CON/5
+      const edLevels = this.actor.system.characteristics.ed.max - this.actor.system.characteristics.ed.base;
+      const edFigured = Math.round(this.actor.system.characteristics.con.max/5)
+      figuredChanges[`system.characteristics.ed.max`] = edLevels + edFigured
+      figuredChanges[`system.characteristics.ed.value`] = edLevels + edFigured
+      figuredChanges[`system.characteristics.ed.base`] = this.actor.system.characteristics.ed.base + edFigured
+      figuredChanges[`system.characteristics.ed.figured`] = edFigured
+
+      // Speed (SPD) 1 + (DEX/10)
+      const spdLevels = this.actor.system.characteristics.spd.max - this.actor.system.characteristics.spd.base;
+      const spdFigured = 1 + Math.floor(this.actor.system.characteristics.dex.max/10)
+      figuredChanges[`system.characteristics.spd.max`] = spdLevels + spdFigured
+      figuredChanges[`system.characteristics.spd.value`] = spdLevels + spdFigured
+      figuredChanges[`system.characteristics.spd.base`] = this.actor.system.characteristics.spd.base + spdFigured
+      figuredChanges[`system.characteristics.spd.figured`] = spdFigured
+
+      // Recovery (REC) (STR/5) + (CON/5)
+      const recLevels = this.actor.system.characteristics.rec.max - this.actor.system.characteristics.rec.base;
+      const recFigured = Math.round(this.actor.system.characteristics.str.max/5) + Math.round(this.actor.system.characteristics.con.max/5)
+      figuredChanges[`system.characteristics.rec.max`] = recLevels + recFigured
+      figuredChanges[`system.characteristics.rec.value`] = recLevels + recFigured
+      figuredChanges[`system.characteristics.rec.base`] = this.actor.system.characteristics.rec.base + recFigured
+      figuredChanges[`system.characteristics.rec.figured`] = recFigured
+
+      // Endurance (END) 2 x CON
+      const endLevels = this.actor.system.characteristics.end.max - this.actor.system.characteristics.end.base;
+      const endFigured = Math.round(this.actor.system.characteristics.con.max*2)
+      figuredChanges[`system.characteristics.end.max`] = endLevels + endFigured
+      figuredChanges[`system.characteristics.end.value`] = endLevels + endFigured
+      figuredChanges[`system.characteristics.end.base`] = this.actor.system.characteristics.end.base + endFigured
+      figuredChanges[`system.characteristics.end.figured`] = endFigured
+
+      // Stun (STUN) BODY+(STR/2)+(CON/2) 
+      const stunLevels = this.actor.system.characteristics.stun.max - this.actor.system.characteristics.stun.base;
+      const stunFigured = Math.round(this.actor.system.characteristics.str.max/2) + Math.round(this.actor.system.characteristics.con.max/2)
+      figuredChanges[`system.characteristics.stun.max`] = stunLevels + stunFigured
+      figuredChanges[`system.characteristics.stun.value`] = stunLevels + stunFigured
+      figuredChanges[`system.characteristics.stun.base`] = this.actor.system.characteristics.stun.base + stunFigured
+      figuredChanges[`system.characteristics.stun.figured`] = stunFigured
+
+
+      // Base OCV & DCV = Attacker’s DEX/3
+      const baseCv = Math.round(this.actor.system.characteristics.dex.max/3)
+      figuredChanges[`system.characteristics.ocv.max`] = baseCv + this.actor.system.characteristics.ocv.max - this.actor.system.characteristics.ocv.base
+      figuredChanges[`system.characteristics.ocv.value`] = baseCv + this.actor.system.characteristics.ocv.max - this.actor.system.characteristics.ocv.base
+      figuredChanges[`system.characteristics.ocv.base`] = baseCv + this.actor.system.characteristics.ocv.max - this.actor.system.characteristics.ocv.base
+      figuredChanges[`system.characteristics.dcv.max`] = baseCv + this.actor.system.characteristics.dcv.max - this.actor.system.characteristics.dcv.base
+      figuredChanges[`system.characteristics.dcv.value`] = baseCv + this.actor.system.characteristics.dcv.max - this.actor.system.characteristics.dcv.base
+      figuredChanges[`system.characteristics.dcv.base`] = baseCv + this.actor.system.characteristics.dcv.max - this.actor.system.characteristics.dcv.base
+
+      //Base Ego Combat Value = EGO/3
+      const baseEcv = Math.round(this.actor.system.characteristics.ego.max/3)
+      figuredChanges[`system.characteristics.omcv.max`] = baseEcv + this.actor.system.characteristics.omcv.max - this.actor.system.characteristics.omcv.base
+      figuredChanges[`system.characteristics.omcv.value`] = baseEcv + this.actor.system.characteristics.omcv.max - this.actor.system.characteristics.omcv.base
+      figuredChanges[`system.characteristics.omcv.base`] = baseEcv + this.actor.system.characteristics.omcv.max - this.actor.system.characteristics.omcv.base
+      figuredChanges[`system.characteristics.dmcv.max`] = baseEcv + this.actor.system.characteristics.dmcv.max - this.actor.system.characteristics.dmcv.base
+      figuredChanges[`system.characteristics.dmcv.value`] = baseEcv + this.actor.system.characteristics.dmcv.max - this.actor.system.characteristics.dmcv.base
+      figuredChanges[`system.characteristics.dmcv.base`] = baseEcv + this.actor.system.characteristics.dmcv.max - this.actor.system.characteristics.dmcv.base
+
+
+      await this.actor.update(figuredChanges)
+    }
+
+
+
     for (const skill of skills.children) {
       await uploadSkill.call(this, skill)
     }
@@ -1113,68 +1195,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     await HeroSystem6eItem.create(itemData, { parent: this.actor })
 
     
-    // Initial 5e support
-    // 5th edition has no edition designator, so assuming if there is no 6E then it is 5E.
-    if (characterTemplate.includes("builtIn.") && !characterTemplate.includes("6E."))
-    {
-      const figuredChanges = []
-      figuredChanges[`system.is5e`] = true  // used in item-attack.js to modify killing attack stun multiplier
-
-      // The major difference between 5E and 6E is figured characteristics.
-      // For now we will just add these to the maxValue.
-      // TODO: Track figured characteristics seperately.
-
-      
-      // Physical Defense (PD) STR/5
-      const pdLevels = this.actor.system.characteristics.pd.max - this.actor.system.characteristics.pd.base;
-      const pdFigured = Math.round(this.actor.system.characteristics.str.max/5)
-      figuredChanges[`system.characteristics.pd.max`] = pdLevels + pdFigured
-      figuredChanges[`system.characteristics.pd.value`] = pdLevels + pdFigured
-      figuredChanges[`system.characteristics.pd.base`] = this.actor.system.characteristics.pd.base + pdFigured
-      figuredChanges[`system.characteristics.pd.figured`] = pdFigured
-      
-      // Energy Defense (ED) CON/5
-      const edLevels = this.actor.system.characteristics.ed.max - this.actor.system.characteristics.ed.base;
-      const edFigured = Math.round(this.actor.system.characteristics.con.max/5)
-      figuredChanges[`system.characteristics.ed.max`] = edLevels + edFigured
-      figuredChanges[`system.characteristics.ed.value`] = edLevels + edFigured
-      figuredChanges[`system.characteristics.ed.base`] = this.actor.system.characteristics.ed.base + edFigured
-      figuredChanges[`system.characteristics.ed.figured`] = edFigured
-
-      // Speed (SPD) 1 + (DEX/10)
-      const spdLevels = this.actor.system.characteristics.spd.max - this.actor.system.characteristics.spd.base;
-      const spdFigured = Math.floor(this.actor.system.characteristics.dex.max/10)
-      figuredChanges[`system.characteristics.spd.max`] = spdLevels + spdFigured
-      figuredChanges[`system.characteristics.spd.value`] = spdLevels + spdFigured
-      figuredChanges[`system.characteristics.spd.base`] = this.actor.system.characteristics.spd.base + spdFigured
-      figuredChanges[`system.characteristics.spd.figured`] = spdFigured
-
-      // Recovery (REC) (STR/5) + (CON/5)
-      const recLevels = this.actor.system.characteristics.rec.max - this.actor.system.characteristics.rec.base;
-      const recFigured = Math.round(this.actor.system.characteristics.str.max/5) + Math.round(this.actor.system.characteristics.con.max/5)
-      figuredChanges[`system.characteristics.rec.max`] = recLevels + recFigured
-      figuredChanges[`system.characteristics.rec.value`] = recLevels + recFigured
-      figuredChanges[`system.characteristics.rec.base`] = this.actor.system.characteristics.rec.base + recFigured
-      figuredChanges[`system.characteristics.rec.figured`] = recFigured
-
-      // Endurance (END) 2 x CON
-      const endLevels = this.actor.system.characteristics.end.max - this.actor.system.characteristics.end.base;
-      const endFigured = Math.round(this.actor.system.characteristics.con.max*2)
-      figuredChanges[`system.characteristics.end.max`] = endLevels + endFigured
-      figuredChanges[`system.characteristics.end.value`] = endLevels + endFigured
-      figuredChanges[`system.characteristics.end.base`] = this.actor.system.characteristics.end.base + endFigured
-      figuredChanges[`system.characteristics.end.figured`] = endFigured
-
-      // Stun (STUN) BODY+(STR/2)+(CON/2) 
-      const stunLevels = this.actor.system.characteristics.stun.max - this.actor.system.characteristics.stun.base;
-      const stunFigured = Math.round(this.actor.system.characteristics.str.max/2) + Math.round(this.actor.system.characteristics.con.max/2)
-      figuredChanges[`system.characteristics.stun.max`] = stunLevels + stunFigured
-      figuredChanges[`system.characteristics.stun.value`] = stunLevels + stunFigured
-      figuredChanges[`system.characteristics.stun.base`] = this.actor.system.characteristics.stun.base + stunFigured
-      figuredChanges[`system.characteristics.stun.figured`] = stunFigured
-
-      await this.actor.update(figuredChanges)
-    }
+    
 
     ui.notifications.info(`${this.actor.name} upload complete`)
 
