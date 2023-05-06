@@ -10,7 +10,7 @@
         "maximum": 10
     },
     "authors": [
-        { "name": "Jared Levine" },
+        { "name" : "Jared Levine" },
         { "name" : "BoDiddleyBeat" },
         { "name" : "Aaron Auseth" }
     ],

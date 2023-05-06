@@ -750,6 +750,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
   }
 
   async _applyCharacterSheetAsync(sheet) {
+    const characterTemplate = sheet.getElementsByTagName('CHARACTER')[0].getAttribute("TEMPLATE")
     const characterInfo = sheet.getElementsByTagName('CHARACTER_INFO')[0]
     const characteristics = sheet.getElementsByTagName('CHARACTERISTICS')[0]
     const skills = sheet.getElementsByTagName('SKILLS')[0]
@@ -764,23 +765,26 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
     // let elementsToLoad = ["POWERS", "PERKS", "TALENTS", "MARTIALARTS", "DISADVANTAGES"]
 
+    // Individual changes to the actor are not very effecient.
+    // Instead save all the changes and perform a bulk update.
     const changes = []
+    changes[`system.characterTemplate`] = characterTemplate
 
     if (characterInfo.getAttribute('CHARACTER_NAME') !== '') {
-      changes.name = characterInfo.getAttribute('CHARACTER_NAME')
+      let name = characterInfo.getAttribute('CHARACTER_NAME')
+      changes[`name`] = name
 
       // Override name of prototype token if HDC upload was from library
       if (this.actor.prototypeToken) {
-        changes.prototypeToken = {}
-        changes.prototypeToken.name = changes.name
+        changes[`prototypeToken.name`] = name
       }
 
       // Overwrite token name if PC
-      if (this.actor.token)
+      if (this.token)
       {
         if (this.actor.type == 'pc')
         {
-          await this.token.update({name: changes.name})
+          await this.token.update({name: name})
         }
       }
     }
@@ -843,6 +847,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       } else {
         changes[`system.characteristics.${key}.value`] = value
         changes[`system.characteristics.${key}.max`] = value
+        changes[`system.characteristics.${key}.base`] = CONFIG.HERO.characteristicDefaults[key]
       }
     }
 
@@ -1106,6 +1111,67 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       
     }
     await HeroSystem6eItem.create(itemData, { parent: this.actor })
+
+    
+    // Initial 5e support
+    // 5th edition has no edition designator, so assuming if there is no 6E then it is 5E.
+    if (characterTemplate.includes("builtIn.") && !characterTemplate.includes("6E."))
+    {
+      // The major difference between 5E and 6E is figured characteristics.
+      // For now we will just add these to the maxValue.
+      // TODO: Track figured characteristics seperately.
+
+      const figuredChanges = []
+      // Physical Defense (PD) STR/5
+      const pdLevels = this.actor.system.characteristics.pd.max - this.actor.system.characteristics.pd.base;
+      const pdFigured = Math.round(this.actor.system.characteristics.str.max/5)
+      figuredChanges[`system.characteristics.pd.max`] = pdLevels + pdFigured
+      figuredChanges[`system.characteristics.pd.value`] = pdLevels + pdFigured
+      figuredChanges[`system.characteristics.pd.base`] = this.actor.system.characteristics.pd.base + pdFigured
+      figuredChanges[`system.characteristics.pd.figured`] = pdFigured
+      
+      // Energy Defense (ED) CON/5
+      const edLevels = this.actor.system.characteristics.ed.max - this.actor.system.characteristics.ed.base;
+      const edFigured = Math.round(this.actor.system.characteristics.con.max/5)
+      figuredChanges[`system.characteristics.ed.max`] = edLevels + edFigured
+      figuredChanges[`system.characteristics.ed.value`] = edLevels + edFigured
+      figuredChanges[`system.characteristics.ed.base`] = this.actor.system.characteristics.ed.base + edFigured
+      figuredChanges[`system.characteristics.ed.figured`] = edFigured
+
+      // Speed (SPD) 1 + (DEX/10)
+      const spdLevels = this.actor.system.characteristics.spd.max - this.actor.system.characteristics.spd.base;
+      const spdFigured = Math.floor(this.actor.system.characteristics.dex.max/10)
+      figuredChanges[`system.characteristics.spd.max`] = spdLevels + spdFigured
+      figuredChanges[`system.characteristics.spd.value`] = spdLevels + spdFigured
+      figuredChanges[`system.characteristics.spd.base`] = this.actor.system.characteristics.spd.base + spdFigured
+      figuredChanges[`system.characteristics.spd.figured`] = spdFigured
+
+      // Recovery (REC) (STR/5) + (CON/5)
+      const recLevels = this.actor.system.characteristics.rec.max - this.actor.system.characteristics.rec.base;
+      const recFigured = Math.round(this.actor.system.characteristics.str.max/5) + Math.round(this.actor.system.characteristics.con.max/5)
+      figuredChanges[`system.characteristics.rec.max`] = recLevels + recFigured
+      figuredChanges[`system.characteristics.rec.value`] = recLevels + recFigured
+      figuredChanges[`system.characteristics.rec.base`] = this.actor.system.characteristics.rec.base + recFigured
+      figuredChanges[`system.characteristics.rec.figured`] = recFigured
+
+      // Endurance (END) 2 x CON
+      const endLevels = this.actor.system.characteristics.end.max - this.actor.system.characteristics.end.base;
+      const endFigured = Math.round(this.actor.system.characteristics.con.max*2)
+      figuredChanges[`system.characteristics.end.max`] = endLevels + endFigured
+      figuredChanges[`system.characteristics.end.value`] = endLevels + endFigured
+      figuredChanges[`system.characteristics.end.base`] = this.actor.system.characteristics.end.base + endFigured
+      figuredChanges[`system.characteristics.end.figured`] = endFigured
+
+      // Stun (STUN) BODY+(STR/2)+(CON/2) 
+      const stunLevels = this.actor.system.characteristics.stun.max - this.actor.system.characteristics.stun.base;
+      const stunFigured = Math.round(this.actor.system.characteristics.str.max/2) + Math.round(this.actor.system.characteristics.con.max/2)
+      figuredChanges[`system.characteristics.stun.max`] = stunLevels + stunFigured
+      figuredChanges[`system.characteristics.stun.value`] = stunLevels + stunFigured
+      figuredChanges[`system.characteristics.stun.base`] = this.actor.system.characteristics.stun.base + stunFigured
+      figuredChanges[`system.characteristics.stun.figured`] = stunFigured
+
+      await this.actor.update(figuredChanges)
+    }
 
     ui.notifications.info(`${this.actor.name} upload complete`)
 
