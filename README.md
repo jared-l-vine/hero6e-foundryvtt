@@ -75,7 +75,7 @@ Activating a maneuver from a character sheet will apply OCV and DCV modifiers wi
   - Special powers
 
 ## Modules
-The following modules have been tested
+The following modules have been tested for compatibility
   - [Dice so nice!](https://gitlab.com/riccisi/foundryvtt-dice-so-nice)
   - [Simple Calendar](https://github.com/vigoren/foundryvtt-simple-calendar)
 
