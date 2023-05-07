@@ -51,7 +51,8 @@
         "Talent": "Talent",
         "Complication": "Complication",
         "ActiveEffect": "ActiveEffect",
-        "Biography": "Biography"
+        "Biography": "Biography",
+        "Velocity" : "Velocity"
     },
     "Errors": {
         "TokenSelect": "Please select a token"
