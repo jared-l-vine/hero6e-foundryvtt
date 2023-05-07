@@ -119,7 +119,7 @@
                         {{#if (ne item.system.areaOfEffect.type "none")}}
                         <td>{{item.system.areaOfEffect.type}} ({{item.system.areaOfEffect.value}})</td>
                         {{/if}}
-                        <td><a class="item-image flex1 item-attack"><i class="fas fa-dice" title="{{item.name}}"
+                        <td><a class="item-image item-rollable"><i class="fas fa-dice" title="{{item.name}}"
                                     width="24" height="24"></i></a></td>
                         <td>
                             <div class="item-controls" data-group="mode">
@@ -166,7 +166,7 @@
                         <td>{{item.system.hardened}}</td>
                         <td>{{item.system.impenetrable}}</td>
                         <td>
-                            <input type="checkbox" name="system.active" {{checked system.active}}
+                            <input class="item-toggle" type="checkbox" name="system.active" {{checked system.active}}
                                 data-dtype="Boolean" />
 
                         </td>
@@ -209,7 +209,7 @@
                         <td class="left">{{item.name}}</td>
                         <td>{{item.system.characteristic}}</td>
                         <td>
-                            <button type="button" class="item-roll rollable" data-roll="{{item.system.roll}}"
+                            <button type="button" class="item-rollable" data-roll="{{item.system.roll}}"
                                 data-label="{{item._id}}">{{numberFormat item.system.roll decimals=0
                                 sign=false}}-</button>
                         </td>
@@ -256,7 +256,7 @@
                         <td>{{item.system.ocv}}</td>
                         <td>{{item.system.dcv}}</td>
                         <td>
-                            <input type="checkbox" name="system.active" {{checked system.active}}
+                            <input class="item-toggle" type="checkbox" name="system.active" {{checked system.active}}
                                 data-dtype="Boolean" />
                         </td>
                         <td>
@@ -339,7 +339,7 @@
                         <td>{{item.system.end}}</td>
                         <td class="left">{{item.system.description}}</td>
                         <td>
-                            {{#if item.system.showToggle}}<input type="checkbox" name="system.active" {{checked
+                            {{#if item.system.showToggle}}<input class="item-toggle" type="checkbox" name="system.active" {{checked
                                 system.active}} data-dtype="Boolean" />
                             {{/if}}
                         </td>
@@ -424,7 +424,7 @@
                         </td>
                         <td>
                             {{#if characteristic.roll}}
-                            <button type="button" class="characteristic-roll rollable" data-roll="3d6"
+                            <button type="button" class="characteristic-roll" data-roll="3d6"
                                 data-label="{{characteristic.key}}">{{numberFormat characteristic.roll decimals=0
                                 sign=false}}-</button>
                             {{/if}}

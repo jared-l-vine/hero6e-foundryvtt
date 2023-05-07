@@ -105,22 +105,52 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         return data
     }
 
-    // _getSubmitData(updateData)
-    // {
-    //     console.log("_getSubmitData", updateData)
-    //     let result = super._getSubmitData(updateData)
+    /** @override */
+    activateListeners(html) {
+        super.activateListeners(html)
 
-    //     // Multiple characteristics have the same form name
-    //     // resulting is multiple values.  We just need 1 of those values.
-    //     for(let key of Object.keys(result))
-    //     {
-    //         let value = result[key]
-    //         if (typeof value == "object") {
-    //             result[key] = value.find(o=> !isNaN(o))
-    //         }
-            
-    //     }
-    //     return result
-    // }
+        // Rollable items
+        html.find('.item-rollable').click(this._onItemRoll.bind(this))
+
+        // Rollable characteristic
+        html.find('.characteristic-roll').click(this._onCharacteristicRoll.bind(this))
+
+        // Tobggle items
+        html.find('.item-toggle').click(this._onItemToggle.bind(this))
+
+        // Update Items
+        html.find('.item-edit').click(this._onItemEdit.bind(this))
+
+        // Delete Items
+        html.find('.item-delete').click(this._onItemDelete.bind(this))
+
+        // Add Items
+        html.find('.item-create').click(this._onItemcreate.bind(this))
+
+    }
+
+    _onItemRoll(event) {
+        console.log("_onItemRoll", event)
+    }
+
+    _onCharacteristicRoll(event) {
+        console.log("_onCharacteristicRoll", event)
+    }
+
+    _onItemToggle(event) {
+        console.log("_onItemToggle", event)
+    }
+
+    _onItemEdit(event) {
+        console.log("_onItemEdit", event)
+    }
+
+    _onItemDelete(event) {
+        console.log("_onItemDelete", event)
+    }
+
+    _onItemcreate(event) {
+        console.log("_onItemcreate", event)
+    }
 
 }
