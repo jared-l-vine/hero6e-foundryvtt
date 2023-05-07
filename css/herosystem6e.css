@@ -353,7 +353,7 @@
 
 .dark {
   color: #000;
-  filter: brightness(0);
+  /* filter: brightness(0); */ /* compatibility issue with Simple Calendar */
 }
 
 .hero .items-list .item img {
