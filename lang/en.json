@@ -41,9 +41,17 @@
         "Characteristic": "Characteristic",
         "Phase": "Phase",
         "OCV": "OCV",
-        "DCV": "DCV"
-
-
+        "DCV": "DCV",
+        "Char": "Char",
+        "Base": "Base",
+        "Cost": "Cost",
+        "Notes": "Notes",
+        "Max": "Max",
+        "Perk": "Perk",
+        "Talent": "Talent",
+        "Complication": "Complication",
+        "ActiveEffect": "ActiveEffect",
+        "Biography": "Biography"
     },
     "Errors": {
         "TokenSelect": "Please select a token"

@@ -176,10 +176,13 @@
 }
 
 .actor-sidebar-sheet table tr:first-child {
+  box-shadow: inset 0 -1px 0 darkgray;
+  background-color: #CFCEC3;
+}
+
+.actor-sidebar-sheet table tr.sticky {
   position: sticky;
   top: 0;
-  background-color: #CFCEC3;
-  box-shadow: inset 0 -1px 0 darkgray;
   z-index: 1; /* pesky checkboxes */
 }
 
@@ -194,6 +197,7 @@
 
 .actor-sidebar-sheet .item-image {
   margin-right: 5px;
+  min-width: 24px;
 }
 
 .actor-sidebar-sheet .item-image img {
@@ -208,6 +212,7 @@
 
 .actor-sidebar-sheet table tr td  {
   padding: 3px 0;
+  max-width: 300px; /* power description can be a bit too big; alternatives pct or flexbox */
 }
 
 .actor-sidebar-sheet table tr td button {
@@ -215,10 +220,14 @@
   line-height: normal;
 }
 
-.actor-sidebar-sheet table tr td button.item-roll {
+.actor-sidebar-sheet table tr.characteristic td button.rollable {
   width: 40px;
 }
 
 .actor-sidebar-sheet table tr td input {
   vertical-align: middle;
+}
+
+.actor-sidebar-sheet table tr.characteristic td input {
+  width: 40px;
 }
