@@ -195,6 +195,10 @@
   text-align: left;
 }
 
+.actor-sidebar-sheet table tr td.right, .actor-sidebar-sheet table tr th.right {
+  text-align: right;
+}
+
 .actor-sidebar-sheet .item-image {
   margin-right: 5px;
   min-width: 24px;
