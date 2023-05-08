@@ -1,6 +1,7 @@
 import { HERO } from '../config.js'
 import { determineDefense } from "../utility/defense.js";
 import { HeroSystem6eItem } from '../item/item.js'
+import { presenceAttackPopOut } from '../utility/presence-attack.js'
 
 export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
@@ -163,6 +164,12 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         // Create Items
         html.find('.item-create').click(this._onItemcreate.bind(this))
 
+        // Upload HDC file
+        html.find('.upload-button').change(this._uploadCharacterSheet.bind(this))
+
+        html.find('.recovery-button').click(this._onRecovery.bind(this))
+        html.find('.presence-button').click(this._onPresenseAttack.bind(this))
+
     }
 
     async _onItemRoll(event) {
@@ -246,6 +253,47 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
         // Finally, create the item!
         return await HeroSystem6eItem.create(itemData, { parent: this.actor })
+    }
+
+    async _onRecovery(event) {
+        const chars = this.actor.system.characteristics
+
+        let newStun = parseInt(chars.stun.value) + parseInt(chars.rec.value)
+        let newEnd = parseInt(chars.end.value) + parseInt(chars.rec.value)
+
+        if (newStun > chars.stun.max) {
+            newStun = chars.stun.max
+        }
+
+        if (newEnd > chars.end.max) {
+            newEnd = chars.end.max
+        }
+
+        await this.actor.update({
+            'system.characteristics.stun.value': newStun,
+            'system.characteristics.end.value': newEnd
+        })
+
+        let token = this.actor.token
+        let speaker = ChatMessage.getSpeaker({ actor: this.actor, token })
+        speaker["alias"] = this.actor.name
+
+        const chatData = {
+            user: game.user._id,
+            type: CONST.CHAT_MESSAGE_TYPES.OTHER,
+            content: this.actor.name + ' recovers!',
+            speaker: speaker
+        }
+
+        return ChatMessage.create(chatData)
+    }
+
+    _onPresenseAttack(event) {
+        presenceAttackPopOut(this.actor)
+    }
+
+    async _uploadCharacterSheet(event) {
+        console.log("_uploadCharacterSheet", event)
     }
 
 }

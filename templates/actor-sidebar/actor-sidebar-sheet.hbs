@@ -54,17 +54,29 @@
                     <li>rPD={{defense.ED}}</li>
                 </ul>
 
+                <div class="characteristic flexrow flex-group-center">
+                    <button type="button" class="recovery-button" >Take Recovery</button>
+                    <button type="button" class="presence-button">Presence Attack</button>
+                </div>
+
             </section>
         </div>
     </aside>
 
-    <header class="char-header sheet-header">
-        <div class="header-fields">
-            <h1 class="charname"><input name="name" type="text" value="{{actor.name}}" placeholder="Name" /></h1>
+    <!-- TOP DIV -->
+    <header class="char-header sheet-header ">
+        <div class="header-fields flexrow">
+            <h1 class="charname flex4"><input name="name" type="text" value="{{actor.name}}" placeholder="Name" /></h1>
 
+            <label class="upload-button">
+                <span>Upload .HDC</span>
+                <input type="file" />
+            </label>
         </div>
     </header>
 
+
+    <!-- NAV BAR -->
     <nav class="sheet-navigation flexrow" data-group="primary">
 
         <a class="item-nav" data-tab="attacks">Attacks</a>
@@ -81,6 +93,7 @@
         <a class="item-nav" data-tab="other">Other</a>
         {{!-- <a class="item-nav" data-tab="description">Description</a> --}}
     </nav>
+
 
     {{!-- Sheet Body --}}
     <section class="sheet-body">

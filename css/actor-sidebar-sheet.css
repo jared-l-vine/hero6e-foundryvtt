@@ -235,3 +235,7 @@
 .actor-sidebar-sheet table tr.characteristic td input {
   width: 40px;
 }
+
+.actor-sidebar-sheet input[type="file"] {
+  display: none;
+}
