@@ -652,24 +652,31 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
   async _onRollSkill(event) {
     event.preventDefault()
-    const element = event.currentTarget
-    const dataset = element.dataset
+    console.log("_onItemRoll")
+    const itemId = $(event.currentTarget).closest("[data-item-id]").data().itemId
+    const item = this.actor.items.get(itemId)
+    item.roll()
 
-    HEROSYS.log(dataset.label)
 
-    if (!isPowerSubItem(dataset.label)) {
-      const item = this.actor.items.get(dataset.label)
-      return createSkillPopOutFromItem(item, this.actor)
-    }
+    // event.preventDefault()
+    // const element = event.currentTarget
+    // const dataset = element.dataset
 
-    const [powerItemId, subItemId] = splitPowerId(dataset.label)
-    const item = this.actor.items.get(powerItemId)
-    HEROSYS.log(item)
-    const skillItemData = item.system.subItems.skill[subItemId]
+    // HEROSYS.log(dataset.label)
 
-    HEROSYS.log(skillItemData)
+    // if (!isPowerSubItem(dataset.label)) {
+    //   const item = this.actor.items.get(dataset.label)
+    //   return createSkillPopOutFromItem(item, this.actor)
+    // }
 
-    return createSkillPopOutFromItem(skillItemData, this.actor)
+    // const [powerItemId, subItemId] = splitPowerId(dataset.label)
+    // const item = this.actor.items.get(powerItemId)
+    // HEROSYS.log(item)
+    // const skillItemData = item.system.subItems.skill[subItemId]
+
+    // HEROSYS.log(skillItemData)
+
+    // return createSkillPopOutFromItem(skillItemData, this.actor)
 
   }
 

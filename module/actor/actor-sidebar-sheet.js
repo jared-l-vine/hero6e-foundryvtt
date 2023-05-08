@@ -1,4 +1,6 @@
 import { HERO } from '../config.js'
+import { determineDefense } from "../utility/defense.js";
+import { HeroSystem6eItem } from '../item/item.js'
 
 export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
@@ -8,14 +10,16 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             classes: ["actor-sidebar-sheet"],
             template: "systems/hero6efoundryvttv2/templates/actor-sidebar/actor-sidebar-sheet.hbs",
             //width: 600,
-            //height: 600,
+            //height 600,
             tabs: [{ navSelector: ".sheet-navigation", contentSelector: ".sheet-body", initial: "Attacks" }],
+            scrollY: [".sheet-body"],
         });
     }
 
     /** @override */
     getData() {
         const data = super.getData()
+
 
         // Equipment is uncommon.  If there isn't any equipment, then don't show the navigation tab.
         data.hasEquipment = false
@@ -52,7 +56,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
             // Defense
             if (item.type == 'defense') {
-                item.system.defenseType = CONFIG.HERO.defenseTypes[item.system.defenseType]
+                item.system.description = CONFIG.HERO.defenseTypes[item.system.defenseType]
             }
 
             if (item.type == 'equipment') {
@@ -102,6 +106,38 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         }
         data.characteristicSet = characteristicSet
 
+        // Defense
+        let defense = {}
+        // Defense PD
+        let pdAttack = {
+            system: {
+                class: "physical"
+            }
+        }
+
+        let [defenseValue, resistantValue, impenetrableValue, damageReductionValue, damageNegationValue, knockbackResistance, defenseTags] = determineDefense(this.actor, pdAttack)
+        defense.PD = defenseValue
+        defense.rPD = resistantValue
+        // Defense ED
+        let edAttack = {
+            system: {
+                class: "energy"
+            }
+        }
+        let [defenseValueE, resistantValueE, impenetrableValueE, damageReductionValueE, damageNegationValueE, knockbackResistanceE, defenseTagsE] = determineDefense(this.actor, edAttack)
+        defense.ED = defenseValueE
+        defense.rED = resistantValueE
+        // Defense MD
+        let mdAttack = {
+            system: {
+                class: "mental"
+            }
+        }
+        let [defenseValueM, resistantValueM, impenetrableValueM, damageReductionValueM, damageNegationValueM, knockbackResistanceM, defenseTagsM] = determineDefense(this.actor, mdAttack)
+        defense.MD = defenseValueM
+        defense.rMD = resistantValueM
+        data.defense = defense
+
         return data
     }
 
@@ -115,42 +151,101 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         // Rollable characteristic
         html.find('.characteristic-roll').click(this._onCharacteristicRoll.bind(this))
 
-        // Tobggle items
+        // Toggle items
         html.find('.item-toggle').click(this._onItemToggle.bind(this))
 
-        // Update Items
+        // Edit Items
         html.find('.item-edit').click(this._onItemEdit.bind(this))
 
         // Delete Items
         html.find('.item-delete').click(this._onItemDelete.bind(this))
 
-        // Add Items
+        // Create Items
         html.find('.item-create').click(this._onItemcreate.bind(this))
 
     }
 
-    _onItemRoll(event) {
-        console.log("_onItemRoll", event)
+    async _onItemRoll(event) {
+        event.preventDefault()
+        console.log("_onItemRoll")
+        const itemId = $(event.currentTarget).closest("[data-item-id]").data().itemId
+        const item = this.actor.items.get(itemId)
+        item.roll()
     }
 
-    _onCharacteristicRoll(event) {
-        console.log("_onCharacteristicRoll", event)
+    async _onCharacteristicRoll(event) {
+        event.preventDefault()
+        const element = event.currentTarget.closest("button")
+        const dataset = element.dataset
+        const charRoll = parseInt(element.textContent.slice(0, -1))
+
+
+        if (dataset.roll) {
+            const actor = this.actor
+
+            const roll = new Roll(dataset.roll, this.actor.getRollData())
+            roll.evaluate({ async: true }).then(function (result) {
+                // let margin = actor.system.characteristics[dataset.label].roll - result.total;
+                const margin = charRoll - result.total
+
+                result.toMessage({
+                    speaker: ChatMessage.getSpeaker({ actor }),
+                    flavor: dataset.label.toUpperCase() + ' roll ' + (margin >= 0 ? 'succeeded' : 'failed') + ' by ' + Math.abs(margin),
+                    borderColor: margin >= 0 ? 0x00FF00 : 0xFF0000
+                })
+            })
+        }
+
     }
 
-    _onItemToggle(event) {
-        console.log("_onItemToggle", event)
+    async _onItemToggle(event) {
+        event.preventDefault()
+        const itemId = $(event.currentTarget).closest("[data-item-id]").data().itemId
+        const item = this.actor.items.get(itemId)
+        item.toggle()
     }
 
-    _onItemEdit(event) {
-        console.log("_onItemEdit", event)
+    async _onItemEdit(event) {
+        const itemId = $(event.currentTarget).closest("[data-item-id]").data().itemId
+        const item = this.actor.items.get(itemId)
+        item.sheet.render(true)
     }
 
-    _onItemDelete(event) {
-        console.log("_onItemDelete", event)
+    async _onItemDelete(event) {
+        const itemId = $(event.currentTarget).closest("[data-item-id]").data().itemId
+        const item = this.actor.items.get(itemId)
+        const confirmed = await Dialog.confirm({
+            title: game.i18n.localize("HERO6EFOUNDRYVTTV2.confirms.deleteConfirm.Title"),
+            content: game.i18n.localize("HERO6EFOUNDRYVTTV2.confirms.deleteConfirm.Content")
+        });
+
+        if (confirmed) {
+            item.delete()
+            this.render();
+        }
     }
 
-    _onItemcreate(event) {
-        console.log("_onItemcreate", event)
+    async _onItemcreate(event) {
+        event.preventDefault()
+        const header = event.currentTarget
+        // Get the type of item to create.
+        const type = header.dataset.type
+        // Grab any data associated with this control.
+        const data = duplicate(header.dataset)
+        // Initialize a default name.
+        const name = `New ${type.capitalize()}`
+
+        // Prepare the item object.
+        const itemData = {
+            name,
+            type,
+            system: data
+        }
+        // Remove the type from the dataset since it's in the itemData.type prop.
+        delete itemData.system.type
+
+        // Finally, create the item!
+        return await HeroSystem6eItem.create(itemData, { parent: this.actor })
     }
 
 }

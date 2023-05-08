@@ -45,8 +45,15 @@
                             </span>
                         </div>
                     </li>
-
                 </ul>
+
+                <ul>
+                    <li>PD={{defense.PD}}</li>
+                    <li>rPD={{defense.rPD}}</li>
+                    <li>ED={{defense.ED}}</li>
+                    <li>rPD={{defense.ED}}</li>
+                </ul>
+
             </section>
         </div>
     </aside>
@@ -119,8 +126,8 @@
                         {{#if (ne item.system.areaOfEffect.type "none")}}
                         <td>{{item.system.areaOfEffect.type}} ({{item.system.areaOfEffect.value}})</td>
                         {{/if}}
-                        <td><a class="item-image item-rollable"><i class="fas fa-dice" title="{{item.name}}"
-                                    width="24" height="24"></i></a></td>
+                        <td><a class="item-image item-rollable"><i class="fas fa-dice" title="{{item.name}}" width="24"
+                                    height="24"></i></a></td>
                         <td>
                             <div class="item-controls" data-group="mode">
                                 <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
@@ -160,7 +167,7 @@
                                     height="24" /></div>
                         </td>
                         <td class="left">{{item.name}}</td>
-                        <td class="left">{{item.system.defenseType}}</td>
+                        <td class="left">{{item.system.description}}</td>
                         <td>{{item.system.value}}</td>
                         <td>{{item.system.resistant}}</td>
                         <td>{{item.system.hardened}}</td>
@@ -195,7 +202,7 @@
                         <th>{{localize "ActorSheet.Characteristic"}}</th>
                         <th>{{localize "ActorSheet.Roll"}}</th>
                         <th>
-                            <a class="item-control item-create" title="Create defense" data-type="defense">
+                            <a class="item-control item-create" title="Create skill" data-type="skill">
                                 <i class="fas fa-plus"></i> Add Skill</a>
                         </th>
                     </tr>
@@ -277,7 +284,7 @@
             {{!-- Movement Tab --}}
             <div class="tab tab-body" data-group="primary" data-tab="movement">
                 <table>
-                   <tr class="sticky">
+                    <tr class="sticky">
                         <th></th>
                         <th class="left">{{localize "ActorSheet.Name"}}</th>
                         <th class="left">{{localize "ActorSheet.Description"}}</th>
@@ -339,8 +346,8 @@
                         <td>{{item.system.end}}</td>
                         <td class="left">{{item.system.description}}</td>
                         <td>
-                            {{#if item.system.showToggle}}<input class="item-toggle" type="checkbox" name="system.active" {{checked
-                                system.active}} data-dtype="Boolean" />
+                            {{#if item.system.showToggle}}<input class="item-toggle" type="checkbox"
+                                name="system.active" {{checked system.active}} data-dtype="Boolean" />
                             {{/if}}
                         </td>
                         <td>
@@ -447,8 +454,8 @@
                         <th class="left">{{localize "ActorSheet.Perk"}}</th>
                         <th class="left">{{localize "ActorSheet.Description"}}</th>
                         <th>
-                            {{!-- <a class="item-control item-create" title="Create equipment" data-type="equipment">
-                                <i class="fas fa-plus"></i> Add Equipment</a> --}}
+                            <a class="item-control item-create" title="Create perk" data-type="perk">
+                                <i class="fas fa-plus"></i> Add Perk</a>
                         </th>
                     </tr>
                     {{#each items as |item id|}}
@@ -480,8 +487,8 @@
                         <th class="left">{{localize "ActorSheet.Talent"}}</th>
                         <th class="left">{{localize "ActorSheet.Description"}}</th>
                         <th>
-                            {{!-- <a class="item-control item-create" title="Create equipment" data-type="equipment">
-                                <i class="fas fa-plus"></i> Add Equipment</a> --}}
+                            <a class="item-control item-create" title="Create talent" data-type="talent">
+                                <i class="fas fa-plus"></i> Add Talent</a>
                         </th>
                     </tr>
                     {{#each items as |item id|}}
@@ -513,8 +520,8 @@
                         <th class="left">{{localize "ActorSheet.Complication"}}</th>
                         <th class="left">{{localize "ActorSheet.Description"}}</th>
                         <th>
-                            {{!-- <a class="item-control item-create" title="Create equipment" data-type="equipment">
-                                <i class="fas fa-plus"></i> Add Equipment</a> --}}
+                            <a class="item-control item-create" title="Create complication" data-type="complication">
+                                <i class="fas fa-plus"></i> Add Complication</a>
                         </th>
                     </tr>
                     {{#each items as |item id|}}
@@ -557,10 +564,10 @@
                         </td>
                         <td class="left">{{item.label}}</td>
                         <td class="right">
-                            <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
+                            {{!-- <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
                             <a class="item-control item-delete" title="Delete Item">
                                 <i class="fas fa-trash"></i>
-                            </a>
+                            </a> --}}
                         </td>
                     </tr>
                     {{/each}}

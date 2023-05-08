@@ -2,8 +2,8 @@ import { HEROSYS } from "../herosystem6e.js";
 
 function determineDefense(targetActor, attackItem) {
     const attackType = attackItem.system.class
-    const piericng = parseInt(attackItem.system.piercing)
-    const penetrating = parseInt(attackItem.system.penetrating)
+    const piericng = parseInt(attackItem.system.piercing) || 0
+    const penetrating = parseInt(attackItem.system.penetrating) || 0
 
 
 

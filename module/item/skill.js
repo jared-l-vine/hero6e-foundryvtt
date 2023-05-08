@@ -26,11 +26,11 @@ async function createSkillPopOutFromItem(item, actor) {
 
 	return new Promise(resolve => {
 		const data = {
-			title: "Roll to Hit",
+			title: "Roll Skill",
 			content: content,
 			buttons: {
 				rollToHit: {
-					label: "Roll to Hit",
+					label: "Roll Skill",
 					callback: html => resolve(skillRoll(item, actor, html))
 				},
 			},
