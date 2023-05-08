@@ -2,6 +2,7 @@ import { HERO } from '../config.js'
 import { determineDefense } from "../utility/defense.js";
 import { HeroSystem6eItem } from '../item/item.js'
 import { presenceAttackPopOut } from '../utility/presence-attack.js'
+import { applyCharacterSheet } from '../utility/upload_hdc.js'
 
 export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
@@ -293,7 +294,19 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
     }
 
     async _uploadCharacterSheet(event) {
-        console.log("_uploadCharacterSheet", event)
+        const file = event.target.files[0]
+        if (!file) {
+            return
+        }
+        const reader = new FileReader()
+        reader.onload = function (event) {
+            const contents = event.target.result
+
+            const parser = new DOMParser()
+            const xmlDoc = parser.parseFromString(contents, 'text/xml')
+            applyCharacterSheet.bind(this)(xmlDoc)
+        }.bind(this)
+        reader.readAsText(file)
     }
 
 }
