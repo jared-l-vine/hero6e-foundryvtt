@@ -171,6 +171,16 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         html.find('.recovery-button').click(this._onRecovery.bind(this))
         html.find('.presence-button').click(this._onPresenseAttack.bind(this))
 
+        // Drag events for macros.
+        if (this.actor.isOwner) {
+            const handler = ev => this._onDragStart(ev)
+
+            html.find('tr.item').each((i, el) => {
+                el.setAttribute('draggable', true)
+                el.addEventListener('dragstart', handler, false)
+            })
+        }
+
     }
 
     async _onItemRoll(event) {

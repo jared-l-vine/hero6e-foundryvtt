@@ -110,6 +110,7 @@ export class HeroSystem6eItem extends Item {
         switch (this.type) {
             case 'attack': return true
             case 'skill': return true
+            case 'defense': return true
         }
         return false
     }
@@ -120,6 +121,8 @@ export class HeroSystem6eItem extends Item {
         switch (this.type) {
             case "attack":
                 return await Attack.AttackOptions(this)
+            case "defense":
+                return this.toggle()
             case "skill":
                 return createSkillPopOutFromItem(this, this.actor)
             default: ui.notifications.warn(`${this.name} roll is not supported`)
