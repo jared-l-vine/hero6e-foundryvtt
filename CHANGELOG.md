@@ -44,7 +44,7 @@
         to create and edit the power there then drag the item onto a character sheet)
 
 ## Version 1.1.2
--Bugfixes
+- Bugfixes
     - movement powers were showing the wrong type
     - couldn't update sub item descriptiosn
     - recovery button didn't produce chat message
@@ -61,7 +61,7 @@
     - rolling initiative produces an error message, this can likely be ignored
 
 ## Version 1.1.1
--Bugfixes
+- Bugfixes
     - Split up attack card because players could only make attacks against themselves
     - Attack card messages had wrong sender name
 
