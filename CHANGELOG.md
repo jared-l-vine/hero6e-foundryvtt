@@ -1,14 +1,12 @@
 # Version 2.1.5-alpha
 - 5th edition characters get figured characteristics and 5E stun multiplier on killing attacks.
 - A second (improved) character sheet is available to preview.
-- DragDrop suppor for attacks, skills and power toggles (like defenses)
-
+- DragDrop support for attacks, skills and power toggles (like defenses)
 
 # Version 2.1.4-alpha
 - NOKB, DOUBLEKB, and KBRESISTANCE
 - Penetrating, Armor Piercing, Hardened
 - Body and Stun only
-
 
 # Version2.1.3-alpha
 - Adding distinction between PC and NPC actors
@@ -21,11 +19,10 @@
 # Version 2.1.1-alpha
 - Maneuver fix #39
 
-
 # Version 2.1.0-alpha
 - power item rework
 - Known Issues:
-    - Manuevers items are applying OCV/DCV modifications
+    - Maneuvers items are applying OCV/DCV modifications
     - Defense items toggles are not working
     - Can't edit/delete Power sub items directly from actor sheet
     - Updating and item on an unlinked actor sheet updates the base actor and not the actor in the scene
@@ -38,25 +35,25 @@
 
 # Version 2.0-alpha
 - V10 migration
-- changed characteristic keys so that other charactersitics can work with Barbrawl
+- changed characteristic keys so that other characteristics can work with Barbrawl
 - Known Issues:
-    - can't edit power/equpipment 'sub-items' from character sheet (to add powers to a character sheet use the item tab
+    - can't edit power/equipment 'sub-items' from character sheet (to add powers to a character sheet use the item tab
         to create and edit the power there then drag the item onto a character sheet)
 
 # Version 1.1.2
 - Bugfixes
     - movement powers were showing the wrong type
-    - couldn't update sub item descriptiosn
+    - couldn't update sub item descriptions
     - recovery button didn't produce chat message
     - attack card automation wouldn't work with power sub items
     - attack card automation wouldn't work with attacks that used strength or knockback
-    - initative tracking wasn't working
+    - imitative tracking wasn't working
 - Added a dice button for attack roll actions
 - Now prioritizing player characters in initiative tracking
 - Known Issues
     - clicking 'Apply to Target' with an attack card generated from a power sub item displays a message
         'Error: Item does not exist', this should be safe to ignore
-    - can't edit power/equpipment 'sub-items' from character sheet (to add powers to a character sheet use the item tab
+    - can't edit power/equipment 'sub-items' from character sheet (to add powers to a character sheet use the item tab
         to create and edit the power there then drag the item onto a character sheet)
     - rolling initiative produces an error message, this can likely be ignored
 
@@ -66,7 +63,7 @@
     - Attack card messages had wrong sender name
 
 # Version 1.1.0
-- Added Characteristics base values to character sheet, Editable only in 'Edit' mode on charater sheet
+- Added Characteristics base values to character sheet, Editable only in 'Edit' mode on character sheet
 - Added End cost to power/equipment item sheets
 - Added a field on attack items for custom additional effects, custom effect text will display the end of attack cards
 - Bugfixes
@@ -85,4 +82,4 @@
 - added hit locations option
 - added knockback option
 - added powers and equipment items
-- added manuever item
+- added maneuver item
