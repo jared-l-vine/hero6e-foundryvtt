@@ -239,3 +239,35 @@
 .actor-sidebar-sheet input[type="file"] {
   display: none;
 }
+
+/* TokenHud */
+.hero-attribute {
+  display: flex;
+  flex-direction: column;
+  gap: 6px 0;
+  justify-content: center;
+  width: 100px;
+}
+
+.hero-attribute.compact {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0 6px;
+  width: 40px;
+}
+
+.col.middle .hero-attribute {
+  width: unset;
+}
+
+.hero-attribute.compact input[type="text"] {
+  width: 40%;
+  height: 30px;
+  font-size: 20px;
+  margin: 2px;
+  min-width: 40px;
+}
+
+.hero-attribute input:disabled {
+  color: #aaa;
+}

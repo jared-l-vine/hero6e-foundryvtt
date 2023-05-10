@@ -15,68 +15,69 @@ import { HeroSystem6eActorActiveEffects } from "./actor/actor-active-effects.js"
 import HeroSystem6eTemplate from "./template.js";
 import { HeroSystem6eCombat, HeroSystem6eCombatTracker } from "./combat.js";
 import SettingsHelpers from "./settings/settings-helpers.js";
+import { HeroSystem6eTokenHud, HeroSystem6ePreUpdateToken } from "./tokenHud.js";
 
-Hooks.once('init', async function() {
+Hooks.once('init', async function () {
 
-    game.herosystem6e = {
-        applications: {
-            HeroSystem6eActorSheet,
-            HeroSystem6eItemSheet,
-        },
-        entities: {
-            HeroSystem6eActor,
-            HeroSystem6eItem,
-            HeroSystem6eTokenDocument,
-            HeroSystem6eToken
-        },
-        canvas: {
-            HeroSystem6eTemplate
-        },
-        macros: macros,
-        rollItemMacro: rollItemMacro,
-        config : HERO
-    };
+  game.herosystem6e = {
+    applications: {
+      HeroSystem6eActorSheet,
+      HeroSystem6eItemSheet,
+    },
+    entities: {
+      HeroSystem6eActor,
+      HeroSystem6eItem,
+      HeroSystem6eTokenDocument,
+      HeroSystem6eToken
+    },
+    canvas: {
+      HeroSystem6eTemplate
+    },
+    macros: macros,
+    rollItemMacro: rollItemMacro,
+    config: HERO
+  };
 
-    CONFIG.HERO = HERO;
+  CONFIG.HERO = HERO;
 
-    CONFIG.POWERS = POWERS;
+  CONFIG.POWERS = POWERS;
 
-    CONFIG.Combat.documentClass = HeroSystem6eCombat;
+  CONFIG.Combat.documentClass = HeroSystem6eCombat;
 
-    /**
-    * Set an initiative formula for the system
-    * @type {String}
-    */
-    CONFIG.Combat.initiative = {
-        formula: "@characteristics.dex.value + (@characteristics.int.value / 100)",
-        decimals: 2
-    };
+  /**
+  * Set an initiative formula for the system
+  * @type {String}
+  */
+  CONFIG.Combat.initiative = {
+    formula: "@characteristics.dex.value + (@characteristics.int.value / 100)",
+    decimals: 2
+  };
 
-    // debug
-    // CONFIG.debug.hooks = true;
+  // debug
+  // CONFIG.debug.hooks = true;
 
-    // Define custom Entity classes
-    CONFIG.Actor.documentClass = HeroSystem6eActor;
-    CONFIG.Item.documentClass = HeroSystem6eItem;
-    CONFIG.Token.documentClass = HeroSystem6eTokenDocument;
-    CONFIG.Token.objectClass = HeroSystem6eToken;
-    CONFIG.statusEffects = HeroSystem6eActorActiveEffects.getEffects();
-    CONFIG.MeasuredTemplate.objectClass = HeroSystem6eTemplate;
-    CONFIG.ui.combat = HeroSystem6eCombatTracker;
-  
-    SettingsHelpers.initLevelSettings();
+  // Define custom Entity classes
+  CONFIG.Actor.documentClass = HeroSystem6eActor;
+  CONFIG.Item.documentClass = HeroSystem6eItem;
+  CONFIG.Token.documentClass = HeroSystem6eTokenDocument;
+  CONFIG.Token.objectClass = HeroSystem6eToken;
+  CONFIG.statusEffects = HeroSystem6eActorActiveEffects.getEffects();
+  CONFIG.MeasuredTemplate.objectClass = HeroSystem6eTemplate;
+  CONFIG.ui.combat = HeroSystem6eCombatTracker;
 
-    // Register sheet application classes
-    Actors.unregisterSheet("core", ActorSheet);
-    Actors.registerSheet("herosystem6e", HeroSystem6eActorSheet, { makeDefault: true });
-    Actors.registerSheet("herosystem6e", HeroSystem6eActorSidebarSheet);
-    Items.unregisterSheet("core", ItemSheet);
-    Items.registerSheet("herosystem6e", HeroSystem6eItemSheet, { makeDefault: true });
+  SettingsHelpers.initLevelSettings();
 
-    // Actors.registerSheet("herosystem6e", HeroSystem6eActorSheetMini, { makeDefault: false });
+  // Register sheet application classes
+  Actors.unregisterSheet("core", ActorSheet);
+  Actors.registerSheet("herosystem6e", HeroSystem6eActorSheet, { makeDefault: true });
+  Actors.registerSheet("herosystem6e", HeroSystem6eActorSidebarSheet);
+  Items.unregisterSheet("core", ItemSheet);
+  Items.registerSheet("herosystem6e", HeroSystem6eItemSheet, { makeDefault: true });
 
-    // If you need to add Handlebars helpers, here are a few useful examples:
-    Handlebars.registerHelper('concat', function() {
+  // Actors.registerSheet("herosystem6e", HeroSystem6eActorSheetMini, { makeDefault: false });
+
+  // If you need to add Handlebars helpers, here are a few useful examples:
+  Handlebars.registerHelper('concat', function () {
     var outStr = '';
     for (var arg in arguments) {
       if (typeof arguments[arg] != 'object') {
@@ -288,31 +289,52 @@ async function migrateActorTypes() {
 async function migrateKnockback() {
   let updates = [];
   for (let actor of game.actors) {
-    for(let item of actor.items)
-    {
-      if (item.type === 'attack')
-      {
-        if (item.system.knockback && parseInt(item.system.knockbackMultiplier) == 0)
-        {
-          updates.push({ _id: item.id, system: {knockbackMultiplier: 1, knockback: null }} );
+    for (let item of actor.items) {
+      if (item.type === 'attack') {
+        if (item.system.knockback && parseInt(item.system.knockbackMultiplier) == 0) {
+          updates.push({ _id: item.id, system: { knockbackMultiplier: 1, knockback: null } });
         }
       }
     }
     if (updates.length > 0) {
-      await Item.updateDocuments(updates, {parent: actor});
+      await Item.updateDocuments(updates, { parent: actor });
       ui.notifications.info(`${updates.length} attacks migrated for ${actor.name}.`)
       updates = []
     }
   }
-  
+
 }
 
 
 
 // Remove Character from selectable actor types
-// Using Actor.migration instead
 Hooks.on("renderDialog", (dialog, html, data) => {
   if (html[0].querySelector(".window-title").textContent != "Create New Actor") return
   let option = html[0].querySelector("option[value*='character']")
   if (option) option.remove()
 })
+
+
+
+// Modify TokenHUD (need 3 bars: end, stun, body)
+// Hooks.on("renderTokenHUD", HeroSystem6eTokenHud);
+
+// Hooks.on("preUpdateToken", function (doc, changes) {
+//   alert("preUpdateToken")
+// });
+
+// Hooks.on("preUpdateActor", function (actor, newData) {
+//   alert("preUpdateActor")
+//   console.log("preUpdateActor")
+// });
+
+// Hooks.on("preCreateActor", function (actor, newData) {
+//   alert("preCreateActor")
+//   console.log("preCreateActor")
+// });
+
+
+// Hooks.on("preCreateToken", function (doc, data) {
+//   alert("preCreateToken")
+// });
+
