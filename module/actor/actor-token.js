@@ -10,7 +10,22 @@ export class HeroSystem6eToken extends Token {
         if (this.document.height >= 2) h *= 1.6;  // Enlarge the bar for large tokens
         let posY = this.h - h * (number + 1);
         bar.position.set(0, posY);
-
         return drawnBar;
     }
+
+    // constructor(data, options={}) {
+            
+    //     super(data, options);
+    //     console.log("constructor", data)
+    //     this.document.update({ "bars.bar3.attribute": "test" });
+    
+    // }
+
+
+    // _onCreate(data)
+    // {
+
+    //     console.log("_onCreate", data)
+    //     alert("_onCreate")
+    // }
 }

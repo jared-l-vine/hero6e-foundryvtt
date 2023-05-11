@@ -6,7 +6,7 @@ import { editSubItem, deleteSubItem, getItemCategory, isPowerSubItem, splitPower
 import { enforceManeuverLimits } from '../item/manuever.js'
 import { presenceAttackPopOut } from '../utility/presence-attack.js'
 import { HERO } from '../config.js'
-import { uploadBasic, uploadTalent, uploadSkill, uploadAttack } from '../utility/upload_hdc.js'
+import { applyCharacterSheet } from '../utility/upload_hdc.js'
 import * as Dice from '../dice.js'
 
 /**
@@ -20,7 +20,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
     const options = super.defaultOptions;
 
-    const newOptions =  {
+    const newOptions = {
       ...options,
       //An array of CSS string classes to apply to the rendered HTML
       classes: [...options.classes, 'herosystem6e', 'sheet', 'actor'],
@@ -38,7 +38,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         { navSelector: '.sheet-edit-tabs', contentSelector: '.sheet-mode', initial: 'play' }
       ],
       //A list of unique CSS selectors which target containers that should have their vertical scroll positions preserved during a re-render.
-      scrollY: [ ...options.scrollY, ".defenses-group" ],
+      scrollY: [...options.scrollY, ".defenses-group"],
 
       heroEditable: false,
 
@@ -567,7 +567,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     // Check for associated ActiveEffects
     for (const activeEffect of item.actor.effects.filter(o => o.origin === item.uuid)) {
       await activeEffect.update({ disabled: !item.system.active })
-      for(let change of activeEffect.changes) {
+      for (let change of activeEffect.changes) {
         const key = change.key.match(/characteristics\.(.*)\./)[1]
         const max = item.actor.system.characteristics[key].max
         if (item.system.active) {
@@ -585,7 +585,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
         }
 
       }
-      
+
     }
   }
 
@@ -652,24 +652,31 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
   async _onRollSkill(event) {
     event.preventDefault()
-    const element = event.currentTarget
-    const dataset = element.dataset
+    console.log("_onItemRoll")
+    const itemId = $(event.currentTarget).closest("[data-item-id]").data().itemId
+    const item = this.actor.items.get(itemId)
+    item.roll()
 
-    HEROSYS.log(dataset.label)
 
-    if (!isPowerSubItem(dataset.label)) {
-      const item = this.actor.items.get(dataset.label)
-      return createSkillPopOutFromItem(item, this.actor)
-    }
+    // event.preventDefault()
+    // const element = event.currentTarget
+    // const dataset = element.dataset
 
-    const [powerItemId, subItemId] = splitPowerId(dataset.label)
-    const item = this.actor.items.get(powerItemId)
-    HEROSYS.log(item)
-    const skillItemData = item.system.subItems.skill[subItemId]
+    // HEROSYS.log(dataset.label)
 
-    HEROSYS.log(skillItemData)
+    // if (!isPowerSubItem(dataset.label)) {
+    //   const item = this.actor.items.get(dataset.label)
+    //   return createSkillPopOutFromItem(item, this.actor)
+    // }
 
-    return createSkillPopOutFromItem(skillItemData, this.actor)
+    // const [powerItemId, subItemId] = splitPowerId(dataset.label)
+    // const item = this.actor.items.get(powerItemId)
+    // HEROSYS.log(item)
+    // const skillItemData = item.system.subItems.skill[subItemId]
+
+    // HEROSYS.log(skillItemData)
+
+    // return createSkillPopOutFromItem(skillItemData, this.actor)
 
   }
 
@@ -740,376 +747,12 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
       const parser = new DOMParser()
       const xmlDoc = parser.parseFromString(contents, 'text/xml')
-      this._applyCharacterSheet(xmlDoc)
+      applyCharacterSheet.bind(this)(xmlDoc)
     }.bind(this)
     reader.readAsText(file)
   }
 
-  _applyCharacterSheet(sheet) {
-    this._applyCharacterSheetAsync(sheet)
-  }
 
-  async _applyCharacterSheetAsync(sheet) {
-    const characterInfo = sheet.getElementsByTagName('CHARACTER_INFO')[0]
-    const characteristics = sheet.getElementsByTagName('CHARACTERISTICS')[0]
-    const skills = sheet.getElementsByTagName('SKILLS')[0]
-    const powers = sheet.getElementsByTagName('POWERS')[0]
-    const perks = sheet.getElementsByTagName('PERKS')[0]
-    const talents = sheet.getElementsByTagName('TALENTS')[0]
-    const martialarts = sheet.getElementsByTagName('MARTIALARTS')[0]
-    const complications = sheet.getElementsByTagName('DISADVANTAGES')[0]
-    const equipment = sheet.getElementsByTagName('EQUIPMENT')[0]
-    const image = sheet.getElementsByTagName('IMAGE')[0]
-
-
-    // let elementsToLoad = ["POWERS", "PERKS", "TALENTS", "MARTIALARTS", "DISADVANTAGES"]
-
-    const changes = []
-
-    if (characterInfo.getAttribute('CHARACTER_NAME') !== '') {
-      changes.name = characterInfo.getAttribute('CHARACTER_NAME')
-
-      // Override name of prototype token if HDC upload was from library
-      if (this.actor.prototypeToken) {
-        changes.prototypeToken = {}
-        changes.prototypeToken.name = changes.name
-      }
-
-      // Overwrite token name if PC
-      if (this.actor.token)
-      {
-        if (this.actor.type == 'pc')
-        {
-          await this.token.update({name: changes.name})
-        }
-      }
-    }
-
-    // Biography
-    let Biography = ""
-    for (let child of characterInfo.children) {
-      let text = child.textContent.trim();
-      if (text) {
-        Biography += "<p><b>" + child.nodeName + "</b>: " + text + "</p>"
-      }
-    }
-    changes[`system.biography`] = Biography;
-
-    // Remove all items from
-    // for (const item of this.actor.items) {
-    //   await item.delete()
-    // }
-    // This is a faster (bulk) operation to delete all the items
-    await this.actor.deleteEmbeddedDocuments("Item", Array.from(this.actor.items.keys()))
-
-
-    // determine spd upfront for velocity calculations
-    let spd
-    let value
-    for (const characteristic of characteristics.children) {
-      const key = CONFIG.HERO.characteristicsXMLKey[characteristic.getAttribute('XMLID')]
-      value = CONFIG.HERO.characteristicDefaults[key] + parseInt(characteristic.getAttribute('LEVELS'))
-
-      if (key === 'spd') {
-        spd = value
-      }
-    }
-
-    for (const characteristic of characteristics.children) {
-      const key = CONFIG.HERO.characteristicsXMLKey[characteristic.getAttribute('XMLID')]
-      value = CONFIG.HERO.characteristicDefaults[key] + parseInt(characteristic.getAttribute('LEVELS'))
-
-      const velocity = Math.round((spd * value) / 12)
-
-      if (key in CONFIG.HERO.movementPowers) {
-        let name = characteristic.getAttribute('NAME')
-        name = (name === '') ? characteristic.getAttribute('ALIAS') : name
-
-        const itemData = {
-          name: name,
-          type: 'movement',
-          system: {
-            type: key,
-            editable: false,
-            base: value,
-            value,
-            velBase: velocity,
-            velValue: velocity,
-            class: key,
-          }
-        }
-
-        await HeroSystem6eItem.create(itemData, { parent: this.actor })
-      } else {
-        changes[`system.characteristics.${key}.value`] = value
-        changes[`system.characteristics.${key}.max`] = value
-      }
-    }
-
-    await this.actor.update(changes)
-
-    for (const skill of skills.children) {
-      await uploadSkill.call(this, skill)
-    }
-
-    const relevantFields = ['BASECOST', 'LEVELS', 'ALIAS', 'MULTIPLIER', 'NAME', 'OPTION_ALIAS', 'SFX',
-      'PDLEVELS', 'EDLEVELS', 'MDLEVELS', 'INPUT', 'OPTIONID' // FORCEFIELD
-    ]
-    for (const power of powers.children) {
-      const xmlid = power.getAttribute('XMLID')
-      const name = power.getAttribute('NAME')
-      const alias = power.getAttribute('ALIAS')
-      const levels = power.getAttribute('LEVELS')
-      const input = power.getAttribute('INPUT')
-      let activeCost = levels * 5;
-
-      if (xmlid === 'GENERIC_OBJECT') { continue; }
-
-      // Check if we have CONFIG info about this power
-      let configPowerInfo = CONFIG.HERO.powers[xmlid]
-      if (configPowerInfo) {
-        // switch (configPowerInfo.powerType)
-        // {
-        //   case "attack": break // TODO: unimplemented
-        //   case "characteristic": break // TODO: unimplemented
-        //   case "defense": break // TODO: unimplemented
-        //   case "mental": break // TODO: unimplemented
-        //   case "movement": break // handled elsewhere?
-        //   case "sense": break // handled elsewhere?
-        //   case "skill": await uploadSkill.call(this, power); break
-        //   default : ui.notifications.warn(`${xmlid} not handle during HDC upload of ${this.actor.name}`)
-        // }
-        if ((configPowerInfo?.powerType || "").includes("skill")) {
-          await uploadSkill.call(this, power);
-        }
-
-        // Detect attacks
-        //let configPowerInfo = CONFIG.HERO.powers[power.system.rules]
-        if (configPowerInfo.powerType.includes("attack")) {
-          await uploadAttack.call(this, power);
-        }
-
-      }
-      else {
-        if (game.settings.get(game.system.id, 'alphaTesting')) {
-          ui.notifications.warn(`${xmlid} not handled during HDC upload of ${this.actor.name}`)
-          console.log(power)
-        }
-
-      }
-
-      let itemName = name
-      if (name === undefined || name === '') {
-        itemName = alias
-      }
-
-      const powerData = {}
-
-      for (const attribute of power.attributes) {
-        const attName = attribute.name
-
-        if (relevantFields.includes(attName)) {
-          const attValue = attribute.value
-
-          powerData[attName] = attValue
-        }
-      }
-
-      const modifiers = []
-      for (const modifier of power.children) {
-        const xmlidModifier = modifier.getAttribute('XMLID')
-
-        if (xmlidModifier !== null) {
-          modifiers.push({
-            xmlid: xmlidModifier,
-            alias: modifier.getAttribute('ALIAS'),
-            comments: modifier.getAttribute('ALIAS'),
-            option: modifier.getAttribute('OPTION'),
-            optionId: modifier.getAttribute('OPTIONID'),
-            optionAlias: modifier.getAttribute('OPTION_ALIAS'),
-            LEVELS: modifier.getAttribute('LEVELS'),
-          })
-        }
-      }
-      powerData.modifiers = modifiers
-
-      // Description (eventual goal is to largely match Hero Designer)
-      // TODO: This should probably be moved to the sheets code
-      // so when the power is modified in foundry, the power
-      // description updates as well.
-      // If in sheets code it may handle drains/suppresses nicely.
-      switch (alias) {
-        case "PRE":
-          powerData.description = "+" + levels + " PRE";
-          activeCost = 0;
-          break;
-        case "Mind Scan": powerData.description = levels + "d6 Mind Scan (" +
-          input + " class of minds)";
-          break;
-        default:
-          powerData.description = alias;
-
-      }
-
-      for (let modifier of powerData.modifiers) {
-        if (modifier.alias) powerData.description += "; " + modifier.alias
-        if (modifier.comments) powerData.description += "; " + modifier.comments
-        if (modifier.option) powerData.description += "; " + modifier.option
-        if (modifier.optionId) powerData.description += "; " + modifier.optionId
-        if (modifier.optionAlias) powerData.description += "; " + modifier.optionAlias
-      }
-
-      powerData.rules = xmlid
-
-      let type = ''
-      let itemData = {}
-      if (xmlid.toLowerCase() in CONFIG.HERO.movementPowers) {
-        type = 'movement'
-
-        const velocity = Math.round((spd * levels) / 12)
-
-        powerData.max = levels
-        powerData.value = levels
-        powerData.velBase = velocity
-        powerData.velValue = velocity
-
-
-        itemData = {
-          name: itemName,
-          type,
-          system: powerData,
-          levels
-        }
-
-
-
-      } else {
-        type = 'power'
-
-        itemName = (itemName === '') ? 'unnamed' : itemName
-
-        // TODO: END estimate is too simple for publishing.  
-        // Want to minimize incorrect info.  Needs improvment.
-        //powerData.end = math.round(activeCost/10);
-
-        itemData = {
-          name: itemName,
-          type,
-          system: powerData,
-          levels,
-          input
-        }
-      }
-
-      let newPower = await HeroSystem6eItem.create(itemData, { parent: this.actor })
-
-      // // ActiveEffect for Characteristics
-      // if (configPowerInfo && configPowerInfo.powerType.includes("characteristic")) {
-      //   console.log(newPower.system.rules)
-
-      //   let activeEffect =
-      //   {
-      //     label: newPower.name + " (" + levels + ")",
-      //     //id: newPower.system.rules,
-      //     //icon: 'icons/svg/daze.svg',
-      //     changes: [
-      //       {
-      //         key: "data.characteristics." + newPower.system.rules.toLowerCase() + ".value",
-      //         value: parseInt(levels),
-      //         mode: CONST.ACTIVE_EFFECT_MODES.OVERRIDE
-      //       }
-      //     ]
-      //   }
-      //   await this.actor.addActiveEffect(activeEffect)
-
-      //}
-
-
-    }
-
-    for (const perk of perks.children) {
-      await uploadBasic.call(this, perk, 'perk')
-    }
-
-    for (const talent of talents.children) {
-      await uploadTalent.call(this, talent, 'talent')
-    }
-
-    for (const complication of complications.children) {
-      await uploadBasic.call(this, complication, 'complication')
-    }
-
-    for (const equip of equipment.children) {
-      await uploadBasic.call(this, equip, 'equipment')
-    }
-
-    for (const martialart of martialarts.children) {
-      await uploadBasic.call(this, martialart, 'martialart')
-    }
-
-    // combat maneuvers
-    async function loadCombatManeuvers(dict, actor) {
-      for (const entry of Object.entries(dict)) {
-        const v = entry[1]
-        const itemData = {
-          name: entry[0],
-          type: 'maneuver',
-          data: {
-            phase: v[0],
-            ocv: v[1],
-            dcv: v[2],
-            effects: v[3],
-            active: false
-          }
-        }
-
-        await HeroSystem6eItem.create(itemData, { parent: actor })
-      }
-    }
-
-    await loadCombatManeuvers(CONFIG.HERO.combatManeuvers, this.actor)
-
-    if (game.settings.get('hero6efoundryvttv2', 'optionalManeuvers')) {
-      await loadCombatManeuvers(CONFIG.HERO.combatManeuversOptional, this.actor)
-    }
-
-    // ActiveEffects
-    // TODO: Creating ActiveEffects initially on the Item should
-    // allow easier implementation of power toggles and associated ActiveEffects.
-    await this.actor.applyPowerEffects()
-
-    
-
-    // Actor Image
-    if (image) {
-      let filename = image.getAttribute("FileName")
-      let extension = filename.split('.').pop()
-      let base64 = "data:image/" + extension + ";base64," + image.textContent
-      let path = "worlds/" + game.world.id
-      if (this.actor.img.indexOf(filename) == -1) {
-        await ImageHelper.uploadBase64(base64, filename, path)
-        await this.actor.update({ [`img`]: path + '/' + filename })
-      }
-    }
-
-
-    // Default Strike attack
-    let itemData = {
-      type: "attack",
-      name: "strike",
-      system: {
-        //xmlid: "HANDTOHANDATTACK",
-        knockbackMultiplier: 1,
-        usesStrength: true,
-        rules: "This is the basic attack maneuver"
-      }
-      
-    }
-    await HeroSystem6eItem.create(itemData, { parent: this.actor })
-
-    ui.notifications.info(`${this.actor.name} upload complete`)
-
-  }
 
   async _updateName(name) {
     // this needed to be pulled out of the listener for some reason
@@ -1125,7 +768,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     await editSubItem(event, item)
   }
 
-  async _onDeleteItem (event) {
+  async _onDeleteItem(event) {
     const itemId = $(event.currentTarget).closest("[data-item-id]").data().itemId
     const item = this.actor.items.get(itemId)
 
@@ -1135,8 +778,8 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     });
 
     if (confirmed) {
-        item.delete()
-        this.render();
+      item.delete()
+      this.render();
     }
   }
 
