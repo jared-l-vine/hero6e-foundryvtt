@@ -1,7 +1,7 @@
 # Version 2.1.5-alpha
 - 5th edition characters get figured characteristics and 5E stun multiplier on killing attacks.
 - A second (improved) character sheet is available to preview.
-- DragDrop support for attacks, skills and power toggles (like defenses)
+- DragDrop to hotbar for attacks, skills and power toggles (like defenses)
 
 # Version 2.1.4-alpha
 - NOKB, DOUBLEKB, and KBRESISTANCE
