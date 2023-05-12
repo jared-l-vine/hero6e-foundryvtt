@@ -8,6 +8,11 @@
  */
 export const HeroSystem6eTokenHud = async function (tokenHud, html, data) {
 
+    // Make sure were alphaTesting
+    if (!game.settings.get(game.system.id, 'alphaTesting')) {
+        return html;
+    }
+
     // TokenHud includes most of the clickable controls/inputs
     // it does not include the bar's themselves.
 
@@ -20,21 +25,22 @@ export const HeroSystem6eTokenHud = async function (tokenHud, html, data) {
 
     // Do not now how data is created, but it has bar1Data and bar2Data.
     // We will create bar3Data here for now.
+    console.log("bar3")
     const token = tokenHud.object
     const actor = token?.actor
-    if (actor) {
-        data.bar3Data = {
-            attribute: 'characteristics.end',
-            value: actor.system.characteristics.end.value,
-            max: actor.system.characteristics.end.value,
-            type: "heroBar",
-            name: "heroBar3",
-            editable: true
-        }
-        //await token.document.update({bar3: data.bar3Data.attribute})
-    } else {
-        return /* forget about all the custom stuff */
-    }
+    // if (actor) {
+    //     data.bar3Data = {
+    //         attribute: 'characteristics.end',
+    //         value: actor.system.characteristics.end.value,
+    //         max: actor.system.characteristics.end.value,
+    //         type: "heroBar",
+    //         name: "heroBar3",
+    //         editable: true
+    //     }
+    //     //await token.document.update({bar3: data.bar3Data.attribute})
+    // } else {
+    //     return /* forget about all the custom stuff */
+    // }
 
 
     // Add top bar3

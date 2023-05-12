@@ -16,6 +16,7 @@ import HeroSystem6eTemplate from "./template.js";
 import { HeroSystem6eCombat, HeroSystem6eCombatTracker } from "./combat.js";
 import SettingsHelpers from "./settings/settings-helpers.js";
 import { HeroSystem6eTokenHud, HeroSystem6ePreUpdateToken } from "./tokenHud.js";
+import { extendBarRenderer } from "./rendering.js";
 
 Hooks.once('init', async function () {
 
@@ -62,7 +63,7 @@ Hooks.once('init', async function () {
   CONFIG.Token.documentClass = HeroSystem6eTokenDocument;
   CONFIG.Token.objectClass = HeroSystem6eToken;
   CONFIG.statusEffects = HeroSystem6eActorActiveEffects.getEffects();
-  CONFIG.MeasuredTemplate.objectClass = HeroSystem6eTemplate;
+  //CONFIG.MeasuredTemplate.objectClass = HeroSystem6eTemplate;
   CONFIG.ui.combat = HeroSystem6eCombatTracker;
 
   SettingsHelpers.initLevelSettings();
@@ -316,8 +317,9 @@ Hooks.on("renderDialog", (dialog, html, data) => {
 
 
 
-// Modify TokenHUD (need 3 bars: end, stun, body)
-// Hooks.on("renderTokenHUD", HeroSystem6eTokenHud);
+//Modify TokenHUD (need 3 bars: end, stun, body)
+//Hooks.once("setup", extendBarRenderer);
+Hooks.on("renderTokenHUD", HeroSystem6eTokenHud);
 
 // Hooks.on("preUpdateToken", function (doc, changes) {
 //   alert("preUpdateToken")

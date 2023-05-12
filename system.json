@@ -29,6 +29,7 @@
     "gridUnits": "m",
     "primaryTokenAttribute": "system.characteristics.body",
     "secondaryTokenAttribute": "system.characteristics.stun",
+    "tertiaryTokenAttribute": "system.characteristics.stun",
     "url": "https://github.com/dmdorman/hero6e-foundryvtt",
     "manifest": "https://github.com/dmdorman/hero6e-foundryvtt/releases/download/v2.1.5-alpha/system.json",
     "download": "https://github.com/dmdorman/hero6e-foundryvtt/releases/download/v2.1.5-alpha/hero6efoundryvttv2.zip",
