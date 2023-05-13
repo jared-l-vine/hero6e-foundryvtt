@@ -44,8 +44,9 @@ export class HeroSystem6eTokenDocument extends TokenDocument {
         }
 
         // Add label
-        const attr = alternative || this[barName]?.attribute;
-        if (attr) return { ...data, label: attr.split('.').pop()};
+        let attr = alternative?.alternative || this[barName]?.attribute;
+        if(attr && attr.indexOf(".")>-1) attr = attr.split('.').pop();
+        if (attr) return { ...data, label: attr};
         return data;
     }
 
@@ -77,7 +78,7 @@ export class HeroSystem6eToken extends Token {
     }
 
     _drawAttributeBars() {
-        console.log("_drawAttributeBars")
+        //console.log("_drawAttributeBars")
         let bars = super._drawAttributeBars()
         bars.bar3 = bars.addChild(new PIXI.Graphics());
         return bars;
