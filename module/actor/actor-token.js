@@ -4,27 +4,57 @@
 export class HeroSystem6eTokenDocument extends TokenDocument {
     constructor(data, context) {
         super(data, context)
-        console.log(this)
-        // this.bar3= new SchemaField({
-        //     attribute: new StringField({required: true, nullable: true, blank: false,
-        //       initial: () => game?.system.tertiaryTokenAttribute || null})
-        //   });
     }
 
     getBarAttribute(barName, alternative) {
-        console.log("getBarAttribute")
-        return super.getBarAttribute(barName, alternative)
+        //console.log("getBarAttribute")
+        let data = super.getBarAttribute(barName, alternative)
+
+        if (barName == "bar3") {
+            const attr = alternative || this[barName]?.attribute;
+            if (!attr || !this.actor) return null;
+            let data = foundry.utils.getProperty(this.actor.system, attr);
+            if ((data === null) || (data === undefined)) return null;
+            const model = game.model.Actor[this.actor.type];
+
+            // Single values
+            if (Number.isNumeric(data)) {
+                return {
+                    type: "value",
+                    attribute: attr,
+                    value: Number(data),
+                    editable: foundry.utils.hasProperty(model, attr)
+                };
+            }
+
+            // Attribute objects
+            else if (("value" in data) && ("max" in data)) {
+                return {
+                    type: "bar",
+                    attribute: attr,
+                    value: parseInt(data.value || 0),
+                    max: parseInt(data.max || 0),
+                    editable: foundry.utils.hasProperty(model, `${attr}.value`)
+                };
+            }
+
+            // Otherwise null
+            return null;
+        }
+        return data;
     }
 
     static defineSchema() {
-        console.log("defineSchema")
-        let schema = super.defineSchema()
-        schema.bar3= new foundry.data.fields.SchemaField({
-            attribute: new foundry.data.fields.StringField({required: true, nullable: true, blank: false,
-                initial: () => "system.characteristics.end" })
-            });
-        return schema;
-    }
+    //console.log("defineSchema")
+    let schema = super.defineSchema()
+    schema.bar3 = new foundry.data.fields.SchemaField({
+        attribute: new foundry.data.fields.StringField({
+            required: true, nullable: true, blank: false,
+            initial: () => "characteristics.end"
+        })
+    });
+    return schema;
+}
 }
 
 export class HeroSystem6eToken extends Token {
@@ -60,7 +90,7 @@ export class HeroSystem6eToken extends Token {
 
 
     drawBars() {
-        console.log("drawBars")
+        //console.log("drawBars")
         if (!this.actor || (this.document.displayBars === CONST.TOKEN_DISPLAY_MODES.NONE)) {
             return this.bars.visible = false;
         }

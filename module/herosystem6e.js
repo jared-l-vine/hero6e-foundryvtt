@@ -15,8 +15,8 @@ import { HeroSystem6eActorActiveEffects } from "./actor/actor-active-effects.js"
 import HeroSystem6eTemplate from "./template.js";
 import { HeroSystem6eCombat, HeroSystem6eCombatTracker } from "./combat.js";
 import SettingsHelpers from "./settings/settings-helpers.js";
-import { HeroSystem6eTokenHud, HeroSystem6ePreUpdateToken } from "./tokenHud.js";
-import { extendBarRenderer } from "./rendering.js";
+import { HeroSystem6eTokenHud, HeroSystem6ePreUpdateToken } from "./bar3/tokenHud.js";
+//import { extendBarRenderer } from "./bar3/rendering.js";
 
 Hooks.once('init', async function () {
 
@@ -320,6 +320,7 @@ Hooks.on("renderDialog", (dialog, html, data) => {
 //Modify TokenHUD (need 3 bars: end, stun, body)
 //Hooks.once("setup", extendBarRenderer);
 Hooks.on("renderTokenHUD", HeroSystem6eTokenHud);
+//Hooks.on("renderTokenConfig", extendTokenConfig);
 
 // Hooks.on("preUpdateToken", function (doc, changes) {
 //   alert("preUpdateToken")

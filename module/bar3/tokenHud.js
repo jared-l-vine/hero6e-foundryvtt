@@ -1,5 +1,8 @@
 /** Large portions have been inspired by https://gitlab.com/woodentavern/foundryvtt-bar-brawl */
 
+
+// TokenHUD does not appear to be extendable, so hook on renderTokenHUD
+
 /**
  * Modifies the given HTML to render additional resource input fields.
  * @param {TokenHUD} tokenHud The HUD object.
@@ -23,25 +26,12 @@ export const HeroSystem6eTokenHud = async function (tokenHud, html, data) {
     middleColumn.find("div.attribute").remove();
     //html.find(".col.middle .bar1").remove()
 
-    // Do not now how data is created, but it has bar1Data and bar2Data.
-    // We will create bar3Data here for now.
-    console.log("bar3")
-    const token = tokenHud.object
-    const actor = token?.actor
-    // if (actor) {
-    //     data.bar3Data = {
-    //         attribute: 'characteristics.end',
-    //         value: actor.system.characteristics.end.value,
-    //         max: actor.system.characteristics.end.value,
-    //         type: "heroBar",
-    //         name: "heroBar3",
-    //         editable: true
-    //     }
-    //     //await token.document.update({bar3: data.bar3Data.attribute})
-    // } else {
-    //     return /* forget about all the custom stuff */
-    // }
+    let actor = tokenHud.actor
 
+    // Define bar3data
+    const bar3 = tokenHud.object.document.getBarAttribute("bar3")
+    data.bar3Data = bar3;
+    data.displayBar3 = bar3 && (bar3.type !== "none");
 
     // Add top bar3
     let bars = []
@@ -82,7 +72,7 @@ export const HeroSystem6eTokenHud = async function (tokenHud, html, data) {
  */
 function renderBarInput(bars) {
     const css = bars.length > 1 ? "compact" : ""
-    return renderTemplate("systems/hero6efoundryvttv2/templates//resource-hud.hbs", { bars, css });
+    return renderTemplate("systems/hero6efoundryvttv2/module/bar3/resource-hud.hbs", { bars, css });
 }
 
 
