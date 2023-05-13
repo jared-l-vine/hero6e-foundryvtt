@@ -35,7 +35,7 @@ export const HeroSystem6eTokenHud = async function (tokenHud, html, data) {
 
     // Add top bar3
     let bars = []
-    bars.push(data.bar3Data)
+    bars.push(data.bar3Data || {})
     bars[0].name = "bar3"
     bars[0].maxcolor = "blue"
     for (let i = 0; i < bars.length; i++) {
@@ -45,10 +45,10 @@ export const HeroSystem6eTokenHud = async function (tokenHud, html, data) {
 
     // Add bottom bar1 & bar2
     bars = []
-    bars.push(data.bar1Data)
+    bars.push(data.bar1Data || {})
     bars[0].name = "bar1"
     bars[0].maxcolor = "#CC5500"
-    bars.push(data.bar2Data)
+    bars.push(data.bar2Data || {})
     bars[1].name = "bar2"
     bars[1].maxcolor = "green"
     for (let i = 0; i < bars.length; i++) {

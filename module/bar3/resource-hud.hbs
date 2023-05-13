@@ -1,8 +1,9 @@
 {{ log 'resource-hud' this }}
 <div class="attribute hero-attribute {{css}}">
     {{#each bars}}
+    {{#if this.max}}
     <input type="text" name="{{this.name}}.value" data-bar="{{this.name}}" value="{{this.value}}" {{#unless
-        this.editable}}disabled{{/unless}} title="{{this.title}}"
-        style="border: 1px solid {{this.maxcolor}};">
+        this.editable}}disabled{{/unless}} title="{{this.title}}" style="border: 1px solid {{this.maxcolor}};">
+    {{/if}}
     {{/each}}
 </div>
