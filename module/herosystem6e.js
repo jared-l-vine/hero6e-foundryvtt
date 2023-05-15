@@ -319,6 +319,3 @@ Hooks.on("renderDialog", (dialog, html, data) => {
 //Modify TokenHUD (need 3 bars: end, stun, body)
 Hooks.on("renderTokenHUD", HeroSystem6eTokenHud);
 Hooks.on("renderTokenConfig", extendTokenConfig);
-// Hooks.on("preUpdateActor", function (actor, newData) {
-//   console.log("preUpdateActor")
-// })
