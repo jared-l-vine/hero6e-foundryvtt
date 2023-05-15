@@ -5,9 +5,16 @@
     <div class="form-fields">
         <select class="bar-attribute" name="bar3.attribute">
             <option value=>None</option>
-            {{#each barAttributes}}
-            <option value="{{this}}" {{#if (eq this ../bar3.attribute)}}selected{{/if}}>{{this}}</option>
-            {{/each}}
+            <optgroup label="Attribute Bars">
+                {{#each barAttributes}}
+                <option value="{{this}}" {{#if (eq this ../bar3.attribute)}}selected{{/if}}>{{this}}</option>
+                {{/each}}
+            </optgroup>
+            <optgroup label="Single Values">
+                {{#each singleValues}}
+                <option value="{{this}}" {{#if (eq this ../bar3.attribute)}}selected{{/if}}>{{this}}</option>
+                {{/each}}
+            </optgroup>
         </select>
     </div>
 </div>

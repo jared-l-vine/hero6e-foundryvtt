@@ -1,44 +1,25 @@
-
-export class HeroSystem6eTokenConfig extends TokenConfig {
-    constructor(object, options) {
-        alert("HeroSystem6eTokenConfig")
-        return super(object, options)
-    }
-
-    async _onBarChange(event) {
-        alert("_onBarChange")
-        return super._onBarChange(event)
-    }
-}
-
 export const extendTokenConfig = async function (tokenConfig, html, data) {
 
     const resourceTab = html.find("div[data-tab='resources']");
     console.log(resourceTab)
 
     // Add form group for bar 3
-    let bar3 = tokenConfig.token.getBarAttribute("bar3")
+    let bar3 = getBarExtendedAttribute.bind(tokenConfig.token)("bar3")
     let barAttributes = data.barAttributes["Attribute Bars"]
-    let bar3FormGroup = await renderTemplate("systems/hero6efoundryvttv2/module/bar3/resource-form-group.hbs", { bar3, barAttributes });
+    let singleValues = data.barAttributes["Single Values"]
+    //$("div[data-tab='resources'] .form-group")[1].cloneNode(true); //
+    let bar3FormGroup = await renderTemplate("systems/hero6efoundryvttv2/module/bar3/resource-form-group.hbs", { bar3, barAttributes, singleValues });
     resourceTab.append(bar3FormGroup)
 
     // Add event for bar3
     let el = resourceTab.find(`select[name="bar3.attribute"]`)
     el.change(_onBarChange.bind(tokenConfig))
-    // el.change((event) => {
-    //     // Copied from foundry.TokenConfig as couldn't figure out how to extend it
-    //     console.log("_onBarChange")
-    //     const form = event.target.form;
-    //     const attr = this.token.getBarAttribute("", { alternative: event.target.value });
-    //     const bar = event.target.name.split(".").shift();
-    //     form.querySelector(`input.${bar}-value`).value = attr !== null ? attr.value : "";
-    //     form.querySelector(`input.${bar}-max`).value = ((attr !== null) && (attr.type === "bar")) ? attr.max : "";
-    // })
 
+    // Add event for Update Token (save)
+    html.submit(_onSubmit.bind(tokenConfig))
 
     // Copied from foundry.TokenConfig as couldn't figure out how to extend it
-    function _onBarChange(event) {
-        console.log("_onBarChange")
+    async function _onBarChange(event) {
         const form = event.target.form;
         const attr = this.token.getBarAttribute("", { alternative: event.target.value });
         const bar = event.target.name.split(".").shift();
@@ -46,12 +27,54 @@ export const extendTokenConfig = async function (tokenConfig, html, data) {
         form.querySelector(`input.${bar}-max`).value = ((attr !== null) && (attr.type === "bar")) ? attr.max : "";
     }
 
+    async function _onSubmit(event) {
+        const form = event.target.form;
+        const bar3 = $(`select[name="bar3.attribute"]`).val();
+
+        console.log("_onSubmit", bar3)
+        await this.token.setFlag(game.system.id, "bar3", { "attribute": bar3 } )
+    }
+
 
     // Resize resource tab
     if (resourceTab.hasClass("active")) adjustConfigHeight(tokenConfig.element);
 
-
     return html;
+}
+
+export function getBarExtendedAttribute(barName, alternative) {
+
+    const attr = alternative || this[barName]?.attribute || this.flags[game.system.id]?.[barName]?.attribute
+    if (!attr || !this.actor) return null;
+    let data = foundry.utils.getProperty(this.actor.system, attr);
+    if ((data === null) || (data === undefined)) return null;
+    const model = game.model.Actor[this.actor.type];
+
+    // Single values
+    if (Number.isNumeric(data)) {
+        return {
+            type: "value",
+            attribute: attr,
+            value: Number(data),
+            editable: foundry.utils.hasProperty(model, attr),
+        };
+    }
+
+    // Attribute objects
+    else if (("value" in data) && ("max" in data)) {
+        return {
+            type: "bar",
+            attribute: attr,
+            value: parseInt(data.value || 0),
+            max: parseInt(data.max || 0),
+            editable: foundry.utils.hasProperty(model, `${attr}.value`),
+            label: attr.split('.').pop()
+        };
+    }
+
+    // Otherwise null
+    return null;
+
 }
 
 function adjustConfigHeight(html) {
@@ -59,5 +82,7 @@ function adjustConfigHeight(html) {
     const height = parseInt(html.css("height"), 10);
     html.css("height", Math.max(height, 350) + "px");
 }
+
+
 
 

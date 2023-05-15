@@ -16,7 +16,7 @@ import HeroSystem6eTemplate from "./template.js";
 import { HeroSystem6eCombat, HeroSystem6eCombatTracker } from "./combat.js";
 import SettingsHelpers from "./settings/settings-helpers.js";
 import { HeroSystem6eTokenHud } from "./bar3/tokenHud.js";
-import { HeroSystem6eTokenConfig, extendTokenConfig } from "./bar3/extendTokenConfig.js";
+import { extendTokenConfig } from "./bar3/extendTokenConfig.js";
 
 Hooks.once('init', async function () {
 
@@ -308,7 +308,6 @@ async function migrateKnockback() {
 }
 
 
-
 // Remove Character from selectable actor types
 Hooks.on("renderDialog", (dialog, html, data) => {
   if (html[0].querySelector(".window-title").textContent != "Create New Actor") return
@@ -317,27 +316,9 @@ Hooks.on("renderDialog", (dialog, html, data) => {
 })
 
 
-
 //Modify TokenHUD (need 3 bars: end, stun, body)
-//Hooks.once("setup", extendBarRenderer);
 Hooks.on("renderTokenHUD", HeroSystem6eTokenHud);
 Hooks.on("renderTokenConfig", extendTokenConfig);
-
-// Hooks.on("preUpdateToken", function (doc, changes) {
-//   alert("preUpdateToken")
-// });
-
 // Hooks.on("preUpdateActor", function (actor, newData) {
-//   alert("preUpdateActor")
 //   console.log("preUpdateActor")
-// });
-
-// Hooks.on("preCreateActor", function (actor, newData) {
-//   alert("preCreateActor")
-//   console.log("preCreateActor")
-// });
-
-
-// Hooks.on("preCreateToken", function (doc, data) {
-//   alert("preCreateToken")
-// });
+// })

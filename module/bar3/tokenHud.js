@@ -1,5 +1,6 @@
 /** Large portions have been inspired by https://gitlab.com/woodentavern/foundryvtt-bar-brawl */
 
+import {getBarExtendedAttribute} from "./extendTokenConfig.js"
 
 // TokenHUD does not appear to be extendable, so hook on renderTokenHUD
 
@@ -29,7 +30,7 @@ export const HeroSystem6eTokenHud = async function (tokenHud, html, data) {
     let actor = tokenHud.actor
 
     // Define bar3data
-    const bar3 = tokenHud.object.document.getBarAttribute("bar3")
+    const bar3 = getBarExtendedAttribute.bind(data)("bar3") //tokenHud.object.document.getBarAttribute("bar3")
     data.bar3Data = bar3;
     data.displayBar3 = bar3 && (bar3.type !== "none");
 

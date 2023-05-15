@@ -1,66 +1,68 @@
 // Possible reference: https://github.com/foundryvtt/foundryvtt/issues/9026
 // Possible reference: https://gitlab.com/woodentavern/foundryvtt-bar-brawl
 
+import { getBarExtendedAttribute } from "../bar3/extendTokenConfig.js"
+
 export class HeroSystem6eTokenDocument extends TokenDocument {
     constructor(data, context) {
         super(data, context)
     }
 
-    getBarAttribute(barName, alternative) {
-        //console.log("getBarAttribute")
-        let data = super.getBarAttribute(barName, alternative)
+    // getBarAttribute(barName, alternative) {
+    //     //console.log("getBarAttribute")
+    //     let data = super.getBarAttribute(barName, alternative)
 
-        if (barName == "bar3") {
-            const attr = alternative || this[barName]?.attribute;
-            if (!attr || !this.actor) return null;
-            let data = foundry.utils.getProperty(this.actor.system, attr);
-            if ((data === null) || (data === undefined)) return null;
-            const model = game.model.Actor[this.actor.type];
+    //     if (barName == "bar3") {
+    //         const attr = alternative || this.flags.bar3?.attribute; //this[barName]?.attribute;
+    //         if (!attr || !this.actor) return null;
+    //         let data = foundry.utils.getProperty(this.actor.system, attr);
+    //         if ((data === null) || (data === undefined)) return null;
+    //         const model = game.model.Actor[this.actor.type];
 
-            // Single values
-            if (Number.isNumeric(data)) {
-                return {
-                    type: "value",
-                    attribute: attr,
-                    value: Number(data),
-                    editable: foundry.utils.hasProperty(model, attr),
-                };
-            }
+    //         // Single values
+    //         if (Number.isNumeric(data)) {
+    //             return {
+    //                 type: "value",
+    //                 attribute: attr,
+    //                 value: Number(data),
+    //                 editable: foundry.utils.hasProperty(model, attr),
+    //             };
+    //         }
 
-            // Attribute objects
-            else if (("value" in data) && ("max" in data)) {
-                return {
-                    type: "bar",
-                    attribute: attr,
-                    value: parseInt(data.value || 0),
-                    max: parseInt(data.max || 0),
-                    editable: foundry.utils.hasProperty(model, `${attr}.value`),
-                    label: attr.split('.').pop()
-                };
-            }
+    //         // Attribute objects
+    //         else if (("value" in data) && ("max" in data)) {
+    //             return {
+    //                 type: "bar",
+    //                 attribute: attr,
+    //                 value: parseInt(data.value || 0),
+    //                 max: parseInt(data.max || 0),
+    //                 editable: foundry.utils.hasProperty(model, `${attr}.value`),
+    //                 label: attr.split('.').pop()
+    //             };
+    //         }
 
-            // Otherwise null
-            return null;
-        }
+    //         // Otherwise null
+    //         return null;
+    //     }
 
-        // Add label
-        let attr = alternative?.alternative || this[barName]?.attribute;
-        if(attr && attr.indexOf(".")>-1) attr = attr.split('.').pop();
-        if (attr) return { ...data, label: attr};
-        return data;
-    }
+    //     // Add label
+    //     let attr = alternative?.alternative || this[barName]?.attribute;
+    //     if(attr && attr.indexOf(".")>-1) attr = attr.split('.').pop();
+    //     if (attr) return { ...data, label: attr};
+    //     return data;
+    // }
 
-    static defineSchema() {
-        //console.log("defineSchema")
-        let schema = super.defineSchema()
-        schema.bar3 = new foundry.data.fields.SchemaField({
-            attribute: new foundry.data.fields.StringField({
-                required: true, nullable: true, blank: false,
-                initial: () => "characteristics.end"
-            })
-        });
-        return schema;
-    }
+    // static defineSchema() {
+    //     //console.log("defineSchema")
+    //     let schema = super.defineSchema()
+    //     schema.bar3 = new foundry.data.fields.SchemaField({
+    //         attribute: new foundry.data.fields.StringField({
+    //             required: true, nullable: true, blank: false,
+    //             initial: () => "characteristics.end"
+    //         })
+    //     });
+    //     return schema;
+    // }
 }
 
 export class HeroSystem6eToken extends Token {
@@ -73,7 +75,7 @@ export class HeroSystem6eToken extends Token {
 
     getData(options) {
         let data = super.getData();
-        data.bar3 = this.token.getBarAttribute?.("bar3")
+        data.bar3 = this.token.flags.bar3; //this.token.getBarAttribute?.("bar3")
         return data
     }
 
@@ -101,11 +103,11 @@ export class HeroSystem6eToken extends Token {
         else color = PIXI.utils.rgb2hex([(0.5 * pct), (0.7 * pct), 0.5 + (pct / 2)]);
 
         // Override for Hero
-        if (number === 0) color = PIXI.utils.rgb2hex([1,0,0]); // Body
-        if (number === 1) color = PIXI.utils.rgb2hex([0,1,0]); // Stun
-        if (number === 2) color = PIXI.utils.rgb2hex([0.5,0.5,1]); // Endurance
+        if (number === 0) color = PIXI.utils.rgb2hex([1, 0, 0]); // Body
+        if (number === 1) color = PIXI.utils.rgb2hex([0, 1, 0]); // Stun
+        if (number === 2) color = PIXI.utils.rgb2hex([0.5, 0.5, 1]); // Endurance
 
-        // Draw the bar
+        // Draw the bar 
         bar.clear();
         bar.beginFill(blk, 0.5).lineStyle(bs, blk, 1.0).drawRoundedRect(0, 0, this.w, h, 3);
         bar.beginFill(color, 1.0).lineStyle(bs, blk, 1.0).drawRoundedRect(0, 0, pct * w, h, 2);
@@ -124,13 +126,13 @@ export class HeroSystem6eToken extends Token {
 
         // Label
         this.drawBarLabel(bar, data, data.value, data.max);
-        
+
 
     }
 
     drawBarLabel(bar, data, value, max) {
         // remove any existing children (may want save the previous one, not sure yet)
-        while(bar.children[0]) { 
+        while (bar.children[0]) {
             bar.removeChild(bar.children[0]);
         }
 
@@ -159,20 +161,20 @@ export class HeroSystem6eToken extends Token {
         let font = CONFIG.canvasTextStyle.clone();
         font.fontSize = bar.height;
         //font.fontSize = data.fgImage || data.bgImage ? getBarHeight(token, bar.contentWidth) : bar.contentHeight;
-    
+
         const barText = new PIXI.Text(text, font);
         barText.name = bar.name + "-text";
         barText.x = bar.width / 2;
         barText.y = bar.height * 0.44;  // For some reason 50% is slighly low
         barText.anchor.set(0.5);
         barText.resolution = 2;
-        barText.height =bar.height
+        barText.height = bar.height
         //barText.width = bar.width
         if (data.invertDirection) barText.scale.x *= -1;
         bar.addChild(barText);
     }
-    
-    
+
+
 
 
     drawBars() {
@@ -182,12 +184,13 @@ export class HeroSystem6eToken extends Token {
         }
         ["bar1", "bar2", "bar3"].forEach((b, i) => {
             const bar = this.bars[b];
-            if (!bar) return
-            const attr = this.document.getBarAttribute(b);
+            //if (!bar) return
+            const attr = getBarExtendedAttribute.bind(this.document)(b)// : this.document.getBarAttribute(b);
             if (!attr || (attr.type !== "bar")) return bar.visible = false;
             this._drawBar(i, bar, attr);
             bar.visible = true;
         });
+
         this.bars.visible = this._canViewMode(this.document.displayBars);
 
     }
