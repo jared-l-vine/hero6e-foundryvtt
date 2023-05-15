@@ -1,3 +1,6 @@
+# Version 2.1.6-alpha
+- Added 3rd attribute bar. Expectation is to show body, stun, and endurance for most tokens.
+
 # Version 2.1.5-alpha
 - 5th edition characters get figured characteristics and 5E stun multiplier on killing attacks.
 - A second (improved) character sheet is available to preview.
