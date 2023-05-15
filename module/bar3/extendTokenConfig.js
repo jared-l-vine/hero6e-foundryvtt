@@ -1,19 +1,11 @@
-// export class HeroSystem6eDefaultTokenConfig extends DefaultTokenConfig {
-//     async getData(options = {}) {
-//         console.log("HeroSystem6eDefaultTokenConfig")
-//         const context = await super.getData(options);
-//         return context
-//     }
-// }
+
 export class HeroSystem6eTokenConfig extends TokenConfig {
-    constructor (object, options)
-    {
+    constructor(object, options) {
         alert("HeroSystem6eTokenConfig")
         return super(object, options)
     }
 
-    async _onBarChange(event)
-    {
+    async _onBarChange(event) {
         alert("_onBarChange")
         return super._onBarChange(event)
     }
@@ -28,20 +20,36 @@ export const extendTokenConfig = async function (tokenConfig, html, data) {
     let bar3 = tokenConfig.token.getBarAttribute("bar3")
     let barAttributes = data.barAttributes["Attribute Bars"]
     let bar3FormGroup = await renderTemplate("systems/hero6efoundryvttv2/module/bar3/resource-form-group.hbs", { bar3, barAttributes });
-
-
-
-
-
     resourceTab.append(bar3FormGroup)
 
-    // Add events
-    //let el = html.find(`select[name="bar3.attribute"]`)
-    //el.change(tokenConfig._onBarChange)
+    // Add event for bar3
+    let el = resourceTab.find(`select[name="bar3.attribute"]`)
+    el.change(_onBarChange.bind(tokenConfig))
+    // el.change((event) => {
+    //     // Copied from foundry.TokenConfig as couldn't figure out how to extend it
+    //     console.log("_onBarChange")
+    //     const form = event.target.form;
+    //     const attr = this.token.getBarAttribute("", { alternative: event.target.value });
+    //     const bar = event.target.name.split(".").shift();
+    //     form.querySelector(`input.${bar}-value`).value = attr !== null ? attr.value : "";
+    //     form.querySelector(`input.${bar}-max`).value = ((attr !== null) && (attr.type === "bar")) ? attr.max : "";
+    // })
 
+
+    // Copied from foundry.TokenConfig as couldn't figure out how to extend it
+    function _onBarChange(event) {
+        console.log("_onBarChange")
+        const form = event.target.form;
+        const attr = this.token.getBarAttribute("", { alternative: event.target.value });
+        const bar = event.target.name.split(".").shift();
+        form.querySelector(`input.${bar}-value`).value = attr !== null ? attr.value : "";
+        form.querySelector(`input.${bar}-max`).value = ((attr !== null) && (attr.type === "bar")) ? attr.max : "";
+    }
+
+
+    // Resize resource tab
     if (resourceTab.hasClass("active")) adjustConfigHeight(tokenConfig.element);
 
-    console.log(resourceTab)
 
     return html;
 }
@@ -51,4 +59,5 @@ function adjustConfigHeight(html) {
     const height = parseInt(html.css("height"), 10);
     html.css("height", Math.max(height, 350) + "px");
 }
+
 
