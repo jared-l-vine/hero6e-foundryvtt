@@ -37,15 +37,44 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
             // Damage
             if (item.type == 'attack') {
-                item.system.damage = item.system.dice
+
+                // Convert dice to pips
+                let pips = item.system.dice * 3;
                 switch (item.system.extraDice) {
-                    case 'zero':
-                        item.system.damage += 'D6'
-                        break
                     case 'pip':
-                        item.system.damage += 'D6+1'
+                        pips += 1;
                         break
                     case 'half':
+                        pips += 2;
+                        break
+                }
+
+                // Add in STR
+                if (item.system.usesStrength)
+                {
+                    let str = Math.floor(data.actor.system.characteristics.str.value / 5)
+                    if (item.system.killing) {
+                        pips += str
+                    } else
+                    {
+                        pips += str * 3
+                    }
+                }
+
+                // Convert pips to DICE
+                let fullDice = Math.floor(pips/3)
+                let extraDice = pips - fullDice * 3
+
+                // text descrdiption of damage
+                item.system.damage = fullDice
+                switch (extraDice) {
+                    case 0:
+                        item.system.damage += 'D6'
+                        break
+                    case 1:
+                        item.system.damage += 'D6+1'
+                        break
+                    case 2:
                         item.system.damage += '.5D6'
                         break
                 }
