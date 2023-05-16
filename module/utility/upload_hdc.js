@@ -621,19 +621,29 @@ export async function uploadAttack(power) {
     const levels = parseInt(power.getAttribute('LEVELS'))
     const input = power.getAttribute('INPUT')
 
+    // Attempt to calculate atvantages
+    //let advantages = 1;
+    //for (let mod in powers.)
+
+    // Active cost is required for endurance calculation.
+    // It should include all advantages (which we don't handle very well at the moment)
+    let activeCost = (levels * 5)
+    let end = Math.round(activeCost/10 -0.01);
+
     let itemData = {
         name,
         type: "attack",
         system: {
             class: input === "ED" ? "energy" : "physical",
             dice: levels,
-            end: 0,
+            end: end,
             extraDice: "zero",
             killing: false,
             knockbackMultiplier: 1,
             targets: "dcv",
             uses: "ocv",
             usesStrength: true,
+            activeCost: activeCost,
         }
     }
 

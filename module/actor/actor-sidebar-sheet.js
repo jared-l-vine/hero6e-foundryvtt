@@ -35,6 +35,9 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
                 item.system.showToggle = true
             }
 
+            // Endurance
+            item.system.endEstimate = item.system.end;
+
             // Damage
             if (item.type == 'attack') {
 
@@ -52,14 +55,21 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
                 // Add in STR
                 if (item.system.usesStrength)
                 {
-                    let str = Math.floor(data.actor.system.characteristics.str.value / 5)
+                    let str = data.actor.system.characteristics.str.value 
+                    let str5 = Math.floor(str / 5)
                     if (item.system.killing) {
-                        pips += str
+                        pips += str5
                     } else
                     {
-                        pips += str * 3
+                        pips += str5 * 3
                     }
+
+                    // Endurance
+                    let strEnd = Math.max(1, Math.round(str / 10))
+                    item.system.endEstimate += strEnd
                 }
+
+                
 
                 // Convert pips to DICE
                 let fullDice = Math.floor(pips/3)
@@ -83,6 +93,8 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
                 } else {
                     item.system.damage += 'N'
                 }
+
+                
             }
 
             // Defense

@@ -82,14 +82,12 @@ export async function AttackToHit(item, options) {
   let rollEquation = "11 + " + hitCharacteristic;
   tags.push({ value: hitCharacteristic, name: itemData.uses })
 
-  if (parseInt(item.system.toHitMod) > 0)
-  {
+  if (parseInt(item.system.toHitMod) > 0) {
     rollEquation = modifyRollEquation(rollEquation, item.system.toHitMod);
     tags.push({ value: item.system.toHitMod, name: item.name })
   }
- 
-  if (parseInt(options.toHitMod) > 0)
-  {
+
+  if (parseInt(options.toHitMod) > 0) {
     rollEquation = modifyRollEquation(rollEquation, options.toHitMod);
     tags.push({ value: options.toHitMod, name: "toHitMod" })
   }
@@ -119,7 +117,7 @@ export async function AttackToHit(item, options) {
     let spentEnd = itemEnd;
 
     if (itemData.usesStrength) {
-      let strEnd = Math.round(actor.system.characteristics.str.value / 10);
+      let strEnd = Math.max(1, Math.round(actor.system.characteristics.str.value / 10))
       if (options.effectivestr <= actor.system.characteristics.str.value) {
         strEnd = Math.round(options.effectivestr / 10);
       }
@@ -224,8 +222,7 @@ export async function _onRollDamage(event) {
   // let automation = game.settings.get("hero6efoundryvttv2", "automation");
 
   let tags = []
-  if (parseInt(itemData.dice) >0)
-  {
+  if (parseInt(itemData.dice) > 0) {
     tags.push({ value: itemData.dice + "d6", name: "base" })
   }
 
@@ -643,8 +640,7 @@ async function _calcDamage(damageResult, item, options) {
 
   // Penetrating
   let penetratingBody = 0
-  if (item.system.penetrating)
-  {
+  if (item.system.penetrating) {
     for (let die of damageResult.terms[0].results) {
       switch (die.result) {
         case 1:
@@ -667,13 +663,12 @@ async function _calcDamage(damageResult, item, options) {
     hasStunMultiplierRoll = true;
     body = damageResult.total;
     let hitLocationModifiers = [1, 1, 1, 0];
-    
+
     // 6E uses 1d3 stun multiplier
     let stunRoll = new Roll("1D3", item.actor.getRollData());
 
     // 5E uses 1d6-1 for stun multiplier
-    if (item.actor.system.is5e)
-    {
+    if (item.actor.system.is5e) {
       stunRoll = new Roll("max(1D6-1,1)", item.actor.getRollData());
     }
 
@@ -716,7 +711,7 @@ async function _calcDamage(damageResult, item, options) {
     body = countedBody;
   }
 
-  
+
 
 
   let bodyDamage = body;
@@ -800,7 +795,7 @@ async function _calcDamage(damageResult, item, options) {
   if (game.settings.get("hero6efoundryvttv2", "knockback") && knockbackMultiplier) {
     useKnockBack = true;
     // body - 2d6 m
-    
+
     let knockBackEquation = body + (knockbackMultiplier > 1 ? "*" + knockbackMultiplier : "") + " - 2D6"
     // knockback modifier added on an attack by attack basis
     if (options.knockbackMod != 0) {
@@ -837,37 +832,31 @@ async function _calcDamage(damageResult, item, options) {
     stun = body;
     effects += "minimum damage invoked; "
   }
-  
+
   // The body of a penetrating attack is the minimum damage
-  if (penetratingBody > body)
-  {
-    if (itemData.killing)
-    {
+  if (penetratingBody > body) {
+    if (itemData.killing) {
       body = penetratingBody;
       stun = body * stunMultiplier;
     }
-    else
-    {
+    else {
       stun = penetratingBody;
     }
     effects += "penetrating damage; "
   }
 
   // StunOnly?
-  if (item.system.stunBodyDamage === "stunonly")
-  {
+  if (item.system.stunBodyDamage === "stunonly") {
     body = 0;
   }
 
   // BodyOnly?
-  if (item.system.stunBodyDamage === "bodyonly")
-  {
+  if (item.system.stunBodyDamage === "bodyonly") {
     stun = 0;
   }
 
   // EffectOnly?
-  if (item.system.stunBodyDamage === "effectonly")
-  {
+  if (item.system.stunBodyDamage === "effectonly") {
     stun = 0;
     body = 0;
   }
