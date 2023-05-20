@@ -113,6 +113,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
         for (const [key, characteristic] of Object.entries(data.actor.system.characteristics)) {
             characteristic.key = key
+            if (!CONFIG.HERO.characteristicCosts[key]) continue;
             characteristic.name = CONFIG.HERO.characteristics[key]
             characteristic.base = CONFIG.HERO.characteristicDefaults[key]
             characteristic.cost = Math.ceil((characteristic.core - characteristic.base) * CONFIG.HERO.characteristicCosts[key])
@@ -148,6 +149,46 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
                     characteristic.roll = 20
                 }
             }
+
+            // Notes
+            if (key == 'str') {
+                let _lift = 0;
+                let _throw = 0;
+                if (characteristic.value >= 1) { _lift = '8kg'; _throw = 2 }
+                if (characteristic.value >= 2) { _lift = '16kg'; _throw = 3 }
+                if (characteristic.value >= 3) { _lift = '25kg'; _throw = 4 }
+                if (characteristic.value >= 4) { _lift = '38kg'; _throw = 6 }
+                if (characteristic.value >= 5) { _lift = '50kg'; _throw = 8 }
+                if (characteristic.value >= 8) { _lift = '75kg'; _throw = 12 }
+                if (characteristic.value >= 10) { _lift = '16kg'; _throw = 16 }
+                if (characteristic.value >= 13) { _lift = '150kg'; _throw = 20 }
+                if (characteristic.value >= 15) { _lift = '200kg'; _throw = 24 }
+                if (characteristic.value >= 18) { _lift = '300kg'; _throw = 28 }
+                if (characteristic.value >= 20) { _lift = '400kg'; _throw = 32 }
+                if (characteristic.value >= 23) { _lift = '600kg'; _throw = 36 }
+                if (characteristic.value >= 25) { _lift = '800kg'; _throw = 40 }
+                if (characteristic.value >= 28) { _lift = '1,200kg'; _throw = 44 }
+                if (characteristic.value >= 30) { _lift = '1,600kg'; _throw = 48 }
+                if (characteristic.value >= 35) { _lift = '3,200kg'; _throw = 56 }
+                if (characteristic.value >= 40) { _lift = '6,400kg'; _throw = 64 }
+                if (characteristic.value >= 45) { _lift = '12.5 tons'; _throw = 72 }
+                if (characteristic.value >= 50) { _lift = '25 tons'; _throw = 80 }
+                if (characteristic.value >= 55) { _lift = '50 tons'; _throw = 88 }
+                if (characteristic.value >= 60) { _lift = '100 tons'; _throw = 96 }
+                if (characteristic.value >= 65) { _lift = '200 tons'; _throw = 104 }
+                if (characteristic.value >= 70) { _lift = '400 tons'; _throw = 112 }
+                if (characteristic.value >= 75) { _lift = '800 tons'; _throw = 120 }
+                if (characteristic.value >= 80) { _lift = '1.6 ktons'; _throw = 128 }
+                if (characteristic.value >= 85) { _lift = '3.2 ktons'; _throw = 136 }
+                if (characteristic.value >= 90) { _lift = '6.4 ktons'; _throw = 144 }
+                if (characteristic.value >= 95) { _lift = '12.5 ktons'; _throw = 152 }
+                if (characteristic.value >= 100) { _lift = '25 ktons'; _throw = 160 }
+                if (characteristic.value >= 105) { _lift = '50+ ktons'; _throw = '168+'}
+
+                characteristic.notes = `lift ${_lift}, throw ${_throw}m`
+            }
+            if (key == 'leaping') characteristic.notes = `${characteristic.value}m forward, ${Math.round(characteristic.value / 2)}m upward`
+
             characteristicSet.push(characteristic)
         }
         data.characteristicSet = characteristicSet

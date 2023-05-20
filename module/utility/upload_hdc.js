@@ -75,15 +75,14 @@ export async function applyCharacterSheet(xmlDoc) {
     for (const characteristic of characteristics.children) {
         const key = CONFIG.HERO.characteristicsXMLKey[characteristic.getAttribute('XMLID')]
         value = CONFIG.HERO.characteristicDefaults[key] + parseInt(characteristic.getAttribute('LEVELS'))
-        if (key == "pd") {
-            console.log(key)
-        }
-        const velocity = Math.round((spd * value) / 12)
+        changes[`system.characteristics.${key}.value`] = value
+        changes[`system.characteristics.${key}.max`] = value
+        changes[`system.characteristics.${key}.core`] = value
 
         if (key in CONFIG.HERO.movementPowers) {
             let name = characteristic.getAttribute('NAME')
             name = (name === '') ? characteristic.getAttribute('ALIAS') : name
-
+            const velocity = Math.round((spd * value) / 12)
             const itemData = {
                 name: name,
                 type: 'movement',
@@ -99,10 +98,6 @@ export async function applyCharacterSheet(xmlDoc) {
             }
 
             await HeroSystem6eItem.create(itemData, { parent: this.actor })
-        } else {
-            changes[`system.characteristics.${key}.value`] = value
-            changes[`system.characteristics.${key}.max`] = value
-            changes[`system.characteristics.${key}.core`] = value
         }
     }
 
