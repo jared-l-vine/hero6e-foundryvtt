@@ -53,14 +53,12 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
                 }
 
                 // Add in STR
-                if (item.system.usesStrength)
-                {
-                    let str = data.actor.system.characteristics.str.value 
+                if (item.system.usesStrength) {
+                    let str = data.actor.system.characteristics.str.value
                     let str5 = Math.floor(str / 5)
                     if (item.system.killing) {
                         pips += str5
-                    } else
-                    {
+                    } else {
                         pips += str5 * 3
                     }
 
@@ -69,10 +67,10 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
                     item.system.endEstimate += strEnd
                 }
 
-                
+
 
                 // Convert pips to DICE
-                let fullDice = Math.floor(pips/3)
+                let fullDice = Math.floor(pips / 3)
                 let extraDice = pips - fullDice * 3
 
                 // text descrdiption of damage
@@ -94,7 +92,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
                     item.system.damage += 'N'
                 }
 
-                
+
             }
 
             // Defense
@@ -116,6 +114,11 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         for (const [key, characteristic] of Object.entries(data.actor.system.characteristics)) {
             characteristic.key = key
             characteristic.name = CONFIG.HERO.characteristics[key]
+            characteristic.base = CONFIG.HERO.characteristicDefaults[key]
+            characteristic.cost = Math.ceil((characteristic.core - characteristic.base) * CONFIG.HERO.characteristicCosts[key])
+            if (isNaN(characteristic.cost)) {
+                characteristic.cost = "";
+            }
             if (characteristic.type === 'rollable') {
                 if (characteristic.value === 0) {
                     characteristic.roll = 8
@@ -149,18 +152,29 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         }
         data.characteristicSet = characteristicSet
 
-        // Defense
+        // Defense (create fake attacks and get defense results)
         let defense = {}
+
         // Defense PD
         let pdAttack = {
             system: {
                 class: "physical"
             }
         }
-
-        let [defenseValue, resistantValue, impenetrableValue, damageReductionValue, damageNegationValue, knockbackResistance, defenseTags] = determineDefense(this.actor, pdAttack)
+        let [defenseValue, resistantValue, impenetrableValue, damageReductionValue, damageNegationValue, knockbackResistance, defenseTagsP] = determineDefense(this.actor, pdAttack)
         defense.PD = defenseValue
         defense.rPD = resistantValue
+        defense.PDtags = "";
+        defense.rPDtags = "";
+        for (let tag of defenseTagsP) {
+            if (tag.resistant) {
+                defense.rPDtags += `${tag.value} ${tag.title}\n`
+            }
+            else {
+                defense.PDtags += `${tag.value} ${tag.title}\n`
+            }
+        }
+
         // Defense ED
         let edAttack = {
             system: {
@@ -170,6 +184,17 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         let [defenseValueE, resistantValueE, impenetrableValueE, damageReductionValueE, damageNegationValueE, knockbackResistanceE, defenseTagsE] = determineDefense(this.actor, edAttack)
         defense.ED = defenseValueE
         defense.rED = resistantValueE
+        defense.EDtags = "";
+        defense.rEDtags = "";
+        for (let tag of defenseTagsE) {
+            if (tag.resistant) {
+                defense.rEDtags += `${tag.value} ${tag.title}\n`
+            }
+            else {
+                defense.EDtags += `${tag.value} ${tag.title}\n`
+            }
+        }
+
         // Defense MD
         let mdAttack = {
             system: {
@@ -179,6 +204,17 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         let [defenseValueM, resistantValueM, impenetrableValueM, damageReductionValueM, damageNegationValueM, knockbackResistanceM, defenseTagsM] = determineDefense(this.actor, mdAttack)
         defense.MD = defenseValueM
         defense.rMD = resistantValueM
+        defense.MDtags = "";
+        defense.rMDtags = "";
+        for (let tag of defenseTagsM) {
+            if (tag.resistant) {
+                defense.rMDtags += `${tag.value} ${tag.title}\n`
+            }
+            else {
+                defense.MDtags += `${tag.value} ${tag.title}\n`
+            }
+        }
+
         data.defense = defense
 
         return data

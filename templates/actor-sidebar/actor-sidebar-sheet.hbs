@@ -48,14 +48,16 @@
                 </ul>
 
                 <ul>
-                    <li>PD={{defense.PD}}</li>
-                    <li>rPD={{defense.rPD}}</li>
-                    <li>ED={{defense.ED}}</li>
-                    <li>rPD={{defense.ED}}</li>
+                    <li title="{{defense.PDtags}}">PD={{defense.PD}}</li>
+                    <li title="{{defense.rPDtags}}">rPD={{defense.rPD}}</li>
+                    <li title="{{defense.EDtags}}">ED={{defense.ED}}</li>
+                    <li title="{{defense.rEDtags}}">rED={{defense.rED}}</li>
+                    <li title="{{defense.MDtags}}">MD={{defense.MD}}</li>
+                    <li title="{{defense.rMDtags}}">rMD={{defense.rMD}}</li>
                 </ul>
 
                 <div class="characteristic flexrow flex-group-center">
-                    <button type="button" class="recovery-button" >Take Recovery</button>
+                    <button type="button" class="recovery-button">Take Recovery</button>
                     <button type="button" class="presence-button">Presence Attack</button>
                 </div>
 
@@ -420,11 +422,12 @@
             <div class="tab tab-body" data-group="primary" data-tab="characteristics">
                 <table>
                     <tr class="sticky">
-                        <th>{{localize "ActorSheet.Value"}}</th>
+                        <th title="{{localize "ActorSheet.ValueTitle"}}">{{localize "ActorSheet.Value"}}</th>
+                        <th title="{{localize "ActorSheet.MaxTitle"}}">{{localize "ActorSheet.Max"}}</th>
+                        <th title="{{localize "ActorSheet.CoreTitle"}}">{{localize "ActorSheet.Core"}}</th>
                         <th>{{localize "ActorSheet.Char"}}</th>
                         <th>{{localize "ActorSheet.Base"}}</th>
                         <th>{{localize "ActorSheet.Cost"}}</th>
-                        <th>{{localize "ActorSheet.Max"}}</th>
                         <th>{{localize "ActorSheet.Roll"}}</th>
                         <th>{{localize "ActorSheet.Notes"}}</th>
                     </tr>
@@ -435,13 +438,17 @@
                             <input name="system.characteristics.{{characteristic.key}}.value" type="text"
                                 value="{{characteristic.value}}" data-dtype="Number">
                         </td>
-                        <td>{{characteristic.name}}</td>
-                        <td>{{characteristic.base}}</td>
-                        <td>{{characteristic.cost}}</td>
-                        <td>
+                        <td >
                             <input name="system.characteristics.{{characteristic.key}}.max" type="text"
                                 value="{{characteristic.max}}" data-dtype="Number">
                         </td>
+                        <td >
+                            {{characteristic.core}}
+                        </td>
+                        <td>{{characteristic.name}}</td>
+                        <td>{{characteristic.base}}</td>
+                        <td>{{characteristic.cost}}</td>
+
                         <td>
                             {{#if characteristic.roll}}
                             <button type="button" class="characteristic-roll" data-roll="3d6"

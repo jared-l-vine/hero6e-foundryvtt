@@ -61,9 +61,7 @@ Activating a maneuver from a character sheet will apply OCV and DCV modifiers wi
 - The upload of a .HDC file is practically a requirement.  You can't create powers, skills, or equipment from scratch.  Character editing is limited within the system.
 - Power frameworks are largely ignored, powers within the framework should work.
 - Endurance use of non-attacking powers is untracked.
-- Perks, Talents, and Complications are not implemented.
-- Power limitations are largely not implemented
-- The following power are largely not implemented
+- The following are largely not implemented
   - Adjustment powers (Absorption Aid, Drain, Healing).
   - Attack powers that do not do stun/body damage (Change Environment, Darkness, Dispel, Drain, Entangle, Flash, Images, Mental Illusions, Mind Control, Reflection, Transform).
   - Attack powers with NND
@@ -73,9 +71,11 @@ Activating a maneuver from a character sheet will apply OCV and DCV modifiers wi
   - Sense-Affecting powers
   - Sensory powers
   - Special powers
+  - Power limitations
+  - Perks, Talents, and Complications
 
 ## Modules
-The following modules have been tested for compatibility
+The following modules have been successfully tested for compatibility
   - [Dice so nice!](https://gitlab.com/riccisi/foundryvtt-dice-so-nice)
   - [Simple Calendar](https://github.com/vigoren/foundryvtt-simple-calendar)
 

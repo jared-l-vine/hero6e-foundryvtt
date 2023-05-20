@@ -96,6 +96,30 @@ HERO.characteristicDefaults = {
     "leaping": 4,
 };
 
+HERO.characteristicCosts = {
+    "str": 1,
+    "dex": 2,
+    "con": 1,
+    "int": 1,
+    "ego": 1,
+    "pre": 1,
+    "ocv": 5,
+    "dcv": 5,
+    "omcv": 3,
+    "dmcv": 3,
+    "spd": 10,
+    "pd": 1,
+    "ed": 1,
+    "rec": 1,
+    "end": 1/5,
+    "body": 1,
+    "stun": 1/2,
+    "running": 1,
+    "swimming": 1/2,
+    "leaping": 1/2,
+};
+
+
 HERO.characteristicsXMLKey = {
     "STR": "str",
     "DEX": "dex",

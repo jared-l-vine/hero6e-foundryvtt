@@ -75,7 +75,9 @@ export async function applyCharacterSheet(xmlDoc) {
     for (const characteristic of characteristics.children) {
         const key = CONFIG.HERO.characteristicsXMLKey[characteristic.getAttribute('XMLID')]
         value = CONFIG.HERO.characteristicDefaults[key] + parseInt(characteristic.getAttribute('LEVELS'))
-
+        if (key == "pd") {
+            console.log(key)
+        }
         const velocity = Math.round((spd * value) / 12)
 
         if (key in CONFIG.HERO.movementPowers) {
@@ -100,7 +102,7 @@ export async function applyCharacterSheet(xmlDoc) {
         } else {
             changes[`system.characteristics.${key}.value`] = value
             changes[`system.characteristics.${key}.max`] = value
-            changes[`system.characteristics.${key}.base`] = CONFIG.HERO.characteristicDefaults[key]
+            changes[`system.characteristics.${key}.core`] = value
         }
     }
 
