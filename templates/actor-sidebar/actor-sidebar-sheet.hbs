@@ -434,9 +434,11 @@
                     {{#each characteristicSet as |characteristic key|}}
                     <tr class="characteristic">
 
-                        <td>
+                        <td >
                             <input name="system.characteristics.{{characteristic.key}}.value" type="text"
-                                value="{{characteristic.value}}" data-dtype="Number">
+                                value="{{characteristic.value}}" data-dtype="Number"
+                                class="{{#if (gt characteristic.value characteristic.max)}}overMax{{/if}}{{#if (lt characteristic.value characteristic.max)}}underMax{{/if}}"
+                                >
                         </td>
                         <td >
                             <input name="system.characteristics.{{characteristic.key}}.max" type="text"

@@ -271,3 +271,13 @@
 .hero-attribute input:disabled {
   color: #aaa;
 }
+
+.actor-sidebar-sheet input.underMax
+{
+  background-color: rgba(255,200,200,0.5)
+}
+
+.actor-sidebar-sheet input.overMax
+{
+  background-color: rgba(200,255,200,0.5)
+}

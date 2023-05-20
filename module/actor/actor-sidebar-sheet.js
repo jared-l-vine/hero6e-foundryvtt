@@ -1,8 +1,8 @@
 import { HERO } from '../config.js'
-import { determineDefense } from "../utility/defense.js";
+import { determineDefense} from "../utility/defense.js";
 import { HeroSystem6eItem } from '../item/item.js'
 import { presenceAttackPopOut } from '../utility/presence-attack.js'
-import { applyCharacterSheet } from '../utility/upload_hdc.js'
+import { applyCharacterSheet, SkillRollUpdateValue } from '../utility/upload_hdc.js'
 
 export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
@@ -102,6 +102,10 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
             if (item.type == 'equipment') {
                 data.hasEquipment = true
+            }
+
+            if (item.type == 'skill') {
+                SkillRollUpdateValue(item)
             }
 
             items.push(item)

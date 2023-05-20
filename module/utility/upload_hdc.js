@@ -188,6 +188,19 @@ export async function applyCharacterSheet(xmlDoc) {
         await uploadSkill.call(this, skill)
     }
 
+    // Perception Skill
+    const itemDataPerception = {
+        name: 'Perception',
+        type: 'skill',
+        system: {
+            characteristic: "int",
+            state: 'trained',
+            levels: "0"
+        }
+    }
+
+    await HeroSystem6eItem.create(itemDataPerception, { parent: this.actor })
+
     const relevantFields = ['BASECOST', 'LEVELS', 'ALIAS', 'MULTIPLIER', 'NAME', 'OPTION_ALIAS', 'SFX',
         'PDLEVELS', 'EDLEVELS', 'MDLEVELS', 'INPUT', 'OPTIONID' // FORCEFIELD
     ]
@@ -570,26 +583,26 @@ export async function uploadSkill(skill) {
     }
 
     // determine Skill Roll
-    if (skillData.state === 'everyman') {
-        skillData.roll = '8-'
-    } else if (skillData.state === 'familiar') {
-        skillData.roll = '8-'
-    } else if (skillData.state === 'proficient') {
-        skillData.roll = '10-'
-    } else if (skillData.state === 'trained') {
-        const charValue = ((skillData.characteristic.toLowerCase() !== 'general') && (skillData.characteristic.toLowerCase() != '')) ?
-            this.actor.system.characteristics[`${skillData.characteristic.toLowerCase()}`].value : 0
+    // if (skillData.state === 'everyman') {
+    //     skillData.roll = '8-'
+    // } else if (skillData.state === 'familiar') {
+    //     skillData.roll = '8-'
+    // } else if (skillData.state === 'proficient') {
+    //     skillData.roll = '10-'
+    // } else if (skillData.state === 'trained') {
+    //     const charValue = ((skillData.characteristic.toLowerCase() !== 'general') && (skillData.characteristic.toLowerCase() != '')) ?
+    //         this.actor.system.characteristics[`${skillData.characteristic.toLowerCase()}`].value : 0
 
-        const rollVal = 9 + Math.round(charValue / 5) + parseInt(skillData.levels)
-        skillData.roll = rollVal.toString() + '-'
-    } else {
-        // This is likely a Skill Enhancer.
-        // Skill Enahncers provide a discount to the purchase of asssociated skills.
-        // They no not change the roll.
-        // Skip for now.
-        HEROSYS.log(false, xmlid + ' was not included in skills.  Likely Skill Enhancer')
-        return
-    }
+    //     const rollVal = 9 + Math.round(charValue / 5) + parseInt(skillData.levels)
+    //     skillData.roll = rollVal.toString() + '-'
+    // } else {
+    //     // This is likely a Skill Enhancer.
+    //     // Skill Enahncers provide a discount to the purchase of asssociated skills.
+    //     // They no not change the roll.
+    //     // Skip for now.
+    //     HEROSYS.log(false, xmlid + ' was not included in skills.  Likely Skill Enhancer')
+    //     return
+    // }
 
     const itemData = {
         name,
@@ -730,5 +743,30 @@ export async function uploadAttack(power) {
 
     if (game.settings.get(game.system.id, 'alphaTesting')) {
         ui.notifications.warn(`${xmlid} not implemented during HDC upload of ${this.actor.name}`)
+    }
+}
+
+export function SkillRollUpdateValue(item)
+{
+    let skillData = item.system
+    if (skillData.state === 'everyman') {
+        skillData.roll = '8-'
+    } else if (skillData.state === 'familiar') {
+        skillData.roll = '8-'
+    } else if (skillData.state === 'proficient') {
+        skillData.roll = '10-'
+    } else if (skillData.state === 'trained') {
+        const charValue = ((skillData.characteristic.toLowerCase() !== 'general') && (skillData.characteristic.toLowerCase() != '')) ?
+            item.actor.system.characteristics[`${skillData.characteristic.toLowerCase()}`].value : 0
+
+        const rollVal = 9 + Math.round(charValue / 5) + parseInt(skillData.levels)
+        skillData.roll = rollVal.toString() + '-'
+    } else {
+        // This is likely a Skill Enhancer.
+        // Skill Enahncers provide a discount to the purchase of asssociated skills.
+        // They no not change the roll.
+        // Skip for now.
+        HEROSYS.log(false, (skillData.xmlid || item.name) + ' was not included in skills.  Likely Skill Enhancer')
+        return
     }
 }
