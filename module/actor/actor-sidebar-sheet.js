@@ -211,7 +211,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             if (tag.resistant) {
                 defense.rPDtags += `${tag.value} ${tag.title}\n`
             }
-            else {
+            else if (tag.resistant != undefined) {
                 defense.PDtags += `${tag.value} ${tag.title}\n`
             }
         }
@@ -231,7 +231,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             if (tag.resistant) {
                 defense.rEDtags += `${tag.value} ${tag.title}\n`
             }
-            else {
+            else if (tag.resistant != undefined) {
                 defense.EDtags += `${tag.value} ${tag.title}\n`
             }
         }
@@ -251,7 +251,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             if (tag.resistant) {
                 defense.rMDtags += `${tag.value} ${tag.title}\n`
             }
-            else {
+            else if (tag.resistant != undefined) {
                 defense.MDtags += `${tag.value} ${tag.title}\n`
             }
         }
