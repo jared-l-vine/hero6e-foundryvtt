@@ -767,6 +767,6 @@ export function SkillRollUpdateValue(item)
         // They no not change the roll.
         // Skip for now.
         HEROSYS.log(false, (skillData.xmlid || item.name) + ' was not included in skills.  Likely Skill Enhancer')
-        return
+        return 
     }
 }
