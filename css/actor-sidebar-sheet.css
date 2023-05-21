@@ -281,3 +281,14 @@
 {
   background-color: rgba(200,255,200,0.5)
 }
+
+
+.actor-sidebar-sheet .sidebar-actions {
+  padding: 0;
+  border: none;
+}
+
+.actor-sidebar-sheet .sidebar-actions button {
+  line-height: normal;
+  margin: 2px 0px;
+}

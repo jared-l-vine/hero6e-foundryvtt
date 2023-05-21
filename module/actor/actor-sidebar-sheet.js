@@ -1,5 +1,5 @@
 import { HERO } from '../config.js'
-import { determineDefense} from "../utility/defense.js";
+import { determineDefense } from "../utility/defense.js";
 import { HeroSystem6eItem } from '../item/item.js'
 import { presenceAttackPopOut } from '../utility/presence-attack.js'
 import { applyCharacterSheet, SkillRollUpdateValue } from '../utility/upload_hdc.js'
@@ -187,7 +187,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
                 if (characteristic.value >= 90) { _lift = '6.4 ktons'; _throw = 144 }
                 if (characteristic.value >= 95) { _lift = '12.5 ktons'; _throw = 152 }
                 if (characteristic.value >= 100) { _lift = '25 ktons'; _throw = 160 }
-                if (characteristic.value >= 105) { _lift = '50+ ktons'; _throw = '168+'}
+                if (characteristic.value >= 105) { _lift = '50+ ktons'; _throw = '168+' }
 
                 characteristic.notes = `lift ${_lift}, throw ${_throw}m`
             }
@@ -394,13 +394,17 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         let newStun = parseInt(chars.stun.value) + parseInt(chars.rec.value)
         let newEnd = parseInt(chars.end.value) + parseInt(chars.rec.value)
 
+
+
         if (newStun > chars.stun.max) {
             newStun = chars.stun.max
         }
+        let deltaStun = newStun - parseInt(chars.stun.value)
 
         if (newEnd > chars.end.max) {
             newEnd = chars.end.max
         }
+        let deltaEnd = newEnd - parseInt(chars.end.value)
 
         await this.actor.update({
             'system.characteristics.stun.value': newStun,
@@ -414,7 +418,15 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         const chatData = {
             user: game.user._id,
             type: CONST.CHAT_MESSAGE_TYPES.OTHER,
-            content: this.actor.name + ' recovers!',
+            content: this.actor.name + ` <span title="
+Recovering is a Full Phase Action and occurs at the end of
+the Segment (after all other characters who have a Phase that
+Segment have acted). A character who Recovers during a Phase
+may do nothing else. He cannot even maintain a Constant Power
+or perform Actions that cost no END or take no time. However,
+he may take Zero Phase Actions at the beginning of his Phase
+to turn off Powers, and Persistent Powers that don't cost END
+remain in effect."><i>Takes a Recovery</i></span>, gaining ${deltaEnd} endurance and ${deltaStun} stun.`,
             speaker: speaker
         }
 
