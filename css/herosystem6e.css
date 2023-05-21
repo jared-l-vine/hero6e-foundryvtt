@@ -687,3 +687,16 @@ td {
   font-size:14px;
   margin-top: 2px;
 }
+
+.toHit-card .target-dc-result .Miss {
+  color: red;
+}
+
+.toHit-card .target-dc-result .Hit {
+  color: blue;
+}
+
+.toHit-card .target-dc {
+  border-bottom: 2px groove #FFF;
+  margin-bottom: 4px;
+}
