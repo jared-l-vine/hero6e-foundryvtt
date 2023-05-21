@@ -479,6 +479,16 @@ export async function uploadBasic(xml, type) {
         'system.rules': xml.getAttribute('ALIAS')
     }
 
+    // Marital Arts
+    if (xml.getAttribute('BASECOST')) itemData['system.baseCost'] = xml.getAttribute('BASECOST')
+    if (xml.getAttribute('OCV')) itemData['system.ocv'] = xml.getAttribute('OCV')
+    if (xml.getAttribute('DCV')) itemData['system.dcv'] = xml.getAttribute('DCV')
+    if (xml.getAttribute('DC')) itemData['system.dc'] = xml.getAttribute('DC')
+    if (xml.getAttribute('PHASE')) itemData['system.phase'] = xml.getAttribute('PHASE')
+    if (xml.getAttribute('ACTIVECOST')) itemData['system.activeCost'] = xml.getAttribute('ACTIVECOST')
+    if (xml.getAttribute('DISPLAY')) itemData['system.description'] = xml.getAttribute('DISPLAY')
+    if (xml.getAttribute('EFFECT')) itemData['system.effect'] = xml.getAttribute('EFFECT')
+
     await HeroSystem6eItem.create(itemData, { parent: this.actor })
 }
 

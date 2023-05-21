@@ -23,8 +23,9 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         const data = super.getData()
 
 
-        // Equipment is uncommon.  If there isn't any equipment, then don't show the navigation tab.
+        // Equipment & MartialArts are uncommon.  If there isn't any, then don't show the navigation tab.
         data.hasEquipment = false
+        data.hasMartialArts = false
 
         // override actor.items (which is a map) to an array with some custom properties
         let items = []
@@ -98,6 +99,11 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             // Defense
             if (item.type == 'defense') {
                 item.system.description = CONFIG.HERO.defenseTypes[item.system.defenseType]
+            }
+
+            if (item.type == 'martialart') {
+                console.log(item.system)
+                data.hasMartialArts = true
             }
 
             if (item.type == 'equipment') {
@@ -397,12 +403,12 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
 
         if (newStun > chars.stun.max) {
-            newStun = chars.stun.max
+            newStun = Math.max(chars.stun.max, parseInt(chars.stun.value)) // possible > MAX (which is OKish)
         }
         let deltaStun = newStun - parseInt(chars.stun.value)
 
         if (newEnd > chars.end.max) {
-            newEnd = chars.end.max
+            newEnd = Math.max(chars.end.max, parseInt(chars.end.value)) // possible > MAX (which is OKish)
         }
         let deltaEnd = newEnd - parseInt(chars.end.value)
 
