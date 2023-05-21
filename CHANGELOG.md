@@ -1,10 +1,9 @@
 # Version 2.1.6-alpha
 - Added 3rd attribute bar. Expectation is to show body, stun, and endurance for most tokens.  [#75](https://github.com/dmdorman/hero6e-foundryvtt/issues/75)
 - Improved the default character sheet.
-- Improved damage dice estimation listed on sheet to account for strength.
 - Added Perception as a skill [#97](https://github.com/dmdorman/hero6e-foundryvtt/issues/97)
 - Skill rolls dynamically change with characteristic changes.
-- Improved END use estimation for attacks [#83](https://github.com/dmdorman/hero6e-foundryvtt/issues/83)
+- Improved damage dice and END estimation listed on sheet to account for strength. [#83](https://github.com/dmdorman/hero6e-foundryvtt/issues/83)
 - Fixed mislabled rED and added MD defense summary to left panel of character sheet [#86](https://github.com/dmdorman/hero6e-foundryvtt/issues/86)
 - Removed flight from characteristics [#87](https://github.com/dmdorman/hero6e-foundryvtt/issues/87)
 - STR shows lift and throw notes [#51](https://github.com/dmdorman/hero6e-foundryvtt/issues/51)
