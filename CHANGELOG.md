@@ -1,6 +1,14 @@
 # Version 2.1.6-alpha
-- Added 3rd attribute bar. Expectation is to show body, stun, and endurance for most tokens.
-- Improved damage dice estimation for listed on sheet
+- Added 3rd attribute bar. Expectation is to show body, stun, and endurance for most tokens.  #75
+- Improved default character sheet.
+- Improved damage dice estimation for listed on sheet.
+- Added Perception as a skill #97
+- Skill rolls dynamically change with characteristic changes.
+- Improved END use estimation for attacks #83
+- Fixed rED and added MD defense summary to left panel of character sheet #86
+- Removed flight from characteristics #87
+- STR shows lift and throw notes #51
+- Attack edit sheet relaced "Value" with "Damage Dice" #94
 
 # Version 2.1.5-alpha
 - 5th edition characters get figured characteristics and 5E stun multiplier on killing attacks.
