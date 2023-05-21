@@ -29,7 +29,7 @@
 - Attack card automation rework
 
 # Version 2.1.1-alpha
-- Maneuver fix #39
+- Maneuver fix [#39](https://github.com/dmdorman/hero6e-foundryvtt/issues/39)
 
 # Version 2.1.0-alpha
 - power item rework
