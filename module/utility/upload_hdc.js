@@ -488,6 +488,8 @@ export async function uploadTalent(xml, type) {
 
     const xmlid = xml.getAttribute('XMLID')
 
+    const levels = parseInt(xml.getAttribute('LEVELS'))
+
     if (xmlid === 'GENERIC_OBJECT') { return; }
 
     let other = {}
@@ -495,7 +497,7 @@ export async function uploadTalent(xml, type) {
     switch (xmlid) {
         case ('LIGHTNING_REFLEXES_ALL'): {
             other = {
-                'levels': xml.getAttribute('LEVELS'),
+                'levels': levels,
                 'option_alias': xml.getAttribute('OPTION_ALIAS')
             }
             break;
@@ -505,12 +507,15 @@ export async function uploadTalent(xml, type) {
         }
     }
 
-    const itemData = {
+    let itemData = {
         'type': type,
         'name': name,
         'system.id': xmlid,
         'system.rules': xml.getAttribute('ALIAS'),
         'system.other': other
+    }
+    if (levels) {
+        itemData['system.levels'] = levels;
     }
 
     await HeroSystem6eItem.create(itemData, { parent: this.actor })
@@ -638,7 +643,7 @@ export async function uploadAttack(power) {
     // Active cost is required for endurance calculation.
     // It should include all advantages (which we don't handle very well at the moment)
     let activeCost = (levels * 5)
-    let end = Math.round(activeCost/10 -0.01);
+    let end = Math.round(activeCost / 10 - 0.01);
 
     let itemData = {
         name,
@@ -746,8 +751,7 @@ export async function uploadAttack(power) {
     }
 }
 
-export function SkillRollUpdateValue(item)
-{
+export function SkillRollUpdateValue(item) {
     let skillData = item.system
     if (skillData.state === 'everyman') {
         skillData.roll = '8-'
@@ -767,6 +771,6 @@ export function SkillRollUpdateValue(item)
         // They no not change the roll.
         // Skip for now.
         HEROSYS.log(false, (skillData.xmlid || item.name) + ' was not included in skills.  Likely Skill Enhancer')
-        return 
+        return
     }
 }

@@ -336,6 +336,27 @@ export class HeroSystem6eActor extends Actor {
             }
         }
 
+        // Combat Luck (is a TALENT with defense effects)
+        let combatLuck = this.items.find(o => o.type === 'talent' && o.system.id === "COMBAT_LUCK")
+        if (combatLuck) {
+
+            // Prepare the item object.
+            const itemData = {
+                name: combatLuck.name,
+                type: 'defense',
+
+                system: {
+                    rules: combatLuck.system.rules,
+                    resistant: true,
+                    value: parseInt(combatLuck.system.levels * 3)
+                }
+            }
+            itemData.system.defenseType = 'pd'
+            await HeroSystem6eItem.create(itemData, { parent: this })
+            itemData.system.defenseType = 'ed'
+            await HeroSystem6eItem.create(itemData, { parent: this })
+        }
+
     }
 
 
