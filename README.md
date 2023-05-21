@@ -88,20 +88,24 @@ This is a 6E framework, however 5E is very similar to 6E and with a few minor ch
 
 ## Screenshots
 
-![CrusherMovement](./media/CrusherMovement.png)
-
-![CrusherManeuvers](./media/CrusherManeuvers.png)
-
-![CrusherPowers](./media/CrusherPowers.png)
-
 ![CrusherAttacks](./media/CrusherAttacks.png)
 
 ![CrusherDefenses](./media/CrusherDefenses.png)
 
 ![CrusherSkills](./media/CrusherSkills.png)
 
-![CrushAttackEdit](./media/CrushAttackEdit.png)
+![CrusherManeuvers](./media/CrusherManeuvers.png)
 
+![CrusherMovement](./media/CrusherMovement.png)
+
+![CrusherPowers](./media/CrusherPowers.png)
+
+![CrusherCharacteristics](./media/CrusherCharacteristics.png)
+
+![CrusherOther](./media/CrusherOther.png)
+
+
+![CrushAttackEdit](./media/CrushAttackEdit.png)
 
 ![CrusherAttackEdit](./media/CrushAttackCard.png)
 
