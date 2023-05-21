@@ -107,7 +107,7 @@
                 <table>
                     <tr class="sticky">
                         <th></th>
-                        <th>{{localize "ActorSheet.Name"}}</th>
+                        <th class="left">{{localize "ActorSheet.Name"}}</th>
                         <th>{{localize "ActorSheet.HitMod"}}</th>
                         <th>{{localize "ActorSheet.OffVDef"}}</th>
                         <th>{{localize "ActorSheet.Dmg"}}</th>
@@ -129,9 +129,9 @@
                             <div class="item-image"><img src="{{item.img}}" title="{{item.name}}" width="24"
                                     height="24" /></div>
                         </td>
-                        <td>{{item.name}}</td>
+                        <td class="left">{{item.name}}</td>
                         <td>{{item.system.toHitMod}}</td>
-                        <td>{{item.system.uses}} vs {{item.targets}}</td>
+                        <td>{{item.system.uses}} vs {{item.system.targets}}</td>
                         <td>{{item.system.damage}}</td>
                         <td>{{item.system.class}}</td>
                         <td>{{item.system.endEstimate}}</td>

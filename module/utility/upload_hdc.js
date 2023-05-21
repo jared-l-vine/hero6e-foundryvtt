@@ -686,6 +686,23 @@ export async function uploadAttack(power) {
         itemData.system.knockbackMultiplier = 2
     }
 
+    // Alternate Combat Value (uses OMCV against DCV)
+    let ACV = power.querySelector('[XMLID="ACV"]')
+    if (ACV) {
+        if (ACV.getAttribute('OPTION_ALIAS') === "uses OMCV against DCV") {
+            itemData.system.uses = 'omcv'
+            itemData.system.targets = 'dcv'
+        }
+        if (ACV.getAttribute('OPTION_ALIAS') === "uses OCV against DMCV") {
+            itemData.system.uses = 'ocv'
+            itemData.system.targets = 'dmcv'
+        }
+        if (ACV.getAttribute('OPTION_ALIAS') === "uses OMCV against DCV") {
+            itemData.system.uses = 'omcv'
+            itemData.system.targets = 'dcv'
+        }
+    }
+
 
     if (power.querySelector('[XMLID="PLUSONEPIP"]')) {
         itemData.system.extraDice = "pip"
