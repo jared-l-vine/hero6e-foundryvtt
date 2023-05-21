@@ -72,7 +72,7 @@ export default class SettingsHelpers {
           pcEndOnly: "PCs (end) and NPCs (end, stun, body)",
           all: "PCs and NPCs (end, stun, body)"
         },
-        default: "none",
+        default: "all",
         onChange: value=> console.log(value)
       });
 
