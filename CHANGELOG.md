@@ -12,7 +12,7 @@
 - "Take a recovery" chat card now shows End/Stun details on chat card. [#96](https://github.com/dmdorman/hero6e-foundryvtt/issues/96)
 - "Combat Luck" added to defenses. [#85](https://github.com/dmdorman/hero6e-foundryvtt/issues/85)
 - Attacks with Alternate Combat Values are auto created property. [#93](https://github.com/dmdorman/hero6e-foundryvtt/issues/93)
-- Attacks will use selected targets, show hit/miss, and hit targets will follow thru to damage cards. #79(https://github.com/dmdorman/hero6e-foundryvtt/issues/79) #92(https://github.com/dmdorman/hero6e-foundryvtt/issues/92)
+- Attacks will use selected targets, show hit/miss, and hit targets will follow thru to damage cards. [#79](https://github.com/dmdorman/hero6e-foundryvtt/issues/79) [#92](https://github.com/dmdorman/hero6e-foundryvtt/issues/92)
 
 # Version 2.1.5-alpha
 - 5th edition characters get figured characteristics and 5E stun multiplier on killing attacks.
