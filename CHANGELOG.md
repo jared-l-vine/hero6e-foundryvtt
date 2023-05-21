@@ -1,6 +1,6 @@
 # Version 2.1.6-alpha
 - Added 3rd attribute bar. Expectation is to show body, stun, and endurance for most tokens.  [#75](https://github.com/dmdorman/hero6e-foundryvtt/issues/75)
-- Improved the default character sheet.
+- New default character sheet.
 - Added Perception as a skill [#97](https://github.com/dmdorman/hero6e-foundryvtt/issues/97)
 - Skill rolls dynamically change with characteristic changes.
 - Improved damage dice and END estimation listed on sheet to account for strength. [#83](https://github.com/dmdorman/hero6e-foundryvtt/issues/83)
