@@ -13,16 +13,25 @@ export class HeroSystem6eActor extends Actor {
 
         //TODO: Add user configuration for initial prototype settings
 
+        console.log("_preCreate")
         let prototypeToken = {
             // Leaving sight disabled.
             // TODO: Implement various Enhanced Visions
             // sight: { enabled: true }, 
-            bar1: { attribute: "characteristics.body" },
-            bar2: { attribute: "characteristics.stun" },
+            // bar1: { attribute: "characteristics.body" },
+            // bar2: { attribute: "characteristics.stun" },
+            // bar3: { attribute: "characteristics.end" },
             displayBars: CONST.TOKEN_DISPLAY_MODES.HOVER,
             displayName: CONST.TOKEN_DISPLAY_MODES.HOVER,
-        };
+            flags: {
+                [game.system.id]: {
+                    bar3: {
+                        attribute: "characteristics.end"
+                    }
+                }
+            }
 
+        }
 
         if (this.type === "pc") {
             prototypeToken = {
@@ -37,6 +46,9 @@ export class HeroSystem6eActor extends Actor {
         }
 
         this.updateSource({ prototypeToken });
+
+        // Bar3 is a flag
+        //await this.prototypeToken.setFlag(game.system.id, "bar3", { "attribute": "characteristics.end" })
 
     }
 
@@ -127,8 +139,7 @@ export class HeroSystem6eActor extends Actor {
 
             }
 
-            if (power.system.rules === "DENSITYINCREASE")
-            {
+            if (power.system.rules === "DENSITYINCREASE") {
                 const levels = parseInt(parseInt(power.system.LEVELS))
 
                 const strAdd = Math.floor(levels) * 5
@@ -179,34 +190,30 @@ export class HeroSystem6eActor extends Actor {
 
                 // Prepare the item object.
                 const itemData = {
-                  name: power.name,
-                  type: 'defense',
-                  system: { 
+                    name: power.name,
+                    type: 'defense',
+                    system: {
                         rules: power.system.rules,
                         resistant: false
                     }
                 }
 
-                let hardened = parseInt(power.system.modifiers.find(o=> o.xmlid === 'HARDENED')?.LEVELS)
-                if (hardened)
-                {
+                let hardened = parseInt(power.system.modifiers.find(o => o.xmlid === 'HARDENED')?.LEVELS)
+                if (hardened) {
                     itemData.system.hardened = hardened
                 }
 
-                let impenetrable = parseInt(power.system.modifiers.find(o=> o.xmlid === "IMPENETRABLE")?.LEVELS)
-                if (impenetrable)
-                {
+                let impenetrable = parseInt(power.system.modifiers.find(o => o.xmlid === "IMPENETRABLE")?.LEVELS)
+                if (impenetrable) {
                     itemData.system.impenetrable = impenetrable
                 }
 
                 let addedDefense = false
 
-                for (let key of ['pd', 'ed', 'md'])
-                {
+                for (let key of ['pd', 'ed', 'md']) {
                     let levels = parseInt(power.system[key.toUpperCase() + "LEVELS"])
-                    if (levels)
-                    {
-                        itemData.name = power.name + " ("  + (configPowerInfo.name || power.system.rules) + ")"
+                    if (levels) {
+                        itemData.name = power.name + " (" + (configPowerInfo.name || power.system.rules) + ")"
                         itemData.system.value = levels
                         itemData.system.defenseType = key
 
@@ -214,7 +221,7 @@ export class HeroSystem6eActor extends Actor {
                         if (power.system.rules == "FORCEFIELD") {
                             itemData.system.resistant = true
                         }
-                        
+
 
                         // Forcewall / barrier 
                         if (power.system.rules == "FORCEWALL") {
@@ -228,7 +235,7 @@ export class HeroSystem6eActor extends Actor {
 
                 if (power.system.rules == "FLASHDEFENSE" && !addedDefense) {
                     itemData.system.defenseType = 'fd'
-                    itemData.name = power.name + " ("  + (configPowerInfo.name || power.system.rules) + ")"
+                    itemData.name = power.name + " (" + (configPowerInfo.name || power.system.rules) + ")"
                     itemData.system.value = parseInt(power.system.LEVELS)
                     await HeroSystem6eItem.create(itemData, { parent: this })
                     addedDefense = true
@@ -236,7 +243,7 @@ export class HeroSystem6eActor extends Actor {
 
                 if (power.system.rules == "MENTALDEFENSE" && !addedDefense) {
                     itemData.system.defenseType = 'md'
-                    itemData.name = power.name + " ("  + (configPowerInfo.name || power.system.rules) + ")"
+                    itemData.name = power.name + " (" + (configPowerInfo.name || power.system.rules) + ")"
                     itemData.system.value = parseInt(power.system.LEVELS)
                     await HeroSystem6eItem.create(itemData, { parent: this })
                     addedDefense = true
@@ -244,7 +251,7 @@ export class HeroSystem6eActor extends Actor {
 
                 if (power.system.rules == "POWERDEFENSE" && !addedDefense) {
                     itemData.system.defenseType = 'powd'
-                    itemData.name = power.name + " ("  + (configPowerInfo.name || power.system.rules) + ")"
+                    itemData.name = power.name + " (" + (configPowerInfo.name || power.system.rules) + ")"
                     itemData.system.value = parseInt(power.system.LEVELS)
                     await HeroSystem6eItem.create(itemData, { parent: this })
                     addedDefense = true
@@ -252,28 +259,25 @@ export class HeroSystem6eActor extends Actor {
 
                 // Damage negation PD/ED/MD values are strangely in the modifiers
                 if (power.system.rules == "DAMAGENEGATION" && !addedDefense) {
-                    itemData.name = power.name + " ("  + (configPowerInfo.name || power.system.rules) + ")"
+                    itemData.name = power.name + " (" + (configPowerInfo.name || power.system.rules) + ")"
                     itemData.system.defenseType = 'dnp'
-                    itemData.system.value = parseInt(power.system.modifiers.find(o=> o.xmlid === 'PHYSICAL').LEVELS)
-                    if (itemData.system.value > 0)
-                    {
+                    itemData.system.value = parseInt(power.system.modifiers.find(o => o.xmlid === 'PHYSICAL').LEVELS)
+                    if (itemData.system.value > 0) {
                         await HeroSystem6eItem.create(itemData, { parent: this })
                     }
 
                     itemData.system.defenseType = 'dne'
-                    itemData.system.value = parseInt(power.system.modifiers.find(o=> o.xmlid === 'ENERGY').LEVELS)
-                    if (itemData.system.value > 0)
-                    {
+                    itemData.system.value = parseInt(power.system.modifiers.find(o => o.xmlid === 'ENERGY').LEVELS)
+                    if (itemData.system.value > 0) {
                         await HeroSystem6eItem.create(itemData, { parent: this })
                     }
 
                     itemData.system.defenseType = 'dnm'
-                    itemData.system.value = parseInt(power.system.modifiers.find(o=> o.xmlid === 'MENTAL').LEVELS)
-                    if (itemData.system.value > 0)
-                    {
+                    itemData.system.value = parseInt(power.system.modifiers.find(o => o.xmlid === 'MENTAL').LEVELS)
+                    if (itemData.system.value > 0) {
                         await HeroSystem6eItem.create(itemData, { parent: this })
                     }
-                    
+
                     addedDefense = true
                 }
 
@@ -281,35 +285,30 @@ export class HeroSystem6eActor extends Actor {
                 if (power.system.rules == "DAMAGEREDUCTION" && !addedDefense) {
                     itemData.name = power.name// + " ("  + (configPowerInfo.name || power.system.rules) + ")"
                     itemData.system.value = 0
-                    if (power.system.OPTIONID.indexOf("25")>-1)
-                    {
+                    if (power.system.OPTIONID.indexOf("25") > -1) {
                         itemData.system.value = 25
                     }
-                    if (power.system.OPTIONID.indexOf("50")>-1)
-                    {
+                    if (power.system.OPTIONID.indexOf("50") > -1) {
                         itemData.system.value = 50
                     }
-                    if (power.system.OPTIONID.indexOf("75")>-1)
-                    {
+                    if (power.system.OPTIONID.indexOf("75") > -1) {
                         itemData.system.value = 75
                     }
-                    if (power.system.OPTIONID.indexOf("RESISTANT")> -1)
-                    {
+                    if (power.system.OPTIONID.indexOf("RESISTANT") > -1) {
                         itemData.system.resistant = true
                     }
-                    switch(power.system.INPUT)
-                    {
-                        case "Physical": 
+                    switch (power.system.INPUT) {
+                        case "Physical":
                             itemData.system.defenseType = 'drp'
                             await HeroSystem6eItem.create(itemData, { parent: this })
                             addedDefense = true
                             break
-                        case "Energy": 
+                        case "Energy":
                             itemData.system.defenseType = 'dre'
                             await HeroSystem6eItem.create(itemData, { parent: this })
                             addedDefense = true
                             break
-                        case "Mental": 
+                        case "Mental":
                             itemData.system.defenseType = 'drm'
                             await HeroSystem6eItem.create(itemData, { parent: this })
                             addedDefense = true
@@ -324,18 +323,38 @@ export class HeroSystem6eActor extends Actor {
                     await HeroSystem6eItem.create(itemData, { parent: this })
                     addedDefense = true
                 }
-                
-                
-                if (!addedDefense)
-                {
+
+
+                if (!addedDefense) {
                     if (game.settings.get(game.system.id, 'alphaTesting')) {
                         ui.notifications.warn(`${power.system.rules} not implemented during defense item creation`)
                         console.log(power)
                     }
                 }
-                
-                
+
+
             }
+        }
+
+        // Combat Luck (is a TALENT with defense effects)
+        let combatLuck = this.items.find(o => o.type === 'talent' && o.system.id === "COMBAT_LUCK")
+        if (combatLuck) {
+
+            // Prepare the item object.
+            const itemData = {
+                name: combatLuck.name,
+                type: 'defense',
+
+                system: {
+                    rules: combatLuck.system.rules,
+                    resistant: true,
+                    value: parseInt(combatLuck.system.levels * 3)
+                }
+            }
+            itemData.system.defenseType = 'pd'
+            await HeroSystem6eItem.create(itemData, { parent: this })
+            itemData.system.defenseType = 'ed'
+            await HeroSystem6eItem.create(itemData, { parent: this })
         }
 
     }
@@ -418,7 +437,7 @@ export class HeroSystem6eActor extends Actor {
     //     if (data.type === 'character') {
     //         let token = data.prototypeToken || data.token
     //         if (token) {
-                
+
     //             if (token.disposition == CONST.TOKEN_DISPOSITIONS.FRIENDLY) {
     //                 data.type = "pc"
     //             }

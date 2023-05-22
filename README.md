@@ -31,7 +31,6 @@ This system is a work in progress. The following features are supported
 - The character sheet can be used to take a Recovery.
 - Character image stored in .HDC file is used for token.
 
-
 #### Maneuvers
 
 Activating a maneuver from a character sheet will apply OCV and DCV modifiers with the exception of variable modifiers or modifiers that take speed into account. Only one maneuver can be selected at a time with the exception of 'Set' and 'Brace'.
@@ -61,21 +60,21 @@ Activating a maneuver from a character sheet will apply OCV and DCV modifiers wi
 - The upload of a .HDC file is practically a requirement.  You can't create powers, skills, or equipment from scratch.  Character editing is limited within the system.
 - Power frameworks are largely ignored, powers within the framework should work.
 - Endurance use of non-attacking powers is untracked.
-- Perks, Talents, and Complications are not implemented.
-- Power limitations are largely not implemented
-- The following power are largely not implemented
+- The following are largely not implemented
   - Adjustment powers (Absorption Aid, Drain, Healing).
   - Attack powers that do not do stun/body damage (Change Environment, Darkness, Dispel, Drain, Entangle, Flash, Images, Mental Illusions, Mind Control, Reflection, Transform).
   - Attack powers with NND
   - Automation powers(Cannot Be Stunned, Does Not Bleed, No Hit Locations, Takes No STUN).
-  - Body-Affecting powers are not fully implemented (Desolidification, Duplication, Extra Limbs, Growth, Multiform, Shape Shift, Shrinking, Stretching)
+  - Body-Affecting powers (Desolidification, Duplication, Extra Limbs, Growth, Multiform, Shape Shift, Shrinking, Stretching)
   - Mental Powers (Mental Illusions, Mind Control, Mind Scan, Telepathy)
-  - Sense-Affecting powers
-  - Sensory powers
-  - Special powers
+  - Sense-Affecting powers (Darkness, Flash, Images, Invisibility)
+  - Sensory powers (Clairsentience, Enhanced Senses, Mind Scan)
+  - Special powers (Duplication, Endurance Reserve, Enhanced Senses, Extra Limbs, Flash Defense, Luck, Power Defense, Regeneration)
+  - Power limitations
+  - Perks, Talents, and Complications
 
 ## Modules
-The following modules have been tested for compatibility
+The following modules have been successfully tested for compatibility
   - [Dice so nice!](https://gitlab.com/riccisi/foundryvtt-dice-so-nice)
   - [Simple Calendar](https://github.com/vigoren/foundryvtt-simple-calendar)
 
@@ -85,14 +84,7 @@ This is a 6E framework, however 5E is very similar to 6E and with a few minor ch
   - PD, ED, SPD, REC, END, STUN, OCV/DCV, ECV (is still referred to as OMCV/DMCV).
 - Killing Attack stun multiplier is 1d6-1 (minimum 1)
 
-
 ## Screenshots
-
-![CrusherMovement](./media/CrusherMovement.png)
-
-![CrusherManeuvers](./media/CrusherManeuvers.png)
-
-![CrusherPowers](./media/CrusherPowers.png)
 
 ![CrusherAttacks](./media/CrusherAttacks.png)
 
@@ -100,11 +92,21 @@ This is a 6E framework, however 5E is very similar to 6E and with a few minor ch
 
 ![CrusherSkills](./media/CrusherSkills.png)
 
-![CrushAttackEdit](./media/CrushAttackEdit.png)
+![CrusherManeuvers](./media/CrusherManeuvers.png)
 
+![CrusherMovement](./media/CrusherMovement.png)
+
+![CrusherPowers](./media/CrusherPowers.png)
+
+![CrusherCharacteristics](./media/CrusherCharacteristics.png)
+
+![CrusherOther](./media/CrusherOther.png)
+
+![CrushAttackEdit](./media/CrushAttackEdit.png)
 
 ![CrusherAttackEdit](./media/CrushAttackCard.png)
 
 ![CrusherAttackEdit](./media/CrushDamageCard.png)
 
 ![CrusherAttackEdit](./media/CrushApplyDamageCard.png)
+

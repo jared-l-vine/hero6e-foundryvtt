@@ -6,6 +6,7 @@ import * as Dice from "../dice.js"
 import * as Attack from "../item/item-attack.js"
 import { createSkillPopOutFromItem } from '../item/skill.js'
 import { enforceManeuverLimits } from '../item/manuever.js'
+import { SkillRollUpdateValue } from '../utility/upload_hdc.js'
 
 
 /**
@@ -124,6 +125,7 @@ export class HeroSystem6eItem extends Item {
             case "defense":
                 return this.toggle()
             case "skill":
+                SkillRollUpdateValue(this)
                 return createSkillPopOutFromItem(this, this.actor)
             default: ui.notifications.warn(`${this.name} roll is not supported`)
         }

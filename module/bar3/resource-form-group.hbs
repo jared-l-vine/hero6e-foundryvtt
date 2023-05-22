@@ -1,0 +1,29 @@
+{{ log 'resource-form-group' this }}
+
+<div class="form-group">
+    <label>Bar 3 Attribute</label>
+    <div class="form-fields">
+        <select class="bar-attribute" name="bar3.attribute">
+            <option value=>None</option>
+            <optgroup label="Attribute Bars">
+                {{#each barAttributes}}
+                <option value="{{this}}" {{#if (eq this ../bar3.attribute)}}selected{{/if}}>{{this}}</option>
+                {{/each}}
+            </optgroup>
+            <optgroup label="Single Values">
+                {{#each singleValues}}
+                <option value="{{this}}" {{#if (eq this ../bar3.attribute)}}selected{{/if}}>{{this}}</option>
+                {{/each}}
+            </optgroup>
+        </select>
+    </div>
+</div>
+
+<div class="form-group">
+    <label>Bar 3 Data</label>
+    <div class="form-fields">
+        <input type="number" class="bar3-value" value="{{bar3.value}}" disabled>
+        <span class="sep">/</span>
+        <input type="number" class="bar3-max" value="{{bar3.max}}" disabled>
+    </div>
+</div>

@@ -19,7 +19,7 @@
             "TargetsUsing": "Targets Using",
             "ToHitModifier": "To Hit Modifier",
             "UsesStrength": "Uses Strength",
-            "Value": "Value",
+            "Value": "Damage dice",
             "StunBodyDamage": "Stun and/or Body Damage"
         }
     },
@@ -36,6 +36,7 @@
         "Active": "Active",
         "Type": "Type",
         "Value": "Value",
+        "ValueTitle": "Current total value including all powers and effects.",
         "Hard": "Hard.",
         "Imp": "Imp.",
         "Characteristic": "Characteristic",
@@ -47,12 +48,16 @@
         "Cost": "Cost",
         "Notes": "Notes",
         "Max": "Max",
+        "MaxTitle": "Maximum value including all powers and effects.",
+        "Core": "Core",
+        "CoreTitle": "Paid for characterictics above base.\nDoes not include powers or effects.\nFor reference only.",
         "Perk": "Perk",
         "Talent": "Talent",
         "Complication": "Complication",
         "ActiveEffect": "ActiveEffect",
         "Biography": "Biography",
-        "Velocity" : "Velocity"
+        "Velocity" : "Velocity",
+        "Effect" : "Effect"
     },
     "Errors": {
         "TokenSelect": "Please select a token"

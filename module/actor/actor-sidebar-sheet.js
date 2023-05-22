@@ -2,7 +2,7 @@ import { HERO } from '../config.js'
 import { determineDefense } from "../utility/defense.js";
 import { HeroSystem6eItem } from '../item/item.js'
 import { presenceAttackPopOut } from '../utility/presence-attack.js'
-import { applyCharacterSheet } from '../utility/upload_hdc.js'
+import { applyCharacterSheet, SkillRollUpdateValue } from '../utility/upload_hdc.js'
 
 export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
@@ -23,8 +23,9 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         const data = super.getData()
 
 
-        // Equipment is uncommon.  If there isn't any equipment, then don't show the navigation tab.
+        // Equipment & MartialArts are uncommon.  If there isn't any, then don't show the navigation tab.
         data.hasEquipment = false
+        data.hasMartialArts = false
 
         // override actor.items (which is a map) to an array with some custom properties
         let items = []
@@ -35,17 +36,54 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
                 item.system.showToggle = true
             }
 
+            // Endurance
+            item.system.endEstimate = item.system.end;
+
             // Damage
             if (item.type == 'attack') {
-                item.system.damage = item.system.dice
+
+                // Convert dice to pips
+                let pips = item.system.dice * 3;
                 switch (item.system.extraDice) {
-                    case 'zero':
-                        item.system.damage += 'D6'
-                        break
                     case 'pip':
-                        item.system.damage += 'D6+1'
+                        pips += 1;
                         break
                     case 'half':
+                        pips += 2;
+                        break
+                }
+
+                // Add in STR
+                if (item.system.usesStrength) {
+                    let str = data.actor.system.characteristics.str.value
+                    let str5 = Math.floor(str / 5)
+                    if (item.system.killing) {
+                        pips += str5
+                    } else {
+                        pips += str5 * 3
+                    }
+
+                    // Endurance
+                    let strEnd = Math.max(1, Math.round(str / 10))
+                    item.system.endEstimate += strEnd
+                }
+
+
+
+                // Convert pips to DICE
+                let fullDice = Math.floor(pips / 3)
+                let extraDice = pips - fullDice * 3
+
+                // text descrdiption of damage
+                item.system.damage = fullDice
+                switch (extraDice) {
+                    case 0:
+                        item.system.damage += 'D6'
+                        break
+                    case 1:
+                        item.system.damage += 'D6+1'
+                        break
+                    case 2:
                         item.system.damage += '.5D6'
                         break
                 }
@@ -54,6 +92,8 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
                 } else {
                     item.system.damage += 'N'
                 }
+
+
             }
 
             // Defense
@@ -61,8 +101,17 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
                 item.system.description = CONFIG.HERO.defenseTypes[item.system.defenseType]
             }
 
+            if (item.type == 'martialart') {
+                console.log(item.system)
+                data.hasMartialArts = true
+            }
+
             if (item.type == 'equipment') {
                 data.hasEquipment = true
+            }
+
+            if (item.type == 'skill') {
+                SkillRollUpdateValue(item)
             }
 
             items.push(item)
@@ -74,7 +123,13 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
         for (const [key, characteristic] of Object.entries(data.actor.system.characteristics)) {
             characteristic.key = key
+            if (!CONFIG.HERO.characteristicCosts[key]) continue;
             characteristic.name = CONFIG.HERO.characteristics[key]
+            characteristic.base = CONFIG.HERO.characteristicDefaults[key]
+            characteristic.cost = Math.ceil((characteristic.core - characteristic.base) * CONFIG.HERO.characteristicCosts[key])
+            if (isNaN(characteristic.cost)) {
+                characteristic.cost = "";
+            }
             if (characteristic.type === 'rollable') {
                 if (characteristic.value === 0) {
                     characteristic.roll = 8
@@ -104,22 +159,73 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
                     characteristic.roll = 20
                 }
             }
+
+            // Notes
+            if (key == 'str') {
+                let _lift = 0;
+                let _throw = 0;
+                if (characteristic.value >= 1) { _lift = '8kg'; _throw = 2 }
+                if (characteristic.value >= 2) { _lift = '16kg'; _throw = 3 }
+                if (characteristic.value >= 3) { _lift = '25kg'; _throw = 4 }
+                if (characteristic.value >= 4) { _lift = '38kg'; _throw = 6 }
+                if (characteristic.value >= 5) { _lift = '50kg'; _throw = 8 }
+                if (characteristic.value >= 8) { _lift = '75kg'; _throw = 12 }
+                if (characteristic.value >= 10) { _lift = '16kg'; _throw = 16 }
+                if (characteristic.value >= 13) { _lift = '150kg'; _throw = 20 }
+                if (characteristic.value >= 15) { _lift = '200kg'; _throw = 24 }
+                if (characteristic.value >= 18) { _lift = '300kg'; _throw = 28 }
+                if (characteristic.value >= 20) { _lift = '400kg'; _throw = 32 }
+                if (characteristic.value >= 23) { _lift = '600kg'; _throw = 36 }
+                if (characteristic.value >= 25) { _lift = '800kg'; _throw = 40 }
+                if (characteristic.value >= 28) { _lift = '1,200kg'; _throw = 44 }
+                if (characteristic.value >= 30) { _lift = '1,600kg'; _throw = 48 }
+                if (characteristic.value >= 35) { _lift = '3,200kg'; _throw = 56 }
+                if (characteristic.value >= 40) { _lift = '6,400kg'; _throw = 64 }
+                if (characteristic.value >= 45) { _lift = '12.5 tons'; _throw = 72 }
+                if (characteristic.value >= 50) { _lift = '25 tons'; _throw = 80 }
+                if (characteristic.value >= 55) { _lift = '50 tons'; _throw = 88 }
+                if (characteristic.value >= 60) { _lift = '100 tons'; _throw = 96 }
+                if (characteristic.value >= 65) { _lift = '200 tons'; _throw = 104 }
+                if (characteristic.value >= 70) { _lift = '400 tons'; _throw = 112 }
+                if (characteristic.value >= 75) { _lift = '800 tons'; _throw = 120 }
+                if (characteristic.value >= 80) { _lift = '1.6 ktons'; _throw = 128 }
+                if (characteristic.value >= 85) { _lift = '3.2 ktons'; _throw = 136 }
+                if (characteristic.value >= 90) { _lift = '6.4 ktons'; _throw = 144 }
+                if (characteristic.value >= 95) { _lift = '12.5 ktons'; _throw = 152 }
+                if (characteristic.value >= 100) { _lift = '25 ktons'; _throw = 160 }
+                if (characteristic.value >= 105) { _lift = '50+ ktons'; _throw = '168+' }
+
+                characteristic.notes = `lift ${_lift}, throw ${_throw}m`
+            }
+            if (key == 'leaping') characteristic.notes = `${characteristic.value}m forward, ${Math.round(characteristic.value / 2)}m upward`
+
             characteristicSet.push(characteristic)
         }
         data.characteristicSet = characteristicSet
 
-        // Defense
+        // Defense (create fake attacks and get defense results)
         let defense = {}
+
         // Defense PD
         let pdAttack = {
             system: {
                 class: "physical"
             }
         }
-
-        let [defenseValue, resistantValue, impenetrableValue, damageReductionValue, damageNegationValue, knockbackResistance, defenseTags] = determineDefense(this.actor, pdAttack)
+        let [defenseValue, resistantValue, impenetrableValue, damageReductionValue, damageNegationValue, knockbackResistance, defenseTagsP] = determineDefense(this.actor, pdAttack)
         defense.PD = defenseValue
         defense.rPD = resistantValue
+        defense.PDtags = "";
+        defense.rPDtags = "";
+        for (let tag of defenseTagsP) {
+            if (tag.resistant) {
+                defense.rPDtags += `${tag.value} ${tag.title}\n`
+            }
+            else if (tag.resistant != undefined) {
+                defense.PDtags += `${tag.value} ${tag.title}\n`
+            }
+        }
+
         // Defense ED
         let edAttack = {
             system: {
@@ -129,6 +235,17 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         let [defenseValueE, resistantValueE, impenetrableValueE, damageReductionValueE, damageNegationValueE, knockbackResistanceE, defenseTagsE] = determineDefense(this.actor, edAttack)
         defense.ED = defenseValueE
         defense.rED = resistantValueE
+        defense.EDtags = "";
+        defense.rEDtags = "";
+        for (let tag of defenseTagsE) {
+            if (tag.resistant) {
+                defense.rEDtags += `${tag.value} ${tag.title}\n`
+            }
+            else if (tag.resistant != undefined) {
+                defense.EDtags += `${tag.value} ${tag.title}\n`
+            }
+        }
+
         // Defense MD
         let mdAttack = {
             system: {
@@ -138,6 +255,17 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         let [defenseValueM, resistantValueM, impenetrableValueM, damageReductionValueM, damageNegationValueM, knockbackResistanceM, defenseTagsM] = determineDefense(this.actor, mdAttack)
         defense.MD = defenseValueM
         defense.rMD = resistantValueM
+        defense.MDtags = "";
+        defense.rMDtags = "";
+        for (let tag of defenseTagsM) {
+            if (tag.resistant) {
+                defense.rMDtags += `${tag.value} ${tag.title}\n`
+            }
+            else if (tag.resistant != undefined) {
+                defense.MDtags += `${tag.value} ${tag.title}\n`
+            }
+        }
+
         data.defense = defense
 
         return data
@@ -272,13 +400,17 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         let newStun = parseInt(chars.stun.value) + parseInt(chars.rec.value)
         let newEnd = parseInt(chars.end.value) + parseInt(chars.rec.value)
 
+
+
         if (newStun > chars.stun.max) {
-            newStun = chars.stun.max
+            newStun = Math.max(chars.stun.max, parseInt(chars.stun.value)) // possible > MAX (which is OKish)
         }
+        let deltaStun = newStun - parseInt(chars.stun.value)
 
         if (newEnd > chars.end.max) {
-            newEnd = chars.end.max
+            newEnd = Math.max(chars.end.max, parseInt(chars.end.value)) // possible > MAX (which is OKish)
         }
+        let deltaEnd = newEnd - parseInt(chars.end.value)
 
         await this.actor.update({
             'system.characteristics.stun.value': newStun,
@@ -292,7 +424,15 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         const chatData = {
             user: game.user._id,
             type: CONST.CHAT_MESSAGE_TYPES.OTHER,
-            content: this.actor.name + ' recovers!',
+            content: this.actor.name + ` <span title="
+Recovering is a Full Phase Action and occurs at the end of
+the Segment (after all other characters who have a Phase that
+Segment have acted). A character who Recovers during a Phase
+may do nothing else. He cannot even maintain a Constant Power
+or perform Actions that cost no END or take no time. However,
+he may take Zero Phase Actions at the beginning of his Phase
+to turn off Powers, and Persistent Powers that don't cost END
+remain in effect."><i>Takes a Recovery</i></span>, gaining ${deltaEnd} endurance and ${deltaStun} stun.`,
             speaker: speaker
         }
 

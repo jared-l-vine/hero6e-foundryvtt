@@ -15,7 +15,8 @@ import { HeroSystem6eActorActiveEffects } from "./actor/actor-active-effects.js"
 import HeroSystem6eTemplate from "./template.js";
 import { HeroSystem6eCombat, HeroSystem6eCombatTracker } from "./combat.js";
 import SettingsHelpers from "./settings/settings-helpers.js";
-import { HeroSystem6eTokenHud, HeroSystem6ePreUpdateToken } from "./tokenHud.js";
+import { HeroSystem6eTokenHud } from "./bar3/tokenHud.js";
+import { extendTokenConfig } from "./bar3/extendTokenConfig.js";
 
 Hooks.once('init', async function () {
 
@@ -61,16 +62,17 @@ Hooks.once('init', async function () {
   CONFIG.Item.documentClass = HeroSystem6eItem;
   CONFIG.Token.documentClass = HeroSystem6eTokenDocument;
   CONFIG.Token.objectClass = HeroSystem6eToken;
+  //CONFIG.Token.prototypeSheetClass = HeroSystem6eTokenConfig
   CONFIG.statusEffects = HeroSystem6eActorActiveEffects.getEffects();
-  CONFIG.MeasuredTemplate.objectClass = HeroSystem6eTemplate;
+  //CONFIG.MeasuredTemplate.objectClass = HeroSystem6eTemplate;
   CONFIG.ui.combat = HeroSystem6eCombatTracker;
 
   SettingsHelpers.initLevelSettings();
 
   // Register sheet application classes
   Actors.unregisterSheet("core", ActorSheet);
-  Actors.registerSheet("herosystem6e", HeroSystem6eActorSheet, { makeDefault: true });
-  Actors.registerSheet("herosystem6e", HeroSystem6eActorSidebarSheet);
+  Actors.registerSheet("herosystem6e", HeroSystem6eActorSheet);
+  Actors.registerSheet("herosystem6e", HeroSystem6eActorSidebarSheet, { makeDefault: true });
   Items.unregisterSheet("core", ItemSheet);
   Items.registerSheet("herosystem6e", HeroSystem6eItemSheet, { makeDefault: true });
 
@@ -306,7 +308,6 @@ async function migrateKnockback() {
 }
 
 
-
 // Remove Character from selectable actor types
 Hooks.on("renderDialog", (dialog, html, data) => {
   if (html[0].querySelector(".window-title").textContent != "Create New Actor") return
@@ -315,26 +316,6 @@ Hooks.on("renderDialog", (dialog, html, data) => {
 })
 
 
-
-// Modify TokenHUD (need 3 bars: end, stun, body)
-// Hooks.on("renderTokenHUD", HeroSystem6eTokenHud);
-
-// Hooks.on("preUpdateToken", function (doc, changes) {
-//   alert("preUpdateToken")
-// });
-
-// Hooks.on("preUpdateActor", function (actor, newData) {
-//   alert("preUpdateActor")
-//   console.log("preUpdateActor")
-// });
-
-// Hooks.on("preCreateActor", function (actor, newData) {
-//   alert("preCreateActor")
-//   console.log("preCreateActor")
-// });
-
-
-// Hooks.on("preCreateToken", function (doc, data) {
-//   alert("preCreateToken")
-// });
-
+//Modify TokenHUD (need 3 bars: end, stun, body)
+Hooks.on("renderTokenHUD", HeroSystem6eTokenHud);
+Hooks.on("renderTokenConfig", extendTokenConfig);

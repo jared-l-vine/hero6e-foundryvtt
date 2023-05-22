@@ -1,7 +1,23 @@
+# Version 2.1.6-alpha
+- Added 3rd attribute bar. Expectation is to show body, stun, and endurance for most tokens.  [#75](https://github.com/dmdorman/hero6e-foundryvtt/issues/75)
+- New default character sheet.
+- Added Perception as a skill [#97](https://github.com/dmdorman/hero6e-foundryvtt/issues/97)
+- Skill rolls dynamically change with characteristic changes.
+- Improved damage dice and END estimation listed on sheet to account for strength. [#83](https://github.com/dmdorman/hero6e-foundryvtt/issues/83)
+- Fixed mislabled rED and added MD defense summary to left panel of character sheet [#86](https://github.com/dmdorman/hero6e-foundryvtt/issues/86)
+- Removed flight from characteristics. [#87](https://github.com/dmdorman/hero6e-foundryvtt/issues/87)
+- STR shows lift and throw notes [#51](https://github.com/dmdorman/hero6e-foundryvtt/issues/51)
+- Attack edit sheet relaced "Value" with "Damage Dice" [#94](https://github.com/dmdorman/hero6e-foundryvtt/issues/94)
+- Changed "Default Attack Card Automation" from "No Automation" to "PCs and NPCs (end, stun, body)"
+- "Take a recovery" chat card now shows End/Stun details on chat card. [#96](https://github.com/dmdorman/hero6e-foundryvtt/issues/96)
+- "Combat Luck" added to defenses. [#85](https://github.com/dmdorman/hero6e-foundryvtt/issues/85)
+- Attacks with Alternate Combat Values are auto created property. [#93](https://github.com/dmdorman/hero6e-foundryvtt/issues/93)
+- Attacks will use selected targets, show hit/miss, and hit targets will follow thru to damage cards. [#79](https://github.com/dmdorman/hero6e-foundryvtt/issues/79) [#92](https://github.com/dmdorman/hero6e-foundryvtt/issues/92)
+
 # Version 2.1.5-alpha
 - 5th edition characters get figured characteristics and 5E stun multiplier on killing attacks.
 - A second (improved) character sheet is available to preview.
-- DragDrop support for attacks, skills and power toggles (like defenses)
+- DragDrop to hotbar for attacks, skills and power toggles (like defenses)
 
 # Version 2.1.4-alpha
 - NOKB, DOUBLEKB, and KBRESISTANCE
@@ -17,7 +33,7 @@
 - Attack card automation rework
 
 # Version 2.1.1-alpha
-- Maneuver fix #39
+- Maneuver fix [#39](https://github.com/dmdorman/hero6e-foundryvtt/issues/39)
 
 # Version 2.1.0-alpha
 - power item rework

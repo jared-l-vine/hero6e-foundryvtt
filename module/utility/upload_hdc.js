@@ -75,13 +75,14 @@ export async function applyCharacterSheet(xmlDoc) {
     for (const characteristic of characteristics.children) {
         const key = CONFIG.HERO.characteristicsXMLKey[characteristic.getAttribute('XMLID')]
         value = CONFIG.HERO.characteristicDefaults[key] + parseInt(characteristic.getAttribute('LEVELS'))
-
-        const velocity = Math.round((spd * value) / 12)
+        changes[`system.characteristics.${key}.value`] = value
+        changes[`system.characteristics.${key}.max`] = value
+        changes[`system.characteristics.${key}.core`] = value
 
         if (key in CONFIG.HERO.movementPowers) {
             let name = characteristic.getAttribute('NAME')
             name = (name === '') ? characteristic.getAttribute('ALIAS') : name
-
+            const velocity = Math.round((spd * value) / 12)
             const itemData = {
                 name: name,
                 type: 'movement',
@@ -97,10 +98,6 @@ export async function applyCharacterSheet(xmlDoc) {
             }
 
             await HeroSystem6eItem.create(itemData, { parent: this.actor })
-        } else {
-            changes[`system.characteristics.${key}.value`] = value
-            changes[`system.characteristics.${key}.max`] = value
-            changes[`system.characteristics.${key}.base`] = CONFIG.HERO.characteristicDefaults[key]
         }
     }
 
@@ -190,6 +187,19 @@ export async function applyCharacterSheet(xmlDoc) {
     for (const skill of skills.children) {
         await uploadSkill.call(this, skill)
     }
+
+    // Perception Skill
+    const itemDataPerception = {
+        name: 'Perception',
+        type: 'skill',
+        system: {
+            characteristic: "int",
+            state: 'trained',
+            levels: "0"
+        }
+    }
+
+    await HeroSystem6eItem.create(itemDataPerception, { parent: this.actor })
 
     const relevantFields = ['BASECOST', 'LEVELS', 'ALIAS', 'MULTIPLIER', 'NAME', 'OPTION_ALIAS', 'SFX',
         'PDLEVELS', 'EDLEVELS', 'MDLEVELS', 'INPUT', 'OPTIONID' // FORCEFIELD
@@ -469,6 +479,16 @@ export async function uploadBasic(xml, type) {
         'system.rules': xml.getAttribute('ALIAS')
     }
 
+    // Marital Arts
+    if (xml.getAttribute('BASECOST')) itemData['system.baseCost'] = xml.getAttribute('BASECOST')
+    if (xml.getAttribute('OCV')) itemData['system.ocv'] = xml.getAttribute('OCV')
+    if (xml.getAttribute('DCV')) itemData['system.dcv'] = xml.getAttribute('DCV')
+    if (xml.getAttribute('DC')) itemData['system.dc'] = xml.getAttribute('DC')
+    if (xml.getAttribute('PHASE')) itemData['system.phase'] = xml.getAttribute('PHASE')
+    if (xml.getAttribute('ACTIVECOST')) itemData['system.activeCost'] = xml.getAttribute('ACTIVECOST')
+    if (xml.getAttribute('DISPLAY')) itemData['system.description'] = xml.getAttribute('DISPLAY')
+    if (xml.getAttribute('EFFECT')) itemData['system.effect'] = xml.getAttribute('EFFECT')
+
     await HeroSystem6eItem.create(itemData, { parent: this.actor })
 }
 
@@ -478,6 +498,8 @@ export async function uploadTalent(xml, type) {
 
     const xmlid = xml.getAttribute('XMLID')
 
+    const levels = parseInt(xml.getAttribute('LEVELS'))
+
     if (xmlid === 'GENERIC_OBJECT') { return; }
 
     let other = {}
@@ -485,7 +507,7 @@ export async function uploadTalent(xml, type) {
     switch (xmlid) {
         case ('LIGHTNING_REFLEXES_ALL'): {
             other = {
-                'levels': xml.getAttribute('LEVELS'),
+                'levels': levels,
                 'option_alias': xml.getAttribute('OPTION_ALIAS')
             }
             break;
@@ -495,12 +517,15 @@ export async function uploadTalent(xml, type) {
         }
     }
 
-    const itemData = {
+    let itemData = {
         'type': type,
         'name': name,
         'system.id': xmlid,
         'system.rules': xml.getAttribute('ALIAS'),
         'system.other': other
+    }
+    if (levels) {
+        itemData['system.levels'] = levels;
     }
 
     await HeroSystem6eItem.create(itemData, { parent: this.actor })
@@ -573,26 +598,26 @@ export async function uploadSkill(skill) {
     }
 
     // determine Skill Roll
-    if (skillData.state === 'everyman') {
-        skillData.roll = '8-'
-    } else if (skillData.state === 'familiar') {
-        skillData.roll = '8-'
-    } else if (skillData.state === 'proficient') {
-        skillData.roll = '10-'
-    } else if (skillData.state === 'trained') {
-        const charValue = ((skillData.characteristic.toLowerCase() !== 'general') && (skillData.characteristic.toLowerCase() != '')) ?
-            this.actor.system.characteristics[`${skillData.characteristic.toLowerCase()}`].value : 0
+    // if (skillData.state === 'everyman') {
+    //     skillData.roll = '8-'
+    // } else if (skillData.state === 'familiar') {
+    //     skillData.roll = '8-'
+    // } else if (skillData.state === 'proficient') {
+    //     skillData.roll = '10-'
+    // } else if (skillData.state === 'trained') {
+    //     const charValue = ((skillData.characteristic.toLowerCase() !== 'general') && (skillData.characteristic.toLowerCase() != '')) ?
+    //         this.actor.system.characteristics[`${skillData.characteristic.toLowerCase()}`].value : 0
 
-        const rollVal = 9 + Math.round(charValue / 5) + parseInt(skillData.levels)
-        skillData.roll = rollVal.toString() + '-'
-    } else {
-        // This is likely a Skill Enhancer.
-        // Skill Enahncers provide a discount to the purchase of asssociated skills.
-        // They no not change the roll.
-        // Skip for now.
-        HEROSYS.log(false, xmlid + ' was not included in skills.  Likely Skill Enhancer')
-        return
-    }
+    //     const rollVal = 9 + Math.round(charValue / 5) + parseInt(skillData.levels)
+    //     skillData.roll = rollVal.toString() + '-'
+    // } else {
+    //     // This is likely a Skill Enhancer.
+    //     // Skill Enahncers provide a discount to the purchase of asssociated skills.
+    //     // They no not change the roll.
+    //     // Skip for now.
+    //     HEROSYS.log(false, xmlid + ' was not included in skills.  Likely Skill Enhancer')
+    //     return
+    // }
 
     const itemData = {
         name,
@@ -621,19 +646,29 @@ export async function uploadAttack(power) {
     const levels = parseInt(power.getAttribute('LEVELS'))
     const input = power.getAttribute('INPUT')
 
+    // Attempt to calculate atvantages
+    //let advantages = 1;
+    //for (let mod in powers.)
+
+    // Active cost is required for endurance calculation.
+    // It should include all advantages (which we don't handle very well at the moment)
+    let activeCost = (levels * 5)
+    let end = Math.round(activeCost / 10 - 0.01);
+
     let itemData = {
         name,
         type: "attack",
         system: {
             class: input === "ED" ? "energy" : "physical",
             dice: levels,
-            end: 0,
+            end: end,
             extraDice: "zero",
             killing: false,
             knockbackMultiplier: 1,
             targets: "dcv",
             uses: "ocv",
             usesStrength: true,
+            activeCost: activeCost,
         }
     }
 
@@ -659,6 +694,23 @@ export async function uploadAttack(power) {
     let DOUBLEKB = power.querySelector('[XMLID="DOUBLEKB"]')
     if (DOUBLEKB) {
         itemData.system.knockbackMultiplier = 2
+    }
+
+    // Alternate Combat Value (uses OMCV against DCV)
+    let ACV = power.querySelector('[XMLID="ACV"]')
+    if (ACV) {
+        if (ACV.getAttribute('OPTION_ALIAS') === "uses OMCV against DCV") {
+            itemData.system.uses = 'omcv'
+            itemData.system.targets = 'dcv'
+        }
+        if (ACV.getAttribute('OPTION_ALIAS') === "uses OCV against DMCV") {
+            itemData.system.uses = 'ocv'
+            itemData.system.targets = 'dmcv'
+        }
+        if (ACV.getAttribute('OPTION_ALIAS') === "uses OMCV against DCV") {
+            itemData.system.uses = 'omcv'
+            itemData.system.targets = 'dcv'
+        }
     }
 
 
@@ -723,5 +775,29 @@ export async function uploadAttack(power) {
 
     if (game.settings.get(game.system.id, 'alphaTesting')) {
         ui.notifications.warn(`${xmlid} not implemented during HDC upload of ${this.actor.name}`)
+    }
+}
+
+export function SkillRollUpdateValue(item) {
+    let skillData = item.system
+    if (skillData.state === 'everyman') {
+        skillData.roll = '8-'
+    } else if (skillData.state === 'familiar') {
+        skillData.roll = '8-'
+    } else if (skillData.state === 'proficient') {
+        skillData.roll = '10-'
+    } else if (skillData.state === 'trained') {
+        const charValue = ((skillData.characteristic.toLowerCase() !== 'general') && (skillData.characteristic.toLowerCase() != '')) ?
+            item.actor.system.characteristics[`${skillData.characteristic.toLowerCase()}`].value : 0
+
+        const rollVal = 9 + Math.round(charValue / 5) + parseInt(skillData.levels)
+        skillData.roll = rollVal.toString() + '-'
+    } else {
+        // This is likely a Skill Enhancer.
+        // Skill Enahncers provide a discount to the purchase of asssociated skills.
+        // They no not change the roll.
+        // Skip for now.
+        HEROSYS.log(false, (skillData.xmlid || item.name) + ' was not included in skills.  Likely Skill Enhancer')
+        return
     }
 }
