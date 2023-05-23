@@ -18,6 +18,9 @@ export async function applyCharacterSheet(xmlDoc) {
     const image = xmlDoc.getElementsByTagName('IMAGE')[0]
 
 
+
+
+
     // let elementsToLoad = ["POWERS", "PERKS", "TALENTS", "MARTIALARTS", "DISADVANTAGES"]
 
     // Individual changes to the actor are not very effecient.
@@ -392,8 +395,25 @@ export async function applyCharacterSheet(xmlDoc) {
         await uploadBasic.call(this, equip, 'equipment')
     }
 
+    // EXTRA DC's from martial arts
+    let extraDc = 0
+    const _extraDc = martialarts.getElementsByTagName('EXTRADC')[0]
+    if (_extraDc) {
+        extraDc = parseInt(_extraDc.getAttribute("LEVELS"))
+    }
+
+    // Possible TK martiarts (very rare with GM approval; requires BAREHAND weapon element with telekinesis/Psychokinesis in notes)
+    let usesTk = false
+    const _weaponElement = martialarts.getElementsByTagName('WEAPON_ELEMENT')[0]
+    if (_weaponElement && $(_weaponElement).find('[XMLID="BAREHAND"]')[0] && $(powers).find('[XMLID="TELEKINESIS"]')[0]) {
+
+        const notes = _weaponElement.getElementsByTagName("NOTES")[0] || ""
+        if (notes.textContent.match(/kinesis/i)) {
+            usesTk = true
+        }
+    }
     for (const martialart of martialarts.children) {
-        await uploadBasic.call(this, martialart, 'martialart')
+        await uploadMartial.call(this, martialart, 'martialart', extraDc, usesTk)
     }
 
     // combat maneuvers
@@ -488,6 +508,84 @@ export async function uploadBasic(xml, type) {
     if (xml.getAttribute('ACTIVECOST')) itemData['system.activeCost'] = xml.getAttribute('ACTIVECOST')
     if (xml.getAttribute('DISPLAY')) itemData['system.description'] = xml.getAttribute('DISPLAY')
     if (xml.getAttribute('EFFECT')) itemData['system.effect'] = xml.getAttribute('EFFECT')
+
+    await HeroSystem6eItem.create(itemData, { parent: this.actor })
+}
+
+export async function uploadMartial(power, type, extraDc, usesTk) {
+    let name = power.getAttribute('NAME')
+    name = (name === '') ? power.getAttribute('ALIAS') : name
+
+    const xmlid = power.getAttribute('XMLID')
+
+    if (xmlid === 'GENERIC_OBJECT') { return; }
+
+    let itemData = {
+        'type': type,
+        'name': name,
+        'system.id': xmlid,
+        'system.rules': power.getAttribute('ALIAS')
+    }
+
+    // Marital Arts
+    if (power.getAttribute('BASECOST')) itemData['system.baseCost'] = power.getAttribute('BASECOST')
+    if (power.getAttribute('OCV')) itemData['system.ocv'] = parseInt(power.getAttribute('OCV'))
+    if (power.getAttribute('DCV')) itemData['system.dcv'] = parseInt(power.getAttribute('DCV'))
+    if (power.getAttribute('DC')) itemData['system.dc'] = parseInt(power.getAttribute('DC'))
+    if (power.getAttribute('PHASE')) itemData['system.phase'] = power.getAttribute('PHASE')
+    if (power.getAttribute('ACTIVECOST')) itemData['system.activeCost'] = power.getAttribute('ACTIVECOST')
+    if (power.getAttribute('DISPLAY')) itemData['system.description'] = power.getAttribute('DISPLAY')
+    if (power.getAttribute('EFFECT')) itemData['system.effect'] = power.getAttribute('EFFECT')
+
+    await HeroSystem6eItem.create(itemData, { parent: this.actor })
+
+    // Make attack out of the martial art
+    itemData.type = 'attack'
+    itemData.img = "icons/svg/downgrade.svg";
+
+    // Strike like?
+    if (itemData['system.effect']) {
+        let dc = itemData['system.dc'] + extraDc
+        if (itemData['system.effect'].match(/NORMALDC/)) {
+            itemData['system.knockbackMultiplier'] = 1
+            if (usesTk) {
+                itemData['system.usesTk'] = true
+            } else {
+                itemData['system.usesStrength'] = true
+            }
+            itemData['system.dice'] = dc
+        }
+
+        if (itemData['system.effect'].match(/KILLINGDC/)) {
+            let dice = Math.floor(dc / 3);
+            let pips = dc - (dice * 3);
+            let extraDice = 'zero'
+            if (pips == 1) extraDice = 'pip'
+            if (pips == 2) extraDice = 'half'
+            itemData['system.knockbackMultiplier'] = 1
+            if (usesTk) {
+                itemData['system.usesTk'] = true
+            } else {
+                itemData['system.usesStrength'] = true
+            }
+            itemData['system.killing'] = true
+            itemData['system.dice'] = dice
+            itemData['system.extraDice'] = extraDice
+        }
+    }
+
+    // If this isn't an attack where we roll dice, so ignore it for now
+    if (!itemData['system.dice']) {
+        return;
+    }
+
+
+    // Extra DC's is not an attack (ignore for now)
+    if (xmlid === "EXTRADC") return;
+
+    // WEAPON_ELEMENT is not an attack (ignore for now)
+    if (xmlid === "WEAPON_ELEMENT") return;
+
 
     await HeroSystem6eItem.create(itemData, { parent: this.actor })
 }
@@ -630,6 +728,7 @@ export async function uploadSkill(skill) {
 
 export async function uploadAttack(power) {
     const xmlid = power.getAttribute('XMLID')
+
     let configPowerInfo = CONFIG.HERO.powers[xmlid]
 
     // Verify we have an attack

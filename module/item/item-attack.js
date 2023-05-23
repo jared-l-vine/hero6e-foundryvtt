@@ -19,6 +19,20 @@ export async function AttackOptions(item) {
         str: item.actor.system.characteristics.str.value
     }
 
+    // Uses Tk
+    let tkItems = item.actor.items.filter(o => o.system.rules == "TELEKINESIS");
+    let tkStr = 0
+    for (const item of tkItems) {
+        tkStr += parseInt(item.system.LEVELS) || 0
+    }
+    if (item.system.usesTk) {
+        if (item.system.usesStrength) {
+            data.str += tkStr
+        } else {
+            data.str = tkStr
+        }
+    }
+
     if (game.settings.get("hero6efoundryvttv2", "hit locations")) {
         data.useHitLoc = true;
         data.hitLoc = CONFIG.HERO.hitLocations;
@@ -82,15 +96,17 @@ export async function AttackToHit(item, options) {
     let rollEquation = "11 + " + hitCharacteristic;
     tags.push({ value: hitCharacteristic, name: itemData.uses })
 
-    if (parseInt(item.system.toHitMod) > 0) {
-        rollEquation = modifyRollEquation(rollEquation, item.system.toHitMod);
-        tags.push({ value: item.system.toHitMod, name: item.name })
+    item.system.ocv = parseInt(item.system.ocv) || 0
+    if (parseInt(item.system.ocv) != 0) {
+
+        rollEquation = modifyRollEquation(rollEquation, item.system.ocv);
+        tags.push({ value: item.system.ocv, name: item.name })
     }
 
-    if (parseInt(options.toHitMod) > 0) {
-        rollEquation = modifyRollEquation(rollEquation, options.toHitMod);
-        tags.push({ value: options.toHitMod, name: "toHitMod" })
-    }
+    // if (parseInt(options.toHitMod) > 0) {
+    //     rollEquation = modifyRollEquation(rollEquation, options.toHitMod);
+    //     tags.push({ value: options.toHitMod, name: "toHitMod" })
+    // }
 
     let noHitLocationsPower = false;
     if (game.settings.get("hero6efoundryvttv2", "hit locations") && options.aim !== "none" && !noHitLocationsPower) {
@@ -107,6 +123,12 @@ export async function AttackToHit(item, options) {
     let hitRollText = "Hits a " + toHitChar + " of " + hitRollData;
     // -------------------------------------------------
 
+
+
+    // Endurance
+    //let strEnd = Math.max(1, Math.round(str / 10))
+    //item.system.endEstimate += strEnd
+
     let useEnd = false;
     let enduranceText = "";
     if (game.settings.get("hero6efoundryvttv2", "use endurance")) {
@@ -116,11 +138,13 @@ export async function AttackToHit(item, options) {
         let newEnd = valueEnd - itemEnd;
         let spentEnd = itemEnd;
 
-        if (itemData.usesStrength) {
-            let strEnd = Math.max(1, Math.round(actor.system.characteristics.str.value / 10))
-            if (options.effectivestr <= actor.system.characteristics.str.value) {
-                strEnd = Math.round(options.effectivestr / 10);
-            }
+        if (itemData.usesStrength || itemData.usesTk) {
+            // let strEnd = Math.max(1, Math.round(actor.system.characteristics.str.value / 10))
+            // if (options.effectivestr <= actor.system.characteristics.str.value) {
+            //     strEnd = Math.round(options.effectivestr / 10);
+            // }
+            let strEnd = Math.max(1, Math.round(options.effectivestr / 10));
+            item.system.endEstimate += strEnd
 
             newEnd = parseInt(newEnd) - parseInt(strEnd);
             spentEnd = parseInt(spentEnd) + parseInt(strEnd);
@@ -131,6 +155,7 @@ export async function AttackToHit(item, options) {
         } else {
             enduranceText = 'Spent ' + spentEnd + ' END';
         }
+
 
 
         // none: "No Automation",
@@ -245,12 +270,10 @@ export async function _onRollDamage(event) {
 
     let pip = 0;
 
-    if (itemData.usesStrength) {
-        // let strDamage = Math.floor((actor.system.characteristics.str.value - 10)/5)
-        // if (toHitData.effectivestr <= actor.system.characteristics.str.value) {
-        //     strDamage = Math.floor((toHitData.effectivestr)/5);
-        // }
-        let strDamage = Math.floor(Math.max(0, parseInt(toHitData.effectivestr)) / 5) //Math.floor(Math.max(toHitData.effectivestr, actor.system.characteristics.str.value)/5)
+    if (itemData.usesStrength || itemData.usesTk) {
+
+        let strDamage = 0;
+        strDamage += Math.floor(Math.max(0, parseInt(toHitData.effectivestr)) / 5)
         if (strDamage > 0) {
             if (itemData.killing) {
                 let strDice = Math.floor(strDamage / 3)
@@ -520,6 +543,18 @@ export async function _onApplyDamageToSpecificToken(event, tokenId) {
 
     let damageRenderedResult = await newRoll.render()
 
+    // Attack may have additional effects, such as those from martial arts
+    let effectsFinal = deepClone(damageDetail.effects)
+    if (item.system.effect) {
+        for (const effect of item.system.effect.split(',')) {
+
+            // Do not include [NORMALDC] strike and similar
+            if (effect.indexOf("[") == -1 && !effect.match(/strike/i)) {
+                effectsFinal += effect
+            }
+        }
+    }
+
 
     let cardData = {
         item: item,
@@ -540,7 +575,7 @@ export async function _onApplyDamageToSpecificToken(event, tokenId) {
         hasStunMultiplierRoll: damageDetail.hasStunMultiplierRoll,
 
         // effects
-        effects: damageDetail.effects,
+        effects: effectsFinal,
 
         // defense
         defense: defense,

@@ -68,7 +68,25 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
                     item.system.endEstimate += strEnd
                 }
 
+                // Add in TK
+                if (item.system.usesTk) {
 
+                    let tkItems = data.actor.items.filter(o => o.system.rules == "TELEKINESIS");
+                    let str = 0
+                    for (const item of tkItems) {
+                        str += parseInt(item.system.LEVELS) || 0
+                    }
+                    let str5 = Math.floor(str / 5)
+                    if (item.system.killing) {
+                        pips += str5
+                    } else {
+                        pips += str5 * 3
+                    }
+
+                    // Endurance
+                    let strEnd = Math.max(1, Math.round(str / 10))
+                    item.system.endEstimate += strEnd
+                }
 
                 // Convert pips to DICE
                 let fullDice = Math.floor(pips / 3)
@@ -91,6 +109,14 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
                     item.system.damage += 'K'
                 } else {
                     item.system.damage += 'N'
+                }
+
+                // Signed OCV and DCV
+                if (item.system.ocv != undefined) {
+                    item.system.ocv = ("+" + parseInt(item.system.ocv)).replace("+-", "-")
+                }
+                if (item.system.dcv != undefined) {
+                    item.system.dcv = ("+" + parseInt(item.system.dcv)).replace("+-", "-")
                 }
 
 
@@ -396,6 +422,14 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
     async _onRecovery(event) {
         const chars = this.actor.system.characteristics
+
+        // Shouldn't happen, but you never know
+        if (isNaN(parseInt(chars.stun.value))) {
+            chars.stun.value = 0
+        }
+        if (isNaN(parseInt(chars.end.value))) {
+            hars.end.value = 0
+        }
 
         let newStun = parseInt(chars.stun.value) + parseInt(chars.rec.value)
         let newEnd = parseInt(chars.end.value) + parseInt(chars.rec.value)

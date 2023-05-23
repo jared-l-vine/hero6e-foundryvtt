@@ -1,41 +1,43 @@
 {{ log 'HEROSYS ATTACK SHEET' this }}
 <form class="{{cssClass}}" autocomplete="off" data-id="{{item._id}}" data-realId="{{system.realId}}">
-    <header class="sheet-header flexrow" >
+    <header class="sheet-header flexrow">
         <img class="profile" name="img" src="{{item.img}}" title="{{item.name}}" data-edit="img" />
 
         <div class="header-details flexrow">
-            <h1 class="charname" >
+            <h1 class="charname">
                 <input name="name" type="text" value="{{item.name}}" placeholder="Attack Name" />
             </h1>
         </div>
     </header>
 
     {{!-- Sheet Body --}}
-    <section class="sheet-body" >
-        <textarea
-            placeholder="Attack Description"
-            class="power-card-power-description textarea input"
-            name="system.rules"
-        >{{system.rules}}</textarea>
+    <section class="sheet-body">
+        <textarea placeholder="Attack Description" class="power-card-power-description textarea input"
+            name="system.rules">{{system.rules}}</textarea>
 
-        <div class="form-group" >
+        <div class="form-group">
             <label>{{localize "Items.Attack.EndCost"}}</label>
             <input type="text" name="system.end" value="{{system.end}}" data-dtype="Number" />
         </div>
 
-        <div class="form-group" >
+        <div class="form-group">
             <label>{{localize "Items.Attack.Class"}}</label>
             <select name="system.class" data-dtype="text">
                 {{selectOptions config.attackClasses selected=system.class}}
             </select>
         </div>
 
-        <div class="form-group" >
-            <label>{{localize "Items.Attack.ToHitModifier"}}</label>
-            <input type="text" name="system.toHitMod" value="{{system.toHitMod}}" data-dtype="Number" />
+        <div class="form-group">
+            <label>{{localize "Items.Attack.OcvMod"}}</label>
+            <input type="text" name="system.ocv" value="{{system.ocv}}" data-dtype="Number" />
         </div>
 
-        <div class="form-group" >
+        <div class="form-group">
+            <label>{{localize "Items.Attack.DcvMod"}}</label>
+            <input type="text" name="system.dcv" value="{{system.dcv}}" data-dtype="Number" />
+        </div>
+
+        <div class="form-group">
             <label>{{localize "Items.Attack.Value"}}</label>
             <input type="text" name="system.dice" value="{{system.dice}}" data-dtype="Number" />
             D6
@@ -44,58 +46,65 @@
             </select>
         </div>
 
-        <div class="form-group" >
+        <div class="form-group">
             <label>{{localize "Items.Attack.KillingAttack"}}</label>
             <input type="checkbox" name="system.killing" {{checked system.killing}} data-dtype="Boolean" />
         </div>
 
         <div class="form-group">
-            <label>Levels of Armor Piercing</label>
-         </div>
+            <label>{{localize "Items.Attack.Piercing"}}</label>
+            <input type="text" name="system.piercing" value="{{system.piercing}}" data-dtype="Number" />
+        </div>
 
         <div class="form-group">
-            <label>Levels of Penetrating</label>
-         </div>
+            <label>{{localize "Items.Attack.Penetrating"}}</label>
+            <input type="text" name="system.penetrating" value="{{system.penetrating}}" data-dtype="Number" />
+        </div>
 
         {{!-- <div class="form-group">
             <label>Total Attack Advantages</label>
             <input type="text" name="system.advantages" value="{{data.advantages}}" data-dtype="Number" />
         </div> --}}
 
-        <div class="form-group" >
+        <div class="form-group">
             <label>{{localize "Items.Attack.StunBodyDamage"}}</label>
-            
+
             <select name="system.stunBodyDamage" data-dtype="text">
                 {{selectOptions config.stunBodyDamages selected=system.stunBodyDamage}}
             </select>
         </div>
 
 
-        <div class="form-group" >
+        <div class="form-group">
             <label>{{localize "Items.Attack.TargetsUsing"}}</label>
             <select name="system.uses" data-dtype="text">
                 {{selectOptions config.attacksWith selected=system.uses}}
             </select>
         </div>
 
-        <div class="form-group" >
+        <div class="form-group">
             <label>{{localize "Items.Attack.AvoidedBy"}}</label>
             <select name="system.targets" data-dtype="text">
                 {{selectOptions config.defendsWith selected=system.targets}}
             </select>
         </div>
 
-        <div class="form-group" >
+        <div class="form-group">
             <label>{{localize "Items.Attack.DoesKnockback"}}</label>
-             <select name="system.knockbackMultiplier" data-dtype="text">
+            <select name="system.knockbackMultiplier" data-dtype="text">
                 {{selectOptions config.knockbackMultiplier selected=system.knockbackMultiplier}}
             </select>
 
         </div>
 
-        <div class="form-group" >
+        <div class="form-group">
             <label>{{localize "Items.Attack.UsesStrength"}}</label>
             <input type="checkbox" name="system.usesStrength" {{checked system.usesStrength}} data-dtype="Boolean" />
+        </div>
+
+        <div class="form-group">
+            <label>{{localize "Items.Attack.UsesTk"}}</label>
+            <input type="checkbox" name="system.usesTk" {{checked system.usesTk}} data-dtype="Boolean" />
         </div>
 
         <div class="form-group">
@@ -104,17 +113,15 @@
                 {{selectOptions config.areaOfEffect.types selected=system.areaOfEffect.type}}
             </select>
             <label style="margin-left: 10px;">{{localize "Items.Attack.Value"}}</label>
-            <input type="text" name="system.areaOfEffect.value" value="{{system.areaOfEffect.value}}" data-dtype="Number" />
+            <input type="text" name="system.areaOfEffect.value" value="{{system.areaOfEffect.value}}"
+                data-dtype="Number" />
         </div>
 
-        <div class="form-group" >
+        <div class="form-group">
             <label>{{localize "Items.Attack.CustomEffects"}}</label>
-            <textarea
-                placeholder="Attack Description"
-                class="power-card-power-description textarea input"
-                name="system.effects"
-            >{{item.system.effects}}</textarea>
-            
+            <textarea placeholder="Attack Description" class="power-card-power-description textarea input"
+                name="system.effect">{{item.system.effect}}</textarea>
+
         </div>
     </section>
 </form>

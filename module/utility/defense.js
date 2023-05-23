@@ -22,10 +22,9 @@ function determineDefense(targetActor, attackItem) {
     let knockbackResistance = 0;
 
     // Armor Piericng of natural PD and ED
-    if (piericng)
-    {
-        PD = Math.round(PD/2)
-        ED = Math.round(ED/2)
+    if (piericng) {
+        PD = Math.round(PD / 2)
+        ED = Math.round(ED / 2)
     }
 
     // Impenetrable (defense vs penetrating)
@@ -36,12 +35,12 @@ function determineDefense(targetActor, attackItem) {
     // tags (defenses) will be displayed on apply damage card
     let defenseTags = []
 
-    switch(attackType) {
+    switch (attackType) {
         case 'physical':
-            defenseTags.push({name: 'PD', value: PD, resistant: false, title:'Natural PD'})
+            defenseTags.push({ name: 'PD', value: PD, resistant: false, title: 'Natural PD' })
             break;
         case 'energy':
-            defenseTags.push({name: 'ED', value: PD, resistant: false, title:'Natural ED'})
+            defenseTags.push({ name: 'ED', value: PD, resistant: false, title: 'Natural ED' })
             break;
         case 'mental':
             break;
@@ -59,17 +58,15 @@ function determineDefense(targetActor, attackItem) {
                 const hardened = parseInt(i.system.hardened)
 
                 // Armor Piercing
-                if (piericng > hardened)
-                {
-                    valueAp = Math.round(valueAp/2)
+                if (piericng > hardened) {
+                    valueAp = Math.round(valueAp / 2)
                 }
 
                 // Impenetrable
                 const impenetrable = parseInt(i.system.impenetrable)
 
                 // Penetrating
-                if (penetrating <= impenetrable)
-                {
+                if (penetrating <= impenetrable) {
                     valueImp = valueAp
                     //console.log("Amor Piercing", i.name, value, valueAp)
                 }
@@ -78,44 +75,43 @@ function determineDefense(targetActor, attackItem) {
                 switch ((i.system.resistant ? "r" : "") + i.system.defenseType) {
                     case "pd": // Physical Defense
                         PD += valueAp;
-                        if (attackType === 'physical') 
-                        {
-                            defenseTags.push({name: 'PD', value: valueAp, resistant: false, title: i.name})
+                        if (attackType === 'physical') {
+                            defenseTags.push({ name: 'PD', value: valueAp, resistant: false, title: i.name })
                             impenetrableValue += valueImp
                         }
                         break;
                     case "ed": // Energy Defense
                         ED += valueAp
                         if (attackType === 'energy') {
-                            defenseTags.push({name: 'ED', value: valueAp, resistant: false, title: i.name})
+                            defenseTags.push({ name: 'ED', value: valueAp, resistant: false, title: i.name })
                             impenetrableValue += valueImp
                         }
                         break;
                     case "md": // Mental Defense
                         MD += valueAp
                         if (attackType === 'mental') {
-                            defenseTags.push({name: 'MD', value: valueAp, resistant: false, title: i.name})
+                            defenseTags.push({ name: 'MD', value: valueAp, resistant: false, title: i.name })
                             impenetrableValue += valueImp
                         }
                         break;
                     case "rpd": // Resistant PD
                         rPD += valueAp
                         if (attackType === 'physical') {
-                            defenseTags.push({name: 'rPD', value: valueAp, resistant: true, title: i.name})
+                            defenseTags.push({ name: 'rPD', value: valueAp, resistant: true, title: i.name })
                             impenetrableValue += valueImp
                         }
                         break;
                     case "red": // Resistant ED
                         rED += valueAp
                         if (attackType === 'energy') {
-                            defenseTags.push({name: 'rED', value: valueAp, resistant: true, title: i.name})
+                            defenseTags.push({ name: 'rED', value: valueAp, resistant: true, title: i.name })
                             impenetrableValue += valueImp
                         }
                         break;
                     case "rmd": // Resistant MD
                         rMD += valueAp
                         if (attackType === 'mental') {
-                            defenseTags.push({name: 'rMD', value: valueAp, resistant: true, title: i.name})
+                            defenseTags.push({ name: 'rMD', value: valueAp, resistant: true, title: i.name })
                             impenetrableValue += valueImp
                         }
                         break;
@@ -140,11 +136,13 @@ function determineDefense(targetActor, attackItem) {
                     case "kbr": // Knockback Resistance
                         knockbackResistance += value;
                         if (attackType != 'mental' && game.settings.get("hero6efoundryvttv2", "knockback")) {
-                            defenseTags.push({name: 'KB Resistance', value: value, title: i.name})
+                            defenseTags.push({ name: 'KB Resistance', value: value, title: i.name })
                         }
                         break;
                     default:
-                        console.log(i.system.defenseType + " not yet supported!");
+                        if (game.settings.get(game.system.id, 'alphaTesting')) {
+                            console.log(i.system.defenseType + " not yet supported!");
+                        }
                         break;
                 }
             }
@@ -205,7 +203,7 @@ function determineDefense(targetActor, attackItem) {
     let resistantValue = 0;
     let damageReductionValue = 0;
     let damageNegationValue = 0;
-    switch(attackType) {
+    switch (attackType) {
         case 'physical':
             defenseValue = PD;
             resistantValue = rPD;
@@ -228,7 +226,7 @@ function determineDefense(targetActor, attackItem) {
             break;
     }
 
-    return [ defenseValue, resistantValue, impenetrableValue, damageReductionValue, damageNegationValue, knockbackResistance, defenseTags ];
+    return [defenseValue, resistantValue, impenetrableValue, damageReductionValue, damageNegationValue, knockbackResistance, defenseTags];
 }
 
 export { determineDefense };

@@ -65,7 +65,7 @@
         <div class="tags">
             {{#each tags as |tag id|}}
             <span class="tag tag_transparent">{{tag.name}}
-                {{#unless tag.hidePlus}}+{{/unless}}{{tag.value}}
+                {{#if (gte tag.value 0)}}+{{/if}}{{tag.value}}
             </span>
             {{/each}}
         </div>
