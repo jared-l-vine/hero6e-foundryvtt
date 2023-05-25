@@ -1,3 +1,7 @@
+# Version 2.1.7-alpha
+- Improved custom maneuver support. [#91](https://github.com/dmdorman/hero6e-foundryvtt/issues/91)
+- Improved 5e support.  Added Comeliness (COM) characteristic.  Fixed OCV/DCV/STUN figured characteristics.  Fixed characteristic costs. [#104](https://github.com/dmdorman/hero6e-foundryvtt/issues/104)
+
 # Version 2.1.6-alpha
 - Added 3rd attribute bar. Expectation is to show body, stun, and endurance for most tokens.  [#75](https://github.com/dmdorman/hero6e-foundryvtt/issues/75)
 - New default character sheet.
