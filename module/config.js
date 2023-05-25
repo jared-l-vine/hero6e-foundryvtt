@@ -207,6 +207,17 @@ HERO.skillCharacteristics = {
     "pre": "PRE",
 };
 
+HERO.skillCharacteristics5e = {
+    "general": "General",
+    "str": "STR",
+    "dex": "DEX",
+    "con": "CON",
+    "int": "INT",
+    "ego": "EGO",
+    "pre": "PRE",
+    "com": "COM",
+};
+
 HERO.skillTraining = {
     "untrained": "Untrained",
     "familiar": "Familiar",

@@ -42,6 +42,11 @@
                         "max": 10,
                         "type": "rollable"
                     },
+                    "com": {
+                        "value": 10,
+                        "max": 10,
+                        "type": "rollable"
+                    },
                     "ocv": {
                         "max": 3,
                         "autoMod": "0",
