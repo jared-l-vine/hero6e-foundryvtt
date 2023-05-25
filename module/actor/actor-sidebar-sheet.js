@@ -428,7 +428,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             chars.stun.value = 0
         }
         if (isNaN(parseInt(chars.end.value))) {
-            hars.end.value = 0
+            chars.end.value = 0
         }
 
         let newStun = parseInt(chars.stun.value) + parseInt(chars.rec.value)

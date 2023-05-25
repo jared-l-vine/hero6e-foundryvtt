@@ -165,21 +165,21 @@ export async function applyCharacterSheet(xmlDoc) {
 
         // Base OCV & DCV = Attacker’s DEX/3
         const baseCv = Math.round(this.actor.system.characteristics.dex.max / 3)
-        figuredChanges[`system.characteristics.ocv.max`] = baseCv + this.actor.system.characteristics.ocv.max - this.actor.system.characteristics.ocv.base
-        figuredChanges[`system.characteristics.ocv.value`] = baseCv + this.actor.system.characteristics.ocv.max - this.actor.system.characteristics.ocv.base
-        figuredChanges[`system.characteristics.ocv.base`] = baseCv + this.actor.system.characteristics.ocv.max - this.actor.system.characteristics.ocv.base
-        figuredChanges[`system.characteristics.dcv.max`] = baseCv + this.actor.system.characteristics.dcv.max - this.actor.system.characteristics.dcv.base
-        figuredChanges[`system.characteristics.dcv.value`] = baseCv + this.actor.system.characteristics.dcv.max - this.actor.system.characteristics.dcv.base
-        figuredChanges[`system.characteristics.dcv.base`] = baseCv + this.actor.system.characteristics.dcv.max - this.actor.system.characteristics.dcv.base
+        figuredChanges[`system.characteristics.ocv.max`] = baseCv // + this.actor.system.characteristics.ocv.max - this.actor.system.characteristics.ocv.base
+        figuredChanges[`system.characteristics.ocv.value`] = baseCv // + this.actor.system.characteristics.ocv.max - this.actor.system.characteristics.ocv.base
+        figuredChanges[`system.characteristics.ocv.base`] = 0 //baseCv + this.actor.system.characteristics.ocv.max - this.actor.system.characteristics.ocv.base
+        figuredChanges[`system.characteristics.dcv.max`] = baseCv // + this.actor.system.characteristics.dcv.max - this.actor.system.characteristics.dcv.base
+        figuredChanges[`system.characteristics.dcv.value`] = baseCv //+ this.actor.system.characteristics.dcv.max - this.actor.system.characteristics.dcv.base
+        figuredChanges[`system.characteristics.dcv.base`] = 0 //baseCv + this.actor.system.characteristics.dcv.max - this.actor.system.characteristics.dcv.base
 
         //Base Ego Combat Value = EGO/3
         const baseEcv = Math.round(this.actor.system.characteristics.ego.max / 3)
-        figuredChanges[`system.characteristics.omcv.max`] = baseEcv + this.actor.system.characteristics.omcv.max - this.actor.system.characteristics.omcv.base
-        figuredChanges[`system.characteristics.omcv.value`] = baseEcv + this.actor.system.characteristics.omcv.max - this.actor.system.characteristics.omcv.base
-        figuredChanges[`system.characteristics.omcv.base`] = baseEcv + this.actor.system.characteristics.omcv.max - this.actor.system.characteristics.omcv.base
-        figuredChanges[`system.characteristics.dmcv.max`] = baseEcv + this.actor.system.characteristics.dmcv.max - this.actor.system.characteristics.dmcv.base
-        figuredChanges[`system.characteristics.dmcv.value`] = baseEcv + this.actor.system.characteristics.dmcv.max - this.actor.system.characteristics.dmcv.base
-        figuredChanges[`system.characteristics.dmcv.base`] = baseEcv + this.actor.system.characteristics.dmcv.max - this.actor.system.characteristics.dmcv.base
+        figuredChanges[`system.characteristics.omcv.max`] = baseEcv //+ this.actor.system.characteristics.omcv.max - this.actor.system.characteristics.omcv.base
+        figuredChanges[`system.characteristics.omcv.value`] = baseEcv //+ this.actor.system.characteristics.omcv.max - this.actor.system.characteristics.omcv.base
+        figuredChanges[`system.characteristics.omcv.base`] = 0 //baseEcv + this.actor.system.characteristics.omcv.max - this.actor.system.characteristics.omcv.base
+        figuredChanges[`system.characteristics.dmcv.max`] = baseEcv //+ this.actor.system.characteristics.dmcv.max - this.actor.system.characteristics.dmcv.base
+        figuredChanges[`system.characteristics.dmcv.value`] = baseEcv //+ this.actor.system.characteristics.dmcv.max - this.actor.system.characteristics.dmcv.base
+        figuredChanges[`system.characteristics.dmcv.base`] = 0 //baseEcv + this.actor.system.characteristics.dmcv.max - this.actor.system.characteristics.dmcv.base
 
 
         await this.actor.update(figuredChanges)
