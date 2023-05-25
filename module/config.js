@@ -73,6 +73,31 @@ HERO.characteristics = {
     "flying": "Flying",
 };
 
+HERO.characteristics5e = {
+    "str": "STR",
+    "dex": "DEX",
+    "con": "CON",
+    "int": "INT",
+    "ego": "EGO",
+    "pre": "PRE",
+    "com": "COM",
+    "ocv": "OCV",
+    "dcv": "DCV",
+    "omcv": "OMCV",
+    "dmcv": "DMCV",
+    "spd": "SPD",
+    "pd": "PD",
+    "ed": "ED",
+    "rec": "REC",
+    "end": "END",
+    "body": "BODY",
+    "stun": "STUN",
+    "running": "Running",
+    "swimming": "Swimming",
+    "leaping": "Leaping",
+    "flying": "Flying",
+};
+
 HERO.characteristicDefaults = {
     "str": 10,
     "dex": 10,
@@ -80,6 +105,7 @@ HERO.characteristicDefaults = {
     "int": 10,
     "ego": 10,
     "pre": 10,
+    "com": 10,
     "ocv": 3,
     "dcv": 3,
     "omcv": 3,
@@ -119,6 +145,31 @@ HERO.characteristicCosts = {
     "leaping": 1/2,
 };
 
+HERO.characteristicCosts5e = {
+    "str": 1,
+    "dex": 3,
+    "con": 2,
+    "int": 1,
+    "ego": 2,
+    "pre": 1,
+    "com": 1/2,
+    "ocv": 5,
+    "dcv": 5,
+    "omcv": 3,
+    "dmcv": 3,
+    "spd": 10,
+    "pd": 1,
+    "ed": 1,
+    "rec": 2,
+    "end": 1/3,
+    "body": 2,
+    "stun": 1/2,
+    "running": 1,
+    "swimming": 1/2,
+    "leaping": 1/2,
+    
+};
+
 
 HERO.characteristicsXMLKey = {
     "STR": "str",
@@ -127,6 +178,7 @@ HERO.characteristicsXMLKey = {
     "INT": "int",
     "EGO": "ego",
     "PRE": "pre",
+    "COM": "com",
     "OCV": "ocv",
     "DCV": "dcv",
     "OMCV": "omcv",

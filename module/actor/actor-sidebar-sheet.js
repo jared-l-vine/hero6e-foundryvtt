@@ -147,12 +147,32 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         // Characteristics
         const characteristicSet = []
 
-        for (const [key, characteristic] of Object.entries(data.actor.system.characteristics)) {
-            characteristic.key = key
-            if (!CONFIG.HERO.characteristicCosts[key]) continue;
-            characteristic.name = CONFIG.HERO.characteristics[key]
-            characteristic.base = CONFIG.HERO.characteristicDefaults[key]
-            characteristic.cost = Math.ceil((characteristic.core - characteristic.base) * CONFIG.HERO.characteristicCosts[key])
+        // Caracteristics for 6e
+        let characteristicKeys = Object.keys(CONFIG.HERO.characteristicCosts) //Object.entries(data.actor.system.characteristics)
+
+        // Characteristics for 5e
+        if (data.actor.system.is5e) {
+            characteristicKeys = Object.keys(CONFIG.HERO.characteristicCosts5e)
+        }
+
+        for (const key of characteristicKeys) {
+            let characteristic = data.actor.system.characteristics[key]
+            //characteristic.key = key
+            if (!characteristic.base) {
+                characteristic.base = CONFIG.HERO.characteristicDefaults[key]
+            }
+
+            if (data.actor.system.is5e) {
+                if (!CONFIG.HERO.characteristicCosts5e[key]) continue;
+                characteristic.name = CONFIG.HERO.characteristics5e[key]
+                characteristic.cost = Math.ceil((characteristic.core - characteristic.base) * CONFIG.HERO.characteristicCosts5e[key])
+
+            }
+            else {
+                if (!CONFIG.HERO.characteristicCosts[key]) continue;
+                characteristic.name = CONFIG.HERO.characteristics[key]
+                characteristic.cost = Math.ceil((characteristic.core - characteristic.base) * CONFIG.HERO.characteristicCosts[key])
+            }
             if (isNaN(characteristic.cost)) {
                 characteristic.cost = "";
             }
@@ -223,7 +243,46 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
                 characteristic.notes = `lift ${_lift}, throw ${_throw}m`
             }
-            if (key == 'leaping') characteristic.notes = `${characteristic.value}m forward, ${Math.round(characteristic.value / 2)}m upward`
+
+            if (data.actor.system.is5e) {
+
+
+                if (key == 'leaping') characteristic.notes = `${characteristic.value}m forward, ${Math.round(characteristic.value / 2)}m upward`
+
+                if (key == 'pd') {
+                    characteristic.notes = '5e figured STR/5'
+                }
+
+                if (key == 'ed') {
+                    characteristic.notes = '5e figured STR/5'
+                }
+
+                if (key == 'spd') {
+                    characteristic.notes = '5e figured 1 + DEX/10'
+                }
+
+                if (key == 'rec') {
+                    characteristic.notes = "5e figured STR/5 + CON/5"
+                }
+
+                if (key == 'end') {
+                    characteristic.notes = '5e figured 2 x CON'
+                }
+
+                if (key == 'stun') {
+                    characteristic.notes = '5e figured BODY+STR/2+CON/2'
+                }
+
+                if (['ocv', 'dcv'].includes(key)) {
+                    characteristic.base = ''
+                    characteristic.notes = '5e figured DEX/3'
+                }
+
+                if (['omcv', 'dmcv'].includes(key)) {
+                    characteristic.base = ''
+                    characteristic.notes = '5e figured EGO/3'
+                }
+            }
 
             characteristicSet.push(characteristic)
         }
