@@ -466,6 +466,9 @@ HERO.powers = {
     "TUNNELING": { powerType: ["movement"]},
     "RUNNING": { powerType: ["movement"]},
 
+    // Powers can include Talents
+    "COMBAT_LUCK": {powerType: ["talent"]},
+
 
     // Powers can include Skills.
     "ACROBATICS": {powerType: ["skill"]},
