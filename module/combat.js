@@ -519,8 +519,6 @@ export class HeroSystem6eCombat extends Combat {
 
                     if (typeof allInitiatives === 'undefined' || allInitiatives === null) { continue; }
 
-                    HEROSYS.log(heroTurnSet[j])
-
                     for (let k = 0; k < allInitiatives.length; k++) {
                         const fakeCombatantData = {
                             'name': allInitiatives[k][0],
@@ -534,7 +532,8 @@ export class HeroSystem6eCombat extends Combat {
                             'visible': heroTurnSet[j].visible,
                             'token': heroTurnSet[j].token,
                             'owner': heroTurnSet[j].owner,
-                            'resource': heroTurnSet[j].resource
+                            'resource': heroTurnSet[j].resource,
+                            'id': heroTurnSet[j].id
                         }
 
                         segments[i].push(fakeCombatantData)
