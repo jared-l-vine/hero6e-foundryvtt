@@ -542,6 +542,10 @@ export class HeroSystem6eCombat extends Combat {
                     segments[i].push(heroTurnSet[j]);
                 }
             }
+
+            segments[i].sort(function(a, b) {
+                return  b.initiative - a.initiative
+            });
         }
 
         this.segment = Math.clamped(this.segment, 1, 12) || 12;
