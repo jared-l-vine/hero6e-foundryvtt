@@ -109,7 +109,7 @@ export async function applyCharacterSheet(xmlDoc) {
     // Initial 5e support
     // 5th edition has no edition designator, so assuming if there is no 6E then it is 5E.
     if (characterTemplate.includes("builtIn.") && !characterTemplate.includes("6E.")) {
-        const figuredChanges = []
+        const figuredChanges = {}
         figuredChanges[`system.is5e`] = true  // used in item-attack.js to modify killing attack stun multiplier
 
         // One major difference between 5E and 6E is figured characteristics.
@@ -276,7 +276,7 @@ export async function applyCharacterSheet(xmlDoc) {
             }
         }
 
-        const modifiers = []
+        const modifiers = {}
         for (const modifier of power.children) {
             const xmlidModifier = modifier.getAttribute('XMLID')
 
