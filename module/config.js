@@ -41,6 +41,27 @@ HERO.defenseTypes = {
     "df": "Deflection"
 };
 
+HERO.defenseTypes5e = {
+    "pd": "Physical Defense",
+    "ed": "Energy Defense",
+    "md": "Mental Defense",
+    "rpd": "Resistant PD",
+    "red": "Resistant ED",
+    "rmd": "Resistant MD",
+    "drp": "Damage Reduction Physical",
+    "dre": "Damage Reduction Energy",
+    "drm": "Damage Reduction Mental",
+    "dnp": "Damage Negation Physical",
+    "dne": "Damage Negation Energy",
+    "dnm": "Damage Negation Mental",
+    "powd": "Power Defense",
+    "kbr": "Knockback Resistance",
+    "fd": "Flash Defense",
+    "br": "Barrier",
+    "df": "Deflection",
+    "low": "Lack of Weakness"
+};
+
 HERO.attackClasses = {
     "physical": "Physical",
     "energy": "Energy",
@@ -392,6 +413,7 @@ HERO.powers = {
     "DETECT": {powerType: ["sense"]},
     "TARGETINGSENSE": {powerType: ["sense"]},
     "TRACKINGSENSE": {powerType: ["sense"]},
+    "FINDWEAKNESS": {powerType: ["sense", "special"]},
     
 
     // Attack
@@ -457,6 +479,15 @@ HERO.powers = {
         range: "self", 
         costEnd: false 
     },
+    "LACKOFWEAKNESS": { powerType: ["defense", "special"], 
+        name: "Knockback Resistance", 
+        percievability: "imperceptible", 
+        duration: "persistent", 
+        target: "self only", 
+        range: "self", 
+        costEnd: false 
+    },
+    
 
     // Movement
     "FLIGHT": { powerType: ["movement"]},

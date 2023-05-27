@@ -1,4 +1,3 @@
-
 {{log 'item-defense-sheet' this}}
 <form class="{{cssClass}}" autocomplete="off" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
     <header class="sheet-header flexrow">
@@ -13,16 +12,17 @@
 
     {{!-- Sheet Body --}}
     <section class="sheet-body">
-        <textarea
-            placeholder="Defense Description"
-            class="power-card-power-description textarea input"
-            name="system.rules"
-        >{{system.rules}}</textarea>
+        <textarea placeholder="Defense Description" class="power-card-power-description textarea input"
+            name="system.rules">{{system.rules}}</textarea>
 
         <div class="form-group">
             <label>Defense Type</label>
             <select name="system.defenseType" data-dtype="text">
+                {{#if item.actor.system.is5e}}
+                {{selectOptions config.defenseTypes5e selected=system.defenseType}}
+                {{else}}
                 {{selectOptions config.defenseTypes selected=system.defenseType}}
+                {{/if}}
             </select>
         </div>
 

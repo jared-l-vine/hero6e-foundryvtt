@@ -124,7 +124,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
             // Defense
             if (item.type == 'defense') {
-                item.system.description = CONFIG.HERO.defenseTypes[item.system.defenseType]
+                item.system.description = CONFIG.HERO.defenseTypes[item.system.defenseType] || CONFIG.HERO.defenseTypes5e[item.system.defenseType]
             }
 
             if (item.type == 'martialart') {

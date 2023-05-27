@@ -324,6 +324,14 @@ export class HeroSystem6eActor extends Actor {
                     addedDefense = true
                 }
 
+                //LACKOFWEAKNESS  
+                if (power.system.rules == "LACKOFWEAKNESS" && !addedDefense) {
+                    itemData.system.defenseType = 'low'
+                    itemData.system.value = parseInt(power.system.LEVELS)
+                    await HeroSystem6eItem.create(itemData, { parent: this })
+                    addedDefense = true
+                }
+
 
                 if (!addedDefense) {
                     if (game.settings.get(game.system.id, 'alphaTesting')) {
