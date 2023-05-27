@@ -1,11 +1,11 @@
 # Version 2.1.7-alpha
 - Improved custom maneuver support. [#91](https://github.com/dmdorman/hero6e-foundryvtt/issues/91)
-- Improved 5e support.  
+- Improved 5e support:
   - Added Comeliness (COM) characteristic.  
   - Fixed OCV/DCV/STUN figured characteristics. [#104](https://github.com/dmdorman/hero6e-foundryvtt/issues/104) 
   - Fixed characteristic costs. 
   - Lack of Weakness as a defense (no automation). [#106](https://github.com/dmdorman/hero6e-foundryvtt/issues/106)
-  - Added support for the Armor and Growth powers. [#108](https://github.com/dmdorman/hero6e-foundryvtt/issues/108)
+  - Added support for the Armor (Resistant Protection) and Growth powers. [#108](https://github.com/dmdorman/hero6e-foundryvtt/issues/108)
  
 
 # Version 2.1.6-alpha
@@ -14,7 +14,7 @@
 - Added Perception as a skill [#97](https://github.com/dmdorman/hero6e-foundryvtt/issues/97)
 - Skill rolls dynamically change with characteristic changes.
 - Improved damage dice and END estimation listed on sheet to account for strength. [#83](https://github.com/dmdorman/hero6e-foundryvtt/issues/83)
-- Fixed mislabled rED and added MD defense summary to left panel of character sheet [#86](https://github.com/dmdorman/hero6e-foundryvtt/issues/86)
+- Fixed mislabeled rED and added MD defense summary to left panel of character sheet [#86](https://github.com/dmdorman/hero6e-foundryvtt/issues/86)
 - Removed flight from characteristics. [#87](https://github.com/dmdorman/hero6e-foundryvtt/issues/87)
 - STR shows lift and throw notes [#51](https://github.com/dmdorman/hero6e-foundryvtt/issues/51)
 - Attack edit sheet relaced "Value" with "Damage Dice" [#94](https://github.com/dmdorman/hero6e-foundryvtt/issues/94)
