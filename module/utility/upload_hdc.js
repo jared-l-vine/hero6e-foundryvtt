@@ -147,7 +147,7 @@ export async function applyCharacterSheet(xmlDoc) {
         figuredChanges[`system.characteristics.rec.max`] = recLevels + recFigured
         figuredChanges[`system.characteristics.rec.value`] = recLevels + recFigured
         figuredChanges[`system.characteristics.rec.base`] = recFigured //this.actor.system.characteristics.rec.base + recFigured
-        figuredChanges[`system.characteristics.rec.core`] = recLevels + recFigured 
+        figuredChanges[`system.characteristics.rec.core`] = recLevels + recFigured
         figuredChanges[`system.characteristics.rec.figured`] = recFigured
 
         // Endurance (END) 2 x CON
@@ -165,7 +165,7 @@ export async function applyCharacterSheet(xmlDoc) {
         figuredChanges[`system.characteristics.stun.max`] = stunLevels + stunFigured
         figuredChanges[`system.characteristics.stun.value`] = stunLevels + stunFigured
         figuredChanges[`system.characteristics.stun.base`] = stunFigured //this.actor.system.characteristics.stun.base + stunFigured
-        figuredChanges[`system.characteristics.stun.core`] = stunLevels + stunFigured 
+        figuredChanges[`system.characteristics.stun.core`] = stunLevels + stunFigured
         figuredChanges[`system.characteristics.stun.figured`] = stunFigured
 
 
@@ -214,7 +214,7 @@ export async function applyCharacterSheet(xmlDoc) {
         'PDLEVELS', 'EDLEVELS', 'MDLEVELS', 'INPUT', 'OPTIONID' // FORCEFIELD
     ]
     for (const power of powers.children) {
-        const xmlid = power.getAttribute('XMLID')
+        let xmlid = power.getAttribute('XMLID')
         const name = power.getAttribute('NAME')
         const alias = power.getAttribute('ALIAS')
         const levels = power.getAttribute('LEVELS')
@@ -222,6 +222,9 @@ export async function applyCharacterSheet(xmlDoc) {
         let activeCost = levels * 5;
 
         if (xmlid === 'GENERIC_OBJECT') { continue; }
+
+        // Rebrand?
+        xmlid = CONFIG.HERO.powersRebrand[xmlid] || xmlid;
 
         // Check if we have CONFIG info about this power
         let configPowerInfo = CONFIG.HERO.powers[xmlid]
