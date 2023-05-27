@@ -185,6 +185,59 @@ export class HeroSystem6eActor extends Actor {
 
             }
 
+            if (power.system.rules === "GROWTH" && this.system.is5e) {
+                const levels = parseInt(parseInt(power.system.LEVELS))
+
+                const strAdd = Math.floor(levels) * 5
+                const bodyAdd = Math.floor(levels)
+                const stunAdd = Math.floor(levels)
+                const dcvAdd = -2 * Math.floor(levels / 3)
+
+                let activeEffect =
+                {
+                    label: power.name + " (" + power.system.LEVELS + ")",
+                    //id: newPower.system.rules,
+                    icon: 'icons/svg/upgrade.svg',
+                    origin: power.uuid,
+                    changes: [
+                        {
+                            key: "system.characteristics.str.max",
+                            value: strAdd,
+                            mode: CONST.ACTIVE_EFFECT_MODES.ADD
+                        },
+                        {
+                            key: "system.characteristics.body.max",
+                            value: bodyAdd,
+                            mode: CONST.ACTIVE_EFFECT_MODES.ADD
+                        },
+                        {
+                            key: "system.characteristics.stun.max",
+                            value: stunAdd,
+                            mode: CONST.ACTIVE_EFFECT_MODES.ADD
+                        },
+                        {
+                            key: "system.characteristics.dcv.max",
+                            value: dcvAdd,
+                            mode: CONST.ACTIVE_EFFECT_MODES.ADD
+                        }
+                    ]
+                }
+
+                // Add Active Effect to Actor (because it wasn't tranferred from item)
+                await this.addActiveEffect(activeEffect)
+
+                // Set VALUE to new MAX
+                let changes = []
+                changes["system.characteristics.str.value"] = this.system.characteristics.str.max
+                changes["system.characteristics.body.value"] = this.system.characteristics.body.max
+                changes["system.characteristics.stun.value"] = this.system.characteristics.stun.max
+                changes["system.characteristics.dcv.value"] = this.system.characteristics.dcv.max
+                changes["system.active"] = true
+                await this.update(changes)
+
+
+            }
+
             // Defenses (create new defense item)
             if (configPowerInfo && (configPowerInfo?.powerType || "").includes("defense")) {
 
