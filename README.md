@@ -85,6 +85,10 @@ This is a 6E framework, however 5E is very similar to 6E and with a few minor ch
   - Comeliness (COM)
   - Slightly different costs
 - Killing Attack stun multiplier is 1d6-1 (minimum 1)
+- Powers
+  - Armor (Resistant Protection)
+  - Growth
+  - Lack of Weakness (no automation)
 
 ## Screenshots
 
