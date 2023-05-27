@@ -181,8 +181,6 @@ export class HeroSystem6eActor extends Actor {
                 changes["system.characteristics.ed.value"] = this.system.characteristics.ed.max
                 changes["system.active"] = true
                 await this.update(changes)
-
-
             }
 
             // Defenses (create new defense item)

@@ -233,7 +233,7 @@
                         <td>{{item.system.hardened}}</td>
                         <td>{{item.system.impenetrable}}</td>
                         <td>
-                            <input class="item-toggle" type="checkbox" name="system.active" {{checked system.active}}
+                            <input class="item-toggle" type="checkbox"  {{checked system.active}}
                                 data-dtype="Boolean" />
 
                         </td>
@@ -323,7 +323,7 @@
                         <td>{{item.system.ocv}}</td>
                         <td>{{item.system.dcv}}</td>
                         <td>
-                            <input class="item-toggle" type="checkbox" name="system.active" {{checked system.active}}
+                            <input class="item-toggle" type="checkbox"  {{checked system.active}}
                                 data-dtype="Boolean" />
                         </td>
                         <td>
@@ -407,7 +407,7 @@
                         <td class="left">{{item.system.description}}</td>
                         <td>
                             {{#if item.system.showToggle}}<input class="item-toggle" type="checkbox"
-                                name="system.active" {{checked system.active}} data-dtype="Boolean" />
+                                {{checked system.active}} data-dtype="Boolean" />
                             {{/if}}
                         </td>
                         <td>
