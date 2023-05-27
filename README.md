@@ -57,7 +57,7 @@ Activating a maneuver from a character sheet will apply OCV and DCV modifiers wi
     PCs and NPCs: attack card will update stun, body, and end for all tokens/actors
 
 ## Known Limitations
-- The upload of a .HDC file is practically a requirement.  You can't create powers, skills, or equipment from scratch.  Character editing is limited within the system.
+- The upload of a .HDC file from Hero Designer is practically a requirement.  You can't create powers, skills, or equipment from scratch.  Character editing is limited within the system.
 - Untested/limited support for vehicles, automations, computers, etc.
 - Power frameworks are largely ignored, powers within the framework should work.
 - Endurance use of non-attacking powers is untracked.
