@@ -276,7 +276,7 @@ export async function applyCharacterSheet(xmlDoc) {
             }
         }
 
-        const modifiers = {}
+        const modifiers = []
         for (const modifier of power.children) {
             const xmlidModifier = modifier.getAttribute('XMLID')
 
