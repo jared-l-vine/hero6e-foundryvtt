@@ -63,9 +63,6 @@ export async function applyCharacterSheet(xmlDoc) {
     // This is a faster (bulk) operation to delete all the items
     await this.actor.deleteEmbeddedDocuments("Item", Array.from(this.actor.items.keys()))
 
-    let realCost = 0;
-    let activePoints = 0;
-
     // 6e vs 5e
     let characteristicCosts = CONFIG.HERO.characteristicCosts
     if (this.actor.system.is5e) {
@@ -77,7 +74,7 @@ export async function applyCharacterSheet(xmlDoc) {
 
 
     // determine spd upfront for velocity calculations
-    let spd
+    //let spd
     let value
     let characteristicDefaults = CONFIG.HERO.characteristicDefaults
     if (this.actor.system.is5e) {
@@ -134,16 +131,11 @@ export async function applyCharacterSheet(xmlDoc) {
         changes[`system.characteristics.${key}.basePointsPlusAdders`] = cost
         changes[`system.characteristics.${key}.realCost`] = cost
         changes[`system.characteristics.${key}.activePoints`] = cost
-        realCost += cost
-        activePoints += cost
-
-
-
 
         if (key in CONFIG.HERO.movementPowers) {
             let name = characteristic.getAttribute('NAME')
             name = (name === '') ? characteristic.getAttribute('ALIAS') : name
-            const velocity = Math.round((spd * value) / 12)
+            //const velocity = Math.round((spd * value) / 12)
             const itemData = {
                 name: name,
                 type: 'movement',
@@ -152,8 +144,8 @@ export async function applyCharacterSheet(xmlDoc) {
                     editable: false,
                     base: value,
                     value,
-                    velBase: velocity,
-                    velValue: velocity,
+                    //velBase: velocity,
+                    //velValue: velocity,
                     class: key,
                 }
             }
@@ -242,6 +234,8 @@ export async function applyCharacterSheet(xmlDoc) {
         figuredChanges[`system.characteristics.dcv.max`] = baseCv // + this.actor.system.characteristics.dcv.max - this.actor.system.characteristics.dcv.base
         figuredChanges[`system.characteristics.dcv.value`] = baseCv //+ this.actor.system.characteristics.dcv.max - this.actor.system.characteristics.dcv.base
         figuredChanges[`system.characteristics.dcv.base`] = 0 //baseCv + this.actor.system.characteristics.dcv.max - this.actor.system.characteristics.dcv.base
+        figuredChanges[`system.characteristics.ocv.realCost`] = 0
+        figuredChanges[`system.characteristics.dcv.realCost`] = 0
 
         //Base Ego Combat Value = EGO/3
         const baseEcv = Math.round(this.actor.system.characteristics.ego.max / 3)
@@ -251,24 +245,14 @@ export async function applyCharacterSheet(xmlDoc) {
         figuredChanges[`system.characteristics.dmcv.max`] = baseEcv //+ this.actor.system.characteristics.dmcv.max - this.actor.system.characteristics.dmcv.base
         figuredChanges[`system.characteristics.dmcv.value`] = baseEcv //+ this.actor.system.characteristics.dmcv.max - this.actor.system.characteristics.dmcv.base
         figuredChanges[`system.characteristics.dmcv.base`] = 0 //baseEcv + this.actor.system.characteristics.dmcv.max - this.actor.system.characteristics.dmcv.base
-
+        figuredChanges[`system.characteristics.omcv.realCost`] = 0
+        figuredChanges[`system.characteristics.dmcv.realCost`] = 0
 
         await this.actor.update(figuredChanges)
-
-        // redo costs now that we just changed them for 5e
-        realCost = 0
-        for (const characteristic of characteristics.children) {
-            const key = CONFIG.HERO.characteristicsXMLKey[characteristic.getAttribute('XMLID')]
-            realCost += this.actor.system.characteristics[key].realCost;
-        }
-        activePoints = realCost
-
     }
 
-
-
     for (const skill of skills.children) {
-        [realCost, activePoints] = await uploadSkill.call(this, skill, realCost, activePoints)
+        await uploadSkill.call(this, skill)
     }
 
     // Perception Skill
@@ -286,7 +270,7 @@ export async function applyCharacterSheet(xmlDoc) {
 
 
     for (const power of powers.children) {
-        [realCost, activePoints] = await uploadPower.call(this, power, 'power', realCost, activePoints)
+        await uploadPower.call(this, power, 'power')
     }
 
     for (const perk of perks.children) {
@@ -326,7 +310,29 @@ export async function applyCharacterSheet(xmlDoc) {
         await uploadMartial.call(this, martialart, 'martialart', extraDc, usesTk)
     }
 
-    // Character Points
+    // Calculate realCost & Active Points for bought as characteristics
+    let realCost = 0;
+    let activePoints = 0;
+    if (this.actor.system.is5e) {
+        for (const key of Object.keys(CONFIG.HERO.characteristicCosts5e)) {
+            realCost += parseInt(this.actor.system.characteristics[key].realCost || 0);
+        }
+    } else {
+        for (const key of Object.keys(CONFIG.HERO.characteristicCosts)) {
+            realCost += parseInt(this.actor.system.characteristics[key].realCost || 0);
+        }
+    }
+    activePoints = realCost
+    // Add in costs for items
+    for (let item of this.actor.items.filter(o => o.type != 'attack' && o.type != 'defense' && o.type != 'movement' && !o.system.duplicate)) {
+        console.log(item.type, item.name, item.system.realCost)
+
+        // Equipment is typically purchased with money, not character points
+        if (item.type != 'equipment') {
+            realCost += parseInt(item.system.realCost || 0);
+        }
+        activePoints += parseInt(item.system.activePoints || 0);
+    }
     await this.actor.update({ 'system.points': realCost, 'system.activePoints': activePoints })
 
     // combat maneuvers
@@ -424,12 +430,10 @@ export async function uploadBasic(xml, type) {
     if (xml.getAttribute('EFFECT')) itemData['system.effect'] = xml.getAttribute('EFFECT')
 
     const configPowerInfo = CONFIG.HERO.powers[xmlid]
-    if (configPowerInfo && configPowerInfo.name && !itemData['system.description'])
-    {
+    if (configPowerInfo && configPowerInfo.name && !itemData['system.description']) {
         itemData['system.description'] = configPowerInfo.name
     }
-    if (!itemData['system.description'])
-    {
+    if (!itemData['system.description']) {
         itemData['system.description'] = xmlid
     }
 
@@ -558,7 +562,7 @@ export async function uploadTalent(xml, type) {
     await HeroSystem6eItem.create(itemData, { parent: this.actor })
 }
 
-export async function uploadSkill(skill, realCost, activePoints) {
+export async function uploadSkill(skill, duplicate) {
     const xmlid = skill.getAttribute('XMLID')
 
     if (xmlid === 'GENERIC_OBJECT') { return; }
@@ -582,8 +586,11 @@ export async function uploadSkill(skill, realCost, activePoints) {
     name = (name === '') ? description : name
 
     const skillData = {
+        xmlid: xmlid,
+        baseCost: skill.getAttribute('BASECOST'),
         levels: skill.getAttribute('LEVELS'),
-        state: 'trained'
+        state: 'trained',
+        option: skill.getAttribute('OPTION'),
     }
 
     skillData.description = description
@@ -624,15 +631,33 @@ export async function uploadSkill(skill, realCost, activePoints) {
         skillData.optionAlias = skill.getAttribute('OPTION_ALIAS')
     }
 
+    skillData.everyman = skill.getAttribute('EVERYMAN')
+
+    skillData.adders = []
+
+    for (let adder of skill.getElementsByTagName("ADDER")) {
+        skillData.adders.push({
+            xmlid: adder.getAttribute('XMLID'),
+            alias: adder.getAttribute('ALIAS'),
+            comments: adder.getAttribute('ALIAS'),
+            option: adder.getAttribute('OPTION'),
+            optionId: adder.getAttribute('OPTIONID'),
+            optionAlias: adder.getAttribute('OPTION_ALIAS'),
+            levels: adder.getAttribute('LEVELS'),
+            baseCost: parseFloat(adder.getAttribute('BASECOST')),
+        })
+    }
+
     // Real Cost and Active Points
-    let _basePointsPlusAdders = calcBasePointsPlusAdders(skill)
-    let _activePoints = calcActivePoints(_basePointsPlusAdders, skill)
-    let _realCost = calcRealCost(_activePoints, skill)
+    let _basePointsPlusAdders = calcBasePointsPlusAdders(skillData)
+    let _activePoints = calcActivePoints(_basePointsPlusAdders, skillData)
+    let _realCost = calcRealCost(_activePoints, skillData)
     skillData.basePointsPlusAdders = _basePointsPlusAdders
     skillData.activePoints = _activePoints
     skillData.realCost = _realCost
-    realCost += _realCost;
-    activePoints += _activePoints;
+    if (duplicate) {
+        skillData.duplicate = true
+    }
 
     const itemData = {
         name,
@@ -642,22 +667,20 @@ export async function uploadSkill(skill, realCost, activePoints) {
 
     await HeroSystem6eItem.create(itemData, { parent: this.actor })
 
-    return [realCost, activePoints]
 }
 
-function calcBasePointsPlusAdders(xmlItem) {
-
-    const xmlid = xmlItem.getAttribute('XMLID')
-    const basePoints = parseInt(xmlItem.getAttribute('BASECOST'))
-    const levels = parseInt(xmlItem.getAttribute('LEVELS'))
-    const adders = xmlItem.getElementsByTagName("ADDER")
+function calcBasePointsPlusAdders(system) {
+    const xmlid = system.rules || system.xmlid //xmlItem.getAttribute('XMLID')
+    const basePoints = parseFloat(system.baseCost|| system.BASECOST) //parseInt(xmlItem.getAttribute('BASECOST'))
+    const levels = parseFloat(system.levels || system.LEVELS) //parseInt(xmlItem.getAttribute('LEVELS'))
+    const adders = system.adders || [] //xmlItem.getElementsByTagName("ADDER")
 
     // Everyman skills are free
-    if (xmlItem.getAttribute("EVERYMAN") == "Yes") {
+    if (system.everyman == "Yes") {
         return 0
     }
 
-    if (xmlid == "ARMOR")
+    if (xmlid == "MENTAL_COMBAT_LEVELS")
         console.log(xmlid)
 
 
@@ -670,12 +693,12 @@ function calcBasePointsPlusAdders(xmlItem) {
     for (let adder of adders) {
 
         // Some skills have subgroups like TRANSPORT_FAMILIARITY, we will ignore the top level
-        const subAdders = adder.getElementsByTagName("ADDER")
-        if (subAdders.length) {
-            continue;
-        }
+        // const subAdders = adder.getElementsByTagName("ADDER")
+        // if (subAdders.length) {
+        //     continue;
+        // }
 
-        const adderBaseCost = parseInt(adder.getAttribute("BASECOST") || 0)
+        const adderBaseCost = parseInt(adder.baseCost || adder.BASECOST) //parseInt(adder.getAttribute("BASECOST") || 0)
         if (cost >= 2 && adderBaseCost == 2) {
             cost += 1
         }
@@ -684,25 +707,63 @@ function calcBasePointsPlusAdders(xmlItem) {
         }
     }
 
-    // ANIMAL HANDLER default cost is 3; should really be picking types of animals
-    if (xmlid == "ANIMAL_HANDLER" && cost == 0) {
+    // Some skills have default cost of 3; should really be picking specifics
+    if (["ANIMAL_HANDLER", "FORGERY", "GAMBLING", "NAVIGATION", "SURVIVAL", "WEAPONSMITH"].includes(xmlid) && cost == 0) {
         return 3
     }
 
+    // Some skill have a default cost of 3; Transport Familiarity
+    if (["TRANSPORT_FAMILIARITY"].includes(xmlid) && cost == 0) {
+        return 1
+    }
 
+
+    // Rebrand?
+    let _xmlid = CONFIG.HERO.powersRebrand[xmlid] || xmlid;
+
+    // Check if we have CONFIG info about this power
+    let configPowerInfo = CONFIG.HERO.powers[_xmlid]
 
     // Levels
     // TODO: List each skill in config.js and include cost per level
-    if (xmlItem.tagName == "SKILL") {
+    let costPerLevel = 2
+    if (configPowerInfo && configPowerInfo.powerType.includes("skill")) {
         if (["KNOWLEDGE_SKILL"].includes(xmlid)) {
-            cost += parseInt(levels);
-        } else {
-            cost += parseInt(levels) * 2;
+            costPerLevel = 1
         }
+
+        if (["MENTAL_COMBAT_LEVELS", "PENALTY_SKILL_LEVELS"].includes(xmlid)) {
+            switch (system.option) {
+                case "SINGLE": costPerLevel = 1; break;
+                case "TIGHT": costPerLevel = 3; break;
+                case "BROAD": costPerLevel = 6; break;
+            }
+        }
+
+        if (xmlid == "SKILL_LEVELS") {
+            switch (system.option) {
+                case "CHARACTERISTIC": costPerLevel = 2; break;
+                case "RELATED": costPerLevel = 3; break;
+                case "GROUP": costPerLevel = 4; break;
+                case "AGILITY": costPerLevel = 6; break;
+                case "NONCOMBAT": costPerLevel = 10; break;
+                case "SINGLEMOVEMENT": costPerLevel = 2; break;
+                case "ALLMOVEMENT": costPerLevel = 3; break;
+                case "OVERALL": costPerLevel = 12; break;
+            }
+        }
+
+        cost += parseInt(levels) * costPerLevel;
+
     } else {
         let _xmlid = CONFIG.HERO.powersRebrand[xmlid] || xmlid
         let costPerLevel = parseFloat(CONFIG.HERO.powers[_xmlid]?.cost || CONFIG.HERO.characteristicCosts[_xmlid.toLocaleLowerCase()] || 5)
-        cost += Math.ceil(parseInt(levels) * costPerLevel)
+        let _cost = parseInt(levels) * costPerLevel
+        // Costs 3 points for every 2 levels, you can't purchase half a level
+        if (costPerLevel == 3 / 2 && _cost % 1 > 0) {
+            _cost = Math.floor(_cost + 2)
+        }
+        cost += Math.ceil(_cost)
     }
 
     // CUSTOMSKILL has minimum cost of 1
@@ -713,26 +774,25 @@ function calcBasePointsPlusAdders(xmlItem) {
     return basePoints + cost
 }
 
-function calcActivePoints(_basePointsPlusAdders, xmlItem) {
+function calcActivePoints(_basePointsPlusAdders, system) {
     // Active Points = (Base Points + cost of any Adders) x (1 + total value of all Advantages)
 
-    const xmlid = xmlItem.getAttribute('XMLID')
-    const levels = parseInt(xmlItem.getAttribute('LEVELS'))
-    const modifiers = xmlItem.getElementsByTagName("MODIFIER")
+    const xmlid = system.rules || system.xmlid //xmlItem.getAttribute('XMLID')
+    const modifiers = system.modifiers || system.MODIFIER || [] //xmlItem.getElementsByTagName("ADDER")
 
 
     let advantages = 0
     for (let modifier of modifiers) {
-        const modifierBaseCost = parseFloat(modifier.getAttribute("BASECOST") || 0)
+        const modifierBaseCost = parseFloat(modifier.baseCost || 0)
         if (modifierBaseCost > 0) {
             advantages += modifierBaseCost;
         }
 
         // Some modifiers may have ADDERS
-        const adders = modifier.getElementsByTagName("ADDER")
+        const adders = modifier.adders //modifier.getElementsByTagName("ADDER")
         if (adders.length) {
             for (let adder of adders) {
-                const adderBaseCost = parseFloat(modifier.getAttribute("BASECOST") || 0)
+                const adderBaseCost = parseFloat(modifier.baseCost || 0)
                 if (adderBaseCost > 0) {
                     advantages += adderBaseCost;
                 }
@@ -745,25 +805,27 @@ function calcActivePoints(_basePointsPlusAdders, xmlItem) {
     return RoundFavorPlayerDown(_activePoints)
 }
 
-function calcRealCost(_activeCost, xmlItem) {
+function calcRealCost(_activeCost, system) {
     // Real Cost = Active Cost / (1 + total value of all Limitations)
+    const xmlid = system.rules || system.xmlid //xmlItem.getAttribute('XMLID')
+    const levels = parseFloat(system.levels || system.LEVELS) //parseInt(xmlItem.getAttribute('LEVELS'))
+    const modifiers = system.modifiers || [] //xmlItem.getElementsByTagName("ADDER")
 
-    const xmlid = xmlItem.getAttribute('XMLID')
-    const levels = parseInt(xmlItem.getAttribute('LEVELS'))
-    const modifiers = xmlItem.getElementsByTagName("MODIFIER")
+    if (xmlid == "DAMAGEREDUCTION")
+        console.log(xmlid)
 
     let limitations = 0
     for (let modifier of modifiers) {
-        const modifierBaseCost = parseFloat(modifier.getAttribute("BASECOST") || 0)
+        const modifierBaseCost = parseFloat(modifier.baseCost || 0)
         if (modifierBaseCost < 0) {
             limitations += -modifierBaseCost;
         }
 
         // Some modifiers may have ADDERS as well (like a focus)
-        const adders = modifier.getElementsByTagName("ADDER")
+        const adders = modifier.adders
         if (adders.length) {
             for (let adder of adders) {
-                const adderBaseCost = parseFloat(modifier.getAttribute("BASECOST") || 0)
+                const adderBaseCost = parseFloat(modifier.baseCost || 0)
                 if (adderBaseCost < 0) {
                     limitations += -adderBaseCost;
                 }
@@ -777,15 +839,16 @@ function calcRealCost(_activeCost, xmlItem) {
     return RoundFavorPlayerDown(_realCost)
 }
 
-export async function uploadPower(power, type, realCost, activePoints) {
+export async function uploadPower(power, type) {
     let xmlid = power.getAttribute('XMLID')
     const name = power.getAttribute('NAME')
     const alias = power.getAttribute('ALIAS')
     const levels = power.getAttribute('LEVELS')
     const input = power.getAttribute('INPUT')
+    const optionAlias = power.getAttribute("OPTION_ALIAS")
 
     const relevantFields = ['BASECOST', 'LEVELS', 'ALIAS', 'MULTIPLIER', 'NAME', 'OPTION_ALIAS', 'SFX',
-        'PDLEVELS', 'EDLEVELS', 'MDLEVELS', 'INPUT', 'OPTIONID' // FORCEFIELD
+        'PDLEVELS', 'EDLEVELS', 'MDLEVELS', 'INPUT', 'OPTIONID', 'BASECOST' // FORCEFIELD
     ]
     if (xmlid === 'GENERIC_OBJECT') return;
 
@@ -795,25 +858,15 @@ export async function uploadPower(power, type, realCost, activePoints) {
     // Check if we have CONFIG info about this power
     let configPowerInfo = CONFIG.HERO.powers[xmlid]
     if (configPowerInfo) {
-        // switch (configPowerInfo.powerType)
-        // {
-        //   case "attack": break // TODO: unimplemented
-        //   case "characteristic": break // TODO: unimplemented
-        //   case "defense": break // TODO: unimplemented
-        //   case "mental": break // TODO: unimplemented
-        //   case "movement": break // handled elsewhere?
-        //   case "sense": break // handled elsewhere?
-        //   case "skill": await uploadSkill.call(this, power); break
-        //   default : ui.notifications.warn(`${xmlid} not handle during HDC upload of ${this.actor.name}`)
-        // }
+
         if ((configPowerInfo?.powerType || "").includes("skill")) {
-            await uploadSkill.call(this, power);
+            await uploadSkill.call(this, power, true);
         }
 
         // Detect attacks
         //let configPowerInfo = CONFIG.HERO.powers[power.system.rules]
         if (configPowerInfo.powerType.includes("attack")) {
-            await uploadAttack.call(this, power);
+            await uploadAttack.call(this, power, true);
         }
 
     }
@@ -832,6 +885,8 @@ export async function uploadPower(power, type, realCost, activePoints) {
 
     const powerData = {}
 
+    powerData.rules = xmlid
+
     for (const attribute of power.attributes) {
         const attName = attribute.name
 
@@ -847,67 +902,115 @@ export async function uploadPower(power, type, realCost, activePoints) {
         const xmlidModifier = modifier.getAttribute('XMLID')
 
         if (xmlidModifier !== null) {
-            modifiers.push({
+            let _mod = {
                 xmlid: xmlidModifier,
                 alias: modifier.getAttribute('ALIAS'),
                 comments: modifier.getAttribute('ALIAS'),
                 option: modifier.getAttribute('OPTION'),
                 optionId: modifier.getAttribute('OPTIONID'),
                 optionAlias: modifier.getAttribute('OPTION_ALIAS'),
-                LEVELS: modifier.getAttribute('LEVELS'),
-            })
+                levels: modifier.getAttribute('LEVELS'),
+                baseCost: parseFloat(modifier.getAttribute('BASECOST')),
+                adders: [],
+            }
+
+            // Not sure why DIFFICULTTODISPEL baseCost is 0
+            if (xmlidModifier == 'DIFFICULTTODISPEL') {
+                _mod.baseCost = parseInt(_mod.levels) * 0.25
+                _mod.optionAlias = "x" + (parseInt(_mod.levels) + 1) + " Active Cost"
+            }
+
+            if (xmlidModifier == "IMPENETRABLE") {
+                _mod.baseCost = parseInt(_mod.levels) * 0.25
+                _mod.optionAlias = "x" + parseInt(_mod.levels)
+            }
+
+            for (let adder of modifier.getElementsByTagName("ADDER")) {
+                _mod.adders.push({
+                    xmlid: adder.getAttribute('XMLID'),
+                    alias: adder.getAttribute('ALIAS'),
+                    comments: adder.getAttribute('ALIAS'),
+                    option: adder.getAttribute('OPTION'),
+                    optionId: adder.getAttribute('OPTIONID'),
+                    optionAlias: adder.getAttribute('OPTION_ALIAS'),
+                    levels: adder.getAttribute('LEVELS'),
+                    baseCost: parseFloat(adder.getAttribute('BASECOST')),
+                })
+            }
+            modifiers.push(_mod)
         }
     }
     powerData.modifiers = modifiers
 
     // Real Cost and Active Points
-    let _basePointsPlusAdders = calcBasePointsPlusAdders(power)
-    let _activePoints = calcActivePoints(_basePointsPlusAdders, power)
-    let _realCost = calcRealCost(_activePoints, power)
+    let _basePointsPlusAdders = calcBasePointsPlusAdders(powerData)
+    let _activePoints = calcActivePoints(_basePointsPlusAdders, powerData)
+    let _realCost = calcRealCost(_activePoints, powerData)
     powerData.basePointsPlusAdders = _basePointsPlusAdders
     powerData.activePoints = _activePoints
     powerData.realCost = _realCost
-    realCost += _realCost;
-    activePoints += _activePoints;
 
     // Description (eventual goal is to largely match Hero Designer)
     // TODO: This should probably be moved to the sheets code
     // so when the power is modified in foundry, the power
     // description updates as well.
     // If in sheets code it may handle drains/suppresses nicely.
-    switch (alias) {
-        case "PRE":
-            powerData.description = "+" + levels + " PRE";
-            //activeCost = 0;
-            break;
+    switch (xmlid) {
+        // case "PRE":
+        //     powerData.description = "+" + levels + " PRE";
+        //     //activeCost = 0;
+        //     break;
         case "Mind Scan": powerData.description = levels + "d6 Mind Scan (" +
             input + " class of minds)";
             break;
+        // case "DAMAGEREDUCTION":
+        //     powerData.description = input + " " + optionAlias
+        //     break;
+        case "FORCEFIELD": powerData.description = alias + " ("
+            let ary = []
+            if (parseInt(powerData.PDLEVELS)) ary.push(powerData.PDLEVELS + " PD")
+            if (parseInt(powerData.EDLEVELS)) ary.push(powerData.EDLEVELS + " ED")
+            if (parseInt(powerData.MDLEVELS)) ary.push(powerData.MDLEVELS + " MD")
+            powerData.description += ary.join("/") + ")"
+            break;
         default:
-            powerData.description = alias;
+            if (configPowerInfo && configPowerInfo.powerType.includes("characteristic")) {
+                powerData.description = "+" + levels + " " + alias;
+                break;
+            }
+            powerData.description = (input ? input + " " : "") + (optionAlias || alias)
+
+        //powerData.description = xmlid;
 
     }
 
-    for (let modifier of powerData.modifiers) {
-        if (modifier.alias) powerData.description += "; " + modifier.alias
-        if (modifier.comments) powerData.description += "; " + modifier.comments
-        if (modifier.option) powerData.description += "; " + modifier.option
-        if (modifier.optionId) powerData.description += "; " + modifier.optionId
-        if (modifier.optionAlias) powerData.description += "; " + modifier.optionAlias
+    // Active Points
+    if (power.getAttribute('SHOW_ACTIVE_COST') == "Yes") {
+        powerData.description += " (" + powerData.activePoints + " Active Points)"
     }
 
-    powerData.rules = xmlid
+    // Advantages sorted low to high
+    for (let modifier of powerData.modifiers.filter(o => o.baseCost >= 0).sort((a, b) => { return a.baseCost - b.baseCost })) {
+        powerData.description += createPowerDescriptionPartial(modifier, name)
+    }
+
+    // Disadvantages sorted low to high
+    for (let modifier of powerData.modifiers.filter(o => o.baseCost < 0).sort((a, b) => { return a.baseCost - b.baseCost })) {
+        powerData.description += createPowerDescriptionPartial(modifier, name)
+    }
+
+
 
     let itemData = {}
     if (xmlid.toLowerCase() in CONFIG.HERO.movementPowers) {
         type = 'movement'
 
-        const velocity = Math.round((spd * levels) / 12)
+        // const velocity = Math.round((spd * levels) / 12)
 
-        powerData.max = levels
-        powerData.value = levels
-        powerData.velBase = velocity
-        powerData.velValue = velocity
+        // powerData.max = levels
+        // powerData.value = levels
+        // powerData.velBase = velocity
+        // powerData.velValue = velocity
 
 
         itemData = {
@@ -937,7 +1040,50 @@ export async function uploadPower(power, type, realCost, activePoints) {
     }
 
     let newPower = await HeroSystem6eItem.create(itemData, { parent: this.actor })
-    return [realCost, activePoints]
+}
+
+function createPowerDescriptionPartial(modifier, powerName) {
+
+
+
+    let result = ""
+    if (modifier.alias) result += "; " + modifier.alias || "?"
+    // if (modifier.comments) powerData.description += "; " + modifier.comments
+    // if (modifier.option) powerData.description += "; " + modifier.option
+    // if (modifier.optionId) powerData.description += "; " + modifier.optionId
+
+    result += " ("
+    if (modifier.optionAlias && !["VISIBLE"].includes(modifier.xmlid)) result += modifier.optionAlias + ", "
+
+    let fraction = ""
+
+    if (modifier.baseCost == 0) {
+        fraction += "?"
+        if (game.settings.get(game.system.id, 'alphaTesting')) {
+            ui.notifications.warn(`${powerName} has an unhandeled modifier (${modifier.xmlid})`)
+        }
+    }
+
+    if (modifier.baseCost > 0) {
+        fraction += "+"
+    }
+    let wholeNumber = Math.trunc(modifier.baseCost)
+
+    if (wholeNumber != 0) {
+        fraction += wholeNumber + " "
+    }
+    else if (modifier.baseCost < 0) {
+        fraction += "-"
+    }
+    switch (Math.abs(modifier.baseCost % 1)) {
+        case 0: break;
+        case 0.25: fraction += "1/4"; break;
+        case 0.5: fraction += "1/2"; break;
+        case 0.75: fraction += "3/4"; break;
+        default: fraction += modifier.baseCost % 1;
+    }
+    result += fraction.trim() + ")"
+    return result;
 }
 
 export async function uploadAttack(power) {
@@ -959,7 +1105,7 @@ export async function uploadAttack(power) {
     const levels = parseInt(power.getAttribute('LEVELS'))
     const input = power.getAttribute('INPUT')
 
-    // Attempt to calculate atvantages
+    // Attempt to calculate avantages
     //let advantages = 1;
     //for (let mod in powers.)
 
