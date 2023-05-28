@@ -67,13 +67,20 @@
 
     <!-- TOP DIV -->
     <header class="char-header sheet-header ">
-        <div class="header-fields flexrow">
+        <div class="header-fields flexrow" style="width: 100%">
             <h1 class="charname flex4"><input name="name" type="text" value="{{actor.name}}" placeholder="Name" /></h1>
 
-            <label class="upload-button">
-                <span>Upload .HDC</span>
+
+            {{#if actor.system.is5e}}
+            <div class="fifthEd flex0" title="5th edition character">5e</div>
+            {{/if}}
+
+            <label class="upload-button flex0">
+                <span>Upload&nbsp;.HDC</span>
                 <input type="file" accept=".hdc" />
             </label>
+
+
         </div>
     </header>
 
@@ -235,8 +242,8 @@
                         <td>{{item.system.hardened}}</td>
                         <td>{{item.system.impenetrable}}</td>
                         <td>
-                            <input class="item-toggle" type="checkbox" name="item.system.active" {{checked item.system.active}}
-                                data-dtype="Boolean" />
+                            <input class="item-toggle" type="checkbox" name="item.system.active" {{checked
+                                item.system.active}} data-dtype="Boolean" />
 
                         </td>
                         <td>
@@ -325,8 +332,8 @@
                         <td>{{item.system.ocv}}</td>
                         <td>{{item.system.dcv}}</td>
                         <td>
-                            <input class="item-toggle" type="checkbox" name="item.system.active" {{checked item.system.active}}
-                                data-dtype="Boolean" />
+                            <input class="item-toggle" type="checkbox" name="item.system.active" {{checked
+                                item.system.active}} data-dtype="Boolean" />
                         </td>
                         <td>
                             <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>

@@ -582,7 +582,8 @@
 
 .upload-button {
     height: 30px;
-    margin: 0px 60px 0px 30px;
+    /* margin: 0px 60px 0px 30px; */
+    margin: 3px 5px;
     background: rgba(255, 255, 240, 0.8);
     border: 1px solid #b5b3a4;
     border-radius: 3px;
@@ -678,14 +679,15 @@ td {
   text-align: center;
 }
 
-.hero div.fifthEd {
+div.fifthEd {
   background-color: lightsteelblue;
   border: 1px solid rgb(0 0 0 / 30%);
   border-radius: 8px;
   height: 24px;
   padding: 2px 4px;
   font-size:14px;
-  margin-top: 2px;
+  /* margin-top: 2px; */
+  margin: 5px 5px;
 }
 
 .toHit-card .target-dc-result .Miss {
