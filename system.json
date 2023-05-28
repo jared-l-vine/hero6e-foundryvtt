@@ -3,7 +3,7 @@
     "name": "hero6e-foundryvtt-v2",
     "title": "Hero System 6e (Unofficial) v2",
     "description": "The Hero System 6e for FoundryVTT!",
-    "version": "2.1.6-alpha",
+    "version": "2.1.7-alpha",
     "compatibility": {
         "minimum": 10,
         "verified": "10.291",
@@ -30,9 +30,9 @@
     "primaryTokenAttribute": "characteristics.body",
     "secondaryTokenAttribute": "characteristics.stun",
     "url": "https://github.com/dmdorman/hero6e-foundryvtt",
-    "manifest": "https://github.com/dmdorman/hero6e-foundryvtt/releases/download/v2.1.6-alpha/system.json",
-    "download": "https://github.com/dmdorman/hero6e-foundryvtt/releases/download/v2.1.6-alpha/hero6efoundryvttv2.zip",
-    "license": "https://raw.githubusercontent.com/dmdorman/hero6e-foundryvtt/v2.1.6-alpha/LICENSE.txt",
+    "manifest": "https://github.com/dmdorman/hero6e-foundryvtt/releases/download/v2.1.7-alpha/system.json",
+    "download": "https://github.com/dmdorman/hero6e-foundryvtt/releases/download/v2.1.7-alpha/hero6efoundryvttv2.zip",
+    "license": "https://raw.githubusercontent.com/dmdorman/hero6e-foundryvtt/v2.1.7-alpha/LICENSE.txt",
     "changelog": "https://github.com/dmdorman/hero6e-foundryvtt/blob/main/CHANGELOG.md",
     "bugs": "https://github.com/dmdorman/hero6e-foundryvtt/issues"
 }
