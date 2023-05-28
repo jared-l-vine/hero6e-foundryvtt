@@ -124,7 +124,7 @@ export async function applyCharacterSheet(xmlDoc) {
             if (str >= 100) value = 20 + Math.floor((str - 100) / 5)
             changes[`system.characteristics.leaping.base`] = value
             value += parseInt(characteristic.getAttribute('LEVELS'))
-            
+
         }
 
         changes[`system.characteristics.${key}.value`] = value
@@ -284,193 +284,9 @@ export async function applyCharacterSheet(xmlDoc) {
 
     await HeroSystem6eItem.create(itemDataPerception, { parent: this.actor })
 
-    const relevantFields = ['BASECOST', 'LEVELS', 'ALIAS', 'MULTIPLIER', 'NAME', 'OPTION_ALIAS', 'SFX',
-        'PDLEVELS', 'EDLEVELS', 'MDLEVELS', 'INPUT', 'OPTIONID' // FORCEFIELD
-    ]
+
     for (const power of powers.children) {
-        let xmlid = power.getAttribute('XMLID')
-        const name = power.getAttribute('NAME')
-        const alias = power.getAttribute('ALIAS')
-        const levels = power.getAttribute('LEVELS')
-        const input = power.getAttribute('INPUT')
-
-
-
-        if (xmlid === 'GENERIC_OBJECT') { continue; }
-
-        // Rebrand?
-        xmlid = CONFIG.HERO.powersRebrand[xmlid] || xmlid;
-
-        // Check if we have CONFIG info about this power
-        let configPowerInfo = CONFIG.HERO.powers[xmlid]
-        if (configPowerInfo) {
-            // switch (configPowerInfo.powerType)
-            // {
-            //   case "attack": break // TODO: unimplemented
-            //   case "characteristic": break // TODO: unimplemented
-            //   case "defense": break // TODO: unimplemented
-            //   case "mental": break // TODO: unimplemented
-            //   case "movement": break // handled elsewhere?
-            //   case "sense": break // handled elsewhere?
-            //   case "skill": await uploadSkill.call(this, power); break
-            //   default : ui.notifications.warn(`${xmlid} not handle during HDC upload of ${this.actor.name}`)
-            // }
-            if ((configPowerInfo?.powerType || "").includes("skill")) {
-                await uploadSkill.call(this, power);
-            }
-
-            // Detect attacks
-            //let configPowerInfo = CONFIG.HERO.powers[power.system.rules]
-            if (configPowerInfo.powerType.includes("attack")) {
-                await uploadAttack.call(this, power);
-            }
-
-        }
-        else {
-            if (game.settings.get(game.system.id, 'alphaTesting')) {
-                ui.notifications.warn(`${xmlid} not handled during HDC upload of ${this.actor.name}`)
-                console.log(power)
-            }
-
-        }
-
-        let itemName = name
-        if (name === undefined || name === '') {
-            itemName = alias
-        }
-
-        const powerData = {}
-
-        for (const attribute of power.attributes) {
-            const attName = attribute.name
-
-            if (relevantFields.includes(attName)) {
-                const attValue = attribute.value
-
-                powerData[attName] = attValue
-            }
-        }
-
-        const modifiers = []
-        for (const modifier of power.children) {
-            const xmlidModifier = modifier.getAttribute('XMLID')
-
-            if (xmlidModifier !== null) {
-                modifiers.push({
-                    xmlid: xmlidModifier,
-                    alias: modifier.getAttribute('ALIAS'),
-                    comments: modifier.getAttribute('ALIAS'),
-                    option: modifier.getAttribute('OPTION'),
-                    optionId: modifier.getAttribute('OPTIONID'),
-                    optionAlias: modifier.getAttribute('OPTION_ALIAS'),
-                    LEVELS: modifier.getAttribute('LEVELS'),
-                })
-            }
-        }
-        powerData.modifiers = modifiers
-
-        // Real Cost and Active Points
-        let _basePointsPlusAdders = calcBasePointsPlusAdders(power)
-        let _activePoints = calcActivePoints(_basePointsPlusAdders, power)
-        let _realCost = calcRealCost(_activePoints, power)
-        powerData.basePointsPlusAdders = _basePointsPlusAdders
-        powerData.activePoints = _activePoints
-        powerData.realCost = _realCost
-        realCost += _realCost;
-        activePoints += _activePoints;
-
-        // Description (eventual goal is to largely match Hero Designer)
-        // TODO: This should probably be moved to the sheets code
-        // so when the power is modified in foundry, the power
-        // description updates as well.
-        // If in sheets code it may handle drains/suppresses nicely.
-        switch (alias) {
-            case "PRE":
-                powerData.description = "+" + levels + " PRE";
-                //activeCost = 0;
-                break;
-            case "Mind Scan": powerData.description = levels + "d6 Mind Scan (" +
-                input + " class of minds)";
-                break;
-            default:
-                powerData.description = alias;
-
-        }
-
-        for (let modifier of powerData.modifiers) {
-            if (modifier.alias) powerData.description += "; " + modifier.alias
-            if (modifier.comments) powerData.description += "; " + modifier.comments
-            if (modifier.option) powerData.description += "; " + modifier.option
-            if (modifier.optionId) powerData.description += "; " + modifier.optionId
-            if (modifier.optionAlias) powerData.description += "; " + modifier.optionAlias
-        }
-
-        powerData.rules = xmlid
-
-        let type = ''
-        let itemData = {}
-        if (xmlid.toLowerCase() in CONFIG.HERO.movementPowers) {
-            type = 'movement'
-
-            const velocity = Math.round((spd * levels) / 12)
-
-            powerData.max = levels
-            powerData.value = levels
-            powerData.velBase = velocity
-            powerData.velValue = velocity
-
-
-            itemData = {
-                name: itemName,
-                type,
-                system: powerData,
-                levels
-            }
-
-
-
-        } else {
-            type = 'power'
-
-            itemName = (itemName === '') ? 'unnamed' : itemName
-
-            // TODO: END estimate is too simple for publishing.  
-            // Want to minimize incorrect info.  Needs improvment.
-            //powerData.end = math.round(activeCost/10);
-
-            itemData = {
-                name: itemName,
-                type,
-                system: powerData,
-                levels,
-                input
-            }
-        }
-
-        let newPower = await HeroSystem6eItem.create(itemData, { parent: this.actor })
-
-        // // ActiveEffect for Characteristics
-        // if (configPowerInfo && configPowerInfo.powerType.includes("characteristic")) {
-        //   console.log(newPower.system.rules)
-
-        //   let activeEffect =
-        //   {
-        //     label: newPower.name + " (" + levels + ")",
-        //     //id: newPower.system.rules,
-        //     //icon: 'icons/svg/daze.svg',
-        //     changes: [
-        //       {
-        //         key: "data.characteristics." + newPower.system.rules.toLowerCase() + ".value",
-        //         value: parseInt(levels),
-        //         mode: CONST.ACTIVE_EFFECT_MODES.OVERRIDE
-        //       }
-        //     ]
-        //   }
-        //   await this.actor.addActiveEffect(activeEffect)
-
-        //}
-
-
+        [realCost, activePoints] = await uploadPower.call(this, power, 'power', realCost, activePoints)
     }
 
     for (const perk of perks.children) {
@@ -486,7 +302,7 @@ export async function applyCharacterSheet(xmlDoc) {
     }
 
     for (const equip of equipment.children) {
-        await uploadBasic.call(this, equip, 'equipment')
+        await uploadPower.call(this, equip, 'equipment')
     }
 
     // EXTRA DC's from martial arts
@@ -593,7 +409,8 @@ export async function uploadBasic(xml, type) {
         'type': type,
         'name': name,
         'system.id': xmlid,
-        'system.rules': xml.getAttribute('ALIAS')
+        'system.rules': xmlid,
+        'system.name': xml.getAttribute('ALIAS') || xmlid,
     }
 
     // Marital Arts
@@ -606,7 +423,22 @@ export async function uploadBasic(xml, type) {
     if (xml.getAttribute('DISPLAY')) itemData['system.description'] = xml.getAttribute('DISPLAY')
     if (xml.getAttribute('EFFECT')) itemData['system.effect'] = xml.getAttribute('EFFECT')
 
+    const configPowerInfo = CONFIG.HERO.powers[xmlid]
+    if (configPowerInfo && configPowerInfo.name && !itemData['system.description'])
+    {
+        itemData['system.description'] = configPowerInfo.name
+    }
+    if (!itemData['system.description'])
+    {
+        itemData['system.description'] = xmlid
+    }
+
     await HeroSystem6eItem.create(itemData, { parent: this.actor })
+
+    // Detect attacks
+    if (configPowerInfo && configPowerInfo.powerType.includes("attack")) {
+        await uploadAttack.call(this, xml);
+    }
 }
 
 export async function uploadMartial(power, type, extraDc, usesTk) {
@@ -852,6 +684,11 @@ function calcBasePointsPlusAdders(xmlItem) {
         }
     }
 
+    // ANIMAL HANDLER default cost is 3; should really be picking types of animals
+    if (xmlid == "ANIMAL_HANDLER" && cost == 0) {
+        return 3
+    }
+
 
 
     // Levels
@@ -864,10 +701,14 @@ function calcBasePointsPlusAdders(xmlItem) {
         }
     } else {
         let _xmlid = CONFIG.HERO.powersRebrand[xmlid] || xmlid
-        let costPerLevel = parseFloat(CONFIG.HERO.powers[_xmlid]?.cost || CONFIG.HERO.characteristicCosts[_xmlid.toLocaleLowerCase()] || 5 )
+        let costPerLevel = parseFloat(CONFIG.HERO.powers[_xmlid]?.cost || CONFIG.HERO.characteristicCosts[_xmlid.toLocaleLowerCase()] || 5)
         cost += Math.ceil(parseInt(levels) * costPerLevel)
     }
 
+    // CUSTOMSKILL has minimum cost of 1
+    if (xmlid == "CUSTOMSKILL" && cost == 0) {
+        return 1
+    }
 
     return basePoints + cost
 }
@@ -934,6 +775,169 @@ function calcRealCost(_activeCost, xmlItem) {
 
     // ToDo: I thik there is a minimum of 1 here, but Everyday skills are 0, so not quite sure what to do yet.
     return RoundFavorPlayerDown(_realCost)
+}
+
+export async function uploadPower(power, type, realCost, activePoints) {
+    let xmlid = power.getAttribute('XMLID')
+    const name = power.getAttribute('NAME')
+    const alias = power.getAttribute('ALIAS')
+    const levels = power.getAttribute('LEVELS')
+    const input = power.getAttribute('INPUT')
+
+    const relevantFields = ['BASECOST', 'LEVELS', 'ALIAS', 'MULTIPLIER', 'NAME', 'OPTION_ALIAS', 'SFX',
+        'PDLEVELS', 'EDLEVELS', 'MDLEVELS', 'INPUT', 'OPTIONID' // FORCEFIELD
+    ]
+    if (xmlid === 'GENERIC_OBJECT') return;
+
+    // Rebrand?
+    xmlid = CONFIG.HERO.powersRebrand[xmlid] || xmlid;
+
+    // Check if we have CONFIG info about this power
+    let configPowerInfo = CONFIG.HERO.powers[xmlid]
+    if (configPowerInfo) {
+        // switch (configPowerInfo.powerType)
+        // {
+        //   case "attack": break // TODO: unimplemented
+        //   case "characteristic": break // TODO: unimplemented
+        //   case "defense": break // TODO: unimplemented
+        //   case "mental": break // TODO: unimplemented
+        //   case "movement": break // handled elsewhere?
+        //   case "sense": break // handled elsewhere?
+        //   case "skill": await uploadSkill.call(this, power); break
+        //   default : ui.notifications.warn(`${xmlid} not handle during HDC upload of ${this.actor.name}`)
+        // }
+        if ((configPowerInfo?.powerType || "").includes("skill")) {
+            await uploadSkill.call(this, power);
+        }
+
+        // Detect attacks
+        //let configPowerInfo = CONFIG.HERO.powers[power.system.rules]
+        if (configPowerInfo.powerType.includes("attack")) {
+            await uploadAttack.call(this, power);
+        }
+
+    }
+    else {
+        if (game.settings.get(game.system.id, 'alphaTesting')) {
+            ui.notifications.warn(`${xmlid} not handled during HDC upload of ${this.actor.name}`)
+            console.log(power)
+        }
+
+    }
+
+    let itemName = name
+    if (name === undefined || name === '') {
+        itemName = alias
+    }
+
+    const powerData = {}
+
+    for (const attribute of power.attributes) {
+        const attName = attribute.name
+
+        if (relevantFields.includes(attName)) {
+            const attValue = attribute.value
+
+            powerData[attName] = attValue
+        }
+    }
+
+    const modifiers = []
+    for (const modifier of power.children) {
+        const xmlidModifier = modifier.getAttribute('XMLID')
+
+        if (xmlidModifier !== null) {
+            modifiers.push({
+                xmlid: xmlidModifier,
+                alias: modifier.getAttribute('ALIAS'),
+                comments: modifier.getAttribute('ALIAS'),
+                option: modifier.getAttribute('OPTION'),
+                optionId: modifier.getAttribute('OPTIONID'),
+                optionAlias: modifier.getAttribute('OPTION_ALIAS'),
+                LEVELS: modifier.getAttribute('LEVELS'),
+            })
+        }
+    }
+    powerData.modifiers = modifiers
+
+    // Real Cost and Active Points
+    let _basePointsPlusAdders = calcBasePointsPlusAdders(power)
+    let _activePoints = calcActivePoints(_basePointsPlusAdders, power)
+    let _realCost = calcRealCost(_activePoints, power)
+    powerData.basePointsPlusAdders = _basePointsPlusAdders
+    powerData.activePoints = _activePoints
+    powerData.realCost = _realCost
+    realCost += _realCost;
+    activePoints += _activePoints;
+
+    // Description (eventual goal is to largely match Hero Designer)
+    // TODO: This should probably be moved to the sheets code
+    // so when the power is modified in foundry, the power
+    // description updates as well.
+    // If in sheets code it may handle drains/suppresses nicely.
+    switch (alias) {
+        case "PRE":
+            powerData.description = "+" + levels + " PRE";
+            //activeCost = 0;
+            break;
+        case "Mind Scan": powerData.description = levels + "d6 Mind Scan (" +
+            input + " class of minds)";
+            break;
+        default:
+            powerData.description = alias;
+
+    }
+
+    for (let modifier of powerData.modifiers) {
+        if (modifier.alias) powerData.description += "; " + modifier.alias
+        if (modifier.comments) powerData.description += "; " + modifier.comments
+        if (modifier.option) powerData.description += "; " + modifier.option
+        if (modifier.optionId) powerData.description += "; " + modifier.optionId
+        if (modifier.optionAlias) powerData.description += "; " + modifier.optionAlias
+    }
+
+    powerData.rules = xmlid
+
+    let itemData = {}
+    if (xmlid.toLowerCase() in CONFIG.HERO.movementPowers) {
+        type = 'movement'
+
+        const velocity = Math.round((spd * levels) / 12)
+
+        powerData.max = levels
+        powerData.value = levels
+        powerData.velBase = velocity
+        powerData.velValue = velocity
+
+
+        itemData = {
+            name: itemName,
+            type,
+            system: powerData,
+            levels
+        }
+
+
+
+    } else {
+
+        itemName = (itemName === '') ? 'unnamed' : itemName
+
+        // TODO: END estimate is too simple for publishing.  
+        // Want to minimize incorrect info.  Needs improvment.
+        //powerData.end = math.round(activeCost/10);
+
+        itemData = {
+            name: itemName,
+            type,
+            system: powerData,
+            levels,
+            input
+        }
+    }
+
+    let newPower = await HeroSystem6eItem.create(itemData, { parent: this.actor })
+    return [realCost, activePoints]
 }
 
 export async function uploadAttack(power) {

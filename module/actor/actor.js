@@ -89,7 +89,7 @@ export class HeroSystem6eActor extends Actor {
         const ids = this.effects.map(o => o.id)
         await this.deleteEmbeddedDocuments("ActiveEffect", ids)
 
-        for (const power of this.items.filter(o => o.type === 'power')) {
+        for (const power of this.items.filter(o => o.type === 'power' || o.type === 'equipment')) {
             let configPowerInfo = CONFIG.HERO.powers[power.system.rules]
 
             // Characteristics (via ActiveEffects)
