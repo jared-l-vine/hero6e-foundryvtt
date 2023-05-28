@@ -68,7 +68,25 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
                     item.system.endEstimate += strEnd
                 }
 
+                // Add in TK
+                if (item.system.usesTk) {
 
+                    let tkItems = data.actor.items.filter(o => o.system.rules == "TELEKINESIS");
+                    let str = 0
+                    for (const item of tkItems) {
+                        str += parseInt(item.system.LEVELS) || 0
+                    }
+                    let str5 = Math.floor(str / 5)
+                    if (item.system.killing) {
+                        pips += str5
+                    } else {
+                        pips += str5 * 3
+                    }
+
+                    // Endurance
+                    let strEnd = Math.max(1, Math.round(str / 10))
+                    item.system.endEstimate += strEnd
+                }
 
                 // Convert pips to DICE
                 let fullDice = Math.floor(pips / 3)
@@ -93,12 +111,20 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
                     item.system.damage += 'N'
                 }
 
+                // Signed OCV and DCV
+                if (item.system.ocv != undefined) {
+                    item.system.ocv = ("+" + parseInt(item.system.ocv)).replace("+-", "-")
+                }
+                if (item.system.dcv != undefined) {
+                    item.system.dcv = ("+" + parseInt(item.system.dcv)).replace("+-", "-")
+                }
+
 
             }
 
             // Defense
             if (item.type == 'defense') {
-                item.system.description = CONFIG.HERO.defenseTypes[item.system.defenseType]
+                item.system.description = CONFIG.HERO.defenseTypes[item.system.defenseType] || CONFIG.HERO.defenseTypes5e[item.system.defenseType]
             }
 
             if (item.type == 'martialart') {
@@ -121,15 +147,39 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         // Characteristics
         const characteristicSet = []
 
-        for (const [key, characteristic] of Object.entries(data.actor.system.characteristics)) {
-            characteristic.key = key
-            if (!CONFIG.HERO.characteristicCosts[key]) continue;
-            characteristic.name = CONFIG.HERO.characteristics[key]
-            characteristic.base = CONFIG.HERO.characteristicDefaults[key]
-            characteristic.cost = Math.ceil((characteristic.core - characteristic.base) * CONFIG.HERO.characteristicCosts[key])
-            if (isNaN(characteristic.cost)) {
-                characteristic.cost = "";
+        // Caracteristics for 6e
+        let characteristicKeys = Object.keys(CONFIG.HERO.characteristicCosts) //Object.entries(data.actor.system.characteristics)
+
+        // Characteristics for 5e
+        if (data.actor.system.is5e) {
+            characteristicKeys = Object.keys(CONFIG.HERO.characteristicCosts5e)
+        }
+
+        for (const key of characteristicKeys) {
+            let characteristic = data.actor.system.characteristics[key]
+            //characteristic.key = key
+            if (!characteristic.base) {
+                if (data.actor.system.is5e) {
+                    characteristic.base = CONFIG.HERO.characteristicDefaults5e[key]
+                } else {
+                    characteristic.base = CONFIG.HERO.characteristicDefaults[key]
+                }
             }
+
+            if (data.actor.system.is5e) {
+                if (!CONFIG.HERO.characteristicCosts5e[key]) continue;
+                characteristic.name = CONFIG.HERO.characteristics5e[key]
+                //characteristic.cost = Math.ceil((characteristic.core - characteristic.base) * CONFIG.HERO.characteristicCosts5e[key])
+
+            }
+            else {
+                if (!CONFIG.HERO.characteristicCosts[key]) continue;
+                characteristic.name = CONFIG.HERO.characteristics[key]
+                //characteristic.cost = Math.ceil((characteristic.core - characteristic.base) * CONFIG.HERO.characteristicCosts[key])
+            }
+            // if (isNaN(characteristic.cost)) {
+            //     //characteristic.cost = "";
+            // }
             if (characteristic.type === 'rollable') {
                 if (characteristic.value === 0) {
                     characteristic.roll = 8
@@ -197,7 +247,46 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
                 characteristic.notes = `lift ${_lift}, throw ${_throw}m`
             }
-            if (key == 'leaping') characteristic.notes = `${characteristic.value}m forward, ${Math.round(characteristic.value / 2)}m upward`
+
+            if (data.actor.system.is5e) {
+
+
+                if (key == 'leaping') characteristic.notes = `${characteristic.value}m forward, ${Math.round(characteristic.value / 2)}m upward`
+
+                if (key == 'pd') {
+                    characteristic.notes = '5e figured STR/5'
+                }
+
+                if (key == 'ed') {
+                    characteristic.notes = '5e figured STR/5'
+                }
+
+                if (key == 'spd') {
+                    characteristic.notes = '5e figured 1 + DEX/10'
+                }
+
+                if (key == 'rec') {
+                    characteristic.notes = "5e figured STR/5 + CON/5"
+                }
+
+                if (key == 'end') {
+                    characteristic.notes = '5e figured 2 x CON'
+                }
+
+                if (key == 'stun') {
+                    characteristic.notes = '5e figured BODY+STR/2+CON/2'
+                }
+
+                if (['ocv', 'dcv'].includes(key)) {
+                    characteristic.base = ''
+                    characteristic.notes = '5e figured DEX/3'
+                }
+
+                if (['omcv', 'dmcv'].includes(key)) {
+                    characteristic.base = ''
+                    characteristic.notes = '5e figured EGO/3'
+                }
+            }
 
             characteristicSet.push(characteristic)
         }
@@ -396,6 +485,14 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
     async _onRecovery(event) {
         const chars = this.actor.system.characteristics
+
+        // Shouldn't happen, but you never know
+        if (isNaN(parseInt(chars.stun.value))) {
+            chars.stun.value = 0
+        }
+        if (isNaN(parseInt(chars.end.value))) {
+            chars.end.value = 0
+        }
 
         let newStun = parseInt(chars.stun.value) + parseInt(chars.rec.value)
         let newEnd = parseInt(chars.end.value) + parseInt(chars.rec.value)

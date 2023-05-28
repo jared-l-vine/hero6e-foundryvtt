@@ -107,6 +107,11 @@ export class HeroSystem6eToken extends Token {
         if (number === 1) color = PIXI.utils.rgb2hex([0, 1, 0]); // Stun
         if (number === 2) color = PIXI.utils.rgb2hex([0.5, 0.5, 1]); // Endurance
 
+
+        if (!bar) {
+            console.log("bar is undefined");
+            return;
+        }
         // Draw the bar 
         bar.clear();
         bar.beginFill(blk, 0.5).lineStyle(bs, blk, 1.0).drawRoundedRect(0, 0, this.w, h, 3);
@@ -184,13 +189,21 @@ export class HeroSystem6eToken extends Token {
         }
         ["bar1", "bar2", "bar3"].forEach((b, i) => {
             const bar = this.bars[b];
-            //if (!bar) return
+            if (!bar) {
+                console.log("bar is undefined")
+                return
+            }
             const attr = getBarExtendedAttribute.bind(this.document)(b)// : this.document.getBarAttribute(b);
             if (!attr || (attr.type !== "bar")) return bar.visible = false;
             this._drawBar(i, bar, attr);
             bar.visible = true;
         });
 
+        if (!this._canViewMode)
+        {
+            console.log("this._canViewMode is undefined")
+            return
+        }
         this.bars.visible = this._canViewMode(this.document.displayBars);
 
     }

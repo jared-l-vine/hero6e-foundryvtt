@@ -1,24 +1,28 @@
-{{ log 'HEROSYS SKILL SHEET' this }}
+{{ log 'HEROSYS item-skill-sheet' this }}
 <form class="{{cssClass}}" autocomplete="off" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
-    <header class="sheet-header" >
-        <img class="profile-img" name="img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/>
+    <header class="sheet-header">
+        <img class="profile-img" name="img" src="{{item.img}}" data-edit="img" title="{{item.name}}" />
         <div class="header-fields">
-            <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Name"/></h1>
+            <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder="Name" /></h1>
         </div>
     </header>
 
     {{!-- Sheet Body --}}
-    <section class="sheet-body" >
+    <section class="sheet-body">
 
         <div class="form-group">
             <label>Levels</label>
-            <input type="text" name="system.levels" value="{{system.levels}}" data-dtype="Number"/>
+            <input type="text" name="system.levels" value="{{system.levels}}" data-dtype="Number" />
         </div>
 
         <div class="form-group">
             <label>Characteristic</label>
             <select name="system.characteristic" data-dtype="text">
+                {{#if item.actor.system.is5e}}
+                {{selectOptions config.skillCharacteristics5e selected=system.characteristic}}
+                {{else}}
                 {{selectOptions config.skillCharacteristics selected=system.characteristic}}
+                {{/if}}
             </select>
         </div>
 
@@ -38,8 +42,22 @@
             <label>OptionAlias</label>
             <input type="text" name="system.optionAlias" value="{{system.optionAlias}}" data-dtype="text" />
         </div>
-        
 
-        
+        <div class="form-group">
+            <label>Base Cost plus Adders</label>
+            <input type="text" name="system.basePointsPlusAdders" value="{{system.basePointsPlusAdders}}" data-dtype="text" />
+        </div>
+
+        <div class="form-group">
+            <label>Active Points</label>
+            <input type="text" name="system.activePoints" value="{{system.activePoints}}" data-dtype="text" />
+        </div>
+
+        <div class="form-group">
+            <label>Real Cost</label>
+            <input type="text" name="system.realCost" value="{{system.realCost}}" data-dtype="text" />
+        </div>
+
+
     </section>
 </form>

@@ -1,9 +1,9 @@
 {{ log 'HEROSYS ITEM ATTACK CARD2' this }}
 <form>
-    <div class="hero chat-card item-card attack-card" data-actor-id="{{actor._id}}" data-item-id="{{item._id}}"
-        {{#if tokenId}}data-token-id="{{tokenId}}"{{/if}}>
+    <div class="hero chat-card item-card attack-card" data-actor-id="{{actor._id}}" data-item-id="{{item._id}}" {{#if
+        tokenId}}data-token-id="{{tokenId}}" {{/if}}>
         <header class="card-header flexrow">
-            <img src="{{item.img}}" title="{{item.name}}" width="36" height="36"/>
+            <img src="{{item.img}}" title="{{item.name}}" width="36" height="36" />
             <h3 class="item-name">{{item.name}}</h3>
         </header>
     </div>
@@ -14,22 +14,27 @@
         <select name="aim" id="aim">
             <option value="none">None</option>
             {{#each hitLoc as |hitLoc key|}}
-                <option value={{key}}>{{key}}</option>
+            <option value={{key}}>{{key}}</option>
             {{/each}}
         </select>
     </div>
     {{/if}}
 
     <div class="form-group">
-        <label>To Hit Modifier</label>
-        <input type="text" name="toHitMod" value="{{item.system.toHitMod}}"/>
+        <label>{{localize "Items.Attack.OcvMod"}}</label>
+        <input type="text" name="system.ocv" value="{{item.system.ocv}}" />
+    </div>
+
+    <div class="form-group">
+        <label>{{localize "Items.Attack.DcvMod"}}</label>
+        <input type="text" name="system.dcv" value="{{item.system.dcv}}" />
     </div>
 
 
-    {{#if item.system.usesStrength}}
+    {{#if (or item.system.usesStrength item.system.usesTk)}}
     <div class="form-group">
         <label>Effective Strength</label>
-        <input type="text" name="effectiveStr" value="{{str}}"/>
+        <input type="text" name="effectiveStr" value="{{str}}" />
         <label>/ {{str}}</label>
     </div>
     {{/if}}

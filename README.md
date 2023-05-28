@@ -57,7 +57,8 @@ Activating a maneuver from a character sheet will apply OCV and DCV modifiers wi
     PCs and NPCs: attack card will update stun, body, and end for all tokens/actors
 
 ## Known Limitations
-- The upload of a .HDC file is practically a requirement.  You can't create powers, skills, or equipment from scratch.  Character editing is limited within the system.
+- The upload of a .HDC file from Hero Designer is practically a requirement.  You can't create powers, skills, or equipment from scratch.  Character editing is limited within the system.
+- Untested/limited support for vehicles, automations, computers, etc.
 - Power frameworks are largely ignored, powers within the framework should work.
 - Endurance use of non-attacking powers is untracked.
 - The following are largely not implemented
@@ -80,9 +81,15 @@ The following modules have been successfully tested for compatibility
 
 ## 5th Edition Support
 This is a 6E framework, however 5E is very similar to 6E and with a few minor changes you may be able to play a 5E game.  A 5E character is detected when you upload a HDC file using one of the 5E Hero Designer character templates.  The following 5E rules are supported:
-- Figured Characteristics
-  - PD, ED, SPD, REC, END, STUN, OCV/DCV, ECV (is still referred to as OMCV/DMCV).
+- Characteristics
+  - Figured: PD, ED, SPD, REC, END, STUN, OCV/DCV, ECV (is still referred to as OMCV/DMCV)
+  - Comeliness (COM)
+  - Slightly different costs
 - Killing Attack stun multiplier is 1d6-1 (minimum 1)
+- Powers
+  - Armor (Resistant Protection)
+  - Growth
+  - Lack of Weakness (no automation)
 
 ## Screenshots
 

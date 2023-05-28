@@ -12,7 +12,7 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     return mergeObject(super.defaultOptions, {
       classes: ['herosystem6e', 'sheet', 'item'],
       width: 520,
-      height: 600,
+      height: 660,
       tabs: [{ navSelector: '.sheet-tabs', contentSelector: '.sheet-body', initial: 'description' }]
     })
   }
@@ -62,6 +62,17 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     if (data.system.characteristic) {
       data.system.characteristic = data.system.characteristic.toLowerCase()
     }
+
+    // Signed OCV and DCV
+    if (data.system.ocv != undefined)
+    {
+      data.system.ocv = ( "+" + parseInt(data.system.ocv)).replace("+-", "-")
+    }
+    if (data.system.dcv != undefined)
+    {
+      data.system.dcv = ( "+" + parseInt(data.system.dcv)).replace("+-", "-")
+    }
+
 
     return data
   }

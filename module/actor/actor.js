@@ -89,7 +89,7 @@ export class HeroSystem6eActor extends Actor {
         const ids = this.effects.map(o => o.id)
         await this.deleteEmbeddedDocuments("ActiveEffect", ids)
 
-        for (const power of this.items.filter(o => o.type === 'power')) {
+        for (const power of this.items.filter(o => o.type === 'power' || o.type === 'equipment')) {
             let configPowerInfo = CONFIG.HERO.powers[power.system.rules]
 
             // Characteristics (via ActiveEffects)
@@ -179,6 +179,59 @@ export class HeroSystem6eActor extends Actor {
                 changes["system.characteristics.str.value"] = this.system.characteristics.str.max
                 changes["system.characteristics.pd.value"] = this.system.characteristics.pd.max
                 changes["system.characteristics.ed.value"] = this.system.characteristics.ed.max
+                changes["system.active"] = true
+                await this.update(changes)
+
+
+            }
+
+            if (power.system.rules === "GROWTH" && this.system.is5e) {
+                const levels = parseInt(parseInt(power.system.LEVELS))
+
+                const strAdd = Math.floor(levels) * 5
+                const bodyAdd = Math.floor(levels)
+                const stunAdd = Math.floor(levels)
+                const dcvAdd = -2 * Math.floor(levels / 3)
+
+                let activeEffect =
+                {
+                    label: power.name + " (" + power.system.LEVELS + ")",
+                    //id: newPower.system.rules,
+                    icon: 'icons/svg/upgrade.svg',
+                    origin: power.uuid,
+                    changes: [
+                        {
+                            key: "system.characteristics.str.max",
+                            value: strAdd,
+                            mode: CONST.ACTIVE_EFFECT_MODES.ADD
+                        },
+                        {
+                            key: "system.characteristics.body.max",
+                            value: bodyAdd,
+                            mode: CONST.ACTIVE_EFFECT_MODES.ADD
+                        },
+                        {
+                            key: "system.characteristics.stun.max",
+                            value: stunAdd,
+                            mode: CONST.ACTIVE_EFFECT_MODES.ADD
+                        },
+                        {
+                            key: "system.characteristics.dcv.max",
+                            value: dcvAdd,
+                            mode: CONST.ACTIVE_EFFECT_MODES.ADD
+                        }
+                    ]
+                }
+
+                // Add Active Effect to Actor (because it wasn't tranferred from item)
+                await this.addActiveEffect(activeEffect)
+
+                // Set VALUE to new MAX
+                let changes = []
+                changes["system.characteristics.str.value"] = this.system.characteristics.str.max
+                changes["system.characteristics.body.value"] = this.system.characteristics.body.max
+                changes["system.characteristics.stun.value"] = this.system.characteristics.stun.max
+                changes["system.characteristics.dcv.value"] = this.system.characteristics.dcv.max
                 changes["system.active"] = true
                 await this.update(changes)
 
@@ -324,6 +377,14 @@ export class HeroSystem6eActor extends Actor {
                     addedDefense = true
                 }
 
+                //LACKOFWEAKNESS  
+                if (power.system.rules == "LACKOFWEAKNESS" && !addedDefense) {
+                    itemData.system.defenseType = 'low'
+                    itemData.system.value = parseInt(power.system.LEVELS)
+                    await HeroSystem6eItem.create(itemData, { parent: this })
+                    addedDefense = true
+                }
+
 
                 if (!addedDefense) {
                     if (game.settings.get(game.system.id, 'alphaTesting')) {
@@ -337,7 +398,7 @@ export class HeroSystem6eActor extends Actor {
         }
 
         // Combat Luck (is a TALENT with defense effects)
-        let combatLuck = this.items.find(o => o.type === 'talent' && o.system.id === "COMBAT_LUCK")
+        let combatLuck = this.items.find(o => o.system.id === "COMBAT_LUCK" || o.system.rules === "COMBAT_LUCK")
         if (combatLuck) {
 
             // Prepare the item object.

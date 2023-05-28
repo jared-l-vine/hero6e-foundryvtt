@@ -19,8 +19,13 @@
             "TargetsUsing": "Targets Using",
             "ToHitModifier": "To Hit Modifier",
             "UsesStrength": "Uses Strength",
+            "UsesTk": "Uses Telekinesis Strength",
             "Value": "Damage dice",
-            "StunBodyDamage": "Stun and/or Body Damage"
+            "StunBodyDamage": "Stun and/or Body Damage",
+            "OcvMod": "OCV Modifier",
+            "DcvMod": "DCV Modifier",
+            "Piercing": "Armor Piercing Levels",
+            "Penetrating": "Penetrating Levels"
         }
     },
     "ActorSheet": {

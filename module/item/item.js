@@ -24,6 +24,11 @@ export class HeroSystem6eItem extends Item {
     // persisted should be performed with this.updateSource().
     async _preCreate(data, options, userId) {
 
+        if (this.type == "martialart")
+        {
+            console.log(this.name)
+        }
+
         await super._preCreate(data, options, userId);
 
         const icons = {
@@ -33,6 +38,7 @@ export class HeroSystem6eItem extends Item {
             "defense": "icons/svg/shield.svg",
             "power": "icons/svg/aura.svg",
             "maneuver": "icons/svg/upgrade.svg",
+            "martialart": "icons/svg/downgrade.svg",
         }
 
         // assign a default image

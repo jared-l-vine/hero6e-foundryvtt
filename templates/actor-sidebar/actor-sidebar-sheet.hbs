@@ -67,13 +67,28 @@
 
     <!-- TOP DIV -->
     <header class="char-header sheet-header ">
-        <div class="header-fields flexrow">
+        <div class="header-fields flexrow" style="width: 100%">
             <h1 class="charname flex4"><input name="name" type="text" value="{{actor.name}}" placeholder="Name" /></h1>
 
-            <label class="upload-button">
-                <span>Upload .HDC</span>
+
+            {{#if actor.system.is5e}}
+            <div class="fifthEd flex0" title="5th edition character">5e</div>
+            {{/if}}
+
+            {{#if actor.system.points}}
+            <div class="points flex0" title="Total Points Spent (estimate)">{{actor.system.points}}CP</div>
+            {{/if}}
+
+            {{#if actor.system.activePoints}}
+            <div class="points flex0" title="Total Active Points (estimate)">{{actor.system.activePoints}}AP</div>
+            {{/if}}
+
+            <label class="upload-button flex0">
+                <span>Upload&nbsp;.HDC</span>
                 <input type="file" accept=".hdc" />
             </label>
+
+
         </div>
     </header>
 
@@ -112,7 +127,8 @@
                     <tr class="sticky">
                         <th></th>
                         <th class="left">{{localize "ActorSheet.Name"}}</th>
-                        <th>{{localize "ActorSheet.HitMod"}}</th>
+                        <th>{{localize "ActorSheet.OCV"}}</th>
+                        <th>{{localize "ActorSheet.DCV"}}</th>
                         <th>{{localize "ActorSheet.OffVDef"}}</th>
                         <th>{{localize "ActorSheet.Dmg"}}</th>
                         <th>{{localize "ActorSheet.Res"}}</th>
@@ -134,7 +150,8 @@
                                     height="24" /></div>
                         </td>
                         <td class="left">{{item.name}}</td>
-                        <td>{{item.system.toHitMod}}</td>
+                        <td>{{item.system.ocv}}</td>
+                        <td>{{item.system.dcv}}</td>
                         <td>{{item.system.uses}} vs {{item.system.targets}}</td>
                         <td>{{item.system.damage}}</td>
                         <td>{{item.system.class}}</td>
@@ -233,8 +250,8 @@
                         <td>{{item.system.hardened}}</td>
                         <td>{{item.system.impenetrable}}</td>
                         <td>
-                            <input class="item-toggle" type="checkbox" name="system.active" {{checked system.active}}
-                                data-dtype="Boolean" />
+                            <input class="item-toggle" type="checkbox" name="item.system.active" {{checked
+                                item.system.active}} data-dtype="Boolean" />
 
                         </td>
                         <td>
@@ -323,8 +340,8 @@
                         <td>{{item.system.ocv}}</td>
                         <td>{{item.system.dcv}}</td>
                         <td>
-                            <input class="item-toggle" type="checkbox" name="system.active" {{checked system.active}}
-                                data-dtype="Boolean" />
+                            <input class="item-toggle" type="checkbox" name="item.system.active" {{checked
+                                item.system.active}} data-dtype="Boolean" />
                         </td>
                         <td>
                             <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
@@ -390,6 +407,7 @@
                     <tr class="sticky">
                         <th></th>
                         <th class="left">{{localize "ActorSheet.Name"}}</th>
+                        <th>{{localize "ActorSheet.Cost"}}</th>
                         <th>{{localize "ActorSheet.End"}}</th>
                         <th class="left">{{localize "ActorSheet.Description"}}</th>
                         <th>{{localize "ActorSheet.Active"}}</th>
@@ -403,11 +421,12 @@
                                     height="24" /></div>
                         </td>
                         <td class="left">{{item.name}}</td>
+                        <td>{{item.system.realCost}}</td>
                         <td>{{item.system.end}}</td>
                         <td class="left">{{item.system.description}}</td>
                         <td>
                             {{#if item.system.showToggle}}<input class="item-toggle" type="checkbox"
-                                name="system.active" {{checked system.active}} data-dtype="Boolean" />
+                                name="item.system.active" {{checked item.system.active}} data-dtype="Boolean" />
                             {{/if}}
                         </td>
                         <td>
@@ -432,6 +451,7 @@
                         <th></th>
                         <th class="left">{{localize "ActorSheet.Name"}}</th>
                         <th class="left">{{localize "ActorSheet.Description"}}</th>
+                        <th>{{localize "ActorSheet.Cost"}}</th>
                         <th>{{localize "ActorSheet.End"}}</th>
                         <th>
                             {{!-- <a class="item-control item-create" title="Create equipment" data-type="equipment">
@@ -446,7 +466,8 @@
                                     height="24" /></div>
                         </td>
                         <td class="left">{{item.name}}</td>
-                        <td class="left">{{item.system.rules}}</td>
+                        <td class="left">{{item.system.description}}</td>
+                        <td>{{item.system.realCost}}</td>
                         <td>{{item.system.end}}</td>
                         <td>
                             <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
@@ -493,7 +514,7 @@
                         </td>
                         <td>{{characteristic.name}}</td>
                         <td>{{characteristic.base}}</td>
-                        <td>{{characteristic.cost}}</td>
+                        <td>{{characteristic.realCost}}</td>
 
                         <td>
                             {{#if characteristic.roll}}
