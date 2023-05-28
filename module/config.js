@@ -98,21 +98,21 @@ HERO.characteristics5e = {
     "str": "STR",
     "dex": "DEX",
     "con": "CON",
+    "body": "BODY",
     "int": "INT",
     "ego": "EGO",
     "pre": "PRE",
     "com": "COM",
+    "pd": "PD",
+    "ed": "ED",
+    "spd": "SPD",
+    "rec": "REC",
+    "end": "END",
+    "stun": "STUN",
     "ocv": "OCV",
     "dcv": "DCV",
     "omcv": "OMCV",
     "dmcv": "DMCV",
-    "spd": "SPD",
-    "pd": "PD",
-    "ed": "ED",
-    "rec": "REC",
-    "end": "END",
-    "body": "BODY",
-    "stun": "STUN",
     "running": "Running",
     "swimming": "Swimming",
     "leaping": "Leaping",
@@ -143,6 +143,30 @@ HERO.characteristicDefaults = {
     "leaping": 4,
 };
 
+HERO.characteristicDefaults5e = {
+    "str": 10,
+    "dex": 10,
+    "con": 10,
+    "int": 10,
+    "ego": 10,
+    "pre": 10,
+    "com": 10,
+    "ocv": 3,
+    "dcv": 3,
+    "omcv": 3,
+    "dmcv": 3,
+    "spd": 2,
+    "pd": 2,
+    "ed": 2,
+    "rec": 4,
+    "end": 20,
+    "body": 10,
+    "stun": 20,
+    "running": 6,
+    "swimming": 2,
+    "leaping": 1,
+};
+
 HERO.characteristicCosts = {
     "str": 1,
     "dex": 2,
@@ -170,25 +194,24 @@ HERO.characteristicCosts5e = {
     "str": 1,
     "dex": 3,
     "con": 2,
+    "body": 2,
     "int": 1,
     "ego": 2,
     "pre": 1,
     "com": 1 / 2,
+    "pd": 1,
+    "ed": 1,
+    "spd": 10,
+    "rec": 2,
+    "end": 1 / 2,
+    "stun": 1,
     "ocv": 5,
     "dcv": 5,
     "omcv": 3,
     "dmcv": 3,
-    "spd": 10,
-    "pd": 1,
-    "ed": 1,
-    "rec": 2,
-    "end": 1 / 3,
-    "body": 2,
-    "stun": 1 / 2,
-    "running": 1,
+    "running": 2,
     "swimming": 1 / 2,
     "leaping": 1 / 2,
-
 };
 
 
@@ -391,7 +414,8 @@ HERO.powers = {
         duration: "constant",
         target: "self only",
         range: "self",
-        costEnd: true
+        costEnd: true,
+        cost: 4,
     },
     "NAKEDMODIFIER": {
         powerType: []
@@ -446,7 +470,7 @@ HERO.powers = {
 
     // Defense
     "FORCEWALL": { powerType: ["defense"], name: "Barrier" }, // AKA BARRIER
-    "FORCEFIELD": { powerType: ["defense"], name: "Resistant Protection" },  // AKA RESISTANT PROTECTION
+    "FORCEFIELD": { powerType: ["defense"], name: "Resistant Protection", cost: 3/2 },  // AKA RESISTANT PROTECTION
     "FLASHDEFENSE": {
         powerType: ["defense", "special"],
         name: "Flash Defense",

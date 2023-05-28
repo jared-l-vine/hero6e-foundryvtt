@@ -159,23 +159,27 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             let characteristic = data.actor.system.characteristics[key]
             //characteristic.key = key
             if (!characteristic.base) {
-                characteristic.base = CONFIG.HERO.characteristicDefaults[key]
+                if (data.actor.system.is5e) {
+                    characteristic.base = CONFIG.HERO.characteristicDefaults5e[key]
+                } else {
+                    characteristic.base = CONFIG.HERO.characteristicDefaults[key]
+                }
             }
 
             if (data.actor.system.is5e) {
                 if (!CONFIG.HERO.characteristicCosts5e[key]) continue;
                 characteristic.name = CONFIG.HERO.characteristics5e[key]
-                characteristic.cost = Math.ceil((characteristic.core - characteristic.base) * CONFIG.HERO.characteristicCosts5e[key])
+                //characteristic.cost = Math.ceil((characteristic.core - characteristic.base) * CONFIG.HERO.characteristicCosts5e[key])
 
             }
             else {
                 if (!CONFIG.HERO.characteristicCosts[key]) continue;
                 characteristic.name = CONFIG.HERO.characteristics[key]
-                characteristic.cost = Math.ceil((characteristic.core - characteristic.base) * CONFIG.HERO.characteristicCosts[key])
+                //characteristic.cost = Math.ceil((characteristic.core - characteristic.base) * CONFIG.HERO.characteristicCosts[key])
             }
-            if (isNaN(characteristic.cost)) {
-                characteristic.cost = "";
-            }
+            // if (isNaN(characteristic.cost)) {
+            //     //characteristic.cost = "";
+            // }
             if (characteristic.type === 'rollable') {
                 if (characteristic.value === 0) {
                     characteristic.roll = 8

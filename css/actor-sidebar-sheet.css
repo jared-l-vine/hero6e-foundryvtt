@@ -292,3 +292,14 @@
   line-height: normal;
   margin: 2px 0px;
 }
+
+.actor-sidebar-sheet div.points {
+  border: 1px solid rgb(0 0 0 / 30%);
+  border-radius: 8px;
+  height: 24px;
+  padding: 2px 4px;
+  font-size:14px;
+  /* margin-top: 2px; */
+  margin: 5px 5px;
+  text-align: center;
+}

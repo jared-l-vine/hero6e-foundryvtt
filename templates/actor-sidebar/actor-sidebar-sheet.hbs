@@ -75,6 +75,14 @@
             <div class="fifthEd flex0" title="5th edition character">5e</div>
             {{/if}}
 
+            {{#if actor.system.points}}
+            <div class="points flex0" title="Total Points Spent (estimate)">{{actor.system.points}}CP</div>
+            {{/if}}
+
+            {{#if actor.system.activePoints}}
+            <div class="points flex0" title="Total Active Points (estimate)">{{actor.system.activePoints}}AP</div>
+            {{/if}}
+
             <label class="upload-button flex0">
                 <span>Upload&nbsp;.HDC</span>
                 <input type="file" accept=".hdc" />
@@ -399,6 +407,7 @@
                     <tr class="sticky">
                         <th></th>
                         <th class="left">{{localize "ActorSheet.Name"}}</th>
+                        <th>{{localize "ActorSheet.Cost"}}</th>
                         <th>{{localize "ActorSheet.End"}}</th>
                         <th class="left">{{localize "ActorSheet.Description"}}</th>
                         <th>{{localize "ActorSheet.Active"}}</th>
@@ -412,6 +421,7 @@
                                     height="24" /></div>
                         </td>
                         <td class="left">{{item.name}}</td>
+                        <td>{{item.system.realCost}}</td>
                         <td>{{item.system.end}}</td>
                         <td class="left">{{item.system.description}}</td>
                         <td>
@@ -502,7 +512,7 @@
                         </td>
                         <td>{{characteristic.name}}</td>
                         <td>{{characteristic.base}}</td>
-                        <td>{{characteristic.cost}}</td>
+                        <td>{{characteristic.realCost}}</td>
 
                         <td>
                             {{#if characteristic.roll}}

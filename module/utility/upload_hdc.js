@@ -1,5 +1,6 @@
 import { HEROSYS } from "../herosystem6e.js";
 import { HeroSystem6eItem } from "../item/item.js";
+import { RoundFavorPlayerDown } from "../utility/round.js"
 
 
 export async function applyCharacterSheet(xmlDoc) {
@@ -25,7 +26,7 @@ export async function applyCharacterSheet(xmlDoc) {
 
     // Individual changes to the actor are not very effecient.
     // Instead save all the changes and perform a bulk update.
-    const changes = []
+    let changes = {}
     changes[`system.characterTemplate`] = characterTemplate
 
     if (characterInfo.getAttribute('CHARACTER_NAME') !== '') {
@@ -62,25 +63,82 @@ export async function applyCharacterSheet(xmlDoc) {
     // This is a faster (bulk) operation to delete all the items
     await this.actor.deleteEmbeddedDocuments("Item", Array.from(this.actor.items.keys()))
 
+    let realCost = 0;
+    let activePoints = 0;
+
+    // 6e vs 5e
+    let characteristicCosts = CONFIG.HERO.characteristicCosts
+    if (this.actor.system.is5e) {
+        characteristicCosts = CONFIG.HERO.characteristicCosts5e
+    }
+
+    // Caracteristics for 6e
+    let characteristicKeys = Object.keys(characteristicCosts)
+
 
     // determine spd upfront for velocity calculations
     let spd
     let value
-    for (const characteristic of characteristics.children) {
-        const key = CONFIG.HERO.characteristicsXMLKey[characteristic.getAttribute('XMLID')]
-        value = CONFIG.HERO.characteristicDefaults[key] + parseInt(characteristic.getAttribute('LEVELS'))
-
-        if (key === 'spd') {
-            spd = value
-        }
+    let characteristicDefaults = CONFIG.HERO.characteristicDefaults
+    if (this.actor.system.is5e) {
+        characteristicDefaults = CONFIG.HERO.characteristicDefaults5e
     }
 
     for (const characteristic of characteristics.children) {
         const key = CONFIG.HERO.characteristicsXMLKey[characteristic.getAttribute('XMLID')]
-        value = CONFIG.HERO.characteristicDefaults[key] + parseInt(characteristic.getAttribute('LEVELS'))
+        const levels = parseInt(characteristic.getAttribute('LEVELS'))
+        value = characteristicDefaults[key] + levels
+
+
+        if (key === "running" && this.actor.system.is5e) {
+            console.log(key)
+        }
+
+        if (key === "leaping" && this.actor.system.is5e) {
+            const str = parseInt(changes[`system.characteristics.str.core`])
+            if (str >= 3) value = 0.5
+            if (str >= 5) value = 1
+            if (str >= 8) value = 1.5
+            if (str >= 10) value = 2
+            if (str >= 13) value = 2.5
+            if (str >= 15) value = 3
+            if (str >= 18) value = 3.5
+            if (str >= 20) value = 4
+            if (str >= 23) value = 4.5
+            if (str >= 25) value = 5
+            if (str >= 28) value = 5.5
+            if (str >= 30) value = 6
+            if (str >= 35) value = 7
+            if (str >= 40) value = 8
+            if (str >= 45) value = 9
+            if (str >= 50) value = 10
+            if (str >= 55) value = 11
+            if (str >= 60) value = 12
+            if (str >= 65) value = 13
+            if (str >= 70) value = 14
+            if (str >= 75) value = 15
+            if (str >= 80) value = 16
+            if (str >= 85) value = 17
+            if (str >= 90) value = 18
+            if (str >= 95) value = 19
+            if (str >= 100) value = 20 + Math.floor((str - 100) / 5)
+            changes[`system.characteristics.leaping.base`] = value
+            value += parseInt(characteristic.getAttribute('LEVELS'))
+            
+        }
+
         changes[`system.characteristics.${key}.value`] = value
         changes[`system.characteristics.${key}.max`] = value
         changes[`system.characteristics.${key}.core`] = value
+        let cost = Math.round(levels * characteristicCosts[key])
+        changes[`system.characteristics.${key}.basePointsPlusAdders`] = cost
+        changes[`system.characteristics.${key}.realCost`] = cost
+        changes[`system.characteristics.${key}.activePoints`] = cost
+        realCost += cost
+        activePoints += cost
+
+
+
 
         if (key in CONFIG.HERO.movementPowers) {
             let name = characteristic.getAttribute('NAME')
@@ -105,6 +163,7 @@ export async function applyCharacterSheet(xmlDoc) {
     }
 
     await this.actor.update(changes)
+    changes = {}
 
     // Initial 5e support
     // 5th edition has no edition designator, so assuming if there is no 6E then it is 5E.
@@ -115,7 +174,7 @@ export async function applyCharacterSheet(xmlDoc) {
         // One major difference between 5E and 6E is figured characteristics.
 
         // Physical Defense (PD) STR/5
-        const pdLevels = this.actor.system.characteristics.pd.max - CONFIG.HERO.characteristicDefaults.pd;
+        const pdLevels = this.actor.system.characteristics.pd.max - CONFIG.HERO.characteristicDefaults5e.pd;
         const pdFigured = Math.round(this.actor.system.characteristics.str.max / 5)
         figuredChanges[`system.characteristics.pd.max`] = pdLevels + pdFigured
         figuredChanges[`system.characteristics.pd.value`] = pdLevels + pdFigured
@@ -124,7 +183,7 @@ export async function applyCharacterSheet(xmlDoc) {
         figuredChanges[`system.characteristics.pd.figured`] = pdFigured
 
         // Energy Defense (ED) CON/5
-        const edLevels = this.actor.system.characteristics.ed.max - CONFIG.HERO.characteristicDefaults.ed;
+        const edLevels = this.actor.system.characteristics.ed.max - CONFIG.HERO.characteristicDefaults5e.ed;
         const edFigured = Math.round(this.actor.system.characteristics.con.max / 5)
         figuredChanges[`system.characteristics.ed.max`] = edLevels + edFigured
         figuredChanges[`system.characteristics.ed.value`] = edLevels + edFigured
@@ -132,26 +191,30 @@ export async function applyCharacterSheet(xmlDoc) {
         figuredChanges[`system.characteristics.ed.core`] = edLevels + edFigured
         figuredChanges[`system.characteristics.ed.figured`] = edFigured
 
-        // Speed (SPD) 1 + (DEX/10)
-        const spdLevels = this.actor.system.characteristics.spd.max - CONFIG.HERO.characteristicDefaults.spd;
-        const spdFigured = 1 + Math.floor(this.actor.system.characteristics.dex.max / 10)
-        figuredChanges[`system.characteristics.spd.max`] = spdLevels + spdFigured
-        figuredChanges[`system.characteristics.spd.value`] = spdLevels + spdFigured
+
+        // Speed (SPD) 1 + (DEX/10)   can be fractional
+        const spdLevels = this.actor.system.characteristics.spd.max - CONFIG.HERO.characteristicDefaults5e.spd;
+        const spdFigured = 1 + parseFloat(parseFloat(this.actor.system.characteristics.dex.max / 10).toFixed(1))
+        figuredChanges[`system.characteristics.spd.max`] = Math.floor(spdLevels + spdFigured)
+        figuredChanges[`system.characteristics.spd.value`] = Math.floor(spdLevels + spdFigured)
         figuredChanges[`system.characteristics.spd.base`] = spdFigured //this.actor.system.characteristics.spd.base + spdFigured
-        figuredChanges[`system.characteristics.spd.core`] = spdLevels + spdFigured
+        figuredChanges[`system.characteristics.spd.core`] = Math.floor(spdLevels + spdFigured)
         figuredChanges[`system.characteristics.spd.figured`] = spdFigured
+        figuredChanges[`system.characteristics.spd.realCost`] = (spdFigured - spdLevels) * CONFIG.HERO.characteristicCosts5e.spd
+
 
         // Recovery (REC) (STR/5) + (CON/5)
-        const recLevels = this.actor.system.characteristics.rec.max - CONFIG.HERO.characteristicDefaults.rec;
+        const recLevels = this.actor.system.characteristics.rec.max - CONFIG.HERO.characteristicDefaults5e.rec;
         const recFigured = Math.round(this.actor.system.characteristics.str.max / 5) + Math.round(this.actor.system.characteristics.con.max / 5)
         figuredChanges[`system.characteristics.rec.max`] = recLevels + recFigured
         figuredChanges[`system.characteristics.rec.value`] = recLevels + recFigured
         figuredChanges[`system.characteristics.rec.base`] = recFigured //this.actor.system.characteristics.rec.base + recFigured
         figuredChanges[`system.characteristics.rec.core`] = recLevels + recFigured
         figuredChanges[`system.characteristics.rec.figured`] = recFigured
+        figuredChanges[`system.characteristics.red.realCost`] = recLevels * CONFIG.HERO.characteristicCosts5e.red
 
         // Endurance (END) 2 x CON
-        const endLevels = this.actor.system.characteristics.end.max - CONFIG.HERO.characteristicDefaults.end;
+        const endLevels = this.actor.system.characteristics.end.max - CONFIG.HERO.characteristicDefaults5e.end;
         const endFigured = Math.round(this.actor.system.characteristics.con.max * 2)
         figuredChanges[`system.characteristics.end.max`] = endLevels + endFigured
         figuredChanges[`system.characteristics.end.value`] = endLevels + endFigured
@@ -159,14 +222,16 @@ export async function applyCharacterSheet(xmlDoc) {
         figuredChanges[`system.characteristics.end.core`] = endLevels + endFigured
         figuredChanges[`system.characteristics.end.figured`] = endFigured
 
+
         // Stun (STUN) BODY+(STR/2)+(CON/2) 
-        const stunLevels = this.actor.system.characteristics.stun.max - CONFIG.HERO.characteristicDefaults.stun;
+        const stunLevels = this.actor.system.characteristics.stun.max - CONFIG.HERO.characteristicDefaults5e.stun;
         const stunFigured = this.actor.system.characteristics.body.max + Math.round(this.actor.system.characteristics.str.max / 2) + Math.round(this.actor.system.characteristics.con.max / 2)
         figuredChanges[`system.characteristics.stun.max`] = stunLevels + stunFigured
         figuredChanges[`system.characteristics.stun.value`] = stunLevels + stunFigured
         figuredChanges[`system.characteristics.stun.base`] = stunFigured //this.actor.system.characteristics.stun.base + stunFigured
         figuredChanges[`system.characteristics.stun.core`] = stunLevels + stunFigured
         figuredChanges[`system.characteristics.stun.figured`] = stunFigured
+        figuredChanges[`system.characteristics.stun.realCost`] = stunLevels * CONFIG.HERO.characteristicCosts5e.stun
 
 
         // Base OCV & DCV = Attacker’s DEX/3
@@ -189,12 +254,21 @@ export async function applyCharacterSheet(xmlDoc) {
 
 
         await this.actor.update(figuredChanges)
+
+        // redo costs now that we just changed them for 5e
+        realCost = 0
+        for (const characteristic of characteristics.children) {
+            const key = CONFIG.HERO.characteristicsXMLKey[characteristic.getAttribute('XMLID')]
+            realCost += this.actor.system.characteristics[key].realCost;
+        }
+        activePoints = realCost
+
     }
 
 
 
     for (const skill of skills.children) {
-        await uploadSkill.call(this, skill)
+        [realCost, activePoints] = await uploadSkill.call(this, skill, realCost, activePoints)
     }
 
     // Perception Skill
@@ -219,7 +293,8 @@ export async function applyCharacterSheet(xmlDoc) {
         const alias = power.getAttribute('ALIAS')
         const levels = power.getAttribute('LEVELS')
         const input = power.getAttribute('INPUT')
-        let activeCost = levels * 5;
+
+
 
         if (xmlid === 'GENERIC_OBJECT') { continue; }
 
@@ -294,6 +369,16 @@ export async function applyCharacterSheet(xmlDoc) {
         }
         powerData.modifiers = modifiers
 
+        // Real Cost and Active Points
+        let _basePointsPlusAdders = calcBasePointsPlusAdders(power)
+        let _activePoints = calcActivePoints(_basePointsPlusAdders, power)
+        let _realCost = calcRealCost(_activePoints, power)
+        powerData.basePointsPlusAdders = _basePointsPlusAdders
+        powerData.activePoints = _activePoints
+        powerData.realCost = _realCost
+        realCost += _realCost;
+        activePoints += _activePoints;
+
         // Description (eventual goal is to largely match Hero Designer)
         // TODO: This should probably be moved to the sheets code
         // so when the power is modified in foundry, the power
@@ -302,7 +387,7 @@ export async function applyCharacterSheet(xmlDoc) {
         switch (alias) {
             case "PRE":
                 powerData.description = "+" + levels + " PRE";
-                activeCost = 0;
+                //activeCost = 0;
                 break;
             case "Mind Scan": powerData.description = levels + "d6 Mind Scan (" +
                 input + " class of minds)";
@@ -424,6 +509,9 @@ export async function applyCharacterSheet(xmlDoc) {
     for (const martialart of martialarts.children) {
         await uploadMartial.call(this, martialart, 'martialart', extraDc, usesTk)
     }
+
+    // Character Points
+    await this.actor.update({ 'system.points': realCost, 'system.activePoints': activePoints })
 
     // combat maneuvers
     async function loadCombatManeuvers(dict, actor) {
@@ -638,7 +726,7 @@ export async function uploadTalent(xml, type) {
     await HeroSystem6eItem.create(itemData, { parent: this.actor })
 }
 
-export async function uploadSkill(skill) {
+export async function uploadSkill(skill, realCost, activePoints) {
     const xmlid = skill.getAttribute('XMLID')
 
     if (xmlid === 'GENERIC_OBJECT') { return; }
@@ -704,35 +792,148 @@ export async function uploadSkill(skill) {
         skillData.optionAlias = skill.getAttribute('OPTION_ALIAS')
     }
 
-    // determine Skill Roll
-    // if (skillData.state === 'everyman') {
-    //     skillData.roll = '8-'
-    // } else if (skillData.state === 'familiar') {
-    //     skillData.roll = '8-'
-    // } else if (skillData.state === 'proficient') {
-    //     skillData.roll = '10-'
-    // } else if (skillData.state === 'trained') {
-    //     const charValue = ((skillData.characteristic.toLowerCase() !== 'general') && (skillData.characteristic.toLowerCase() != '')) ?
-    //         this.actor.system.characteristics[`${skillData.characteristic.toLowerCase()}`].value : 0
-
-    //     const rollVal = 9 + Math.round(charValue / 5) + parseInt(skillData.levels)
-    //     skillData.roll = rollVal.toString() + '-'
-    // } else {
-    //     // This is likely a Skill Enhancer.
-    //     // Skill Enahncers provide a discount to the purchase of asssociated skills.
-    //     // They no not change the roll.
-    //     // Skip for now.
-    //     HEROSYS.log(false, xmlid + ' was not included in skills.  Likely Skill Enhancer')
-    //     return
-    // }
+    // Real Cost and Active Points
+    let _basePointsPlusAdders = calcBasePointsPlusAdders(skill)
+    let _activePoints = calcActivePoints(_basePointsPlusAdders, skill)
+    let _realCost = calcRealCost(_activePoints, skill)
+    skillData.basePointsPlusAdders = _basePointsPlusAdders
+    skillData.activePoints = _activePoints
+    skillData.realCost = _realCost
+    realCost += _realCost;
+    activePoints += _activePoints;
 
     const itemData = {
         name,
         type: 'skill',
-        system: skillData
+        system: skillData,
     }
 
     await HeroSystem6eItem.create(itemData, { parent: this.actor })
+
+    return [realCost, activePoints]
+}
+
+function calcBasePointsPlusAdders(xmlItem) {
+
+    const xmlid = xmlItem.getAttribute('XMLID')
+    const basePoints = parseInt(xmlItem.getAttribute('BASECOST'))
+    const levels = parseInt(xmlItem.getAttribute('LEVELS'))
+    const adders = xmlItem.getElementsByTagName("ADDER")
+
+    // Everyman skills are free
+    if (xmlItem.getAttribute("EVERYMAN") == "Yes") {
+        return 0
+    }
+
+    if (xmlid == "ARMOR")
+        console.log(xmlid)
+
+
+    // Categorized Skills typically cost 2 CP per category,
+    // 1 CP per subcategory, and +1 to the roll per +2 CP. The
+    // Skills most commonly exploded in this manner include
+    // Animal Handler, Forgery, Gambling,
+
+    let cost = 0
+    for (let adder of adders) {
+
+        // Some skills have subgroups like TRANSPORT_FAMILIARITY, we will ignore the top level
+        const subAdders = adder.getElementsByTagName("ADDER")
+        if (subAdders.length) {
+            continue;
+        }
+
+        const adderBaseCost = parseInt(adder.getAttribute("BASECOST") || 0)
+        if (cost >= 2 && adderBaseCost == 2) {
+            cost += 1
+        }
+        else {
+            cost += adderBaseCost
+        }
+    }
+
+
+
+    // Levels
+    // TODO: List each skill in config.js and include cost per level
+    if (xmlItem.tagName == "SKILL") {
+        if (["KNOWLEDGE_SKILL"].includes(xmlid)) {
+            cost += parseInt(levels);
+        } else {
+            cost += parseInt(levels) * 2;
+        }
+    } else {
+        let _xmlid = CONFIG.HERO.powersRebrand[xmlid] || xmlid
+        let costPerLevel = parseFloat(CONFIG.HERO.powers[_xmlid]?.cost || CONFIG.HERO.characteristicCosts[_xmlid.toLocaleLowerCase()] || 5 )
+        cost += Math.ceil(parseInt(levels) * costPerLevel)
+    }
+
+
+    return basePoints + cost
+}
+
+function calcActivePoints(_basePointsPlusAdders, xmlItem) {
+    // Active Points = (Base Points + cost of any Adders) x (1 + total value of all Advantages)
+
+    const xmlid = xmlItem.getAttribute('XMLID')
+    const levels = parseInt(xmlItem.getAttribute('LEVELS'))
+    const modifiers = xmlItem.getElementsByTagName("MODIFIER")
+
+
+    let advantages = 0
+    for (let modifier of modifiers) {
+        const modifierBaseCost = parseFloat(modifier.getAttribute("BASECOST") || 0)
+        if (modifierBaseCost > 0) {
+            advantages += modifierBaseCost;
+        }
+
+        // Some modifiers may have ADDERS
+        const adders = modifier.getElementsByTagName("ADDER")
+        if (adders.length) {
+            for (let adder of adders) {
+                const adderBaseCost = parseFloat(modifier.getAttribute("BASECOST") || 0)
+                if (adderBaseCost > 0) {
+                    advantages += adderBaseCost;
+                }
+            }
+        }
+    }
+
+    const _activePoints = _basePointsPlusAdders * (1 + advantages)
+
+    return RoundFavorPlayerDown(_activePoints)
+}
+
+function calcRealCost(_activeCost, xmlItem) {
+    // Real Cost = Active Cost / (1 + total value of all Limitations)
+
+    const xmlid = xmlItem.getAttribute('XMLID')
+    const levels = parseInt(xmlItem.getAttribute('LEVELS'))
+    const modifiers = xmlItem.getElementsByTagName("MODIFIER")
+
+    let limitations = 0
+    for (let modifier of modifiers) {
+        const modifierBaseCost = parseFloat(modifier.getAttribute("BASECOST") || 0)
+        if (modifierBaseCost < 0) {
+            limitations += -modifierBaseCost;
+        }
+
+        // Some modifiers may have ADDERS as well (like a focus)
+        const adders = modifier.getElementsByTagName("ADDER")
+        if (adders.length) {
+            for (let adder of adders) {
+                const adderBaseCost = parseFloat(modifier.getAttribute("BASECOST") || 0)
+                if (adderBaseCost < 0) {
+                    limitations += -adderBaseCost;
+                }
+            }
+        }
+    }
+
+    const _realCost = _activeCost / (1 + limitations)
+
+    // ToDo: I thik there is a minimum of 1 here, but Everyday skills are 0, so not quite sure what to do yet.
+    return RoundFavorPlayerDown(_realCost)
 }
 
 export async function uploadAttack(power) {
