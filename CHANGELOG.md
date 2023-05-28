@@ -1,5 +1,6 @@
 # Version 2.1.7-alpha
 - Improved custom maneuver support. [#91](https://github.com/dmdorman/hero6e-foundryvtt/issues/91)
+- Estimation of Character Points spent and Active Points [#111](https://github.com/dmdorman/hero6e-foundryvtt/issues/111)
 - Improved 5e support:
   - Added Comeliness (COM) characteristic.  
   - Fixed OCV/DCV/STUN figured characteristics. [#104](https://github.com/dmdorman/hero6e-foundryvtt/issues/104) 
