@@ -17,6 +17,7 @@ import { HeroSystem6eCombat, HeroSystem6eCombatTracker } from "./combat.js";
 import SettingsHelpers from "./settings/settings-helpers.js";
 import { HeroSystem6eTokenHud } from "./bar3/tokenHud.js";
 import { extendTokenConfig } from "./bar3/extendTokenConfig.js";
+import { HeroRuler } from "./ruler.js";
 
 Hooks.once('init', async function () {
 
@@ -67,6 +68,8 @@ Hooks.once('init', async function () {
   //CONFIG.MeasuredTemplate.objectClass = HeroSystem6eTemplate;
   CONFIG.ui.combat = HeroSystem6eCombatTracker;
 
+  HeroRuler.initialize()
+
   SettingsHelpers.initLevelSettings();
 
   // Register sheet application classes
@@ -98,164 +101,6 @@ Hooks.once('init', async function () {
   });
 });
 
-Hooks.once("init", () => {
-  // if (!game.modules.get('drag-ruler')?.active) {
-    Ruler.prototype._getSegmentLabel = function _getSegmentLabel(segmentDistance, totalDistance, isTotal) {
-      let rangeMod = Math.ceil(Math.log2(totalDistance / 8)) * 2;
-
-      rangeMod = rangeMod < 0 ? 0 : rangeMod;
-
-      let label = "[" + Math.round(segmentDistance.distance) + " m]" + "\n-" + rangeMod + " Range Modifier"
-
-      return label
-    };
-  // }
-});
-
-// Hooks.on('getSceneControlButtons', (buttons) => {
-//   // const UnTTool = {
-//   //     activeTool: "types",
-//   //     icon: "scene-control-icon",
-//   //     layer: "UnT",
-//   //     name: "UnT",
-//   //     title: game.i18n.localize("UnT.Name"),
-//   //     tools: [],
-//   //     visible: true
-//   // }
-
-//   // UnTTool.tools.push({
-//   //     name: "types",
-//   //     icon: "scene-control-icon-types",
-//   //     title: game.i18n.localize("UnT.SceneControl.Types"),
-//   //     button: true,
-//   //     onClick: () => {
-//   //         const typeForm = new TypingForm()
-//   //         typeForm.render(true)
-//   //     },
-//   // })
-
-//   // if(game.user.isGM) {
-//   //    // GM only controls
-//   // }
-
-
-//   const tokenSelectButton = buttons[0].tools[0]
-
-//   // buttons.push(UnTTool)
-//   HEROSYS.log(buttons[0].tools[0])
-// })
-
-Hooks.on('controlToken', function(token, controlled) {
-  const sceneControls = ui.controls//.controls.find(control => control.name === 'token');
-  if (sceneControls.activeControl !== "token") { return; }
-  if (sceneControls.activeTool !== "select") { return; }
-
-  HEROSYS.log('control token ready!')
-
-  const tokensControlled = canvas.tokens.controlled.length;
-
-  if (tokensControlled !== 1 || !controlled) {
-      return
-  }
-
-  movementRadioSelectRender()
-
-
-  return
-  sceneControls.tools.push(radialMenuButton)
-
-});
-
-Hooks.on('renderSceneControls', function(sceneControls, html) {
-  HEROSYS.log(sceneControls)
-
-  return
-  if (sceneControls.activeControl === "token" && sceneControls.activeTool === "select") {
-    HEROSYS.log('lets add some stuff here!')
-    HEROSYS.log(html)
-
-    const radialMenuButton = $(`
-      <div class="conatiner">
-        <div class="radio">
-          <input id="radio-1" name="radio" type="radio" data-tool="walk" checked>
-          <label for="radio-1" class="radio-label">Walk</label>
-        </div>
-
-        <div class="radio">
-          <input id="radio-1" name="radio" type="radio" data-tool="run" checked>
-          <label for="radio-1" class="radio-label">Run</label>
-        </div>
-
-        <div class="radio">
-          <input id="radio-1" name="radio" type="radio" data-tool="fly" checked>
-          <label for="radio-1" class="radio-label">Fly</label>
-        </div>
-      </div>
-  `);
-
-    // Add event handlers
-    radialMenuButton.find('[data-tool]').click(function() {
-      const tool = $(this).attr('data-tool');
-
-      HEROSYS.log(tool)
-
-      switch (tool) {
-          case 'walk':
-              // Do something for walk
-              break;
-          case 'run':
-              // Do something for run
-              break;
-          case 'fly':
-              // Do something for fly
-              break;
-      }
-
-      // Set this button as active
-      radialMenuButton.find('.active').removeClass('active');
-      $(this).addClass('active');
-    });
-
-    // html.append('<div>hello there!</div>')
-    html.append(radialMenuButton)
-  }
-})
-
-function movementRadioSelectRender() {
-  const tokenControlButton = $(".scene-control[data-control='token']");
-
-  const relevantToken = canvas.tokens.controlled[0];
-
-  HEROSYS.log(relevantToken)
-  const movmentItems = relevantToken.actor.items.filter((e) => e.type === "movement");
-
-  const radioOptions = movmentItems.map((item, index) => `
-    <div class="radio">
-      <input id="radio-${index}" name="radio" type="radio" data-tool="${item.name}"${index === 0 ? ' checked' : ''}>
-      <label for="radio-${index}" class="radio-label">${item.name}</label>
-    </div>
-  `).join('');
-
-  const radioSelect = $(`<div class="radio-container">${radioOptions}</div>`);
-
-  radioSelect.find('[data-tool]').click(function() {
-    const tool = $(this).attr('data-tool');
-
-    HEROSYS.log(tool)
-
-    // Set this button as active
-    radioSelect.find('.active').removeClass('active');
-    $(this).addClass('active');
-  });
-
-
-  if (tokenControlButton.find('.radio-container').length > 0) {
-    tokenControlButton.find('.radio-container').remove();
-  }
-
-  tokenControlButton.append(radioSelect);
-}
-
 Hooks.once("ready", async function () {
   // Wait to register hotbar drop hook on ready so that modules could register earlier if they want to
   Hooks.on("hotbarDrop", (bar, data, slot) => createHeroSystem6eMacro(bar, data, slot));
@@ -278,37 +123,6 @@ Hooks.on("updateActor", (app, html, data) => {
 
 Hooks.once('devModeReady', ({ registerPackageDebugFlag }) => {
   registerPackageDebugFlag(HEROSYS.ID);
-});
-
-Hooks.once('dragRuler.ready', (SpeedProvider) => {
-  class HeroSysSpeedProvider extends SpeedProvider {
-    get colors() {
-      return [
-        {id: "walk", default: 0x00FF00, name: "my-module-id.speeds.walk"},
-        {id: "dash", default: 0xFFFF00, name: "my-module-id.speeds.dash"},
-        {id: "run", default: 0xFF8000, name: "my-module-id.speeds.run"}
-      ]
-    }
-
-    getRanges(token) {
-      const baseSpeed = 5//token.actor.data.speed
-
-      // A character can always walk it's base speed and dash twice it's base speed
-      const ranges = [
-        {range: baseSpeed, color: "walk"},
-        {range: baseSpeed * 2, color: "dash"}
-      ]
-
-      // Characters that aren't wearing armor are allowed to run with three times their speed
-      if (!token.actor.data.isWearingArmor) {
-        ranges.push({range: baseSpeed * 3, color: "dash"})
-      }
-
-      return ranges
-    }   
-  }
-
-  dragRuler.registerSystem(HEROSYS.module, HeroSysSpeedProvider)
 });
 
 export class HEROSYS {
