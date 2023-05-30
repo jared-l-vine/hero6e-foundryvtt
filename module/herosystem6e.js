@@ -71,7 +71,7 @@ Hooks.once('init', async function () {
 
   // Register sheet application classes
   Actors.unregisterSheet("core", ActorSheet);
-  Actors.registerSheet("herosystem6e", HeroSystem6eActorSheet);
+  // Actors.registerSheet("herosystem6e", HeroSystem6eActorSheet);
   Actors.registerSheet("herosystem6e", HeroSystem6eActorSidebarSheet, { makeDefault: true });
   Items.unregisterSheet("core", ItemSheet);
   Items.registerSheet("herosystem6e", HeroSystem6eItemSheet, { makeDefault: true });

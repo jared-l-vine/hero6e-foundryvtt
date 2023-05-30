@@ -354,7 +354,7 @@ HERO.movementPowers = {
 HERO.powers = {
 
     // Characteristics (will likely use active effects for these)
-    "STR": { powerType: ["characteristic"] },
+    "STR": { powerType: ["characteristic"], costEnd: true },
     "DEX": { powerType: ["characteristic"] },
     "CON": { powerType: ["characteristic"] },
     "INT": { powerType: ["characteristic"] },
@@ -374,12 +374,28 @@ HERO.powers = {
 
     // Misc
     "CLINGING": { powerType: ["standard"] },
-    "EXTRALIMBS": { powerType: ["standard"] },
+    "EXTRALIMBS": { powerType: ["standard"], },
     "SUMMON": { powerType: ["standard"] },
     "DESOLIDIFICATION": { powerType: ["body-affecting", "standard"], name: "Desolidification" },
     "REGENERATION": { powerType: ["special"], percievability: "imperceptible", duration: "persistent", target: "self only", range: "self", costEnd: false },
-    "HEALING": { powerType: ["adjustment"], percievability: "obvious", duration: "instant", target: "target's dcv", range: "no range", costEnd: true },
-    "STRETCHING": { powerType: ["body-affecting", "standard"], percievability: "obvious", duration: "constant", target: "self only", range: "self", costEnd: true },
+    "HEALING": {
+        powerType: ["adjustment"],
+        percievability: "obvious",
+        duration: "instant",
+        target: "target's dcv",
+        range: "no range",
+        costEnd: true,
+        cost: 10,
+    },
+    "STRETCHING": {
+        powerType: ["body-affecting", "standard"],
+        percievability: "obvious",
+        duration: "constant",
+        target: "self only",
+        range: "self",
+        costEnd: true,
+        cost: 1
+    },
     "LIFESUPPORT": {
         name: "Life Support",
         powerType: ["standard"],
@@ -396,7 +412,8 @@ HERO.powers = {
         duration: "Instant",
         target: "target’s DCV",
         range: "no range",
-        costEnd: true
+        costEnd: true,
+        cost: 6,
     },
     "SHAPESHIFT": {
         name: "Shape Shift",
@@ -417,8 +434,10 @@ HERO.powers = {
         costEnd: true,
         cost: 4,
     },
-    "NAKEDMODIFIER": {
-        powerType: []
+    "NAKEDMODIFIER": {  // INDEPENDENT ADVANTAGE
+        powerType: [],
+        costEnd: true,
+        cost: 1,
     },
     "GROWTH": {
         name: "Growth",
@@ -429,6 +448,7 @@ HERO.powers = {
         range: "self",
         costEnd: true
     },
+
 
 
 
@@ -443,7 +463,7 @@ HERO.powers = {
     "ENHANCEDPERCEPTION": { powerType: ["sense"] },
     "MENTALAWARENESS": { powerType: ["sense"], senseGroup: "mental", senseType: "passive" },
     "PENETRATIVE": { powerType: ["sense"] },
-    "DETECT": { powerType: ["sense"] },
+    "DETECT": { powerType: ["sense"], cost: 1 },
     "TARGETINGSENSE": { powerType: ["sense"] },
     "TRACKINGSENSE": { powerType: ["sense"] },
     "FINDWEAKNESS": { powerType: ["sense", "special"] },
@@ -470,7 +490,7 @@ HERO.powers = {
 
     // Defense
     "FORCEWALL": { powerType: ["defense"], name: "Barrier" }, // AKA BARRIER
-    "FORCEFIELD": { powerType: ["defense"], name: "Resistant Protection", cost: 3/2 },  // AKA RESISTANT PROTECTION
+    "FORCEFIELD": { powerType: ["defense"], name: "Resistant Protection", cost: 3 / 2 },  // AKA RESISTANT PROTECTION
     "FLASHDEFENSE": {
         powerType: ["defense", "special"],
         name: "Flash Defense",
@@ -481,7 +501,11 @@ HERO.powers = {
         costEnd: false,
         cost: 1,
     },
-    "MENTALDEFENSE": { powerType: ["defense", "special"], name: "Mental Defense" },
+    "MENTALDEFENSE": { 
+        powerType: ["defense", "special"], 
+        name: "Mental Defense",
+        cost: 1
+    },
     "POWERDEFENSE": {
         powerType: ["defense", "special"],
         name: "Power Defense",
@@ -489,7 +513,8 @@ HERO.powers = {
         duration: "persistent",
         target: "self only",
         range: "self",
-        costEnd: false
+        costEnd: false,
+        cost: 1,
     },
     "DAMAGENEGATION": {
         powerType: ["defense", "special"],
@@ -531,16 +556,32 @@ HERO.powers = {
 
 
     // Movement
-    "FLIGHT": { powerType: ["movement"] },
-    "LEAPING": { powerType: ["movement"] },
-    "TELEPORTATION": { powerType: ["movement"] },
-    "SWINGING": { powerType: ["movement"] },
-    "TUNNELING": { powerType: ["movement"] },
-    "RUNNING": { powerType: ["movement"] },
+    "FLIGHT": { powerType: ["movement"], costEnd: true, cost: 1, },
+    "LEAPING": { powerType: ["movement"], costEnd: true, cost: 0.5, },
+    "TELEPORTATION": { powerType: ["movement"], costEnd: true, cost: 1, },
+    "SWINGING": { powerType: ["movement"], costEnd: true, cost: 0.5, },
+    "TUNNELING": { powerType: ["movement"], costEnd: true, cost: 1, },
+    "RUNNING": { powerType: ["movement"], costEnd: true, cost: 1, },
+
+    // PERKS
+    "REPUTATION": {
+        powerType: ["talent"],
+        name: "Positive Reputation",
+        cost: 0,
+    },
+    "CONTACT": {
+        powerType: ["talent"],
+        name: "Contact",
+        cost: 1,
+    },
 
     // Powers can include Talents
     "COMBAT_LUCK": { powerType: ["talent"] },
-
+    "COMBAT_SENSE": {
+        powerType: ["talent"],
+        name: "Combat Sense",
+        cost: 1,
+    },
 
     // Powers can include Skills.
     "ACROBATICS": { powerType: ["skill"] },

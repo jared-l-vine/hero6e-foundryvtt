@@ -1,3 +1,9 @@
+# Version 2.1.8-alpha
+- Improved power descriptions. [#78](https://github.com/dmdorman/hero6e-foundryvtt/issues/78)
+- Improved Estimation of Character Points spent and Active Points. [#111](https://github.com/dmdorman/hero6e-foundryvtt/issues/111)
+- Removed old HeroSystem6eActorSheet
+
+
 # Version 2.1.7-alpha
 - Improved custom maneuver support. [#91](https://github.com/dmdorman/hero6e-foundryvtt/issues/91)
 - Estimation of Character Points spent and Active Points.  Still pretty rough. [#111](https://github.com/dmdorman/hero6e-foundryvtt/issues/111)
