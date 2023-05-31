@@ -472,7 +472,11 @@ HERO.powers = {
     // Attack
     "HANDTOHANDATTACK": { powerType: ["attack"] },
     "HKA": { powerType: ["attack"], cost: 15 },
-    "TELEKINESIS": { powerType: ["attack"] },
+    "TELEKINESIS": {
+        powerType: ["attack"],
+        costEnd: true,
+        cost: 3 / 2
+    },
     "RKA": { powerType: ["attack"], cost: 15 },
     "ENERGYBLAST": { powerType: ["attack"] },
     "DARKNESS": { powerType: ["sense-affecting", "attack", "standard"] },
@@ -501,8 +505,8 @@ HERO.powers = {
         costEnd: false,
         cost: 1,
     },
-    "MENTALDEFENSE": { 
-        powerType: ["defense", "special"], 
+    "MENTALDEFENSE": {
+        powerType: ["defense", "special"],
         name: "Mental Defense",
         cost: 1
     },

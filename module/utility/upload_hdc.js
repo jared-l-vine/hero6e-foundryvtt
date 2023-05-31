@@ -809,7 +809,7 @@ function calcBasePointsPlusAdders(system) {
         return 0
     }
 
-    if (system.XMLID == "REPUTATION")
+    if (system.XMLID == "PD")
         console.log(system.XMLID)
 
 
@@ -928,35 +928,34 @@ function calcActivePoints(_basePointsPlusAdders, system) {
     // const xmlid = system.rules || system.xmlid //xmlItem.getAttribute('XMLID')
     // const modifiers = system.modifiers || system.MODIFIER || [] //xmlItem.getElementsByTagName("ADDER")
 
-    if (system.XMLID == "DETECT")
+    if (system.XMLID == "TELEKINESIS")
         console.log(system.XMLID)
 
     // NAKEDMODIFIER uses PRIVATE=="Yes" to indicate advantages
 
     let advantages = 0
-    for (let modifier of system.modifiers.filter(o => system.XMLID != "NAKEDMODIFIER" || o.PRIVATE == "Yes")) {
+    for (let modifier of system.modifiers.filter(o =>
+        (system.XMLID != "NAKEDMODIFIER" || o.PRIVATE == "Yes")
+        && parseFloat(o.BASECOST) >= 0
+    )) {
         let _myAdvantage = 0
         const modifierBaseCost = parseFloat(modifier.BASECOST || 0)
-        if (modifierBaseCost > 0) {
-            _myAdvantage += modifierBaseCost;
-            console.log(modifier.XMLID, modifierBaseCost)
-            // Some modifiers may have ADDERS
-            const adders = modifier.adders //modifier.getElementsByTagName("ADDER")
-            if (adders.length) {
-                for (let adder of adders) {
-                    const adderBaseCost = parseFloat(adder.BASECOST || 0)
-                    //if (adderBaseCost > 0) {
-                    _myAdvantage += adderBaseCost;
-                    console.log(adder.XMLID, adderBaseCost)
-                    //}
-                }
+        _myAdvantage += modifierBaseCost;
+        console.log(modifier.XMLID, modifierBaseCost)
+        // Some modifiers may have ADDERS
+        const adders = modifier.adders //modifier.getElementsByTagName("ADDER")
+        if (adders.length) {
+            for (let adder of adders) {
+                const adderBaseCost = parseFloat(adder.BASECOST || 0)
+                //if (adderBaseCost > 0) {
+                _myAdvantage += adderBaseCost;
+                console.log(adder.XMLID, adderBaseCost)
+                //}
             }
-
-            // No negative advantages
-            advantages += Math.max(0, _myAdvantage)
         }
 
-
+        // No negative advantages
+        advantages += Math.max(0, _myAdvantage)
 
     }
 
@@ -968,31 +967,35 @@ function calcActivePoints(_basePointsPlusAdders, system) {
 function calcRealCost(_activeCost, system) {
     // Real Cost = Active Cost / (1 + total value of all Limitations)
 
-    // if (system.XMLID == "DAMAGEREDUCTION")
-    //     console.log(system.XMLID)
+    if (system.XMLID == "PD")
+        console.log(system.XMLID)
 
     // if (system.NAME == "Unyielding Defense")
     //     console.log(system.NAME)
 
     let limitations = 0
-    for (let modifier of system.modifiers) {
+    for (let modifier of system.modifiers.filter(o => parseFloat(o.BASECOST) < 0)) {
         let _myLimitation = 0
         const modifierBaseCost = parseFloat(modifier.BASECOST || 0)
-        if (modifierBaseCost < 0) {
-            _myLimitation += -modifierBaseCost;
-        }
-
-        // if (system.XMLID == "FORCEFIELD" && modifier.XMLID == "CHARGES")
-        //     console.log(modifier.XMLID)
+        _myLimitation += -modifierBaseCost;
 
         // Some modifiers may have ADDERS as well (like a focus)
         for (let adder of modifier.adders) {
             const adderBaseCost = parseFloat(adder.BASECOST || 0)
+
             // can be positive or negative (like charges)
             _myLimitation += -adderBaseCost;
         }
 
+        // NOTE: REQUIRESASKILLROLL The minimum value is -¼, regardless of modifiers.
+        if (_myLimitation < 0.25) {
 
+            if (game.settings.get(game.system.id, 'alphaTesting')) {
+                ui.notifications.warn(`${system.XMLID} ${modifier.XMLID} has a limiation of ${-_myLimitation}.  Overrided limitation to be -1/4.`)
+                console.log(`${system.XMLID} ${modifier.XMLID} has a limiation of ${-_myLimitation}.  Overrided limitation to be -1/4.`, system)
+            }
+            _myLimitation = 0.25
+        }
 
         modifier.BASECOST_total = -_myLimitation
 
@@ -1154,8 +1157,14 @@ export async function uploadPower(power, type) {
             if (_mod.OPTION == "AREA" && parseInt(_mod.LEVELS) <= 2) _mod.BASECOST = 0.25
         }
 
+        if (_mod.XMLID == "REQUIRESASKILLROLL") {
+            // <MODIFIER XMLID="REQUIRESASKILLROLL" ID="1589145772288" BASECOST="0.25" LEVELS="0" ALIAS="Requires A Roll" POSITION="-1" MULTIPLIER="1.0" GRAPHIC="Burst" COLOR="255 255 255" SFX="Default" SHOW_ACTIVE_COST="Yes" OPTION="14" OPTIONID="14" OPTION_ALIAS="14- roll" INCLUDE_NOTES_IN_PRINTOUT="Yes" NAME="" COMMENTS="" PRIVATE="No" FORCEALLOW="No">
+            // This is a limitation not an advantage, not sure why it is positive.  Force it negative.
+            _mod.BASECOST = - Math.abs(parseFloat(_mod.BASECOST))
+        }
 
-        if (parseFloat(_mod.BASECOST) == 0) {
+
+        if (parseFloat(_mod.BASECOST) == 0 && !["ACV"].includes(_mod.XMLID)) {
             if (game.settings.get(game.system.id, 'alphaTesting')) {
                 ui.notifications.warn(`${powerData.XMLID} has an poorly handled modifier (${_mod.XMLID})`)
             }
@@ -1165,9 +1174,10 @@ export async function uploadPower(power, type) {
 
     }
 
-    // Real Cost and Active Points (notice we only round at the end)
+    // Real Cost and Active Points
+    // Most things (like TELEKINESIS) round AP before determing RC
     let _basePointsPlusAdders = calcBasePointsPlusAdders(powerData)
-    let _activePoints = calcActivePoints(_basePointsPlusAdders, powerData)
+    let _activePoints = RoundFavorPlayerDown(calcActivePoints(_basePointsPlusAdders, powerData))
     let _realCost = calcRealCost(_activePoints, powerData)
     powerData.basePointsPlusAdders = RoundFavorPlayerDown(_basePointsPlusAdders)
     powerData.activePoints = RoundFavorPlayerDown(_activePoints)
