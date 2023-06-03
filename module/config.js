@@ -374,7 +374,7 @@ HERO.powers = {
 
     // Misc
     "CLINGING": { powerType: ["standard"] },
-    "EXTRALIMBS": { powerType: ["standard"], },
+    "EXTRALIMBS": { powerType: ["standard"], costPerLevel: 0 },
     "SUMMON": { powerType: ["standard"] },
     "DESOLIDIFICATION": { powerType: ["body-affecting", "standard"], name: "Desolidification" },
     "REGENERATION": { powerType: ["special"], percievability: "imperceptible", duration: "persistent", target: "self only", range: "self", costEnd: false },
@@ -385,7 +385,7 @@ HERO.powers = {
         target: "target's dcv",
         range: "no range",
         costEnd: true,
-        cost: 10,
+        costPerLevel: 10,
     },
     "STRETCHING": {
         powerType: ["body-affecting", "standard"],
@@ -394,7 +394,7 @@ HERO.powers = {
         target: "self only",
         range: "self",
         costEnd: true,
-        cost: 1
+        costPerLevel: 1
     },
     "LIFESUPPORT": {
         name: "Life Support",
@@ -413,7 +413,7 @@ HERO.powers = {
         target: "target’s DCV",
         range: "no range",
         costEnd: true,
-        cost: 6,
+        costPerLevel: 6,
     },
     "SHAPESHIFT": {
         name: "Shape Shift",
@@ -432,12 +432,12 @@ HERO.powers = {
         target: "self only",
         range: "self",
         costEnd: true,
-        cost: 4,
+        costPerLevel: 4,
     },
     "NAKEDMODIFIER": {  // INDEPENDENT ADVANTAGE
         powerType: [],
         costEnd: true,
-        cost: 1,
+        costPerLevel: 1,
     },
     "GROWTH": {
         name: "Growth",
@@ -463,7 +463,7 @@ HERO.powers = {
     "ENHANCEDPERCEPTION": { powerType: ["sense"] },
     "MENTALAWARENESS": { powerType: ["sense"], senseGroup: "mental", senseType: "passive" },
     "PENETRATIVE": { powerType: ["sense"] },
-    "DETECT": { powerType: ["sense"], cost: 1 },
+    "DETECT": { powerType: ["sense"], costPerLevel: 1 },
     "TARGETINGSENSE": { powerType: ["sense"] },
     "TRACKINGSENSE": { powerType: ["sense"] },
     "FINDWEAKNESS": { powerType: ["sense", "special"] },
@@ -471,13 +471,13 @@ HERO.powers = {
 
     // Attack
     "HANDTOHANDATTACK": { powerType: ["attack"] },
-    "HKA": { powerType: ["attack"], cost: 15 },
+    "HKA": { powerType: ["attack"], costPerLevel: 15 },
     "TELEKINESIS": {
         powerType: ["attack"],
         costEnd: true,
-        cost: 3 / 2
+        costPerLevel: 3 / 2
     },
-    "RKA": { powerType: ["attack"], cost: 15 },
+    "RKA": { powerType: ["attack"], costPerLevel: 15 },
     "ENERGYBLAST": { powerType: ["attack"] },
     "DARKNESS": { powerType: ["sense-affecting", "attack", "standard"] },
     "DISPEL": { powerType: ["attack", "standard"] },
@@ -491,10 +491,15 @@ HERO.powers = {
         range: "standard",
         costEnd: true
     },
+    "EXTRADC": { powerType: ["martial"], costPerLevel: 4 },
 
     // Defense
     "FORCEWALL": { powerType: ["defense"], name: "Barrier" }, // AKA BARRIER
-    "FORCEFIELD": { powerType: ["defense"], name: "Resistant Protection", cost: 3 / 2 },  // AKA RESISTANT PROTECTION
+    "FORCEFIELD": {
+        powerType: ["defense"],
+        name: "Resistant Protection",
+        costPerLevel: 3 / 2
+    },  // AKA RESISTANT PROTECTION
     "FLASHDEFENSE": {
         powerType: ["defense", "special"],
         name: "Flash Defense",
@@ -503,12 +508,12 @@ HERO.powers = {
         target: "self only",
         range: "self",
         costEnd: false,
-        cost: 1,
+        costPerLevel: 1,
     },
     "MENTALDEFENSE": {
         powerType: ["defense", "special"],
         name: "Mental Defense",
-        cost: 1
+        costPerLevel: 1
     },
     "POWERDEFENSE": {
         powerType: ["defense", "special"],
@@ -518,7 +523,7 @@ HERO.powers = {
         target: "self only",
         range: "self",
         costEnd: false,
-        cost: 1,
+        costPerLevel: 1,
     },
     "DAMAGENEGATION": {
         powerType: ["defense", "special"],
@@ -555,43 +560,43 @@ HERO.powers = {
         target: "self only",
         range: "self",
         costEnd: false,
-        cost: 1,
+        costPerLevel: 1,
     },
 
 
     // Movement
-    "FLIGHT": { powerType: ["movement"], costEnd: true, cost: 1, },
-    "LEAPING": { powerType: ["movement"], costEnd: true, cost: 0.5, },
-    "TELEPORTATION": { powerType: ["movement"], costEnd: true, cost: 1, },
-    "SWINGING": { powerType: ["movement"], costEnd: true, cost: 0.5, },
-    "TUNNELING": { powerType: ["movement"], costEnd: true, cost: 1, },
-    "RUNNING": { powerType: ["movement"], costEnd: true, cost: 1, },
+    "FLIGHT": { powerType: ["movement"], costEnd: true, costPerLevel: 1, },
+    "LEAPING": { powerType: ["movement"], costEnd: true, costPerLevel: 0.5, },
+    "TELEPORTATION": { powerType: ["movement"], costEnd: true, costPerLevel: 1, },
+    "SWINGING": { powerType: ["movement"], costEnd: true, costPerLevel: 0.5, },
+    "TUNNELING": { powerType: ["movement"], costEnd: true, costPerLevel: 1, },
+    "RUNNING": { powerType: ["movement"], costEnd: true, costPerLevel: 1, },
 
     // PERKS
     "REPUTATION": {
         powerType: ["talent"],
         name: "Positive Reputation",
-        cost: 0,
+        costPerLevel: 0,
     },
     "CONTACT": {
         powerType: ["talent"],
         name: "Contact",
-        cost: 1,
+        costPerLevel: 1,
     },
 
     // Powers can include Talents
-    "COMBAT_LUCK": { powerType: ["talent"] },
+    "COMBAT_LUCK": { powerType: ["talent"], costPerLevel: 6 },
     "COMBAT_SENSE": {
         powerType: ["talent"],
         name: "Combat Sense",
-        cost: 1,
+        costPerLevel: 1,
     },
 
     // Powers can include Skills.
     "ACROBATICS": { powerType: ["skill"] },
     "ACTING": { powerType: ["skill"] },
     "ANALYZE": { powerType: ["skill"] },
-    "ANIMAL_HANDLER": { powerType: ["skill"] },
+    "ANIMAL_HANDLER": { powerType: ["skill"], categorized: true },
     "AUTOFIRE_SKILLS": { powerType: ["skill"] },
     "BREAKFALL": { powerType: ["skill"] },
     "BRIBERY": { powerType: ["skill"] },
@@ -617,19 +622,19 @@ HERO.powers = {
     "ELECTRONICS": { powerType: ["skill"] },
     "FAST_DRAW": { powerType: ["skill"] },
     "FORENSIC_MEDICINE": { powerType: ["skill"] },
-    "FORGERY": { powerType: ["skill"] },
-    "GAMBLING": { powerType: ["skill"] },
+    "FORGERY": { powerType: ["skill"], categorized: true },
+    "GAMBLING": { powerType: ["skill"], categorized: true },
     "HIGH_SOCIETY": { powerType: ["skill"] },
     "INTERROGATION": { powerType: ["skill"] },
     "INVENTOR": { powerType: ["skill"] },
-    "KNOWLEDGE_SKILL": { powerType: ["skill"] },
+    "KNOWLEDGE_SKILL": { powerType: ["skill"], costPerLevel: 1 },
     "LANGUAGES": { powerType: ["skill"] },
     "LIPREADING": { powerType: ["skill"] },
     "LOCKPICKING": { powerType: ["skill"] },
     "MECHANICS": { powerType: ["skill"] },
     "MENTAL_COMBAT_LEVELS": { powerType: ["skill"] },
     "MIMICRY": { powerType: ["skill"] },
-    "NAVIGATION": { powerType: ["skill"] },
+    "NAVIGATION": { powerType: ["skill"], categorized: true },
     "ORATORY": { powerType: ["skill"] },
     "PARAMEDICS": { powerType: ["skill"] },
     "PENALTY_SKILL_LEVELS": { powerType: ["skill"] },
@@ -645,7 +650,7 @@ HERO.powers = {
     "SLEIGHT_OF_HAND": { powerType: ["skill"] },
     "STEALTH": { powerType: ["skill"] },
     "STREETWISE": { powerType: ["skill"] },
-    "SURVIVAL": { powerType: ["skill"] },
+    "SURVIVAL": { powerType: ["skill"], categorized: true },
     "SYSTEMS_OPERATION": { powerType: ["skill"] },
     "TACTICS": { powerType: ["skill"] },
     "TEAMWORK": { powerType: ["skill"] },
@@ -655,13 +660,24 @@ HERO.powers = {
     "TWO_WEAPON_FIGHTING_HTH": { powerType: ["skill"] },
     "VENTRILOQUISM": { powerType: ["skill"] },
     "WEAPON_FAMILIARITY": { powerType: ["skill"] },
-    "WEAPONSMITH": { powerType: ["skill"] },
+    "WEAPONSMITH": { powerType: ["skill"], categorized: true },
 }
 
 
 // These (mostly 5e) powers are rebranded as 6e powers
 HERO.powersRebrand = {
     "ARMOR": "FORCEFIELD"
+}
+
+// For some reason the BASECOST of some modifiers/adder are 0, some are just wrong
+HERO.ModifierOverride = {
+    "DIFFICULTTODISPEL": { BASECOST: 0.25 },
+    "IMPENETRABLE": { BASECOST: 0.25 },
+    "DIMENSIONS": { BASECOST: 5 },
+    "IMPROVEDNONCOMBAT": { BASECOST: 5 },
+    "DEFBONUS": { BASECOST: 2 },
+    "CONTINUOUSCONCENTRATION": { BASECOST: -0.25 },
+    "ALWAYSOCCURS": { BASECOST: 0, MULTIPLIER: 2 },
 }
 
 HERO.areaOfEffect = {
