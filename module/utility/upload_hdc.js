@@ -437,6 +437,9 @@ function XmlToItemData(xml, type) {
         }
     }
 
+    // Make sure we have a name
+    systemData.NAME = systemData.NAME || systemData.ALIAS
+
     if (["MENTAL_COMBAT_LEVELS", "PENALTY_SKILL_LEVELS"].includes(systemData.XMLID)) {
         switch (systemData.OPTION) {
             case "SINGLE": systemData.costPerLevel = 1; break;
@@ -760,6 +763,7 @@ export async function uploadMartial(power, type, extraDc, usesTk) {
 
 export async function uploadSkill(skill, duplicate) {
 
+    if (skill.getAttribute('XMLID') == "GENERIC_OBJECT") return;
     let itemData = XmlToItemData(skill, 'skill')
     itemData.system.duplicate = duplicate
     await HeroSystem6eItem.create(itemData, { parent: this.actor })
@@ -1180,7 +1184,7 @@ export async function uploadPower(power, type) {
     // let itemData = XmlToItemData(xml, type)
     // await HeroSystem6eItem.create(itemData, { parent: this.actor })
 
-    let xmlid = power.getAttribute('XMLID')
+    let xmlid = itemData.system.XMLID
     // const name = power.getAttribute('NAME')
     // const alias = power.getAttribute('ALIAS')
     // const levels = power.getAttribute('LEVELS')
@@ -1190,7 +1194,7 @@ export async function uploadPower(power, type) {
     // const relevantFields = ['BASECOST', 'LEVELS', 'ALIAS', 'MULTIPLIER', 'NAME', 'OPTION_ALIAS', 'SFX',
     //     'PDLEVELS', 'EDLEVELS', 'MDLEVELS', 'INPUT', 'OPTION', 'OPTIONID', 'BASECOST' // FORCEFIELD
     // ]
-    if (xmlid === 'GENERIC_OBJECT') return;
+    //if (xmlid === 'GENERIC_OBJECT') return;
 
     // Rebrand?
     xmlid = CONFIG.HERO.powersRebrand[xmlid] || xmlid;
@@ -1400,6 +1404,7 @@ export async function uploadPower(power, type) {
     // Create a copy for movements
     if (xmlid.toLowerCase() in CONFIG.HERO.movementPowers) {
         itemData.type = 'movement'
+        itemData.system.value = parseInt(itemData.system.LEVELS) || 0
         await HeroSystem6eItem.create(itemData, { parent: this.actor })
     }
 }
