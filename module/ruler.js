@@ -137,7 +137,7 @@ function setHeroRulerLabel() {
 
         rangeMod = rangeMod < 0 ? 0 : rangeMod;
 
-        let label = "[" + Math.round(segmentDistance.distance) + " m]" + "\n-" + rangeMod + " Range Modifier"
+        let label = "[" + Math.round(segmentDistance.distance) + " m]"
 
         if (game.modules.get("drag-ruler")?.active) {
             const relevantToken = canvas.tokens.controlled[0];
@@ -150,6 +150,8 @@ function setHeroRulerLabel() {
 
             label += "\n" + activeMovementLabel
         }
+
+        label += "\n-" + rangeMod + " Range Modifier"
 
         return label
     };
