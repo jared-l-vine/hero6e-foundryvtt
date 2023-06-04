@@ -71,7 +71,7 @@ Hooks.once('init', async function () {
 
   // Register sheet application classes
   Actors.unregisterSheet("core", ActorSheet);
-  Actors.registerSheet("herosystem6e", HeroSystem6eActorSheet);
+  // Actors.registerSheet("herosystem6e", HeroSystem6eActorSheet);
   Actors.registerSheet("herosystem6e", HeroSystem6eActorSidebarSheet, { makeDefault: true });
   Items.unregisterSheet("core", ItemSheet);
   Items.registerSheet("herosystem6e", HeroSystem6eItemSheet, { makeDefault: true });
@@ -96,6 +96,13 @@ Hooks.once('init', async function () {
   Handlebars.registerHelper('is_active_segment', function (actives, index) {
     return actives[index];
   });
+
+  // Handlebars Templates and Partials
+  loadTemplates([
+    `systems/hero6efoundryvttv2/templates/item/item-common-partial.hbs`,
+
+  ]);
+
 });
 
 Hooks.once("init", () => {

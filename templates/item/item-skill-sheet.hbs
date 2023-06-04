@@ -33,31 +33,7 @@
             </select>
         </div>
 
-        <div class="form-group">
-            <label>Description</label>
-            <input type="text" name="system.description" value="{{system.description}}" data-dtype="text" />
-        </div>
-
-        <div class="form-group">
-            <label>OptionAlias</label>
-            <input type="text" name="system.optionAlias" value="{{system.optionAlias}}" data-dtype="text" />
-        </div>
-
-        <div class="form-group">
-            <label>Base Cost plus Adders</label>
-            <input type="text" name="system.basePointsPlusAdders" value="{{system.basePointsPlusAdders}}" data-dtype="text" />
-        </div>
-
-        <div class="form-group">
-            <label>Active Points</label>
-            <input type="text" name="system.activePoints" value="{{system.activePoints}}" data-dtype="text" />
-        </div>
-
-        <div class="form-group">
-            <label>Real Cost</label>
-            <input type="text" name="system.realCost" value="{{system.realCost}}" data-dtype="text" />
-        </div>
-
+        {{> systems/hero6efoundryvttv2/templates/item/item-common-partial.hbs item=item }}
 
     </section>
 </form>

@@ -3,6 +3,7 @@ import { determineDefense } from "../utility/defense.js";
 import { HeroSystem6eItem } from '../item/item.js'
 import { presenceAttackPopOut } from '../utility/presence-attack.js'
 import { applyCharacterSheet, SkillRollUpdateValue } from '../utility/upload_hdc.js'
+import { RoundFavorPlayerDown } from "../utility/round.js"
 
 export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
@@ -37,7 +38,10 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             }
 
             // Endurance
-            item.system.endEstimate = item.system.end;
+            item.system.endEstimate = item.system.end || 0
+
+            if (item.type == 'power')
+                console.log(item.type)
 
             // Damage
             if (item.type == 'attack') {

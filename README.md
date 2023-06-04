@@ -78,6 +78,8 @@ Activating a maneuver from a character sheet will apply OCV and DCV modifiers wi
 The following modules have been successfully tested for compatibility
   - [Dice so nice!](https://gitlab.com/riccisi/foundryvtt-dice-so-nice)
   - [Simple Calendar](https://github.com/vigoren/foundryvtt-simple-calendar)
+  - [Drag Ruler](https://foundryvtt.com/packages/drag-ruler)
+    - Speed Attribute = actor.system.characteristics.running.value
 
 ## 5th Edition Support
 This is a 6E framework, however 5E is very similar to 6E and with a few minor changes you may be able to play a 5E game.  A 5E character is detected when you upload a HDC file using one of the 5E Hero Designer character templates.  The following 5E rules are supported:

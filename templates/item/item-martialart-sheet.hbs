@@ -1,4 +1,5 @@
-<form class="hero {{cssClass}} flexcol actor-sheet" autocomplete="off" data-id="{{item._id}}" data-realId="{{item.system.realId}}">
+<form class="hero {{cssClass}} flexcol actor-sheet" autocomplete="off" data-id="{{item._id}}"
+    data-realId="{{item.system.realId}}">
     <header class="sheet-header flexrow">
         <img class="profile" name="img" src="{{item.img}}" title="{{item.name}}" data-edit="img" />
 
@@ -7,13 +8,14 @@
                 <input name="name" type="text" value="{{item.name}}" placeholder="Martial Art Name" />
             </h1>
         </div>
+
+
     </header>
 
     <section class="sheet-body">
-        <textarea
-            placeholder="Power Description"
-            class="power-card-power-description textarea input"
-            name="system.rules"
-        >{{item.system.rules}}</textarea>
+        <textarea placeholder="Power Description" class="power-card-power-description textarea input"
+            name="system.rules">{{item.system.rules}}</textarea>
+
+        {{> systems/hero6efoundryvttv2/templates/item/item-common-partial.hbs item=item }}
     </section>
 </form>

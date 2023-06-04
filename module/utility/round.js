@@ -11,6 +11,7 @@ export function RoundFavorPlayerDown(number) {
     // character’s DCV, it’s to the character’s advantage for his DCV to
     // be as high as possible, so a .5 in that calculation would round
     // up.
+    // const fraction = Math.floor((number % 1) * 10) / 10
     if ((number % 1) < 0.6) return Math.floor(number)
     return Math.ceil(number)
   }

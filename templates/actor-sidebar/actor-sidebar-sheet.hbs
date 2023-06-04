@@ -183,6 +183,7 @@
                     <tr class="sticky">
                         <th></th>
                         <th class="left">{{localize "ActorSheet.Name"}}</th>
+                        <th>{{localize "ActorSheet.Cost"}}</th>
                         <th>{{localize "ActorSheet.Phase"}}</th>
                         <th>{{localize "ActorSheet.OCV"}}</th>
                         <th>{{localize "ActorSheet.DCV"}}</th>
@@ -200,6 +201,7 @@
                                     height="24" /></div>
                         </td>
                         <td class="left">{{item.name}}</td>
+                        <td>{{item.system.realCost}}</td>
                         <td>{{item.system.phase}}</td>
                         <td>{{item.system.ocv}}</td>
                         <td>{{item.system.dcv}}</td>
@@ -276,6 +278,7 @@
                     <tr class="sticky">
                         <th></th>
                         <th class="left">{{localize "ActorSheet.Name"}}</th>
+                        <th>{{localize "ActorSheet.Cost"}}</th>
                         <th>{{localize "ActorSheet.Characteristic"}}</th>
                         <th>{{localize "ActorSheet.Roll"}}</th>
                         <th>
@@ -291,6 +294,7 @@
                                     height="24" /></div>
                         </td>
                         <td class="left">{{item.name}}</td>
+                        <td>{{item.system.realCost}}</td>
                         <td>{{item.system.characteristic}}</td>
                         <td>
                             <button type="button" class="item-rollable" data-roll="{{item.system.roll}}"
@@ -422,7 +426,7 @@
                         </td>
                         <td class="left">{{item.name}}</td>
                         <td>{{item.system.realCost}}</td>
-                        <td>{{item.system.end}}</td>
+                        <td>{{item.system.endEstimate}}</td>
                         <td class="left">{{item.system.description}}</td>
                         <td>
                             {{#if item.system.showToggle}}<input class="item-toggle" type="checkbox"
@@ -539,6 +543,7 @@
                     <tr>
                         <th></th>
                         <th class="left">{{localize "ActorSheet.Perk"}}</th>
+                        <th>{{localize "ActorSheet.Cost"}}</th>
                         <th class="left">{{localize "ActorSheet.Description"}}</th>
                         <th>
                             <a class="item-control item-create" title="Create perk" data-type="perk">
@@ -553,7 +558,8 @@
                                     height="24" /></div>
                         </td>
                         <td class="left">{{item.name}}</td>
-                        <td class="left">{{item.system.rules}}</td>
+                        <td>{{item.system.realCost}}</td>
+                        <td class="left">{{item.system.description}}</td>
                         <td class="right">
                             <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
                             <a class="item-control item-delete" title="Delete Item">
@@ -572,6 +578,7 @@
                     <tr>
                         <th></th>
                         <th class="left">{{localize "ActorSheet.Talent"}}</th>
+                        <th>{{localize "ActorSheet.Cost"}}</th>
                         <th class="left">{{localize "ActorSheet.Description"}}</th>
                         <th>
                             <a class="item-control item-create" title="Create talent" data-type="talent">
@@ -586,7 +593,8 @@
                                     height="24" /></div>
                         </td>
                         <td class="left">{{item.name}}</td>
-                        <td class="left">{{item.system.rules}}</td>
+                        <td>{{item.system.realCost}}</td>
+                        <td class="left">{{item.system.description}}</td>
                         <td class="right">
                             <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
                             <a class="item-control item-delete" title="Delete Item">
