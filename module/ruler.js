@@ -85,6 +85,10 @@ export class HeroRuler {
         Hooks.on('updateItem', function(item, args) {
             if (item.type !== 'movement') { return; }
 
+            const sceneControls = ui.controls
+            if (sceneControls.activeControl !== "token") { return; }
+            if (sceneControls.activeTool !== "select") { return; }
+
             movementRadioSelectRender()
         });
         
