@@ -251,7 +251,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
                     break;
             }
         }
-        console.log(damageRoll)
+        HEROSYS.log(false, damageRoll)
         damageRoll = modifyRollEquation(damageRoll, toHitData.damageMod);
 
         let roll = new Roll(damageRoll, actor.getRollData());

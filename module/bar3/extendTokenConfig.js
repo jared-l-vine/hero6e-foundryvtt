@@ -1,7 +1,9 @@
+import { HEROSYS } from "../herosystem6e.js";
+
 export const extendTokenConfig = async function (tokenConfig, html, data) {
 
     const resourceTab = html.find("div[data-tab='resources']");
-    console.log(resourceTab)
+    HEROSYS.log(false, resourceTab)
 
     // Add form group for bar 3
     let bar3 = getBarExtendedAttribute.bind(tokenConfig.token)("bar3")
@@ -31,7 +33,7 @@ export const extendTokenConfig = async function (tokenConfig, html, data) {
         const form = event.target.form;
         const bar3 = $(`select[name="bar3.attribute"]`).val();
 
-        console.log("_onSubmit", bar3)
+        HEROSYS.log(false, "_onSubmit", bar3)
         await this.token.setFlag(game.system.id, "bar3", { "attribute": bar3 } )
     }
 

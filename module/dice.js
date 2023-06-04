@@ -1,6 +1,8 @@
+import { HEROSYS } from "./herosystem6e"
+
 export function AttackCheck()
 {
-  console.log("AttackCheck", this)
+  HEROSYS.log(false, "AttackCheck", this)
   
   let rollFormula = "3d6"
   let rollData = {
@@ -13,7 +15,7 @@ export function AttackCheck()
 
 async function GetAttackOptions(itemId)
 {
-  console.log("GetAttackOptions")
+  HEROSYS.log(false, "GetAttackOptions")
 
   const template = "systems/hero6efoundryvttv2/templates/attack/item-attack-card.hbs"
   const html = await renderTemplate(template, {})

@@ -9,7 +9,7 @@ export class HeroSystem6eTokenDocument extends TokenDocument {
     }
 
     // getBarAttribute(barName, alternative) {
-    //     //console.log("getBarAttribute")
+    //     //HEROSYS.log(false, "getBarAttribute")
     //     let data = super.getBarAttribute(barName, alternative)
 
     //     if (barName == "bar3") {
@@ -53,7 +53,7 @@ export class HeroSystem6eTokenDocument extends TokenDocument {
     // }
 
     // static defineSchema() {
-    //     //console.log("defineSchema")
+    //     //HEROSYS.log(false, "defineSchema")
     //     let schema = super.defineSchema()
     //     schema.bar3 = new foundry.data.fields.SchemaField({
     //         attribute: new foundry.data.fields.StringField({
@@ -80,7 +80,7 @@ export class HeroSystem6eToken extends Token {
     }
 
     _drawAttributeBars() {
-        //console.log("_drawAttributeBars")
+        //HEROSYS.log(false, "_drawAttributeBars")
         let bars = super._drawAttributeBars()
         bars.bar3 = bars.addChild(new PIXI.Graphics());
         return bars;
@@ -109,7 +109,7 @@ export class HeroSystem6eToken extends Token {
 
 
         if (!bar) {
-            console.log("bar is undefined");
+            HEROSYS.log(false, "bar is undefined");
             return;
         }
         // Draw the bar 
@@ -183,14 +183,14 @@ export class HeroSystem6eToken extends Token {
 
 
     drawBars() {
-        //console.log("drawBars")
+        //HEROSYS.log(false, "drawBars")
         if (!this.actor || (this.document.displayBars === CONST.TOKEN_DISPLAY_MODES.NONE)) {
             return this.bars.visible = false;
         }
         ["bar1", "bar2", "bar3"].forEach((b, i) => {
             const bar = this.bars[b];
             if (!bar) {
-                console.log("bar is undefined")
+                HEROSYS.log(false, "bar is undefined")
                 return
             }
             const attr = getBarExtendedAttribute.bind(this.document)(b)// : this.document.getBarAttribute(b);
@@ -201,7 +201,7 @@ export class HeroSystem6eToken extends Token {
 
         if (!this._canViewMode)
         {
-            console.log("this._canViewMode is undefined")
+            HEROSYS.log(false, "this._canViewMode is undefined")
             return
         }
         this.bars.visible = this._canViewMode(this.document.displayBars);
@@ -211,14 +211,14 @@ export class HeroSystem6eToken extends Token {
 
     // prepareBaseData() {
     //     super.prepareBaseData();
-    //     console.log("prepareBaseData")
+    //     HEROSYS.log(false, "prepareBaseData")
     // }
 
 
     // _onCreate(data)
     // {
 
-    //     console.log("_onCreate", data)
+    //     HEROSYS.log(false, "_onCreate", data)
     //     alert("_onCreate")
     // }
 }

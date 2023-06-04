@@ -4,6 +4,7 @@ import { HeroSystem6eItem } from '../item/item.js'
 import { presenceAttackPopOut } from '../utility/presence-attack.js'
 import { applyCharacterSheet, SkillRollUpdateValue } from '../utility/upload_hdc.js'
 import { RoundFavorPlayerDown } from "../utility/round.js"
+import { HEROSYS } from '../herosystem6e.js';
 
 export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
@@ -41,7 +42,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             item.system.endEstimate = item.system.end || 0
 
             if (item.type == 'power')
-                console.log(item.type)
+                HEROSYS.log(false, item.type)
 
             // Damage
             if (item.type == 'attack') {
@@ -132,7 +133,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             }
 
             if (item.type == 'martialart') {
-                console.log(item.system)
+                HEROSYS.log(false, item.system)
                 data.hasMartialArts = true
             }
 
@@ -406,7 +407,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
     async _onItemRoll(event) {
         event.preventDefault()
-        console.log("_onItemRoll")
+        HEROSYS.log(false, "_onItemRoll")
         const itemId = $(event.currentTarget).closest("[data-item-id]").data().itemId
         const item = this.actor.items.get(itemId)
         item.roll()

@@ -4,7 +4,7 @@ import { RoundFavorPlayerDown } from "../utility/round.js"
 
 
 export async function applyCharacterSheet(xmlDoc) {
-    //console.log("applyCharacterSheet")
+    //HEROSYS.log(false, "applyCharacterSheet")
 
     const characterTemplate = xmlDoc.getElementsByTagName('CHARACTER')[0].getAttribute("TEMPLATE")
     const characterInfo = xmlDoc.getElementsByTagName('CHARACTER_INFO')[0]
@@ -88,7 +88,7 @@ export async function applyCharacterSheet(xmlDoc) {
 
 
         // if (key === "running" && this.actor.system.is5e) {
-        //     console.log(key)
+        //     HEROSYS.log(false, key)
         // }
 
         if (key === "leaping" && this.actor.system.is5e) {
@@ -400,7 +400,7 @@ async function CalcRealAndActivePoints(actor) {
     // Add in costs for items
     let _splitCost = {}
     for (let item of actor.items.filter(o => o.type != 'attack' && o.type != 'defense' && o.type != 'movement' && o.type != 'complication' && !o.system.duplicate)) {
-        //console.log(item.type, item.name, item.system.realCost)
+        //HEROSYS.log(false, item.type, item.name, item.system.realCost)
 
         // Equipment is typically purchased with money, not character points
         if (item.type != 'equipment') {
@@ -410,7 +410,7 @@ async function CalcRealAndActivePoints(actor) {
 
         _splitCost[item.type] = (_splitCost[item.type] || 0) + (item.system?.realCost || 0)
     }
-    console.log(_splitCost)
+    HEROSYS.log(false, _splitCost)
     await actor.update({ 'system.points': realCost, 'system.activePoints': activePoints })
 }
 
@@ -443,7 +443,7 @@ function XmlToItemData(xml, type) {
             case "SINGLE": systemData.costPerLevel = 1; break;
             case "TIGHT": systemData.costPerLevel = 3; break;
             case "BROAD": systemData.costPerLevel = 6; break;
-            default: console.log(systemData.OPTION)
+            default: HEROSYS.log(false, systemData.OPTION)
         }
     }
 
@@ -457,7 +457,7 @@ function XmlToItemData(xml, type) {
             case "SINGLEMOVEMENT": systemData.costPerLevel = 2; break;
             case "ALLMOVEMENT": systemData.costPerLevel = 3; break;
             case "OVERALL": systemData.costPerLevel = 12; break;
-            default: console.log(systemData.OPTION)
+            default: HEROSYS.log(false, systemData.OPTION)
         }
     }
 
@@ -895,10 +895,10 @@ function calcBasePointsPlusAdders(system) {
 
 
     if (system.XMLID == "SHAPESHIFT")
-        console.log(system.XMLID)
+        HEROSYS.log(false, system.XMLID)
 
     if (system.NAME == "Sheet of Steel")
-        console.log(system.NAME)
+        HEROSYS.log(false, system.NAME)
 
 
     // Everyman skills are free
@@ -1003,7 +1003,7 @@ function calcBasePointsPlusAdders(system) {
     //let configPowerInfo = CONFIG.HERO.powers[_xmlid]
 
     // if (system.XMLID == "END")
-    //     console.log(system.XMLID)
+    //     HEROSYS.log(false, system.XMLID)
 
     // Levels
     // TODO: List each skill in config.js and include cost per level
@@ -1018,7 +1018,7 @@ function calcBasePointsPlusAdders(system) {
     //             case "SINGLE": costPerLevel = 1; break;
     //             case "TIGHT": costPerLevel = 3; break;
     //             case "BROAD": costPerLevel = 6; break;
-    //             default: console.log(system.OPTION)
+    //             default: HEROSYS.log(false, system.OPTION)
     //         }
     //     }
 
@@ -1032,7 +1032,7 @@ function calcBasePointsPlusAdders(system) {
     //             case "SINGLEMOVEMENT": costPerLevel = 2; break;
     //             case "ALLMOVEMENT": costPerLevel = 3; break;
     //             case "OVERALL": costPerLevel = 12; break;
-    //             default: console.log(system.OPTION)
+    //             default: HEROSYS.log(false, system.OPTION)
     //         }
     //     }
 
@@ -1080,7 +1080,7 @@ function calcActivePoints(_basePointsPlusAdders, system) {
     // const modifiers = system.modifiers || system.MODIFIER || [] //xmlItem.getElementsByTagName("ADDER")
 
     if (system.XMLID == "TELEKINESIS")
-        console.log(system.XMLID)
+        HEROSYS.log(false, system.XMLID)
 
     // NAKEDMODIFIER uses PRIVATE=="Yes" to indicate advantages
 
@@ -1093,7 +1093,7 @@ function calcActivePoints(_basePointsPlusAdders, system) {
         const modifierBaseCost = parseFloat(modifier.BASECOST || 0)
         const levels = Math.max(1, parseFloat(modifier.LEVELS))
         _myAdvantage += modifierBaseCost * levels
-        console.log(modifier.XMLID, modifierBaseCost)
+        HEROSYS.log(false, modifier.XMLID, modifierBaseCost)
         // Some modifiers may have ADDERS
         const adders = modifier.adders //modifier.getElementsByTagName("ADDER")
         if (adders.length) {
@@ -1101,7 +1101,7 @@ function calcActivePoints(_basePointsPlusAdders, system) {
                 const adderBaseCost = parseFloat(adder.BASECOST || 0)
                 //if (adderBaseCost > 0) {
                 _myAdvantage += adderBaseCost;
-                console.log(adder.XMLID, adderBaseCost)
+                HEROSYS.log(false, adder.XMLID, adderBaseCost)
                 //}
             }
         }
@@ -1121,10 +1121,10 @@ function calcRealCost(_activeCost, system) {
     // Real Cost = Active Cost / (1 + total value of all Limitations)
 
     if (system.XMLID == "SHAPESHIFT")
-        console.log(system.XMLID)
+        HEROSYS.log(false, system.XMLID)
 
     // if (system.NAME == "Unyielding Defense")
-    //     console.log(system.NAME)
+    //     HEROSYS.log(false, system.NAME)
 
     let limitations = 0
     for (let modifier of system.modifiers.filter(o => parseFloat(o.BASECOST) < 0)) {
@@ -1149,7 +1149,7 @@ function calcRealCost(_activeCost, system) {
 
             if (game.settings.get(game.system.id, 'alphaTesting')) {
                 ui.notifications.warn(`${system.XMLID} ${modifier.XMLID} has a limiation of ${-_myLimitation}.  Overrided limitation to be -1/4.`)
-                console.log(`${system.XMLID} ${modifier.XMLID} has a limiation of ${-_myLimitation}.  Overrided limitation to be -1/4.`, system)
+                HEROSYS.log(false, `${system.XMLID} ${modifier.XMLID} has a limiation of ${-_myLimitation}.  Overrided limitation to be -1/4.`, system)
             }
             _myLimitation = 0.25
         }
@@ -1160,7 +1160,7 @@ function calcRealCost(_activeCost, system) {
     }
 
     // if (system.XMLID == "END")
-    //     console.log(system.XMLID)
+    //     HEROSYS.log(false, system.XMLID)
 
     let _realCost = _activeCost / (1 + limitations)
     _realCost = RoundFavorPlayerDown(_realCost)
@@ -1214,7 +1214,7 @@ export async function uploadPower(power, type) {
     else {
         if (game.settings.get(game.system.id, 'alphaTesting')) {
             ui.notifications.warn(`${xmlid} not handled during HDC upload of ${this.actor.name}`)
-            console.log(power)
+            HEROSYS.log(false, power)
         }
 
     }

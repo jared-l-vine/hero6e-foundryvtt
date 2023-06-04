@@ -254,7 +254,7 @@ export class HeroSystem6eToHitCard2 extends HeroSystem6eCard {
     }
 
     static async _spawnAreaOfEffect(event) {
-        console.log('spawn area of effect!')
+        HEROSYS.log(false, 'spawn area of effect!')
 
         const clickedElement = $(event.currentTarget);
 

@@ -66,38 +66,43 @@
                 <h3 class="segment-active segment-header">Segment {{@index}}</h3>
                 <ol class="segment-content" {{#unless (is_active_segment ../activeSegments @index)}} style="display:none" {{/unless}}>
                     {{#each this}}
-                    <li class="combatant actor directory-item flexrow {{this.css}}" data-combatant-id="{{this.id}}" >
+                    <li class="combatant actor directory-item flexrow {{this.css}}" data-combatant-id="{{this.id}}" style="margin-left: -20px !important;">
                         <img class="token-image" data-src="{{this.img}}" title="{{this.name}}" />
                         
                         <div class="token-name flexcol">
-                            <h4>{{this.name}}</h4>
+                            {{#if this.isFake}}
+                            <h4>LR: {{this.name}}</h4>
                             <h4>{{this.alias}}</h4>
-                            {{!--
+                            {{else}}
+                            <h4>{{this.name}}</h4>
                             <div class="combatant-controls flexrow">
-                                {{#if ../user.isGM}}
-                                <a class="combatant-control {{#if this.hidden}}active{{/if}}" title="{{localize 'COMBAT.ToggleVis'}}" data-control="toggleHidden">
+                                {{#if @root.user.isGM}}
+                                <a class="combatant-control {{#if this.hidden}}active{{/if}}" data-tooltip="COMBAT.ToggleVis" data-control="toggleHidden">
                                     <i class="fas fa-eye-slash"></i>
                                 </a>
-                                <a class="combatant-control {{#if this.defeated}}active{{/if}}" title="{{localize 'COMBAT.ToggleDead'}}" data-control="toggleDefeated">
+                                <a class="combatant-control {{#if this.defeated}}active{{/if}}" data-tooltip="COMBAT.ToggleDead" data-control="toggleDefeated">
                                     <i class="fas fa-skull"></i>
                                 </a>
                                 {{/if}}
+                                <a class="combatant-control" data-tooltip="COMBAT.PingCombatant" data-control="pingCombatant">
+                                    <i class="fa-solid fa-bullseye-arrow"></i>
+                                </a>
                                 <div class="token-effects">
                                     {{#each this.effects}}
-                                    <img class="token-effect" src="{{this}}" />
+                                    <img class="token-effect" src="{{this}}"/>
                                     {{/each}}
                                 </div>
                             </div>
-                            --}}
+                            {{/if}}
                         </div>
 
-                        <!-- 
-                        {{#if this.hasResource}}
-                        <div class="token-resource">
-                            <span class="resource">{{this.resource}}</span>
+                        {{#if this.owner}}
+                        <div class="flex-row" style="justify-content: space-between;">
+                            <span class="resource hero-combat-tracker-resource" style="color: red;">{{this.actorData.characteristics.body.value}}</span>
+                            <span class="resource hero-combat-tracker-resource" style="color: green;">{{this.actorData.characteristics.stun.value}}</span>
+                            <span class="resource hero-combat-tracker-resource" style="color: blue;">{{this.actorData.characteristics.ego.value}}</span>
                         </div>
                         {{/if}}
-                        -->
 
                         <div class="token-initiative">
                             <span class="initiative">{{this.initiative}}</span>

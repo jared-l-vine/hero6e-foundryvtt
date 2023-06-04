@@ -2,6 +2,7 @@
 import { modifyRollEquation, getTokenChar } from "../utility/util.js"
 import { determineDefense } from "../utility/defense.js";
 import { HeroSystem6eActorActiveEffects } from "../actor/actor-active-effects.js"
+import { HEROSYS } from "../herosystem6e.js";
 
 export async function chatListeners(html) {
     // Called by carrd-helpers.js
@@ -499,7 +500,7 @@ export async function _onApplyDamageToSpecificToken(event, tokenId) {
     // determine active defenses
     // -------------------------------------------------
     let defense = "";
-    console.log(defense)
+    HEROSYS.log(false, defense)
     let [defenseValue, resistantValue, impenetrableValue, damageReductionValue, damageNegationValue, knockbackResistance, defenseTags] = determineDefense(token.actor, item)
     if (damageNegationValue > 0) {
         defense += "Damage Negation " + damageNegationValue + "DC(s); "

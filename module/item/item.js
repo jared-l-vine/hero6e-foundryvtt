@@ -26,7 +26,7 @@ export class HeroSystem6eItem extends Item {
 
         if (this.type == "martialart")
         {
-            console.log(this.name)
+            HEROSYS.log(false, this.name)
         }
 
         await super._preCreate(data, options, userId);

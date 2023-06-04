@@ -112,9 +112,6 @@ export class HeroSystem6eToHitCard extends HeroSystem6eCard {
     }
 
     static async createFromAttackCard(item, data, actor, itemId) {
-        HEROSYS.log(item)
-        HEROSYS.log(data)
-
         let itemData = item.system;
         let hitCharacteristic = actor.system.characteristics[itemData.uses].value;
         let toHitChar = CONFIG.HERO.defendsWith[itemData.targets];

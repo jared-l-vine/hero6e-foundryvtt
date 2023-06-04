@@ -38,7 +38,7 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
    */
     static async _onChatCardAction(event) {
         event.preventDefault();
-        console.log("_onChatCardAction")
+        HEROSYS.log(false, "_onChatCardAction")
 
         // not being used anymore, leaving in here for now just in case
     }
@@ -171,8 +171,6 @@ export class HeroSystem6eAttackCard extends HeroSystem6eCard {
       */
     static async createAttackPopOutFromItem(item, actor, itemId, version) {
         const content = await this._renderInternal(item, actor, {}, itemId);
-
-        //HEROSYS.log(item)
 
         // Attack Card as a Pop Out
         let options = {

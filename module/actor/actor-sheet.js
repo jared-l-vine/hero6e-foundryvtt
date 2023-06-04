@@ -43,7 +43,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       heroEditable: false,
 
     }
-    //console.log(newOptions)
+
     return newOptions
   }
 
@@ -519,7 +519,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
   async _onItemAttack(event) {
     event.preventDefault()
 
-    console.log($(event.currentTarget).closest("[data-item-id]").data())
+    HEROSYS.log(false, $(event.currentTarget).closest("[data-item-id]").data())
 
     const itemId = $(event.currentTarget).closest("[data-item-id]").data().itemId
 
@@ -540,8 +540,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
       item = this.actor.items.get(powerItemId).system.subItems.defense[subItemId]
     }
 
-    HEROSYS.log(item.name + ": " + item.system.active)
-
     const attr = 'system.active'
     const newValue = !getProperty(item, attr)
 
@@ -549,10 +547,6 @@ export class HeroSystem6eActorSheet extends ActorSheet {
     if (newValue && item.type === 'maneuver' && newValue) {
       await enforceManeuverLimits(this.actor, itemId, item.name)
     }
-
-    HEROSYS.log(item.name + ": " + JSON.stringify({ [attr]: newValue }))
-
-
 
     if (!isPowerSubItem(itemId)) {
       await item.update({ [attr]: newValue })
@@ -652,7 +646,7 @@ export class HeroSystem6eActorSheet extends ActorSheet {
 
   async _onRollSkill(event) {
     event.preventDefault()
-    console.log("_onItemRoll")
+    HEROSYS.log(false, "_onItemRoll")
     const itemId = $(event.currentTarget).closest("[data-item-id]").data().itemId
     const item = this.actor.items.get(itemId)
     item.roll()

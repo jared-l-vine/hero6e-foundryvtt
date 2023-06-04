@@ -155,7 +155,7 @@ export class HeroSystem6eCombat extends Combat {
             for (let i = 1; i <= 12 && !found; i++) {
                 for (let j = 0; j < this.segments[i].length && !found; j++) {
                     let t = this.segments[i][j];
-                    if (!(t.data.defeated || t.actor?.effects.find(e => e.getFlag("core", "statusId") === CONFIG.Combat.defeatedStatusId))) {
+                    if (!(t.defeated || t.actor?.effects.find(e => e.getFlag("core", "statusId") === CONFIG.Combat.defeatedStatusId))) {
                         segment = i;
                         heroTurn = j;
                         found = true;
@@ -195,7 +195,7 @@ export class HeroSystem6eCombat extends Combat {
             for (let [i, s] of this.segments.entries()) {
                 if (i <= this.segment) continue;
                 nextTurn = (s.findIndex(t => {
-                    return !(t.data.defeated ||
+                    return !(t.defeated ||
                         t.actor?.effects.find(e => e.getFlag("core", "statusId") === CONFIG.Combat.defeatedStatusId));
                 }));
                 if (nextTurn === -1) continue;
@@ -272,7 +272,7 @@ export class HeroSystem6eCombat extends Combat {
         if (skip) {
             for (let [i, t] of this.segments[this.segment].entries()) {
                 if (i <= heroTurn) continue;
-                if (t.data.defeated) continue;
+                if (t.defeated) continue;
                 if (t.actor?.effects.find(e => e.getFlag("core", "statusId") === CONFIG.Combat.defeatedStatusId)) continue;
                 next = i;
                 break;
@@ -533,7 +533,8 @@ export class HeroSystem6eCombat extends Combat {
                             'token': heroTurnSet[j].token,
                             'owner': heroTurnSet[j].owner,
                             'resource': heroTurnSet[j].resource,
-                            'id': heroTurnSet[j].id
+                            'id': heroTurnSet[j].id,
+                            'isFake': true
                         }
 
                         segments[i].push(fakeCombatantData)
@@ -712,7 +713,7 @@ export class HeroSystem6eCombat extends Combat {
         if (currId === undefined) return;
 
         const nextSurvivor = this.segments[this.segment].find((i, t) => {
-            return !result.includes(t.id) && (i >= this.heroTurn) && !t.data.defeated;
+            return !result.includes(t.id) && (i >= this.heroTurn) && !t.defeated;
         });
         this.setupTurns();
 
@@ -748,6 +749,10 @@ export class HeroSystem6eCombatTracker extends CombatTracker {
         html.find('.segment-active').click(ev => this._onSegmentToggleContent(ev));
 
         html.on('click', "[data-control]", this._handleButtonClick.bind(this));
+
+        Hooks.on('updateToken', (token, data, diff, id) => {
+            this.render();
+        });
     }
 
     async _handleButtonClick(event) {
@@ -788,7 +793,7 @@ export class HeroSystem6eCombatTracker extends CombatTracker {
             }
 
             default:
-                console.log('Invalid action detected ' + control)
+                HEROSYS.log(true, 'Invalid action detected ' + control)
                 break;
         }
     }
@@ -859,7 +864,9 @@ export class HeroSystem6eCombatTracker extends CombatTracker {
                         hidden: combatant.hidden,
                         initiative: combatant.initiative,
                         hasResource: resource !== null,
-                        resource: resource
+                        resource: resource,
+                        actorData: combatant.token._actor.system,
+                        isFake: combatant.isFake || false
                     };
 
                     if (Number.isFinite(heroTurn.initiative) && !Number.isInteger(heroTurn.initiative)) hasDecimals = true;
