@@ -248,8 +248,7 @@ export class HeroSystem6eActor extends Actor {
                 const itemData = {
                     name: power.name,
                     type: 'defense',
-                    system: {
-                        rules: power.system.rules,
+                    system: { ...deepClone(power.system),
                         resistant: false
                     }
                 }
