@@ -453,8 +453,55 @@ HERO.powers = {
 
 
     // Mental
-    "MINDSCAN": { powerType: ["mental"] },
-    "TELEPATHY": { powerType: ["mental"] },
+    "MINDSCAN": {
+        powerType: ["mental"],
+        powerType: ["attack", "mental"],
+        percievability: "imperceptible",
+        duration: "constant",
+        target: "dmcv",
+        range: "special",
+        costEnd: true,
+        costPerLevel: 5,
+    },
+    "TELEPATHY": {
+        powerType: ["mental"],
+        percievability: "imperceptible",
+        duration: "instant",
+        target: "dmcv",
+        range: "los",
+        costEnd: true,
+        costPerLevel: 5,
+    },
+    "EGOATTACK": {
+        name: "Mental Blast",
+        powerType: ["attack", "mental"],
+        percievability: "imperceptible",
+        duration: "instant",
+        target: "dmcv",
+        range: "los",
+        costEnd: true,
+        costPerLevel: 10,
+    },
+    "MENTALILLUSIONS": {
+        name: "Mental Illusions",
+        powerType: ["attack", "mental"],
+        percievability: "imperceptible",
+        duration: "instant",
+        target: "dmcv",
+        range: "los",
+        costEnd: true,
+        costPerLevel: 5,
+    },
+    "MINDCONTROL": {
+        name: "Mind Control",
+        powerType: ["attack", "mental"],
+        percievability: "imperceptible",
+        duration: "instant",
+        target: "dmcv",
+        range: "los",
+        costEnd: true,
+        costPerLevel: 5,
+    },
 
 
     // Senses
@@ -470,7 +517,7 @@ HERO.powers = {
 
 
     // Attack
-    "HANDTOHANDATTACK": { powerType: ["attack"] },
+    "HANDTOHANDATTACK": { powerType: ["attack"], costPerLevel: 5 },
     "HKA": { powerType: ["attack"], costPerLevel: 15 },
     "TELEKINESIS": {
         powerType: ["attack"],
@@ -478,9 +525,9 @@ HERO.powers = {
         costPerLevel: 3 / 2
     },
     "RKA": { powerType: ["attack"], costPerLevel: 15 },
-    "ENERGYBLAST": { powerType: ["attack"] },
+    "ENERGYBLAST": { powerType: ["attack"], costPerLevel: 5 },
     "DARKNESS": { powerType: ["sense-affecting", "attack", "standard"] },
-    "DISPEL": { powerType: ["attack", "standard"] },
+    "DISPEL": { powerType: ["attack", "standard"], costPerLevel: 3 },
     "ENTANGLE": { powerType: ["attack", "standard"] },
     "IMAGES": {
         name: "Images",
@@ -492,6 +539,9 @@ HERO.powers = {
         costEnd: true
     },
     "EXTRADC": { powerType: ["martial"], costPerLevel: 4 },
+
+
+
 
     // Defense
     "FORCEWALL": { powerType: ["defense"], name: "Barrier" }, // AKA BARRIER
@@ -550,7 +600,8 @@ HERO.powers = {
         duration: "persistent",
         target: "self only",
         range: "self",
-        costEnd: false
+        costEnd: false,
+        costPerLevel: 1,
     },
     "LACKOFWEAKNESS": {
         powerType: ["defense", "special"],

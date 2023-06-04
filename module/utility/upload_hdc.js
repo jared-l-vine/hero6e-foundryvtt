@@ -159,6 +159,7 @@ export async function applyCharacterSheet(xmlDoc) {
 
     // Initial 5e support
     // 5th edition has no edition designator, so assuming if there is no 6E then it is 5E.
+    // "builtIn.Superheroic6E.hdt"
     if (characterTemplate.includes("builtIn.") && !characterTemplate.includes("6E.")) {
         const figuredChanges = {}
         figuredChanges[`system.is5e`] = true  // used in item-attack.js to modify killing attack stun multiplier
@@ -249,6 +250,16 @@ export async function applyCharacterSheet(xmlDoc) {
         figuredChanges[`system.characteristics.dmcv.realCost`] = 0
 
         await this.actor.update(figuredChanges)
+    }
+    else {
+        // Confirm 6E
+        if (this.actor.system.is5e) {
+            if (game.settings.get(game.system.id, 'alphaTesting')) {
+                ui.notifications.warn(`Actor was incorrectly flagged as 5e.`)
+                console.log(`Actor was incorrectly flagged as 5e.`)
+            }
+            await this.actor.update({ 'system.is5e': false })
+        }
     }
 
     for (const skill of skills.children) {
@@ -449,6 +460,19 @@ function XmlToItemData(xml, type) {
         }
     }
 
+    if (systemData.XMLID == "COMBAT_LEVELS") {
+        switch (systemData.OPTION) {
+            case "SINGLE": systemData.costPerLevel = 2; break;
+            case "TIGHT": systemData.costPerLevel = 3; break;
+            case "BROAD": systemData.costPerLevel = 5; break;
+            case "HTH": systemData.costPerLevel = 8; break;
+            case "RANGED": systemData.costPerLevel = 8; break;
+            case "ALL": systemData.costPerLevel = 10; break;
+
+            default: console.log(systemData.OPTION)
+        }
+    }
+
     if (systemData.XMLID == "SKILL_LEVELS") {
         switch (systemData.OPTION) {
             case "CHARACTERISTIC": systemData.costPerLevel = 2; break;
@@ -589,6 +613,8 @@ export async function uploadBasic(xml, type) {
 }
 
 export async function uploadMartial(power, type, extraDc, usesTk) {
+    if (power.getAttribute('XMLID') == "GENERIC_OBJECT") return;
+
     // let name = power.getAttribute('NAME')
     // name = (name === '') ? power.getAttribute('ALIAS') : name
 
@@ -1089,7 +1115,7 @@ function calcActivePoints(_basePointsPlusAdders, system) {
     // const xmlid = system.rules || system.xmlid //xmlItem.getAttribute('XMLID')
     // const modifiers = system.modifiers || system.MODIFIER || [] //xmlItem.getElementsByTagName("ADDER")
 
-    if (system.XMLID == "TELEKINESIS")
+    if (system.XMLID == "RKA")
         console.log(system.XMLID)
 
     // NAKEDMODIFIER uses PRIVATE=="Yes" to indicate advantages
@@ -1102,7 +1128,12 @@ function calcActivePoints(_basePointsPlusAdders, system) {
         let _myAdvantage = 0
         const modifierBaseCost = parseFloat(modifier.BASECOST || 0)
         const levels = Math.max(1, parseFloat(modifier.LEVELS))
-        _myAdvantage += modifierBaseCost * levels
+        if (modifier.XMLID == "AOE") {
+            _myAdvantage += modifierBaseCost
+        } else {
+            _myAdvantage += modifierBaseCost * levels
+        }
+
         console.log(modifier.XMLID, modifierBaseCost)
         // Some modifiers may have ADDERS
         const adders = modifier.adders //modifier.getElementsByTagName("ADDER")
@@ -1193,7 +1224,7 @@ function calcRealCost(_activeCost, system) {
 }
 
 export async function uploadPower(power, type) {
-
+    if (power.getAttribute('XMLID') == "GENERIC_OBJECT") return;
     let itemData = XmlToItemData(power, type)
     await HeroSystem6eItem.create(itemData, { parent: this.actor })
 
@@ -1544,7 +1575,11 @@ function updateItemDescription(system) {
     const charges = system.modifiers.find(o => o.XMLID == "CHARGES")
     {
         if (charges && !costsEnd) {
-            system.end = "[" + charges.OPTION_ALIAS + "]"
+            system.end = "[" + charges.OPTION_ALIAS
+            if (charges.adders.find(o => o.XMLID == "RECOVERABLE")) {
+                system.end += " rc"
+            }
+            system.end += "]"
         }
     }
 }
