@@ -701,3 +701,57 @@ div.fifthEd {
   border-bottom: 2px groove #FFF;
   margin-bottom: 4px;
 }
+
+.radio-container {
+  margin-left: 90px;
+  width: 200px;
+  font-size: 14px;
+  position: absolute;
+  top: 120px;
+  left: 15px;
+  width: 200px;
+}
+
+.radio {
+  margin: 0.5rem;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  opacity: 80%;
+}
+
+.radio label {
+  color: #000;
+  font-weight: bold;
+}
+
+.radio input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+}
+
+.radio input[type="radio"] + .radio-label:before {
+  content: '';
+  background: #494848;
+  border-radius: 100%;
+  border: 1px solid #000000;
+  display: inline-block;
+  width: 1.4em;
+  height: 1.4em;
+  position: relative;
+  top: 5px;
+  margin-right: 1em;
+  vertical-align: center;
+  cursor: pointer;
+  text-align: center;
+  transition: all 250ms ease;
+}
+
+.radio input[type="radio"]:checked + .radio-label:before {
+  background-color: #ffffff;
+  box-shadow: inset 0 0 0 4px #494848;
+}
+
+.radio input[type="radio"] + .radio-label:empty:before {
+  margin-right: 0;
+}

@@ -53,7 +53,9 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     data.config = CONFIG.HERO
     data.alphaTesting = game.settings.get(game.system.id, 'alphaTesting')
 
-    data.effects = this.actor.effects.filter(o => o.origin === item.uuid)
+    if (this.actor) {
+      data.effects = this.actor.effects.filter(o => o.origin === item.uuid)
+    }
 
     // skillCharacteristics should be lowercase to match CONFIG.HERO.skillCharacteristics.
     // Not needed for new uploads, but previous uploads may incorectely have upperCase version

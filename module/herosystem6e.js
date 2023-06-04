@@ -17,6 +17,7 @@ import { HeroSystem6eCombat, HeroSystem6eCombatTracker } from "./combat.js";
 import SettingsHelpers from "./settings/settings-helpers.js";
 import { HeroSystem6eTokenHud } from "./bar3/tokenHud.js";
 import { extendTokenConfig } from "./bar3/extendTokenConfig.js";
+import { HeroRuler } from "./ruler.js";
 
 Hooks.once('init', async function () {
 
@@ -67,6 +68,8 @@ Hooks.once('init', async function () {
   //CONFIG.MeasuredTemplate.objectClass = HeroSystem6eTemplate;
   CONFIG.ui.combat = HeroSystem6eCombatTracker;
 
+  HeroRuler.initialize()
+
   SettingsHelpers.initLevelSettings();
 
   // Register sheet application classes
@@ -105,18 +108,6 @@ Hooks.once('init', async function () {
 
 });
 
-Hooks.once("init", () => {
-  Ruler.prototype._getSegmentLabel = function _getSegmentLabel(segmentDistance, totalDistance, isTotal) {
-    let rangeMod = Math.ceil(Math.log2(totalDistance / 8)) * 2;
-
-    rangeMod = rangeMod < 0 ? 0 : rangeMod;
-
-    let label = "[" + Math.round(segmentDistance.distance) + " m]" + "\n-" + rangeMod + " Range Modifier"
-
-    return label
-  };
-})
-
 Hooks.once("ready", async function () {
   // Wait to register hotbar drop hook on ready so that modules could register earlier if they want to
   Hooks.on("hotbarDrop", (bar, data, slot) => createHeroSystem6eMacro(bar, data, slot));
@@ -141,9 +132,10 @@ Hooks.once('devModeReady', ({ registerPackageDebugFlag }) => {
   registerPackageDebugFlag(HEROSYS.ID);
 });
 
-
 export class HEROSYS {
   static ID = "HEROSYS";
+
+  static module = "hero6efoundryvttv2";
 
   // static log(force, ...args) {
   static log(...args) {
