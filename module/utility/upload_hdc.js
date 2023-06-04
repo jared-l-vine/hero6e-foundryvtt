@@ -525,7 +525,7 @@ function XmlToItemData(xml, type) {
             // This is a limitation not an advantage, not sure why it is positive.  Force it negative.
             _mod.BASECOST = - Math.abs(parseFloat(_mod.BASECOST))
         }
-        
+
 
 
 
@@ -897,7 +897,7 @@ function calcBasePointsPlusAdders(system) {
     // const adders = system.adders || [] //xmlItem.getElementsByTagName("ADDER")
 
 
-    if (system.XMLID == "SHAPESHIFT")
+    if (system.XMLID == "PD")
         console.log(system.XMLID)
 
     if (system.NAME == "Sheet of Steel")
@@ -930,7 +930,7 @@ function calcBasePointsPlusAdders(system) {
     let costPerLevel = parseFloat(
         configPowerInfo?.costPerLevel ||
         CONFIG.HERO.characteristicCosts[_xmlid.toLocaleLowerCase()] ||
-        system.costPerLevel || 
+        system.costPerLevel ||
         baseCost
         || (configPowerInfo?.powerType == 'skill' ? 2 : 1)
     )
@@ -943,6 +943,13 @@ function calcBasePointsPlusAdders(system) {
     let levels = parseInt(system.LEVELS)
 
     let subCost = costPerLevel * levels
+
+    // 3 CP per 2 points
+    if (costPerLevel == 3 / 2 && subCost % 1) {
+        let _threePerTwo = Math.ceil(costPerLevel * levels) + 1
+        subCost = _threePerTwo
+        system.title = (system.title || "") + '3 CP per 2 points; \n+1 level may cost nothing. '
+    }
 
     // Start adding up the costs
     let cost = baseCost + subCost
@@ -1117,13 +1124,13 @@ function calcActivePoints(_basePointsPlusAdders, system) {
 
     const _activePoints = _basePointsPlusAdders * (1 + advantages)
 
-    return _activePoints //RoundFavorPlayerDown(_activePoints)
+    return RoundFavorPlayerDown(_activePoints)
 }
 
 function calcRealCost(_activeCost, system) {
     // Real Cost = Active Cost / (1 + total value of all Limitations)
 
-    if (system.XMLID == "SHAPESHIFT")
+    if (system.XMLID == "PD")
         console.log(system.XMLID)
 
     // if (system.NAME == "Unyielding Defense")
@@ -1139,9 +1146,15 @@ function calcRealCost(_activeCost, system) {
         for (let adder of modifier.adders) {
             let adderBaseCost = parseFloat(adder.BASECOST || 0)
 
+            // Unique situation where JAMMED floors the limitation
+            if (adder.XMLID == "JAMMED" && _myLimitation == 0.25) {
+                system.title = (system.title || "") + 'Limitations are below the minumum of -1/4; \nConsider removing unnecessary limitations. '
+                adderBaseCost = 0
+            }
+
             // can be positive or negative (like charges).
             // Requires a roll gets interesting with Jammed / Can choose which of two rolls to make from use to use
-            _myLimitation += adderBaseCost;
+            _myLimitation += -adderBaseCost;
 
             const multiplier = Math.max(1, parseFloat(adder.MULTIPLIER || 0))
             _myLimitation *= multiplier
@@ -1151,14 +1164,15 @@ function calcRealCost(_activeCost, system) {
         // NOTE: REQUIRESASKILLROLL The minimum value is -1/4, regardless of modifiers.
         if (_myLimitation < 0.25) {
 
-            if (game.settings.get(game.system.id, 'alphaTesting')) {
-                ui.notifications.warn(`${system.XMLID} ${modifier.XMLID} has a limiation of ${-_myLimitation}.  Overrided limitation to be -1/4.`)
-                console.log(`${system.XMLID} ${modifier.XMLID} has a limiation of ${-_myLimitation}.  Overrided limitation to be -1/4.`, system)
-            }
+            // if (game.settings.get(game.system.id, 'alphaTesting')) {
+            //     ui.notifications.warn(`${system.XMLID} ${modifier.XMLID} has a limiation of ${-_myLimitation}.  Overrided limitation to be -1/4.`)
+            //     console.log(`${system.XMLID} ${modifier.XMLID} has a limiation of ${-_myLimitation}.  Overrided limitation to be -1/4.`, system)
+            // }
             _myLimitation = 0.25
-            system.title = (system.title || "") + 'Limitations are below the minumum of -1/4; \nConsider removing unnecessary limitations.'
+            system.title = (system.title || "") + 'Limitations are below the minumum of -1/4; \nConsider removing unnecessary limitations. '
         }
 
+        console.log("limitation", modifier.ALIAS, _myLimitation)
         modifier.BASECOST_total = -_myLimitation
 
         limitations += _myLimitation
@@ -1475,17 +1489,26 @@ function updateItemDescription(system) {
     }
 
     // ADDRS
-    for (let adder of system.adders) {
-        switch (adder.XMLID) {
-            case "DIMENSIONS":
-                system.description += ", " + adder.ALIAS
-                break;
-            case "DEFBONUS":
-                break
-            default: system.description += " (" + adder.ALIAS + ")"
-        }
+    if (system.adders.length > 0) {
+        system.description += " ("
+        let _adderArray = []
+        for (let adder of system.adders) {
+            switch (adder.XMLID) {
+                case "DIMENSIONS":
+                    system.description += ", " + adder.ALIAS
+                    break;
+                case "DEFBONUS":
+                    break
+                case "EXTENDEDBREATHING":
+                    system.description += adder.ALIAS + " " + adder.OPTION_ALIAS
+                    break
+                default: _adderArray.push(adder.ALIAS)
+            }
 
+        }
+        system.description += _adderArray.join("; ") + ")"
     }
+
 
     // Active Points
     if (system.realCost != system.activePoints) {
@@ -1532,6 +1555,9 @@ function createPowerDescriptionModifier(modifier, powerName) {
 
     let result = ""
 
+    if (modifier.XMLID == "")
+        console.log(modifier)
+
     switch (modifier.XMLID) {
         case "CHARGES":
             // 1 Recoverable Continuing Charge lasting 1 Minute
@@ -1559,6 +1585,9 @@ function createPowerDescriptionModifier(modifier, powerName) {
             if (modifier.ALIAS) result += "; " + modifier.ALIAS || "?"
     }
 
+    // ADDERS
+
+
     // if (modifier.comments) powerData.description += "; " + modifier.comments
     // if (modifier.option) powerData.description += "; " + modifier.option
     // if (modifier.optionId) powerData.description += "; " + modifier.optionId
@@ -1567,6 +1596,9 @@ function createPowerDescriptionModifier(modifier, powerName) {
     if (modifier.OPTION_ALIAS && !["VISIBLE", "CHARGES"].includes(modifier.XMLID)) result += modifier.OPTION_ALIAS + "; "
     //if (["REQUIRESASKILLROLL", "LIMITEDBODYPARTS"].includes(modifier.XMLID)) result += modifier.COMMENTS + "; "
     if (modifier.COMMENTS) result += modifier.COMMENTS + "; "
+    for (let adder of modifier.adders) {
+        result += adder.ALIAS + "; "
+    }
 
     let fraction = ""
 

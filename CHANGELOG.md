@@ -1,8 +1,9 @@
 # Version 2.1.8-alpha
 - Improved power descriptions. [#78](https://github.com/dmdorman/hero6e-foundryvtt/issues/78)
 - Improved Estimation of Character Points spent and Active Points. [#111](https://github.com/dmdorman/hero6e-foundryvtt/issues/111)
+- Powers now show endurance. [#116](https://github.com/dmdorman/hero6e-foundryvtt/issues/116)
 - Removed old HeroSystem6eActorSheet
-- Improved [Drag Ruler](https://foundryvtt.com/packages/drag-ruler) support [#99](https://github.com/dmdorman/hero6e-foundryvtt/issues/99)
+- Improved support for [Drag Ruler](https://foundryvtt.com/packages/drag-ruler) module. [#99](https://github.com/dmdorman/hero6e-foundryvtt/issues/99)
 
 
 # Version 2.1.7-alpha
