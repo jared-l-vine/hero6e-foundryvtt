@@ -100,30 +100,30 @@ export class HeroRuler {
             const movmentItems = relevantToken.actor.items.filter((e) => e.type === "movement");
         
             const renderRadioOptions = () => {
-            const activeMovement = (movmentItems.length === 0)? "none" : relevantToken.actor.flags.activeMovement || movmentItems[0]._id
-        
-            const radioOptions = movmentItems.map((item, index) => `
-                <div class="radio" data-tool="${item._id}">
-                    <input id="radio-${index}" name="radio" type="radio" ${activeMovement === item._id ? 'checked' : ''}>
-                    <label for="radio-${index}" class="radio-label">${item.name} (${item.system.value}m)</label>
-                </div>
-            `).join('');
-        
-            const radioSelect = $(`<div class="radio-container">${radioOptions}</div>`);
-        
-            radioSelect.find('[data-tool]').click(async function() {
-                const tool = $(this).attr('data-tool');
-        
-                await relevantToken.actor.update({'flags.activeMovement': tool })
-        
-                renderRadioOptions();
-            });
-        
-            if (tokenControlButton.find('.radio-container').length > 0) {
-                tokenControlButton.find('.radio-container').remove();
-            }
-        
-            tokenControlButton.append(radioSelect);
+                const activeMovement = (movmentItems.length === 0)? "none" : relevantToken.actor.flags.activeMovement || movmentItems[0]._id
+            
+                const radioOptions = movmentItems.map((item, index) => `
+                    <div class="radio" data-tool="${item._id}">
+                        <input id="radio-${index}" name="radio" type="radio" ${activeMovement === item._id ? 'checked' : ''}>
+                        <label for="radio-${index}" class="radio-label" style="text-shadow: 0 0 8px white;">${item.name} (${item.system.value}m)</label>
+                    </div>
+                `).join('');
+            
+                const radioSelect = $(`<div class="radio-container">${radioOptions}</div>`);
+            
+                radioSelect.find('[data-tool]').click(async function() {
+                    const tool = $(this).attr('data-tool');
+            
+                    await relevantToken.actor.update({'flags.activeMovement': tool })
+            
+                    renderRadioOptions();
+                });
+            
+                if (tokenControlButton.find('.radio-container').length > 0) {
+                    tokenControlButton.find('.radio-container').remove();
+                }
+            
+                tokenControlButton.append(radioSelect);
             };
         
             renderRadioOptions();
@@ -138,6 +138,18 @@ function setHeroRulerLabel() {
         rangeMod = rangeMod < 0 ? 0 : rangeMod;
 
         let label = "[" + Math.round(segmentDistance.distance) + " m]" + "\n-" + rangeMod + " Range Modifier"
+
+        if (game.modules.get("drag-ruler")?.active) {
+            const relevantToken = canvas.tokens.controlled[0];
+        
+            const movmentItems = relevantToken.actor.items.filter((e) => e.type === "movement");
+        
+            const activeMovement = (movmentItems.length === 0)? "none" : relevantToken.actor.flags.activeMovement || movmentItems[0]._id
+    
+            const activeMovementLabel = (activeMovement === "none")? "Running" : movmentItems.find((e) => e._id === activeMovement).name
+
+            label += "\n" + activeMovementLabel
+        }
 
         return label
     };
