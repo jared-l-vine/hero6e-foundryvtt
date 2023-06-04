@@ -380,6 +380,7 @@ export async function applyCharacterSheet(xmlDoc) {
 
     ui.notifications.info(`${this.actor.name} upload complete`)
 
+    Hooks.call('hdcUpload')
 }
 
 async function CalcRealAndActivePoints(actor) {
