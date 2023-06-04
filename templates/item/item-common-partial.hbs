@@ -1,21 +1,26 @@
 <div class="form-group">
     <label>Description</label>
     <textarea placeholder="Description" class="power-card-power-description textarea input" name="system.description"
-        rows="8" disabled>{{item.system.description}}</textarea>
+        rows="8" >{{item.system.description}}</textarea>
 </div>
 
 <div class="form-group">
     <label>Base Cost plus Adders</label>
     <input type="text" name="system.basePointsPlusAdders" value="{{system.basePointsPlusAdders}}" data-dtype="text"
-        disabled />
+        />
 </div>
 
 <div class="form-group">
     <label>Active Points</label>
-    <input type="text" name="system.activePoints" value="{{system.activePoints}}" data-dtype="text" disabled />
+    <input type="text" name="system.activePoints" value="{{system.activePoints}}" data-dtype="text" />
 </div>
 
 <div class="form-group">
     <label>Real Cost</label>
-    <input type="text" name="system.realCost" value="{{system.realCost}}" data-dtype="text" disabled />
+    <input type="text" name="system.realCost" value="{{system.realCost}}" data-dtype="text" />
+</div>
+
+<div class="form-group">
+    <label>Endurance</label>
+    <input type="text" name="system.end" value="{{system.end}}" data-dtype="text" />
 </div>
