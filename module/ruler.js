@@ -6,6 +6,16 @@ export class HeroRuler {
             setHeroRulerLabel()
         });
 
+        Hooks.once("ready", function() {
+            if (!game.modules.get("drag-ruler")) {
+                ui.notifications.error(game.i18n.localize("Warning.DragRuler.Intall"));
+            }
+
+            if (!game.modules.get("drag-ruler")?.active) {
+                ui.notifications.error(game.i18n.localize("Warning.DragRuler.Active"));
+            }
+        });
+
         Hooks.once('dragRuler.ready', (SpeedProvider) => {
             class HeroSysSpeedProvider extends SpeedProvider {
             get colors() {

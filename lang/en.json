@@ -63,7 +63,11 @@
         "TokenSelect": "Please select a token"
     },
     "Warning": {
-        "AreaOfEffectUnsupported": "Unsupported for this Area Of Effect type"
+        "AreaOfEffectUnsupported": "Unsupported for this Area Of Effect type",
+        "DragRuler": {
+            "Install": "Drag Ruler module is recommended. Please install.",
+            "Active": "Drag Ruler module is not activated. Please activate."
+        }
     },
     "Movement": {
         "Half": "Half Move",
