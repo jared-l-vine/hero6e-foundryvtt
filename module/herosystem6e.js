@@ -96,6 +96,13 @@ Hooks.once('init', async function () {
   Handlebars.registerHelper('is_active_segment', function (actives, index) {
     return actives[index];
   });
+
+  // Handlebars Templates and Partials
+  loadTemplates([
+    `systems/hero6efoundryvttv2/templates/item/item-common-partial.hbs`,
+
+  ]);
+
 });
 
 Hooks.once("init", () => {
