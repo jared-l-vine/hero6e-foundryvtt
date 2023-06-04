@@ -3,25 +3,16 @@ import { HEROSYS } from "./herosystem6e.js";
 export class HeroRuler {
     static initialize() {
         Hooks.once("init", () => {
-            Ruler.prototype._getSegmentLabel = function _getSegmentLabel(segmentDistance, totalDistance, isTotal) {
-            let rangeMod = Math.ceil(Math.log2(totalDistance / 8)) * 2;
-
-            rangeMod = rangeMod < 0 ? 0 : rangeMod;
-
-            let label = "[" + Math.round(segmentDistance.distance) + " m]" + "\n-" + rangeMod + " Range Modifier"
-
-            return label
-            };
+            setHeroRulerLabel()
         });
 
         Hooks.once('dragRuler.ready', (SpeedProvider) => {
             class HeroSysSpeedProvider extends SpeedProvider {
             get colors() {
                 return [
-                {id: "walk", default: 0x00FF00, name: "my-module-id.speeds.walk"},
-                {id: "dash", default: 0xFFFF00, name: "my-module-id.speeds.dash"},
-                {id: "run", default: 0xFF8000, name: "my-module-id.speeds.run"},
-                {id: "bad", default: 0x000000, name: "my-module-id.speeds.bad"}
+                    {id: "half", default: 0x00FF00, name: game.i18n.localize("Movement.Half")},
+                    {id: "full", default: 0xFFFF00, name: game.i18n.localize("Movement.Full")},
+                    {id: "noncombat", default: 0xFF8000, name: game.i18n.localize("Movement.Noncombat")},
                 ]
             }
         
@@ -29,9 +20,9 @@ export class HeroRuler {
                 const baseSpeed = this.getMovementSpeed(token)
         
                 const ranges = [
-                {range: Math.ceil(baseSpeed / 2), color: "walk"},
-                {range: Math.floor(baseSpeed / 2) + Math.ceil(baseSpeed / 2), color: "dash"},
-                {range: baseSpeed * 2, color: "run"}
+                    {range: Math.ceil(baseSpeed / 2), color: "half"},
+                    {range: Math.floor(baseSpeed / 2) + Math.ceil(baseSpeed / 2), color: "full"},
+                    {range: baseSpeed * 2, color: "noncombat"}
                 ]
         
                 return ranges
@@ -48,6 +39,8 @@ export class HeroRuler {
             }
         
             dragRuler.registerSystem(HEROSYS.module, HeroSysSpeedProvider)
+
+            setHeroRulerLabel()
         });
 
         Hooks.on('controlToken', function(token, controlled) {
@@ -87,12 +80,12 @@ export class HeroRuler {
             const movmentItems = relevantToken.actor.items.filter((e) => e.type === "movement");
         
             const renderRadioOptions = () => {
-            const activeMovement = relevantToken.actor.flags.activeMovement || movmentItems[0]._id
+            const activeMovement = (movmentItems.length === 0)? "none" : relevantToken.actor.flags.activeMovement || movmentItems[0]._id
         
             const radioOptions = movmentItems.map((item, index) => `
                 <div class="radio" data-tool="${item._id}">
                     <input id="radio-${index}" name="radio" type="radio" ${activeMovement === item._id ? 'checked' : ''}>
-                    <label for="radio-${index}" class="radio-label">${item.name}</label>
+                    <label for="radio-${index}" class="radio-label">${item.name} (${item.system.value}m)</label>
                 </div>
             `).join('');
         
@@ -116,4 +109,16 @@ export class HeroRuler {
             renderRadioOptions();
         }
     }
+}
+
+function setHeroRulerLabel() {
+    Ruler.prototype._getSegmentLabel = function _getSegmentLabel(segmentDistance, totalDistance, isTotal) {
+        let rangeMod = Math.ceil(Math.log2(totalDistance / 8)) * 2;
+
+        rangeMod = rangeMod < 0 ? 0 : rangeMod;
+
+        let label = "[" + Math.round(segmentDistance.distance) + " m]" + "\n-" + rangeMod + " Range Modifier"
+
+        return label
+    };
 }

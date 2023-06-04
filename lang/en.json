@@ -64,5 +64,10 @@
     },
     "Warning": {
         "AreaOfEffectUnsupported": "Unsupported for this Area Of Effect type"
+    },
+    "Movement": {
+        "Half": "Half Move",
+        "Full": "Full Move",
+        "Noncombat": "Noncombat Move"
     }
 }
