@@ -1139,15 +1139,16 @@ function calcRealCost(_activeCost, system) {
         for (let adder of modifier.adders) {
             let adderBaseCost = parseFloat(adder.BASECOST || 0)
 
-            // can be positive or negative (like charges)
-            _myLimitation += -adderBaseCost;
+            // can be positive or negative (like charges).
+            // Requires a roll gets interesting with Jammed / Can choose which of two rolls to make from use to use
+            _myLimitation += adderBaseCost;
 
             const multiplier = Math.max(1, parseFloat(adder.MULTIPLIER || 0))
             _myLimitation *= multiplier
         }
 
 
-        // NOTE: REQUIRESASKILLROLL The minimum value is -¼, regardless of modifiers.
+        // NOTE: REQUIRESASKILLROLL The minimum value is -1/4, regardless of modifiers.
         if (_myLimitation < 0.25) {
 
             if (game.settings.get(game.system.id, 'alphaTesting')) {
@@ -1155,6 +1156,7 @@ function calcRealCost(_activeCost, system) {
                 console.log(`${system.XMLID} ${modifier.XMLID} has a limiation of ${-_myLimitation}.  Overrided limitation to be -1/4.`, system)
             }
             _myLimitation = 0.25
+            system.title = (system.title || "") + 'Limitations are below the minumum of -1/4; \nConsider removing unnecessary limitations.'
         }
 
         modifier.BASECOST_total = -_myLimitation

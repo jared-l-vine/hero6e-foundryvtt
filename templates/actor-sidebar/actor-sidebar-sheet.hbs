@@ -427,7 +427,7 @@
                                     height="24" /></div>
                         </td>
                         <td class="left">{{item.name}}</td>
-                        <td>{{item.system.realCost}}</td>
+                        <td title="{{item.system.title}}" {{#if item.system.title}}class="warn"{{/if}} >{{item.system.realCost}}</td>
                         <td>{{item.system.endEstimate}}</td>
                         <td class="left">{{item.system.description}}</td>
                         <td>
