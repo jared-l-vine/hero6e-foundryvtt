@@ -81,6 +81,12 @@ export class HeroRuler {
         
             return
         });
+
+        Hooks.on('updateItem', function(item, args) {
+            if (item.type !== 'movement') { return; }
+
+            movementRadioSelectRender()
+        });
         
         async function movementRadioSelectRender() {
             const tokenControlButton = $(".scene-control[data-control='token']");
