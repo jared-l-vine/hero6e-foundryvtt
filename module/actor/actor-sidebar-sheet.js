@@ -31,6 +31,9 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         data.hasEquipment = false
         data.hasMartialArts = false
 
+        let weightTotal = 0
+        let priceTotal = 0
+
         // override actor.items (which is a map) to an array with some custom properties
         let items = []
         for (let item of data.actor.items) {
@@ -141,6 +144,11 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
             if (item.type == 'equipment') {
                 data.hasEquipment = true
+                if (item.system.active)
+                {
+                    weightTotal += parseFloat(item.system.WEIGHT)
+                }
+                priceTotal += parseFloat(item.system.PRICE)
             }
 
             if (item.type == 'skill') {
@@ -150,6 +158,12 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             items.push(item)
         }
         data.items = items;
+
+        if (data.hasEquipment)
+        {
+            data.weightTotal = parseFloat(weightTotal).toFixed(1) + "kg"
+            data.priceTotal = "$" + parseFloat(priceTotal).toFixed(2)
+        }
 
         // Characteristics
         const characteristicSet = []

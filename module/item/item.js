@@ -195,6 +195,11 @@ export class HeroSystem6eItem extends Item {
                 await enforceManeuverLimits(this.actor, item.id, item.name)
                 await updateCombatAutoMod(item.actor, item)
                 break;
+            case "equipment":
+                // Do nothing special for now.
+                // Weight/encumbrance will automtically be calculated.
+                // TODO: tie defensive/buff items into equipment.
+                break;
             default: ui.notifications.warn(`${this.name} toggle may be incompmlete`)
         }
     }
