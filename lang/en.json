@@ -62,7 +62,10 @@
         "ActiveEffect": "ActiveEffect",
         "Biography": "Biography",
         "Velocity" : "Velocity",
-        "Effect" : "Effect"
+        "Effect" : "Effect",
+        "Price" : "Price",
+        "Weight" : "Weight",
+        "Carried" : "Carried"
     },
     "Errors": {
         "TokenSelect": "Please select a token"

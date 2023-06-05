@@ -225,7 +225,7 @@ export async function AttackToHit(item, options) {
     };
 
     // render card
-    let cardHtml = await renderTemplate(template, cardData) //wait HeroSystem6eToHitCard2._renderInternal(item, actor, stateData);
+    let cardHtml = await renderTemplate(template, cardData) 
 
     let token = actor.token;
 
@@ -798,7 +798,7 @@ async function _calcDamage(damageResult, item, options) {
     let stunDamage = stun;
 
     let effects = "";
-    if (item.system.effects !== "") {
+    if (item.system.effects) {
         effects = item.system.effects + ";"
     }
 

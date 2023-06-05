@@ -90,7 +90,12 @@ export class HeroSystem6eActor extends Actor {
         await this.deleteEmbeddedDocuments("ActiveEffect", ids)
 
         for (const power of this.items.filter(o => o.type === 'power' || o.type === 'equipment')) {
-            let configPowerInfo = CONFIG.HERO.powers[power.system.rules]
+            
+            // Rebrand?
+            let xmlid = power.system.XMLID || power.system.id || power.system.rules
+            xmlid = CONFIG.HERO.powersRebrand[xmlid] || xmlid;
+
+            let configPowerInfo = CONFIG.HERO.powers[xmlid]
 
             // Characteristics (via ActiveEffects)
             if (configPowerInfo && (configPowerInfo?.powerType || "").includes("characteristic")) {
@@ -243,8 +248,7 @@ export class HeroSystem6eActor extends Actor {
                 const itemData = {
                     name: power.name,
                     type: 'defense',
-                    system: {
-                        rules: power.system.rules,
+                    system: { ...deepClone(power.system),
                         resistant: false
                     }
                 }

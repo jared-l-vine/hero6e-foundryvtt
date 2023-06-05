@@ -159,6 +159,7 @@ export async function applyCharacterSheet(xmlDoc) {
 
     // Initial 5e support
     // 5th edition has no edition designator, so assuming if there is no 6E then it is 5E.
+    // "builtIn.Superheroic6E.hdt"
     if (characterTemplate.includes("builtIn.") && !characterTemplate.includes("6E.")) {
         const figuredChanges = {}
         figuredChanges[`system.is5e`] = true  // used in item-attack.js to modify killing attack stun multiplier
@@ -249,6 +250,16 @@ export async function applyCharacterSheet(xmlDoc) {
         figuredChanges[`system.characteristics.dmcv.realCost`] = 0
 
         await this.actor.update(figuredChanges)
+    }
+    else {
+        // Confirm 6E
+        if (this.actor.system.is5e) {
+            if (game.settings.get(game.system.id, 'alphaTesting')) {
+                ui.notifications.warn(`Actor was incorrectly flagged as 5e.`)
+                console.log(`Actor was incorrectly flagged as 5e.`)
+            }
+            await this.actor.update({ 'system.is5e': false })
+        }
     }
 
     for (const skill of skills.children) {
@@ -430,19 +441,46 @@ function XmlToItemData(xml, type) {
     const relevantFields = [
         'XMLID', 'BASECOST', 'LEVELS', 'ALIAS', 'MULTIPLIER', 'NAME', 'OPTION_ALIAS', 'SFX',
         'PDLEVELS', 'EDLEVELS', 'MDLEVELS', 'INPUT', 'OPTION', 'OPTIONID', 'BASECOST',
-        'PRIVATE', 'EVERYMAN', 'CHARACTERISTIC', 'NATIVE_TONGUE', 'POWDLEVELS'
+        'PRIVATE', 'EVERYMAN', 'CHARACTERISTIC', 'NATIVE_TONGUE', 'POWDLEVELS',
+        "WEIGHT", "PRICE", "CARRIED"
     ]
     for (const attribute of xml.attributes) {
         if (relevantFields.includes(attribute.name)) {
-            systemData[attribute.name] = attribute.value
+            switch (attribute.name) {
+                case "CARRIED":
+                    systemData.active = attribute.value == "Yes" ? true : false
+                    break;
+                case "WEIGHT":
+                    // Convert lbs to kg
+                    systemData[attribute.name] = (parseFloat(attribute.value) / 2.20462).toFixed(2)
+                    break;
+                default:
+                    systemData[attribute.name] = attribute.value
+            }
         }
     }
+
+    // Make sure we have a name
+    systemData.NAME = systemData.NAME || systemData.ALIAS
 
     if (["MENTAL_COMBAT_LEVELS", "PENALTY_SKILL_LEVELS"].includes(systemData.XMLID)) {
         switch (systemData.OPTION) {
             case "SINGLE": systemData.costPerLevel = 1; break;
             case "TIGHT": systemData.costPerLevel = 3; break;
             case "BROAD": systemData.costPerLevel = 6; break;
+            default: console.log(systemData.OPTION)
+        }
+    }
+
+    if (systemData.XMLID == "COMBAT_LEVELS") {
+        switch (systemData.OPTION) {
+            case "SINGLE": systemData.costPerLevel = 2; break;
+            case "TIGHT": systemData.costPerLevel = 3; break;
+            case "BROAD": systemData.costPerLevel = 5; break;
+            case "HTH": systemData.costPerLevel = 8; break;
+            case "RANGED": systemData.costPerLevel = 8; break;
+            case "ALL": systemData.costPerLevel = 10; break;
+
             default: console.log(systemData.OPTION)
         }
     }
@@ -523,7 +561,7 @@ function XmlToItemData(xml, type) {
             // This is a limitation not an advantage, not sure why it is positive.  Force it negative.
             _mod.BASECOST = - Math.abs(parseFloat(_mod.BASECOST))
         }
-        
+
 
 
 
@@ -587,6 +625,8 @@ export async function uploadBasic(xml, type) {
 }
 
 export async function uploadMartial(power, type, extraDc, usesTk) {
+    if (power.getAttribute('XMLID') == "GENERIC_OBJECT") return;
+
     // let name = power.getAttribute('NAME')
     // name = (name === '') ? power.getAttribute('ALIAS') : name
 
@@ -761,6 +801,7 @@ export async function uploadMartial(power, type, extraDc, usesTk) {
 
 export async function uploadSkill(skill, duplicate) {
 
+    if (skill.getAttribute('XMLID') == "GENERIC_OBJECT") return;
     let itemData = XmlToItemData(skill, 'skill')
     itemData.system.duplicate = duplicate
     await HeroSystem6eItem.create(itemData, { parent: this.actor })
@@ -894,7 +935,7 @@ function calcBasePointsPlusAdders(system) {
     // const adders = system.adders || [] //xmlItem.getElementsByTagName("ADDER")
 
 
-    if (system.XMLID == "SHAPESHIFT")
+    if (system.XMLID == "PD")
         console.log(system.XMLID)
 
     if (system.NAME == "Sheet of Steel")
@@ -927,7 +968,7 @@ function calcBasePointsPlusAdders(system) {
     let costPerLevel = parseFloat(
         configPowerInfo?.costPerLevel ||
         CONFIG.HERO.characteristicCosts[_xmlid.toLocaleLowerCase()] ||
-        system.costPerLevel || 
+        system.costPerLevel ||
         baseCost
         || (configPowerInfo?.powerType == 'skill' ? 2 : 1)
     )
@@ -940,6 +981,13 @@ function calcBasePointsPlusAdders(system) {
     let levels = parseInt(system.LEVELS)
 
     let subCost = costPerLevel * levels
+
+    // 3 CP per 2 points
+    if (costPerLevel == 3 / 2 && subCost % 1) {
+        let _threePerTwo = Math.ceil(costPerLevel * levels) + 1
+        subCost = _threePerTwo
+        system.title = (system.title || "") + '3 CP per 2 points; \n+1 level may cost nothing. '
+    }
 
     // Start adding up the costs
     let cost = baseCost + subCost
@@ -1079,7 +1127,7 @@ function calcActivePoints(_basePointsPlusAdders, system) {
     // const xmlid = system.rules || system.xmlid //xmlItem.getAttribute('XMLID')
     // const modifiers = system.modifiers || system.MODIFIER || [] //xmlItem.getElementsByTagName("ADDER")
 
-    if (system.XMLID == "TELEKINESIS")
+    if (system.XMLID == "RKA")
         console.log(system.XMLID)
 
     // NAKEDMODIFIER uses PRIVATE=="Yes" to indicate advantages
@@ -1092,7 +1140,12 @@ function calcActivePoints(_basePointsPlusAdders, system) {
         let _myAdvantage = 0
         const modifierBaseCost = parseFloat(modifier.BASECOST || 0)
         const levels = Math.max(1, parseFloat(modifier.LEVELS))
-        _myAdvantage += modifierBaseCost * levels
+        if (modifier.XMLID == "AOE") {
+            _myAdvantage += modifierBaseCost
+        } else {
+            _myAdvantage += modifierBaseCost * levels
+        }
+
         console.log(modifier.XMLID, modifierBaseCost)
         // Some modifiers may have ADDERS
         const adders = modifier.adders //modifier.getElementsByTagName("ADDER")
@@ -1114,13 +1167,13 @@ function calcActivePoints(_basePointsPlusAdders, system) {
 
     const _activePoints = _basePointsPlusAdders * (1 + advantages)
 
-    return _activePoints //RoundFavorPlayerDown(_activePoints)
+    return RoundFavorPlayerDown(_activePoints)
 }
 
 function calcRealCost(_activeCost, system) {
     // Real Cost = Active Cost / (1 + total value of all Limitations)
 
-    if (system.XMLID == "SHAPESHIFT")
+    if (system.XMLID == "PD")
         console.log(system.XMLID)
 
     // if (system.NAME == "Unyielding Defense")
@@ -1136,7 +1189,14 @@ function calcRealCost(_activeCost, system) {
         for (let adder of modifier.adders) {
             let adderBaseCost = parseFloat(adder.BASECOST || 0)
 
-            // can be positive or negative (like charges)
+            // Unique situation where JAMMED floors the limitation
+            if (adder.XMLID == "JAMMED" && _myLimitation == 0.25) {
+                system.title = (system.title || "") + 'Limitations are below the minumum of -1/4; \nConsider removing unnecessary limitations. '
+                adderBaseCost = 0
+            }
+
+            // can be positive or negative (like charges).
+            // Requires a roll gets interesting with Jammed / Can choose which of two rolls to make from use to use
             _myLimitation += -adderBaseCost;
 
             const multiplier = Math.max(1, parseFloat(adder.MULTIPLIER || 0))
@@ -1144,16 +1204,18 @@ function calcRealCost(_activeCost, system) {
         }
 
 
-        // NOTE: REQUIRESASKILLROLL The minimum value is -¼, regardless of modifiers.
+        // NOTE: REQUIRESASKILLROLL The minimum value is -1/4, regardless of modifiers.
         if (_myLimitation < 0.25) {
 
-            if (game.settings.get(game.system.id, 'alphaTesting')) {
-                ui.notifications.warn(`${system.XMLID} ${modifier.XMLID} has a limiation of ${-_myLimitation}.  Overrided limitation to be -1/4.`)
-                console.log(`${system.XMLID} ${modifier.XMLID} has a limiation of ${-_myLimitation}.  Overrided limitation to be -1/4.`, system)
-            }
+            // if (game.settings.get(game.system.id, 'alphaTesting')) {
+            //     ui.notifications.warn(`${system.XMLID} ${modifier.XMLID} has a limiation of ${-_myLimitation}.  Overrided limitation to be -1/4.`)
+            //     console.log(`${system.XMLID} ${modifier.XMLID} has a limiation of ${-_myLimitation}.  Overrided limitation to be -1/4.`, system)
+            // }
             _myLimitation = 0.25
+            system.title = (system.title || "") + 'Limitations are below the minumum of -1/4; \nConsider removing unnecessary limitations. '
         }
 
+        console.log("limitation", modifier.ALIAS, _myLimitation)
         modifier.BASECOST_total = -_myLimitation
 
         limitations += _myLimitation
@@ -1174,14 +1236,14 @@ function calcRealCost(_activeCost, system) {
 }
 
 export async function uploadPower(power, type) {
-
+    if (power.getAttribute('XMLID') == "GENERIC_OBJECT") return;
     let itemData = XmlToItemData(power, type)
     await HeroSystem6eItem.create(itemData, { parent: this.actor })
 
     // let itemData = XmlToItemData(xml, type)
     // await HeroSystem6eItem.create(itemData, { parent: this.actor })
 
-    let xmlid = power.getAttribute('XMLID')
+    let xmlid = itemData.system.XMLID
     // const name = power.getAttribute('NAME')
     // const alias = power.getAttribute('ALIAS')
     // const levels = power.getAttribute('LEVELS')
@@ -1191,7 +1253,7 @@ export async function uploadPower(power, type) {
     // const relevantFields = ['BASECOST', 'LEVELS', 'ALIAS', 'MULTIPLIER', 'NAME', 'OPTION_ALIAS', 'SFX',
     //     'PDLEVELS', 'EDLEVELS', 'MDLEVELS', 'INPUT', 'OPTION', 'OPTIONID', 'BASECOST' // FORCEFIELD
     // ]
-    if (xmlid === 'GENERIC_OBJECT') return;
+    //if (xmlid === 'GENERIC_OBJECT') return;
 
     // Rebrand?
     xmlid = CONFIG.HERO.powersRebrand[xmlid] || xmlid;
@@ -1401,6 +1463,7 @@ export async function uploadPower(power, type) {
     // Create a copy for movements
     if (xmlid.toLowerCase() in CONFIG.HERO.movementPowers) {
         itemData.type = 'movement'
+        itemData.system.value = parseInt(itemData.system.LEVELS) || 0
         await HeroSystem6eItem.create(itemData, { parent: this.actor })
     }
 }
@@ -1469,17 +1532,35 @@ function updateItemDescription(system) {
     }
 
     // ADDRS
-    for (let adder of system.adders) {
-        switch (adder.XMLID) {
-            case "DIMENSIONS":
-                system.description += ", " + adder.ALIAS
-                break;
-            case "DEFBONUS":
-                break
-            default: system.description += " (" + adder.ALIAS + ")"
-        }
+    if (system.adders.length > 0) {
+        system.description += " ("
+        let _adderArray = []
+        for (let adder of system.adders) {
+            switch (adder.XMLID) {
+                case "DIMENSIONS":
+                    system.description += ", " + adder.ALIAS
+                    break;
+                case "DEFBONUS":
+                    break
+                case "EXTENDEDBREATHING":
+                    system.description += adder.ALIAS + " " + adder.OPTION_ALIAS
+                    break
+                case "CONCEALABILITY":
+                case "REACTION":
+                case "SENSING":
+                case "SITUATION":
+                case "INTENSITY":
+                case "EFFECTS":
+                case "OCCUR":
+                    _adderArray.push(adder.OPTION_ALIAS.replace("(", ""))
+                    break;
+                default: _adderArray.push(adder.ALIAS)
+            }
 
+        }
+        system.description += _adderArray.join("; ") + ")"
     }
+
 
     // Active Points
     if (system.realCost != system.activePoints) {
@@ -1515,7 +1596,11 @@ function updateItemDescription(system) {
     const charges = system.modifiers.find(o => o.XMLID == "CHARGES")
     {
         if (charges && !costsEnd) {
-            system.end = "[" + charges.OPTION_ALIAS + "]"
+            system.end = "[" + charges.OPTION_ALIAS
+            if (charges.adders.find(o => o.XMLID == "RECOVERABLE")) {
+                system.end += " rc"
+            }
+            system.end += "]"
         }
     }
 }
@@ -1525,6 +1610,9 @@ function createPowerDescriptionModifier(modifier, powerName) {
 
 
     let result = ""
+
+    if (modifier.XMLID == "")
+        console.log(modifier)
 
     switch (modifier.XMLID) {
         case "CHARGES":
@@ -1553,6 +1641,9 @@ function createPowerDescriptionModifier(modifier, powerName) {
             if (modifier.ALIAS) result += "; " + modifier.ALIAS || "?"
     }
 
+    // ADDERS
+
+
     // if (modifier.comments) powerData.description += "; " + modifier.comments
     // if (modifier.option) powerData.description += "; " + modifier.option
     // if (modifier.optionId) powerData.description += "; " + modifier.optionId
@@ -1561,6 +1652,9 @@ function createPowerDescriptionModifier(modifier, powerName) {
     if (modifier.OPTION_ALIAS && !["VISIBLE", "CHARGES"].includes(modifier.XMLID)) result += modifier.OPTION_ALIAS + "; "
     //if (["REQUIRESASKILLROLL", "LIMITEDBODYPARTS"].includes(modifier.XMLID)) result += modifier.COMMENTS + "; "
     if (modifier.COMMENTS) result += modifier.COMMENTS + "; "
+    for (let adder of modifier.adders) {
+        result += adder.ALIAS + "; "
+    }
 
     let fraction = ""
 
@@ -1742,7 +1836,7 @@ export async function uploadAttack(power) {
 
 
     if (game.settings.get(game.system.id, 'alphaTesting')) {
-        ui.notifications.warn(`${xmlid} not implemented during HDC upload of ${this.actor.name}`)
+        ui.notifications.warn(`${xmlid} ATTACK not implemented during HDC upload of ${this.actor.name}`)
     }
 }
 
