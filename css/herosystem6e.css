@@ -576,6 +576,11 @@
     text-shadow: 0 0 10px red;
 }
 
+.hero-combat-tracker-resource {
+  font-weight: bold;
+  font-size: 20px;
+}
+
 .hero input[type="file"] {
     display: none;
 }

@@ -2,8 +2,6 @@
 import { HERO } from "./config.js";
 import { POWERS } from "./powers/powers-rules.js";
 import { HeroSystem6eActor } from "./actor/actor.js";
-import { HeroSystem6eActorSheet } from "./actor/actor-sheet.js";
-import { HeroSystem6eActorSheetMini } from "./actor/actor-sheet-mini.js"
 import { HeroSystem6eActorSidebarSheet } from "./actor/actor-sidebar-sheet.js";
 import { HeroSystem6eToken, HeroSystem6eTokenDocument } from "./actor/actor-token.js";
 import { HeroSystem6eItem } from "./item/item.js";
@@ -18,12 +16,13 @@ import SettingsHelpers from "./settings/settings-helpers.js";
 import { HeroSystem6eTokenHud } from "./bar3/tokenHud.js";
 import { extendTokenConfig } from "./bar3/extendTokenConfig.js";
 import { HeroRuler } from "./ruler.js";
+import { initializeHandlebarsHelpers } from "./handlebars-helpers.js";
 
 Hooks.once('init', async function () {
 
   game.herosystem6e = {
     applications: {
-      HeroSystem6eActorSheet,
+      // HeroSystem6eActorSheet,
       HeroSystem6eItemSheet,
     },
     entities: {
@@ -71,6 +70,8 @@ Hooks.once('init', async function () {
   HeroRuler.initialize()
 
   SettingsHelpers.initLevelSettings();
+
+  initializeHandlebarsHelpers();
 
   // Register sheet application classes
   Actors.unregisterSheet("core", ActorSheet);
@@ -137,13 +138,12 @@ export class HEROSYS {
 
   static module = "hero6efoundryvttv2";
 
-  // static log(force, ...args) {
-  static log(...args) {
-    // const shouldLog = force || game.modules.get('_dev-mode')?.api?.getPackageDebugValue(this.ID);
+  static log(force, ...args) {
+    const shouldLog = force || game.modules.get('_dev-mode')?.active;
 
-    //if (shouldLog) {
-    console.log(this.ID, '|', ...args);
-    //}
+    if (shouldLog) {
+      console.log(this.ID, '|', ...args);
+    }
   }
 }
 
@@ -171,7 +171,7 @@ function createHeroSystem6eMacro(bar, data, slot) {
 }
 
 async function handleMacroCreation(bar, data, slot, item) {
-  console.log("createHeroSystem6eMacro", item)
+  HEROSYS.log(false, "createHeroSystem6eMacro", item)
   if (!item) return;
   if (!item.roll) return;
 
@@ -203,7 +203,7 @@ function rollItemMacro(itemName, itemType) {
   if (speaker.token) actor = game.actors.tokens[speaker.token];
   if (!actor) actor = game.actors.get(speaker.actor);
   let item = actor ? actor.items.find(i => i.name === itemName && (!itemType || i.type == itemType)) : null;
-  console.log("rollItemMacro", item)
+  HEROSYS.log(false, "rollItemMacro", item)
 
   // The selected actor does not have an item with this name.
   if (!item) {
@@ -241,7 +241,6 @@ Hooks.once("ready", function () {
     return;
   }
 
-  //console.log("migrateWorld")
   migrateActorTypes()
   migrateKnockback()
   //migrateWorld();
@@ -253,7 +252,7 @@ Hooks.once("ready", function () {
 //   for (let actor of game.actors.contents) {
 //     const updateData = migrateActorData(actor.system);
 //     if (!foundry.utils.isEmpty(updateData)) {
-//       console.log(`Migrating Actor entity ${actor.name}.`);
+//       HEROSYS.log(false, `Migrating Actor entity ${actor.name}.`);
 //       await actor.update(updateData);
 //     }
 //   }

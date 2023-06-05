@@ -1,5 +1,6 @@
 import { HeroSystem6eActorActiveEffects } from "./actor-active-effects.js"
 import { HeroSystem6eItem } from '../item/item.js'
+import { HEROSYS } from "../herosystem6e.js";
 
 /**
  * Extend the base Actor entity by defining a custom roll data structure which is ideal for the Simple system.
@@ -13,7 +14,7 @@ export class HeroSystem6eActor extends Actor {
 
         //TODO: Add user configuration for initial prototype settings
 
-        console.log("_preCreate")
+        HEROSYS.log(false, "_preCreate")
         let prototypeToken = {
             // Leaving sight disabled.
             // TODO: Implement various Enhanced Visions
@@ -69,7 +70,7 @@ export class HeroSystem6eActor extends Actor {
             // Check if this ActiveEffect already exists
             const existingEffect = this.effects.find(o => o.flags?.core?.statusId === activeEffect.id);
             if (existingEffect) {
-                //console.log(activeEffect.id + " already exists")
+                //HEROSYS.log(false, activeEffect.id + " already exists")
                 return
             }
         }
@@ -391,7 +392,7 @@ export class HeroSystem6eActor extends Actor {
                 if (!addedDefense) {
                     if (game.settings.get(game.system.id, 'alphaTesting')) {
                         ui.notifications.warn(`${power.system.rules} not implemented during defense item creation`)
-                        console.log(power)
+                        HEROSYS.log(false, power)
                     }
                 }
 
@@ -429,7 +430,7 @@ export class HeroSystem6eActor extends Actor {
     // prepareData() {
     //     super.prepareData();
 
-    //     console.log(this)
+    //     HEROSYS.log(false, this)
     //     const actorData = this.system;
     //     // const data = actorData.data;
     //     // const flags = actorData.flags;
@@ -487,7 +488,7 @@ export class HeroSystem6eActor extends Actor {
     // }
 
     // _onUpdate(data, options, userId) {
-    //     console.log(data)
+    //     HEROSYS.log(false, data)
     //     super._onUpdate(data, options, userId);
     // }
 

@@ -1,5 +1,4 @@
 import { HeroSystem6eActorActiveEffects } from "../actor/actor-active-effects.js";
-import { HeroSystem6eActorSheet } from "../actor/actor-sheet.js";
 import { HeroSystem6eItem } from "../item/item.js";
 import { HeroSystem6eCard } from "./card.js";
 import { determineDefense } from "../utility/defense.js";
@@ -251,7 +250,7 @@ export class HeroSystem6eDamageCard extends HeroSystem6eCard {
                     break;
             }
         }
-        console.log(damageRoll)
+        HEROSYS.log(false, damageRoll)
         damageRoll = modifyRollEquation(damageRoll, toHitData.damageMod);
 
         let roll = new Roll(damageRoll, actor.getRollData());

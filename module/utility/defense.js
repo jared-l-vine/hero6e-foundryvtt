@@ -68,7 +68,6 @@ function determineDefense(targetActor, attackItem) {
                 // Penetrating
                 if (penetrating <= impenetrable) {
                     valueImp = valueAp
-                    //console.log("Amor Piercing", i.name, value, valueAp)
                 }
 
 
@@ -141,61 +140,11 @@ function determineDefense(targetActor, attackItem) {
                         break;
                     default:
                         if (game.settings.get(game.system.id, 'alphaTesting')) {
-                            console.log(i.system.defenseType + " not yet supported!");
+                            HEROSYS.log(false, i.system.defenseType + " not yet supported!");
                         }
                         break;
                 }
             }
-            // if ((i.type === "power" || i.type === "equipment") && "items" in i.system && "defense" in i.system.subItems) {
-            //     for (const [key, value] of Object.entries(i.system.subItems.defense)) {
-            //         if (value.visible && value.active) {
-            //             switch (value.defenseType) {
-            //                 case "pd":
-            //                     PD += parseInt(value.value);
-            //                     break;
-            //                 case "ed":
-            //                     ED += parseInt(value.value);
-            //                     break;
-            //                 case "md":
-            //                     MD += parseInt(value.value);
-            //                     break;
-            //                 case "rpd":
-            //                     rPD += parseInt(value.value);
-            //                     break;
-            //                 case "red":
-            //                     rED += parseInt(value.value);
-            //                     break;
-            //                 case "rmd":
-            //                     rMD += parseInt(value.value);
-            //                     break;
-            //                 case "drp":
-            //                     DRP = Math.max(DRP, parseInt(value.value));
-            //                     break;
-            //                 case "dre":
-            //                     DRE = Math.max(DRE, parseInt(value.value));
-            //                     break;
-            //                 case "drm":
-            //                     DRM = Math.max(DRM, parseInt(value.value));
-            //                     break;
-            //                 case "dnp":
-            //                     DNP += parseInt(value.value);
-            //                     break;
-            //                 case "dne":
-            //                     DNE += parseInt(value.value);
-            //                     break;
-            //                 case "dnm":
-            //                     DNM += parseInt(value.value);
-            //                     break;
-            //                 case "kbr":
-            //                     knockbackResistance += parseInt(value.value);
-            //                     break;
-            //                 default:
-            //                     console.log(value.defenseType + " not yet supported!");
-            //                     break;
-            //             }
-            //         }
-            //     }
-            // }
         }
     }
 

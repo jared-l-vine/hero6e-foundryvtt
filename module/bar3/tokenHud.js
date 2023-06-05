@@ -1,5 +1,6 @@
 /** Large portions have been inspired by https://gitlab.com/woodentavern/foundryvtt-bar-brawl */
 
+import { HEROSYS } from "../herosystem6e.js";
 import { getBarExtendedAttribute } from "./extendTokenConfig.js"
 
 // TokenHUD does not appear to be extendable, so hook on renderTokenHUD
@@ -118,5 +119,5 @@ function renderBarInput(bars) {
  */
 
 export async function HeroSystem6ePreUpdateToken(tokenDoc, newData) {
-    console.log(HeroSystem6ePreUpdateToken)
+    HEROSYS.log(false, HeroSystem6ePreUpdateToken)
 }

@@ -1,5 +1,4 @@
 import { HeroSystem6eActorActiveEffects } from "../actor/actor-active-effects.js";
-import { HeroSystem6eActorSheet } from "../actor/actor-sheet.js";
 import { HeroSystem6eCard } from "./card.js";
 import { modifyRollEquation, getTokenChar } from "../utility/util.js"
 //import { HeroSystem6eDamageCard2 } from "./damage-card2.js";
@@ -254,7 +253,7 @@ export class HeroSystem6eToHitCard2 extends HeroSystem6eCard {
     }
 
     static async _spawnAreaOfEffect(event) {
-        console.log('spawn area of effect!')
+        HEROSYS.log(false, 'spawn area of effect!')
 
         const clickedElement = $(event.currentTarget);
 

@@ -34,8 +34,6 @@ export class HeroSystem6eItemSheet extends ItemSheet {
   getData() {
     const data = super.getData()
 
-    //console.log(data)
-
     // Grab the item's data.
     //const itemData = data.data
 
@@ -192,99 +190,6 @@ export class HeroSystem6eItemSheet extends ItemSheet {
     // const type = clickedElement.parents('[data-type]')?.data().type
 
     return
-
-    if (event.currentTarget === null) {
-      return
-    }
-
-    let valueName = event.currentTarget.name
-    let value = event.currentTarget.value
-
-    HEROSYS.log(event.currentTarget)
-    HEROSYS.log(event.currentTarget.parent)
-    const target = $(event.currentTarget).parents('.sheet-body').attr('data-item-id')
-    HEROSYS.log(target)
-    HEROSYS.log($(event.currentTarget).parents('.form-group').parents('.sheet-body').attr('data-item-id'))
-
-    // this is necessary for item images
-    if (valueName === 'img') {
-      value = event.currentTarget.currentSrc
-    }
-
-    // this is necessary to make sure check boxes work
-    if (event.currentTarget.dataset.dtype === 'Boolean') {
-      value = event.currentTarget.checked
-    }
-
-    if (!isPowerSubItem(this.item._id)) {
-      // normal items
-      let changes = {}
-      changes[`${valueName}`] = value
-
-      await this.item.update(changes)
-
-      if (this.item.type === 'movement') {
-        changes = {}
-        changes['data.value'] = parseInt(this.item.system.base) + parseInt(this.item.system.mod)
-
-        if (this.item.actor !== null) {
-          const spd = this.item.actor.system.characteristics.spd.value
-          changes['data.velBase'] = Math.round((parseInt(this.item.system.base) * spd) / 12)
-          changes['data.velValue'] = Math.round((changes['data.value'] * spd) / 12)
-        }
-
-        await this.item.update(changes)
-      }
-    } else {
-      // power sub items
-      const linkId = this.item.system.linkId
-      const subLinkId = this.item.system.subLinkId
-
-      HEROSYS.log('edit sub item')
-
-      let item = game.items.get(linkId)
-
-      if (item === undefined) {
-        // item is not a game item / item belongs to an actor
-        // sub items don't know the actor they belong to
-        for (const key of game.actors.keys()) {
-          const actor = game.actors.get(key)
-          if (actor.items.has(linkId)) {
-            item = actor.items.get(linkId)
-          }
-        }
-      }
-
-      const type = this.item.type
-
-      const valueNameSplit = valueName.split('.')
-      if (valueNameSplit.length > 0) {
-        valueName = valueNameSplit[valueNameSplit.length - 1]
-      }
-
-      let changes = {}
-      changes[`system.subItems.${type}.${subLinkId}.system.${valueName}`] = value
-      await item.update(changes)
-
-      if (type === 'movement') {
-        const subItem = item.system.items[`${type}`][`${subLinkId}`]
-
-        changes = {}
-        changes[`system.subItems.${type}.${subLinkId}.system.value`] = parseInt(subItem.base) + parseInt(subItem.mod)
-
-        await item.update(changes)
-
-        // update item-sheet data
-        changes = {}
-        changes.name = subItem.name
-        changes[`system.subItems.${type}.${subLinkId}.system.base`] = parseInt(subItem.base)
-        changes[`system.subItems.${type}.${subLinkId}.system.mod`] = parseInt(subItem.mod)
-        changes[`system.subItems.${type}.${subLinkId}.system.value`] = parseInt(subItem.base) + parseInt(subItem.mod)
-        await this.item.update(changes)
-
-        this._render()
-      }
-    }
   }
 
   async _onSubItemCreate(event) {

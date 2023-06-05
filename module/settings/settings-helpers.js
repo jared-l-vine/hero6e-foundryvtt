@@ -1,3 +1,5 @@
+import { HEROSYS } from "../herosystem6e.js";
+
 export default class SettingsHelpers {
     // Initialize System Settings after the Init Hook
     static initLevelSettings() {
@@ -9,7 +11,7 @@ export default class SettingsHelpers {
         config: true,
         type: Boolean,
         default: true,
-        onChange: value=> console.log(value)
+        onChange: value=> HEROSYS.log(false, value)
       });
 
       game.settings.register(module, "use endurance", {
@@ -18,7 +20,7 @@ export default class SettingsHelpers {
         config: true,
         type: Boolean,
         default: true,
-        onChange: value=> console.log(value)
+        onChange: value=> HEROSYS.log(false, value)
       });
 
       game.settings.register(module, "knockback", {
@@ -27,7 +29,7 @@ export default class SettingsHelpers {
         config: true,
         type: Boolean,
         default: false,
-        onChange: value=> console.log(value)
+        onChange: value=> HEROSYS.log(false, value)
       });
 
       game.settings.register(module, "hit locations", {
@@ -36,7 +38,7 @@ export default class SettingsHelpers {
         config: true,
         type: Boolean,
         default: false,
-        onChange: value=> console.log(value)
+        onChange: value=> HEROSYS.log(false, value)
       });
 
       game.settings.register(module, "hitLocTracking", {
@@ -49,7 +51,7 @@ export default class SettingsHelpers {
           all: "Track for all"
         },
         default: "none",
-        onChange: value=> console.log(value)
+        onChange: value=> HEROSYS.log(false, value)
       });
 
       game.settings.register(module, "optionalManeuvers", {
@@ -58,7 +60,7 @@ export default class SettingsHelpers {
         config: true,
         type: Boolean,
         default: false,
-        onChange: value=> console.log(value)
+        onChange: value=> HEROSYS.log(false, value)
       });
 
       game.settings.register(module, "automation", {
@@ -73,7 +75,7 @@ export default class SettingsHelpers {
           all: "PCs and NPCs (end, stun, body)"
         },
         default: "all",
-        onChange: value=> console.log(value)
+        onChange: value=> HEROSYS.log(false, value)
       });
 
       game.settings.register(module, "alphaTesting", {
@@ -83,7 +85,7 @@ export default class SettingsHelpers {
         config: true,
         type: Boolean,
         default: false,
-        onChange: value=> console.log(value)
+        onChange: value=> HEROSYS.log(false, value)
       });
 
       

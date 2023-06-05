@@ -5,6 +5,7 @@ import { presenceAttackPopOut } from '../utility/presence-attack.js'
 import { applyCharacterSheet, SkillRollUpdateValue } from '../utility/upload_hdc.js'
 import { RoundFavorPlayerDown } from "../utility/round.js"
 import { HEROSYS } from '../herosystem6e.js';
+import { HEROSYS } from '../herosystem6e.js';
 
 export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
@@ -17,6 +18,8 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             //height 600,
             tabs: [{ navSelector: ".sheet-navigation", contentSelector: ".sheet-body", initial: "Attacks" }],
             scrollY: [".sheet-body"],
+            closeOnSubmit: false, // do not close when submitted
+            submitOnChange: true, // submit when any input changes
             closeOnSubmit: false, // do not close when submitted
             submitOnChange: true, // submit when any input changes
         });
@@ -47,6 +50,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             item.system.endEstimate = item.system.end || 0
 
             if (item.type == 'power')
+                HEROSYS.log(false, item.type)
                 HEROSYS.log(false, item.type)
 
             // Damage
@@ -139,6 +143,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
             if (item.type == 'martialart') {
                 HEROSYS.log(false, item.system)
+                HEROSYS.log(false, item.system)
                 data.hasMartialArts = true
             }
 
@@ -178,7 +183,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
         for (const key of characteristicKeys) {
             let characteristic = data.actor.system.characteristics[key]
-
+            
             characteristic.key = key
 
             if (!characteristic.base) {
@@ -383,6 +388,8 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
         HEROSYS.log(false, data)
 
+        HEROSYS.log(false, data)
+
         return data
     }
 
@@ -432,18 +439,19 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
         const characteristics = ['body', 'stun', 'end'];
         for (const characteristic of characteristics) {
-            if (expandedData.Xsystem.characteristics[characteristic].value !== this.actor.system.characteristics[characteristic].value) {
-                expandedData.system.characteristics[characteristic].value = expandedData.Xsystem.characteristics[characteristic].value;
-            }
+          if (expandedData.Xsystem.characteristics[characteristic].value !== this.actor.system.characteristics[characteristic].value) {
+            expandedData.system.characteristics[characteristic].value = expandedData.Xsystem.characteristics[characteristic].value;
+          }
         }
 
         await this.actor.update(expandedData)
-
+    
         this.render();
     }
 
     async _onItemRoll(event) {
         event.preventDefault()
+        HEROSYS.log(false, "_onItemRoll")
         HEROSYS.log(false, "_onItemRoll")
         const itemId = $(event.currentTarget).closest("[data-item-id]").data().itemId
         const item = this.actor.items.get(itemId)

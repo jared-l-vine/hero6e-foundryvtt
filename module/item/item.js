@@ -1,4 +1,3 @@
-import { HeroSystem6eActorSheet } from "../actor/actor-sheet.js";
 import { HeroSystem6eAttackCard } from "../card/attack-card.js";
 import { HeroSystem6eCard } from "../card/card.js";
 import { HEROSYS } from "../herosystem6e.js";
@@ -26,7 +25,7 @@ export class HeroSystem6eItem extends Item {
 
         if (this.type == "martialart")
         {
-            console.log(this.name)
+            HEROSYS.log(false, this.name)
         }
 
         await super._preCreate(data, options, userId);
