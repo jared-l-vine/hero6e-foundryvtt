@@ -11,9 +11,10 @@
 
                     <li class="attribute health" data-ability="end">
                         <h4 class="attribute-name box-title">Endurance</h4>
-                        <div class="attribute-value multiple">
+                        <div class="attribute-value multiple characteristic">
                             <input name="Xsystem.characteristics.end.value" type="text"
-                                value="{{actor.system.characteristics.end.value}}" data-dtype="Number">
+                                value="{{actor.system.characteristics.end.value}}" data-dtype="Number"
+                                class="{{#if (gt actor.system.characteristics.end.value actor.system.characteristics.end.max)}}overMax{{/if}}{{#if (lt actor.system.characteristics.end.value actor.system.characteristics.end.max)}}underMax{{/if}}">
                             <span class="sep"> / </span>
                             <span>
                                 ({{actor.system.characteristics.end.max}})
@@ -23,9 +24,10 @@
 
                     <li class="attribute health" data-ability="body">
                         <h4 class="attribute-name box-title">Body</h4>
-                        <div class="attribute-value multiple">
+                        <div class="attribute-value multiple characteristic">
                             <input name="Xsystem.characteristics.body.value" type="text"
-                                value="{{actor.system.characteristics.body.value}}" data-dtype="Number">
+                                value="{{actor.system.characteristics.body.value}}" data-dtype="Number"
+                                class="{{#if (gt actor.system.characteristics.body.value actor.system.characteristics.body.max)}}overMax{{/if}}{{#if (lt actor.system.characteristics.body.value actor.system.characteristics.body.max)}}underMax{{/if}}">
                             <span class="sep"> / </span>
                             <span>
                                 ({{actor.system.characteristics.body.max}})
@@ -35,9 +37,10 @@
 
                     <li class="attribute health" data-ability="stun">
                         <h4 class="attribute-name box-title">Stun</h4>
-                        <div class="attribute-value multiple">
+                        <div class="attribute-value multiple characteristic">
                             <input name="Xsystem.characteristics.stun.value" type="text"
-                                value="{{actor.system.characteristics.stun.value}}" data-dtype="Number">
+                                value="{{actor.system.characteristics.stun.value}}" data-dtype="Number"
+                                class="{{#if (gt actor.system.characteristics.stun.value actor.system.characteristics.stun.max)}}overMax{{/if}}{{#if (lt actor.system.characteristics.stun.value actor.system.characteristics.stun.max)}}underMax{{/if}}">
                             <span class="sep"> / </span>
                             <span>
                                 ({{actor.system.characteristics.stun.max}})
@@ -449,11 +452,18 @@
             <div class="tab tab-body" data-group="primary" data-tab="equipment">
                 <table>
                     <tr class="sticky">
+                        <th>WEIGHT: {{weightTotal}}</th>
+                        <th>PRICE: {{priceTotal}}</th>
+                    </tr>
+                    <tr class="sticky">
                         <th></th>
                         <th class="left">{{localize "ActorSheet.Name"}}</th>
                         <th class="left">{{localize "ActorSheet.Description"}}</th>
                         <th>{{localize "ActorSheet.Cost"}}</th>
                         <th>{{localize "ActorSheet.End"}}</th>
+                        <th>{{localize "ActorSheet.Price"}}</th>
+                        <th>{{localize "ActorSheet.Weight"}}</th>
+                        <th>{{localize "ActorSheet.Carried"}}</th>
                         <th>
                             {{!-- <a class="item-control item-create" title="Create equipment" data-type="equipment">
                                 <i class="fas fa-plus"></i> Add Equipment</a> --}}
@@ -470,6 +480,11 @@
                         <td class="left">{{item.system.description}}</td>
                         <td>{{item.system.realCost}}</td>
                         <td>{{item.system.end}}</td>
+                        <td>{{item.system.PRICE}}</td>
+                        <td>{{item.system.WEIGHT}}</td>
+                        <td>
+                            <input class="item-toggle" type="checkbox" name="item.system.active" {{checked
+                                item.system.active}} data-dtype="Boolean" />
                         <td>
                             <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
                             <a class="item-control item-delete" title="Delete Item">
@@ -623,7 +638,7 @@
                                     height="24" /></div>
                         </td>
                         <td class="left">{{item.name}}</td>
-                        <td class="left">{{item.system.rules}}</td>
+                        <td class="left">{{item.system.description}}</td>
                         <td class="right">
                             <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
                             <a class="item-control item-delete" title="Delete Item">

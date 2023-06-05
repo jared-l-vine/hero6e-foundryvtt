@@ -5,6 +5,7 @@ import { presenceAttackPopOut } from '../utility/presence-attack.js'
 import { applyCharacterSheet, SkillRollUpdateValue } from '../utility/upload_hdc.js'
 import { RoundFavorPlayerDown } from "../utility/round.js"
 import { HEROSYS } from '../herosystem6e.js';
+import { HEROSYS } from '../herosystem6e.js';
 
 export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
@@ -19,6 +20,8 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             scrollY: [".sheet-body"],
             closeOnSubmit: false, // do not close when submitted
             submitOnChange: true, // submit when any input changes
+            closeOnSubmit: false, // do not close when submitted
+            submitOnChange: true, // submit when any input changes
         });
     }
 
@@ -30,6 +33,9 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         // Equipment & MartialArts are uncommon.  If there isn't any, then don't show the navigation tab.
         data.hasEquipment = false
         data.hasMartialArts = false
+
+        let weightTotal = 0
+        let priceTotal = 0
 
         // override actor.items (which is a map) to an array with some custom properties
         let items = []
@@ -44,6 +50,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             item.system.endEstimate = item.system.end || 0
 
             if (item.type == 'power')
+                HEROSYS.log(false, item.type)
                 HEROSYS.log(false, item.type)
 
             // Damage
@@ -136,11 +143,17 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
             if (item.type == 'martialart') {
                 HEROSYS.log(false, item.system)
+                HEROSYS.log(false, item.system)
                 data.hasMartialArts = true
             }
 
             if (item.type == 'equipment') {
                 data.hasEquipment = true
+                if (item.system.active)
+                {
+                    weightTotal += parseFloat(item.system.WEIGHT)
+                }
+                priceTotal += parseFloat(item.system.PRICE)
             }
 
             if (item.type == 'skill') {
@@ -150,6 +163,12 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             items.push(item)
         }
         data.items = items;
+
+        if (data.hasEquipment)
+        {
+            data.weightTotal = parseFloat(weightTotal).toFixed(1) + "kg"
+            data.priceTotal = "$" + parseFloat(priceTotal).toFixed(2)
+        }
 
         // Characteristics
         const characteristicSet = []
@@ -257,10 +276,11 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
                 characteristic.notes = `lift ${_lift}, throw ${_throw}m`
             }
 
+
+            if (key == 'leaping') characteristic.notes = `${characteristic.value}m forward, ${Math.round(characteristic.value / 2)}m upward`
+
+
             if (data.actor.system.is5e) {
-
-
-                if (key == 'leaping') characteristic.notes = `${characteristic.value}m forward, ${Math.round(characteristic.value / 2)}m upward`
 
                 if (key == 'pd') {
                     characteristic.notes = '5e figured STR/5'
@@ -368,6 +388,8 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
         HEROSYS.log(false, data)
 
+        HEROSYS.log(false, data)
+
         return data
     }
 
@@ -429,6 +451,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
     async _onItemRoll(event) {
         event.preventDefault()
+        HEROSYS.log(false, "_onItemRoll")
         HEROSYS.log(false, "_onItemRoll")
         const itemId = $(event.currentTarget).closest("[data-item-id]").data().itemId
         const item = this.actor.items.get(itemId)
