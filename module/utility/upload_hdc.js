@@ -1545,6 +1545,15 @@ function updateItemDescription(system) {
                 case "EXTENDEDBREATHING":
                     system.description += adder.ALIAS + " " + adder.OPTION_ALIAS
                     break
+                case "CONCEALABILITY":
+                case "REACTION":
+                case "SENSING":
+                case "SITUATION":
+                case "INTENSITY":
+                case "EFFECTS":
+                case "OCCUR":
+                    _adderArray.push(adder.OPTION_ALIAS.replace("(", ""))
+                    break;
                 default: _adderArray.push(adder.ALIAS)
             }
 
@@ -1827,7 +1836,7 @@ export async function uploadAttack(power) {
 
 
     if (game.settings.get(game.system.id, 'alphaTesting')) {
-        ui.notifications.warn(`${xmlid} not implemented during HDC upload of ${this.actor.name}`)
+        ui.notifications.warn(`${xmlid} ATTACK not implemented during HDC upload of ${this.actor.name}`)
     }
 }
 

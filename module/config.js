@@ -446,7 +446,8 @@ HERO.powers = {
         duration: "constant",
         target: "self only",
         range: "self",
-        costEnd: true
+        costEnd: true,
+        costPerLevel: 5,
     },
 
 

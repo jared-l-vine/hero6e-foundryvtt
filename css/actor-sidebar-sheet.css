@@ -111,8 +111,8 @@
   width: 35px;
   min-width: 20px;
   padding: 1px 3px;
-  margin: 0;
-  border-color: transparent;
+  margin: 3px 0px;
+  /* border-color: transparent; */
 }
 
 .actor-sidebar-sheet input[type="text"]:focus {

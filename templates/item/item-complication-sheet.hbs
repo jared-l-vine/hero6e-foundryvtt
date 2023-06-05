@@ -10,10 +10,11 @@
     </header>
 
     <section class="sheet-body">
-        <textarea
-            placeholder="Power Description"
-            class="power-card-power-description textarea input"
-            name="system.rules"
-        >{{item.system.rules}}</textarea>
+        <div class="form-group">
+            <label>Power</label>
+            <input type="text" name="system.rules" value="{{system.rules}}" data-dtype="Text" disabled />
+        </div>
+
+        {{> systems/hero6efoundryvttv2/templates/item/item-common-partial.hbs item=item }}
     </section>
 </form>

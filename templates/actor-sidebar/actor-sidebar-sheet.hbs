@@ -11,9 +11,10 @@
 
                     <li class="attribute health" data-ability="end">
                         <h4 class="attribute-name box-title">Endurance</h4>
-                        <div class="attribute-value multiple">
+                        <div class="attribute-value multiple characteristic">
                             <input name="Xsystem.characteristics.end.value" type="text"
-                                value="{{actor.system.characteristics.end.value}}" data-dtype="Number">
+                                value="{{actor.system.characteristics.end.value}}" data-dtype="Number"
+                                class="{{#if (gt actor.system.characteristics.end.value actor.system.characteristics.end.max)}}overMax{{/if}}{{#if (lt actor.system.characteristics.end.value actor.system.characteristics.end.max)}}underMax{{/if}}">
                             <span class="sep"> / </span>
                             <span>
                                 ({{actor.system.characteristics.end.max}})
@@ -23,9 +24,10 @@
 
                     <li class="attribute health" data-ability="body">
                         <h4 class="attribute-name box-title">Body</h4>
-                        <div class="attribute-value multiple">
+                        <div class="attribute-value multiple characteristic">
                             <input name="Xsystem.characteristics.body.value" type="text"
-                                value="{{actor.system.characteristics.body.value}}" data-dtype="Number">
+                                value="{{actor.system.characteristics.body.value}}" data-dtype="Number"
+                                class="{{#if (gt actor.system.characteristics.body.value actor.system.characteristics.body.max)}}overMax{{/if}}{{#if (lt actor.system.characteristics.body.value actor.system.characteristics.body.max)}}underMax{{/if}}">
                             <span class="sep"> / </span>
                             <span>
                                 ({{actor.system.characteristics.body.max}})
@@ -35,9 +37,10 @@
 
                     <li class="attribute health" data-ability="stun">
                         <h4 class="attribute-name box-title">Stun</h4>
-                        <div class="attribute-value multiple">
+                        <div class="attribute-value multiple characteristic">
                             <input name="Xsystem.characteristics.stun.value" type="text"
-                                value="{{actor.system.characteristics.stun.value}}" data-dtype="Number">
+                                value="{{actor.system.characteristics.stun.value}}" data-dtype="Number"
+                                class="{{#if (gt actor.system.characteristics.stun.value actor.system.characteristics.stun.max)}}overMax{{/if}}{{#if (lt actor.system.characteristics.stun.value actor.system.characteristics.stun.max)}}underMax{{/if}}">
                             <span class="sep"> / </span>
                             <span>
                                 ({{actor.system.characteristics.stun.max}})
@@ -631,7 +634,7 @@
                                     height="24" /></div>
                         </td>
                         <td class="left">{{item.name}}</td>
-                        <td class="left">{{item.system.rules}}</td>
+                        <td class="left">{{item.system.description}}</td>
                         <td class="right">
                             <a class="item-control item-edit" title="Edit Item"><i class="fas fa-edit"></i></a>
                             <a class="item-control item-delete" title="Delete Item">
