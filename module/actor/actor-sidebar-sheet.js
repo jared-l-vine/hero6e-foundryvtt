@@ -5,7 +5,6 @@ import { presenceAttackPopOut } from '../utility/presence-attack.js'
 import { applyCharacterSheet, SkillRollUpdateValue } from '../utility/upload_hdc.js'
 import { RoundFavorPlayerDown } from "../utility/round.js"
 import { HEROSYS } from '../herosystem6e.js';
-import { HEROSYS } from '../herosystem6e.js';
 
 export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
