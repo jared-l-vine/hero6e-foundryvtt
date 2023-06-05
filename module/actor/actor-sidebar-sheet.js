@@ -4,6 +4,7 @@ import { HeroSystem6eItem } from '../item/item.js'
 import { presenceAttackPopOut } from '../utility/presence-attack.js'
 import { applyCharacterSheet, SkillRollUpdateValue } from '../utility/upload_hdc.js'
 import { RoundFavorPlayerDown } from "../utility/round.js"
+import { HEROSYS } from '../herosystem6e.js';
 
 export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
@@ -16,6 +17,8 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             //height 600,
             tabs: [{ navSelector: ".sheet-navigation", contentSelector: ".sheet-body", initial: "Attacks" }],
             scrollY: [".sheet-body"],
+            closeOnSubmit: false, // do not close when submitted
+            submitOnChange: true, // submit when any input changes
         });
     }
 
@@ -41,7 +44,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             item.system.endEstimate = item.system.end || 0
 
             if (item.type == 'power')
-                console.log(item.type)
+                HEROSYS.log(false, item.type)
 
             // Damage
             if (item.type == 'attack') {
@@ -132,7 +135,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             }
 
             if (item.type == 'martialart') {
-                console.log(item.system)
+                HEROSYS.log(false, item.system)
                 data.hasMartialArts = true
             }
 
@@ -161,7 +164,9 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
         for (const key of characteristicKeys) {
             let characteristic = data.actor.system.characteristics[key]
-            //characteristic.key = key
+
+            characteristic.key = key
+
             if (!characteristic.base) {
                 if (data.actor.system.is5e) {
                     characteristic.base = CONFIG.HERO.characteristicDefaults5e[key]
@@ -252,10 +257,11 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
                 characteristic.notes = `lift ${_lift}, throw ${_throw}m`
             }
 
+
+            if (key == 'leaping') characteristic.notes = `${characteristic.value}m forward, ${Math.round(characteristic.value / 2)}m upward`
+
+
             if (data.actor.system.is5e) {
-
-
-                if (key == 'leaping') characteristic.notes = `${characteristic.value}m forward, ${Math.round(characteristic.value / 2)}m upward`
 
                 if (key == 'pd') {
                     characteristic.notes = '5e figured STR/5'
@@ -361,6 +367,8 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
         data.defense = defense
 
+        HEROSYS.log(false, data)
+
         return data
     }
 
@@ -404,9 +412,25 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
     }
 
+    /** @override */
+    async _updateObject(event, formData) {
+        let expandedData = foundry.utils.expandObject(formData);
+
+        const characteristics = ['body', 'stun', 'end'];
+        for (const characteristic of characteristics) {
+            if (expandedData.Xsystem.characteristics[characteristic].value !== this.actor.system.characteristics[characteristic].value) {
+                expandedData.system.characteristics[characteristic].value = expandedData.Xsystem.characteristics[characteristic].value;
+            }
+        }
+
+        await this.actor.update(expandedData)
+
+        this.render();
+    }
+
     async _onItemRoll(event) {
         event.preventDefault()
-        console.log("_onItemRoll")
+        HEROSYS.log(false, "_onItemRoll")
         const itemId = $(event.currentTarget).closest("[data-item-id]").data().itemId
         const item = this.actor.items.get(itemId)
         item.roll()

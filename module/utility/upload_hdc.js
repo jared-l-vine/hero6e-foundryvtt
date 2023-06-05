@@ -441,11 +441,22 @@ function XmlToItemData(xml, type) {
     const relevantFields = [
         'XMLID', 'BASECOST', 'LEVELS', 'ALIAS', 'MULTIPLIER', 'NAME', 'OPTION_ALIAS', 'SFX',
         'PDLEVELS', 'EDLEVELS', 'MDLEVELS', 'INPUT', 'OPTION', 'OPTIONID', 'BASECOST',
-        'PRIVATE', 'EVERYMAN', 'CHARACTERISTIC', 'NATIVE_TONGUE', 'POWDLEVELS'
+        'PRIVATE', 'EVERYMAN', 'CHARACTERISTIC', 'NATIVE_TONGUE', 'POWDLEVELS',
+        "WEIGHT", "PRICE", "CARRIED"
     ]
     for (const attribute of xml.attributes) {
         if (relevantFields.includes(attribute.name)) {
-            systemData[attribute.name] = attribute.value
+            switch (attribute.name) {
+                case "CARRIED":
+                    systemData.active = attribute.value == "Yes" ? true : false
+                    break;
+                case "WEIGHT":
+                    // Convert lbs to kg
+                    systemData[attribute.name] = (parseFloat(attribute.value) / 2.20462).toFixed(2)
+                    break;
+                default:
+                    systemData[attribute.name] = attribute.value
+            }
         }
     }
 
