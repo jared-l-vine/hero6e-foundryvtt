@@ -151,9 +151,9 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
                 data.hasEquipment = true
                 if (item.system.active)
                 {
-                    weightTotal += parseFloat(item.system.WEIGHT)
+                    weightTotal += parseFloat(item.system.WEIGHT) || 0
                 }
-                priceTotal += parseFloat(item.system.PRICE)
+                priceTotal += parseFloat(item.system.PRICE) || 0
             }
 
             if (item.type == 'skill') {
