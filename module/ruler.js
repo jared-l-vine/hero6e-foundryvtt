@@ -91,6 +91,14 @@ export class HeroRuler {
 
             movementRadioSelectRender()
         });
+
+        Hooks.on('hdcUpload', function() {
+            const sceneControls = ui.controls
+            if (sceneControls.activeControl !== "token") { return; }
+            if (sceneControls.activeTool !== "select") { return; }
+
+            movementRadioSelectRender()          
+        });
         
         async function movementRadioSelectRender() {
             const tokenControlButton = $(".scene-control[data-control='token']");
