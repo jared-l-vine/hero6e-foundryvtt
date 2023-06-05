@@ -1,5 +1,4 @@
-{{log 'actor-sidebar-sheet' this}}
-
+{{!-- {{log 'actor-sidebar-sheet' this}} --}}
 <form class="{{cssClass}}" autocomplete="off">
 
     <aside>
@@ -13,7 +12,7 @@
                     <li class="attribute health" data-ability="end">
                         <h4 class="attribute-name box-title">Endurance</h4>
                         <div class="attribute-value multiple">
-                            <input name="Xsystem.characteristics.end.value" type="text" disabled
+                            <input name="Xsystem.characteristics.end.value" type="text"
                                 value="{{actor.system.characteristics.end.value}}" data-dtype="Number">
                             <span class="sep"> / </span>
                             <span>
@@ -25,7 +24,7 @@
                     <li class="attribute health" data-ability="body">
                         <h4 class="attribute-name box-title">Body</h4>
                         <div class="attribute-value multiple">
-                            <input name="Xsystem.characteristics.body.value" type="text" disabled
+                            <input name="Xsystem.characteristics.body.value" type="text"
                                 value="{{actor.system.characteristics.body.value}}" data-dtype="Number">
                             <span class="sep"> / </span>
                             <span>
@@ -37,7 +36,7 @@
                     <li class="attribute health" data-ability="stun">
                         <h4 class="attribute-name box-title">Stun</h4>
                         <div class="attribute-value multiple">
-                            <input name="Xsystem.characteristics.stun.value" type="text" disabled
+                            <input name="Xsystem.characteristics.stun.value" type="text"
                                 value="{{actor.system.characteristics.stun.value}}" data-dtype="Number">
                             <span class="sep"> / </span>
                             <span>
@@ -87,8 +86,6 @@
                 <span>Upload&nbsp;.HDC</span>
                 <input type="file" accept=".hdc" />
             </label>
-
-
         </div>
     </header>
 
@@ -503,7 +500,6 @@
                     </tr>
                     {{#each characteristicSet as |characteristic key|}}
                     <tr class="characteristic">
-
                         <td>
                             <input name="system.characteristics.{{characteristic.key}}.value" type="text"
                                 value="{{characteristic.value}}" data-dtype="Number"

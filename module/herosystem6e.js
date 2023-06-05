@@ -2,8 +2,6 @@
 import { HERO } from "./config.js";
 import { POWERS } from "./powers/powers-rules.js";
 import { HeroSystem6eActor } from "./actor/actor.js";
-import { HeroSystem6eActorSheet } from "./actor/actor-sheet.js";
-import { HeroSystem6eActorSheetMini } from "./actor/actor-sheet-mini.js"
 import { HeroSystem6eActorSidebarSheet } from "./actor/actor-sidebar-sheet.js";
 import { HeroSystem6eToken, HeroSystem6eTokenDocument } from "./actor/actor-token.js";
 import { HeroSystem6eItem } from "./item/item.js";
@@ -24,7 +22,7 @@ Hooks.once('init', async function () {
 
   game.herosystem6e = {
     applications: {
-      HeroSystem6eActorSheet,
+      // HeroSystem6eActorSheet,
       HeroSystem6eItemSheet,
     },
     entities: {

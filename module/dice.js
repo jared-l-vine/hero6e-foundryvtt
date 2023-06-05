@@ -1,4 +1,4 @@
-import { HEROSYS } from "./herosystem6e"
+import { HEROSYS } from "./herosystem6e.js"
 
 export function AttackCheck()
 {

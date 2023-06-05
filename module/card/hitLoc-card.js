@@ -1,5 +1,4 @@
 import { HeroSystem6eActorActiveEffects } from "../actor/actor-active-effects.js";
-import { HeroSystem6eActorSheet } from "../actor/actor-sheet.js";
 import { HeroSystem6eCard } from "./card.js";
 
 export class HeroSystem6eHitLocCard extends HeroSystem6eCard {

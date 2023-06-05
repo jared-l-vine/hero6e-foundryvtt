@@ -17,6 +17,8 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             //height 600,
             tabs: [{ navSelector: ".sheet-navigation", contentSelector: ".sheet-body", initial: "Attacks" }],
             scrollY: [".sheet-body"],
+            closeOnSubmit: false, // do not close when submitted
+            submitOnChange: true, // submit when any input changes
         });
     }
 
@@ -162,7 +164,9 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
         for (const key of characteristicKeys) {
             let characteristic = data.actor.system.characteristics[key]
-            //characteristic.key = key
+            
+            characteristic.key = key
+
             if (!characteristic.base) {
                 if (data.actor.system.is5e) {
                     characteristic.base = CONFIG.HERO.characteristicDefaults5e[key]
@@ -362,6 +366,8 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
         data.defense = defense
 
+        HEROSYS.log(false, data)
+
         return data
     }
 
@@ -403,6 +409,22 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
             })
         }
 
+    }
+
+    /** @override */
+    async _updateObject(event, formData) {
+        let expandedData = foundry.utils.expandObject(formData);
+
+        const characteristics = ['body', 'stun', 'end'];
+        for (const characteristic of characteristics) {
+          if (expandedData.Xsystem.characteristics[characteristic].value !== this.actor.system.characteristics[characteristic].value) {
+            expandedData.system.characteristics[characteristic].value = expandedData.Xsystem.characteristics[characteristic].value;
+          }
+        }
+
+        await this.actor.update(expandedData)
+    
+        this.render();
     }
 
     async _onItemRoll(event) {
