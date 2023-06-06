@@ -2,7 +2,6 @@ import { HEROSYS } from "./herosystem6e.js";
 
 export class HeroRuler {
     static initialize() {
-        if (!game.modules.get('drag-ruler')?.active) { return; }
         Hooks.once("init", () => {
             setHeroRulerLabel()
         });
