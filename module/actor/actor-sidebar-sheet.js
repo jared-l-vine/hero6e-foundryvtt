@@ -50,7 +50,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
             if (item.type == 'power')
                 HEROSYS.log(false, item.type)
-                HEROSYS.log(false, item.type)
+            HEROSYS.log(false, item.type)
 
             // Damage
             if (item.type == 'attack') {
@@ -148,11 +148,10 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
             if (item.type == 'equipment') {
                 data.hasEquipment = true
-                if (item.system.active)
-                {
-                    weightTotal += parseFloat(item.system.WEIGHT)
+                if (item.system.active) {
+                    weightTotal += parseFloat(item.system.WEIGHT) || 0
                 }
-                priceTotal += parseFloat(item.system.PRICE)
+                priceTotal += parseFloat(item.system.PRICE) || 0
             }
 
             if (item.type == 'skill') {
@@ -163,11 +162,13 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         }
         data.items = items;
 
-        if (data.hasEquipment)
-        {
-            data.weightTotal = parseFloat(weightTotal).toFixed(1) + "kg"
-            data.priceTotal = "$" + parseFloat(priceTotal).toFixed(2)
+        if (data.hasEquipment) {
+            if (parseFloat(weightTotal).toFixed(1) > 0 || parseFloat(priceTotal).toFixed(2) > 0) {
+                data.weightTotal = parseFloat(weightTotal).toFixed(1) + "kg"
+                data.priceTotal = "$" + parseFloat(priceTotal).toFixed(2)
+            }
         }
+
 
         // Characteristics
         const characteristicSet = []
@@ -182,7 +183,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
         for (const key of characteristicKeys) {
             let characteristic = data.actor.system.characteristics[key]
-            
+
             characteristic.key = key
 
             if (!characteristic.base) {
@@ -420,6 +421,12 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         html.find('.recovery-button').click(this._onRecovery.bind(this))
         html.find('.presence-button').click(this._onPresenseAttack.bind(this))
 
+        // Active Effects
+        html.find('.effect-create').click(this._onEffectCreate.bind(this))
+        html.find('.effect-delete').click(this._onEffectDelete.bind(this))
+        html.find('.effect-edit').click(this._onEffectEdit.bind(this))
+        html.find('.effect-toggle').click(this._onEffectToggle.bind(this))
+
         // Drag events for macros.
         if (this.actor.isOwner) {
             const handler = ev => this._onDragStart(ev)
@@ -438,13 +445,13 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
         const characteristics = ['body', 'stun', 'end'];
         for (const characteristic of characteristics) {
-          if (expandedData.Xsystem.characteristics[characteristic].value !== this.actor.system.characteristics[characteristic].value) {
-            expandedData.system.characteristics[characteristic].value = expandedData.Xsystem.characteristics[characteristic].value;
-          }
+            if (expandedData.Xsystem.characteristics[characteristic].value !== this.actor.system.characteristics[characteristic].value) {
+                expandedData.system.characteristics[characteristic].value = expandedData.Xsystem.characteristics[characteristic].value;
+            }
         }
 
         await this.actor.update(expandedData)
-    
+
         this.render();
     }
 
@@ -531,6 +538,50 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         // Finally, create the item!
         return await HeroSystem6eItem.create(itemData, { parent: this.actor })
     }
+
+    async _onEffectCreate(event) {
+        event.preventDefault()
+        return await this.actor.createEmbeddedDocuments("ActiveEffect", [{
+            label: "New Effect",
+            icon: "icons/svg/aura.svg",
+            origin: this.actor.uuid,
+            //"duration.rounds": li.dataset.effectType === "temporary" ? 1 : undefined,
+            disabled: true
+        }]);
+
+    }
+
+    async _onEffectDelete(event) {
+        event.preventDefault()
+        const effectId = $(event.currentTarget).closest("[data-effect-id]").data().effectId
+        const effect = this.actor.effects.get(effectId)
+        if (!effect) return
+        const confirmed = await Dialog.confirm({
+            title: game.i18n.localize("HERO6EFOUNDRYVTTV2.confirms.deleteConfirm.Title"),
+            content: game.i18n.localize("HERO6EFOUNDRYVTTV2.confirms.deleteConfirm.Content")
+        });
+
+        if (confirmed) {
+            effect.delete()
+            this.render();
+        }
+    }
+
+    async _onEffectToggle(event)
+    {
+        event.preventDefault()
+        const effectId = $(event.currentTarget).closest("[data-effect-id]").data().effectId
+        const effect = this.actor.effects.get(effectId)
+        return effect.update({disabled: !effect.disabled});
+    }
+
+    async _onEffectEdit(event) {
+        event.preventDefault()
+        const effectId = $(event.currentTarget).closest("[data-effect-id]").data().effectId
+        const effect = this.actor.effects.get(effectId)
+        effect.sheet.render(true)
+    }
+        
 
     async _onRecovery(event) {
         const chars = this.actor.system.characteristics
