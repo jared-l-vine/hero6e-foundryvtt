@@ -6,11 +6,12 @@ export class HeroRuler {
             setHeroRulerLabel()
 
             if (!game.modules.get("drag-ruler")) {
-                ui.notifications.error(game.i18n.localize("Warning.DragRuler.Intall"));
+                ui.notifications.warn(game.i18n.localize("Warning.DragRuler.Install"));
+                return
             }
 
             if (!game.modules.get("drag-ruler")?.active) {
-                ui.notifications.error(game.i18n.localize("Warning.DragRuler.Active"));
+                ui.notifications.warn(game.i18n.localize("Warning.DragRuler.Active"));
             }
         });
 
