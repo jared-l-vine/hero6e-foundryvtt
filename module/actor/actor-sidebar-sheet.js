@@ -50,7 +50,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
             if (item.type == 'power')
                 HEROSYS.log(false, item.type)
-                HEROSYS.log(false, item.type)
+            HEROSYS.log(false, item.type)
 
             // Damage
             if (item.type == 'attack') {
@@ -148,8 +148,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
             if (item.type == 'equipment') {
                 data.hasEquipment = true
-                if (item.system.active)
-                {
+                if (item.system.active) {
                     weightTotal += parseFloat(item.system.WEIGHT) || 0
                 }
                 priceTotal += parseFloat(item.system.PRICE) || 0
@@ -163,11 +162,13 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
         }
         data.items = items;
 
-        if (data.hasEquipment)
-        {
-            data.weightTotal = parseFloat(weightTotal).toFixed(1) + "kg"
-            data.priceTotal = "$" + parseFloat(priceTotal).toFixed(2)
+        if (data.hasEquipment) {
+            if (parseFloat(weightTotal).toFixed(1) > 0 || parseFloat(priceTotal).toFixed(2) > 0) {
+                data.weightTotal = parseFloat(weightTotal).toFixed(1) + "kg"
+                data.priceTotal = "$" + parseFloat(priceTotal).toFixed(2)
+            }
         }
+
 
         // Characteristics
         const characteristicSet = []
@@ -182,7 +183,7 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
         for (const key of characteristicKeys) {
             let characteristic = data.actor.system.characteristics[key]
-            
+
             characteristic.key = key
 
             if (!characteristic.base) {
@@ -438,13 +439,13 @@ export class HeroSystem6eActorSidebarSheet extends ActorSheet {
 
         const characteristics = ['body', 'stun', 'end'];
         for (const characteristic of characteristics) {
-          if (expandedData.Xsystem.characteristics[characteristic].value !== this.actor.system.characteristics[characteristic].value) {
-            expandedData.system.characteristics[characteristic].value = expandedData.Xsystem.characteristics[characteristic].value;
-          }
+            if (expandedData.Xsystem.characteristics[characteristic].value !== this.actor.system.characteristics[characteristic].value) {
+                expandedData.system.characteristics[characteristic].value = expandedData.Xsystem.characteristics[characteristic].value;
+            }
         }
 
         await this.actor.update(expandedData)
-    
+
         this.render();
     }
 

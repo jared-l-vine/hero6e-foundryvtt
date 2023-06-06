@@ -1,3 +1,7 @@
+# Version 2.1.9-alpha
+- Fixed equipment price showing NaN.  Summary weight/price for equipment now only shows when there are items with weight/price.
+- Fixed [Drag Ruler](https://foundryvtt.com/packages/drag-ruler) module errors when Drag Ruler not installed.  Drag Ruler is recommended, but not required.
+
 # Version 2.1.8-alpha
 - Improved power descriptions. [#78](https://github.com/dmdorman/hero6e-foundryvtt/issues/78)
 - Improved Estimation of Character Points spent and Active Points. [#111](https://github.com/dmdorman/hero6e-foundryvtt/issues/111)

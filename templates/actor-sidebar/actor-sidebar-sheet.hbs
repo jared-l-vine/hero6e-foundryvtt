@@ -451,10 +451,12 @@
             {{!-- Equipment Tab --}}
             <div class="tab tab-body" data-group="primary" data-tab="equipment">
                 <table>
+                    {{#if (or weightTotal priceTotal)}}
                     <tr class="sticky">
                         <th>WEIGHT: {{weightTotal}}</th>
                         <th>PRICE: {{priceTotal}}</th>
                     </tr>
+                    {{/if}}
                     <tr class="sticky">
                         <th></th>
                         <th class="left">{{localize "ActorSheet.Name"}}</th>
