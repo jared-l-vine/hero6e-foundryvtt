@@ -2,11 +2,9 @@ import { HEROSYS } from "./herosystem6e.js";
 
 export class HeroRuler {
     static initialize() {
-        Hooks.once("init", () => {
-            setHeroRulerLabel()
-        });
-
         Hooks.once("ready", function () {
+            setHeroRulerLabel()
+
             if (!game.modules.get("drag-ruler")) {
                 ui.notifications.error(game.i18n.localize("Warning.DragRuler.Intall"));
             }
@@ -15,6 +13,8 @@ export class HeroRuler {
                 ui.notifications.error(game.i18n.localize("Warning.DragRuler.Active"));
             }
         });
+
+        if (!game.modules.get('drag-ruler')?.active) { return; }
 
         Hooks.once('dragRuler.ready', (SpeedProvider) => {
             class HeroSysSpeedProvider extends SpeedProvider {
