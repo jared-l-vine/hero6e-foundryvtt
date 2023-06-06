@@ -147,7 +147,7 @@ function setHeroRulerLabel() {
 
         let label = "[" + Math.round(segmentDistance.distance) + " m]"
 
-        if (game.modules.get("drag-ruler")?.active) {
+        if (game.modules.get("drag-ruler")?.active && canvas.tokens.controlled.length > 0) {
             const relevantToken = canvas.tokens.controlled[0];
 
             const movmentItems = relevantToken.actor.items.filter((e) => e.type === "movement");
